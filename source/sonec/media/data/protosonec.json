@@ -1,0 +1,29 @@
+{
+
+	"AnimRight":{
+		"AnimWalk":[
+			{"Image":{"File":{"Path":"/media/gfx/sonec","Name":"sonecwalkright_1.png"}}},
+			{"Image":{"File":{"Path":"/media/gfx/sonec","Name":"sonecwalkright_2.png"}}},
+			{"Image":{"File":{"Path":"/media/gfx/sonec","Name":"sonecwalkright_3.png"}}},
+			{"Image":{"File":{"Path":"/media/gfx/sonec","Name":"sonecwalkright_4.png"}}},
+			{"Image":{"File":{"Path":"/media/gfx/sonec","Name":"sonecwalkright_5.png"}}}
+		],
+		"Stand":{"Image":{"File":{"Path":"/media/gfx/sonec","Name":"sonecstandright.png"}}},
+		"Fly":  {"Image":{"File":{"Path":"/media/gfx/sonec","Name":"sonecflyright.png"}}},
+		"Duck": {"Image":{"File":{"Path":"/media/gfx/sonec","Name":"sonecduckright.png"}}}
+	},
+
+	"AnimLeft":{
+		"AnimWalk":[
+			{"Image":{"File":{"Path":"/media/gfx/sonec","Name":"sonecwalkleft_1.png"}}},
+			{"Image":{"File":{"Path":"/media/gfx/sonec","Name":"sonecwalkleft_2.png"}}},
+			{"Image":{"File":{"Path":"/media/gfx/sonec","Name":"sonecwalkleft_3.png"}}},
+			{"Image":{"File":{"Path":"/media/gfx/sonec","Name":"sonecwalkleft_4.png"}}},
+			{"Image":{"File":{"Path":"/media/gfx/sonec","Name":"sonecwalkleft_5.png"}}}
+		],
+		"Stand":{"Image":{"File":{"Path":"/media/gfx/sonec","Name":"sonecstandleft.png"}}},
+		"Fly":  {"Image":{"File":{"Path":"/media/gfx/sonec","Name":"sonecflyleft.png"}}},
+		"Duck": {"Image":{"File":{"Path":"/media/gfx/sonec","Name":"sonecduckleft.png"}}}
+	}
+
+}

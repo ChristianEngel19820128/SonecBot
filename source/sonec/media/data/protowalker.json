@@ -1,0 +1,19 @@
+{
+
+	"AnimRight":{
+		"Tower":  {"Image":{"File":{"Path":"/media/gfx/enemies/walker","Name":"tower_right.png"}},  "Offset":{"x":13,"y":30},"Anchor":{"x":13,"y":30},"Rotation":0},
+		"Corpus": {"Image":{"File":{"Path":"/media/gfx/enemies/walker","Name":"corpus_right.png"}}, "Offset":{"x":0,"y":16}, "Anchor":{"x":4,"y":22},"Rotation":0},
+		"Thigh":  {"Image":{"File":{"Path":"/media/gfx/enemies/walker","Name":"thigh_right.png"}},  "Offset":{"x":3,"y":4},  "Anchor":{"x":15,"y":6},"Rotation":45},
+		"Shank":  {"Image":{"File":{"Path":"/media/gfx/enemies/walker","Name":"shank_right.png"}},  "Offset":{"x":3,"y":5},  "Anchor":{"x":33,"y":7},"Rotation":-45},
+		"Socket": {"Image":{"File":{"Path":"/media/gfx/enemies/walker","Name":"socket_right.png"}}, "Offset":{"x":2,"y":7},  "Anchor":{"x":2,"y":7},"Rotation":0}
+	},
+
+	"AnimLeft":{
+		"Tower":  {"Image":{"File":{"Path":"/media/gfx/enemies/walker","Name":"tower_left.png"}},  "Offset":{"x":0,"y":30}, "Anchor":{"x":0,"y":30},"Rotation":0},
+		"Corpus": {"Image":{"File":{"Path":"/media/gfx/enemies/walker","Name":"corpus_left.png"}}, "Offset":{"x":9,"y":16},  "Anchor":{"x":5,"y":22},"Rotation":0},
+		"Thigh":  {"Image":{"File":{"Path":"/media/gfx/enemies/walker","Name":"thigh_left.png"}},  "Offset":{"x":15,"y":4},   "Anchor":{"x":3,"y":6},"Rotation":-45},
+		"Shank":  {"Image":{"File":{"Path":"/media/gfx/enemies/walker","Name":"shank_left.png"}},  "Offset":{"x":32,"y":5},   "Anchor":{"x":3,"y":7},"Rotation":45},
+		"Socket": {"Image":{"File":{"Path":"/media/gfx/enemies/walker","Name":"socket_left.png"}}, "Offset":{"x":7,"y":7},   "Anchor":{"x":7,"y":7},"Rotation":0}
+	}
+
+}

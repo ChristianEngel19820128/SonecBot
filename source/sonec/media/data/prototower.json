@@ -1,0 +1,25 @@
+{
+
+	"AnimSmallTower":[
+		{"Image":{"File":{"Path":"/media/gfx/background","Name":"smalltower_1_1.png"}}},
+		{"Image":{"File":{"Path":"/media/gfx/background","Name":"smalltower_1_2.png"}}},
+		{"Image":{"File":{"Path":"/media/gfx/background","Name":"smalltower_1_3.png"}}},
+		{"Image":{"File":{"Path":"/media/gfx/background","Name":"smalltower_1_4.png"}}},
+		{"Image":{"File":{"Path":"/media/gfx/background","Name":"smalltower_2_1.png"}}},
+		{"Image":{"File":{"Path":"/media/gfx/background","Name":"smalltower_2_2.png"}}},
+		{"Image":{"File":{"Path":"/media/gfx/background","Name":"smalltower_2_3.png"}}},
+		{"Image":{"File":{"Path":"/media/gfx/background","Name":"smalltower_2_4.png"}}}
+	],
+
+	"AnimTower":[
+		{"Image":{"File":{"Path":"/media/gfx/background","Name":"tower_1_1.png"}}},
+		{"Image":{"File":{"Path":"/media/gfx/background","Name":"tower_1_2.png"}}},
+		{"Image":{"File":{"Path":"/media/gfx/background","Name":"tower_1_3.png"}}},
+		{"Image":{"File":{"Path":"/media/gfx/background","Name":"tower_1_4.png"}}},
+		{"Image":{"File":{"Path":"/media/gfx/background","Name":"tower_2_1.png"}}},
+		{"Image":{"File":{"Path":"/media/gfx/background","Name":"tower_2_2.png"}}},
+		{"Image":{"File":{"Path":"/media/gfx/background","Name":"tower_2_3.png"}}},
+		{"Image":{"File":{"Path":"/media/gfx/background","Name":"tower_2_4.png"}}}
+	]
+
+}

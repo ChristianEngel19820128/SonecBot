@@ -1,0 +1,13 @@
+{
+
+	"AnimEnergie":[
+		{"Image":{"File":{"Path":"/media/gfx/objects","Name":"energie.png"}}},
+		{"Image":{"File":{"Path":"/media/gfx/objects","Name":"energiereg.png"}}},
+		{"Image":{"File":{"Path":"/media/gfx/objects","Name":"health.png"}}},
+		{"Image":{"File":{"Path":"/media/gfx/objects","Name":"healthreg.png"}}},
+		{"Image":{"File":{"Path":"/media/gfx/objects","Name":"firerate.png"}}},
+		{"Image":{"File":{"Path":"/media/gfx/objects","Name":"fireburst.png"}}},
+		{"Image":{"File":{"Path":"/media/gfx/objects","Name":"ammo.png"}}},
+		{"Image":{"File":{"Path":"/media/gfx/objects","Name":"star.png"}}}
+	]
+}

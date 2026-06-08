@@ -1,0 +1,8 @@
+{
+
+	"AnimFlash":[
+		{"Image":{"File":{"Path":"/media/gfx/weapons","Name":"flash.png"}}},
+		{"Image":{"File":{"Path":"/media/gfx/weapons","Name":"plasmaflash.png"}}}
+	]
+
+}

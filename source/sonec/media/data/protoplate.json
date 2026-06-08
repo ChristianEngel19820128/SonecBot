@@ -1,0 +1,14 @@
+{
+
+	"AnimPlate":[
+		{"Image":{"File":{"Path":"/media/gfx/plate","Name":"plate_1.png"}}},
+		{"Image":{"File":{"Path":"/media/gfx/plate","Name":"plate_2.png"}}},
+		{"Image":{"File":{"Path":"/media/gfx/plate","Name":"plate_3.png"}}},
+		{"Image":{"File":{"Path":"/media/gfx/plate","Name":"plate_4.png"}}},
+		{"Image":{"File":{"Path":"/media/gfx/plate","Name":"plate_5.png"}}},
+		{"Image":{"File":{"Path":"/media/gfx/plate","Name":"plate_6.png"}}},
+		{"Image":{"File":{"Path":"/media/gfx/plate","Name":"plate_7.png"}}},
+		{"Image":{"File":{"Path":"/media/gfx/plate","Name":"plate_8.png"}}}
+	]
+
+}

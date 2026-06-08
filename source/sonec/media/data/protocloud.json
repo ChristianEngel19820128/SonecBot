@@ -1,0 +1,10 @@
+{
+
+	"AnimCloud":[
+		{"Image":{"File":{"Path":"/media/gfx/background","Name":"clouds_1.png"}}},
+		{"Image":{"File":{"Path":"/media/gfx/background","Name":"clouds_2.png"}}},
+		{"Image":{"File":{"Path":"/media/gfx/background","Name":"clouds_3.png"}}},
+		{"Image":{"File":{"Path":"/media/gfx/background","Name":"clouds_4.png"}}},
+		{"Image":{"File":{"Path":"/media/gfx/background","Name":"clouds_5.png"}}}
+	]
+}
