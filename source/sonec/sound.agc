@@ -46,3 +46,34 @@ endfunction
 //----------------------------------------------------------------------
 // 
 //----------------------------------------------------------------------
+
+function SoundPlayPitched(SoundID as integer,Rate as integer)
+	
+	local Value as integer
+	
+	if GetSoundExists(SoundID) = 1
+		if GetSoundMinRate() < Rate and GetSoundMaxRate() > Rate
+			SetSoundInstanceRate(SoundID,Rate)
+		else
+			SetSoundInstanceRate(SoundID,1)
+		endif
+		Value = PlaySound(SoundID)
+	endif
+
+endfunction Value
+
+//----------------------------------------------------------------------
+//
+//----------------------------------------------------------------------
+
+function SoundPlay(SoundID as integer)
+	
+	local Value as integer
+	
+	SoundPlayPitched(SoundID,1)
+
+endfunction Value
+
+//----------------------------------------------------------------------
+//
+//----------------------------------------------------------------------

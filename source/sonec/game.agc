@@ -10,6 +10,8 @@ function GameCreate(Game ref as TGame,vx as integer,vy as integer)
 	
 	GameProtoLoad(Game)
 	
+	SetJoystickIndex(Game)
+	
 	SoundLoad(Game.Sound)
 	
 	Game.IsLost = TRUE
@@ -132,9 +134,9 @@ endfunction
 
 function GameInput(Game ref as TGame,Now as integer)
 
-	SonecInput(Game.Sonec,Game.JetfireList,Game.ProtoJetfire,Game.World,Now)
+	SonecInput(Game.Sonec,Game.JetfireList,Game.ProtoJetfire,Game.World,Game.JoystickIndex,Now)
 	
-	if GetRawJoystickButtonPressed(1,joystickButtonBack) = 1
+	if GetJoyPressed(Game.JoystickIndex,joystickButtonBack) = 1
 		Game.IsLost = TRUE
 	endif
 	
@@ -146,12 +148,12 @@ endfunction
 
 function GameActionInput(Game ref as TGame,Now as integer)
 
-	SonecFlameGunInput(Game.Sonec,Game.FlameList,Game.ProtoFlame,Game.World,Game.Sound,Now)
-	SonecPlasmaBlitzGunInput(Game.Sonec,Game.FlashList,Game.ProtoFlash,Game.PlasmaBlitzList,Game.ProtoPlasmaBlitz,Game.World,Now)
-	SonecMGunInput(Game.Sonec,Game.FlashList,Game.ProtoFlash,Game.BulletList,Game.ProtoBullet,Game.World,Game.Sound,Now)
-	SonecGrenadeLauncherInput(Game.Sonec,Game.GrenadeList,Game.ProtoGrenade,Game.World,Game.Sound,Now)
-	SonecShieldInput(Game.Sonec,Game.Shield,Game.World,Now)
-	SonecInenergieInput(Game.Sonec,Game.Inenergie,Game.EnergieList,Game.World,Now)
+	SonecFlameGunInput(Game.Sonec,Game.FlameList,Game.ProtoFlame,Game.World,Game.Sound,Game.JoystickIndex,Now)
+	SonecPlasmaBlitzGunInput(Game.Sonec,Game.FlashList,Game.ProtoFlash,Game.PlasmaBlitzList,Game.ProtoPlasmaBlitz,Game.World,Game.JoystickIndex,Now)
+	SonecMGunInput(Game.Sonec,Game.FlashList,Game.ProtoFlash,Game.BulletList,Game.ProtoBullet,Game.World,Game.Sound,Game.JoystickIndex,Now)
+	SonecGrenadeLauncherInput(Game.Sonec,Game.GrenadeList,Game.ProtoGrenade,Game.World,Game.Sound,Game.JoystickIndex,Now)
+	SonecShieldInput(Game.Sonec,Game.Shield,Game.World,Game.JoystickIndex,Now)
+	SonecInenergieInput(Game.Sonec,Game.Inenergie,Game.EnergieList,Game.World,Game.JoystickIndex,Now)
 
 endfunction
 
@@ -214,7 +216,7 @@ function GameDo(Game ref as TGame,Now as integer)
 	
 	if WalkerCountAll(Game.WalkerList) < 5
 		if random(0,10000) < 35
-			//WalkerAdd(Game.WalkerList,Game.ProtoWalker,Game.World,Now)
+			WalkerAdd(Game.WalkerList,Game.ProtoWalker,Game.World,Now)
 		endif
 	endif
 	
@@ -224,10 +226,11 @@ function GameDo(Game ref as TGame,Now as integer)
 	MineMoveAll(Game.MineList,Game.Sonec,Game.Inenergie,Game.World,Now)
 	MineHealthRegenerate(Game.MineList,Game,Now)
 	MineCollideSonec(Game.MineList,Game.Sonec,Game,Now)
-
+	
 	WalkerMoveAll(Game.WalkerList,Game.ProtoWalker,Game.World,Now)
 	WalkerHealthRegenerate(Game.WalkerList,Game,Now)
-		
+	WalkerAnimateAll(Game.WalkerList,Game.ProtoWalker,Game.World,Now)
+	
 	JetfireLifeCycle(Game.JetfireList,Now)
 	EnergieMoveAll(Game.EnergieList,Game.World,Now)
 	EnergieLifeCycle(Game.EnergieList,Now)

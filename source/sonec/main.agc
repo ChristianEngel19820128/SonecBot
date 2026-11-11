@@ -7,7 +7,7 @@
 SetErrorMode(2)
 
 // set window properties
-SetWindowTitle( "sonec" )
+SetWindowTitle("SonecBot")
 
 local dx as integer
 local dy as integer
@@ -24,22 +24,18 @@ wy = 675
 vx = 900//1280
 vy = 450//720
 
-SetOrientationAllowed(0,0,1,0)
-SetWindowSize(wx,wy,0)
-SetWindowAllowResize(0)
-
-dx = GetDeviceWidth()
-dy = GetDeviceHeight()
-//vx = wx/(wy/vy)
 cx = vx/2
 cy = vy/2
 
+SetOrientationAllowed(0,0,1,0)
+SetWindowSize(wx,wy,0)
+SetWindowAllowResize(1)
 SetVirtualResolution(vx,vy)
-
-SetSyncRate(120,0)
-//SetVSync(1)
+SetSyncRate(60,1)
 SetScissor(0,0,0,0)
 UseNewDefaultFonts(1)
+
+#constant Device$ GetDeviceBaseName()
 
 #option_explicit
 
@@ -49,6 +45,7 @@ UseNewDefaultFonts(1)
 #include "def_joypad.agc"
 #include "def_keys.agc"
 #include "def_game.agc"
+#include "controls.agc"
 #include "math.agc"
 #include "collision.agc"
 #include "color.agc"
@@ -101,7 +98,7 @@ local Now as integer
 Now = GetMilliseconds()
 
 local CurrentNow as integer
-CurrentNow = 0
+CurrentNow = GetMilliseconds()
 
 IntroCreate(Intro,vx,vy,Now)
 GameCreate(Game,vx,vy)
@@ -117,12 +114,12 @@ repeat
 	Now = GetMilliseconds()
 	
 	if Game.IsLost = TRUE
-		if IntroDo(Intro,Game.Sound,CurrentNow) = TRUE
+		if IntroDo(Intro,Game.Sound,Game.JoystickIndex,CurrentNow) = TRUE
 			GameInit(Game,CurrentNow)
 		endif
 		IntroDraw(Intro)
 	else
-		if GetRawJoystickButtonPressed(1,joystickButtonStart) = 1
+		if GetJoyPressed(Game.JoystickIndex,joystickButtonStart) = 1
 			if Game.IsPause = FALSE
 				Game.IsPause = TRUE
 			else
@@ -144,6 +141,6 @@ repeat
 	Drawtext(FPS)
 	Swap()
 	
-until GetRawKeyPressed(Key_Escape) = 1 or Intro.IsQuit = TRUE
+until GetESCPressed() = 1 or (Device$ <> "html5" and Intro.IsQuit = TRUE)
 
 

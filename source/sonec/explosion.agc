@@ -107,10 +107,10 @@ function ExplosionNew(Explosion ref as TExplosion,ProtoExplosion ref as TProtoEx
 	
 	select Explosion.ExplosionType
 		case 0
-			ColorSet(Explosion.SpriteData.Color,0,255,55,200)
+			ColorSet(Explosion.SpriteData.Color,0,255,0,200)//0,255,55,200)
 		endcase
 		case 1
-			ColorSet(Explosion.SpriteData.Color,255,155,0,200)
+			ColorSet(Explosion.SpriteData.Color,0,255,0,200)//255,155,0,200)
 		endcase
 		case 2
 			ColorSet(Explosion.SpriteData.Color,0,255,0,200)

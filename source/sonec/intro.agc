@@ -128,7 +128,7 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function IntroDo(Intro ref as TIntro,Sound ref as TSound,Now as integer)
+function IntroDo(Intro ref as TIntro,Sound ref as TSound,JoystickIndex as integer,Now as integer)
 	
 	local Value as integer
 	
@@ -137,7 +137,7 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Now as integer)
 		TimeReset(Intro.TimerHelp,Now)
 	endif
 	
-	if GetRawJoystickButtonPressed(1,joystickButtonCrossUp) = 1
+	if GetJoyPressed(JoystickIndex,joystickButtonCrossUp) = 1
 		if Intro.SelctionPos <= 1
 			Intro.SelctionPos = 3
 		else
@@ -146,7 +146,7 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Now as integer)
 		PlaySound(Sound.MenuSound)
 	endif
 	
-		if GetRawJoystickButtonPressed(1,joystickButtonCrossDown) = 1
+		if GetJoyPressed(JoystickIndex,joystickButtonCrossDown) = 1
 		if Intro.SelctionPos >= 3
 			Intro.SelctionPos = 1
 		else
@@ -183,7 +183,7 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Now as integer)
 		endcase
 	endselect
 	
-	if GetRawJoystickButtonPressed(1,joystickButtonStart) = 1 or GetRawJoystickButtonPressed(1,joystickButtonA) = 1
+	if GetJoyPressed(JoystickIndex,joystickButtonStart) = 1 or GetJoyPressed(JoystickIndex,joystickButtonA) = 1
 		select Intro.SelctionPos
 			case 1
 				Value = TRUE

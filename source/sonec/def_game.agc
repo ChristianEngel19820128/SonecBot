@@ -8,6 +8,9 @@
 #constant MOVEDOWN 0
 #constant MOVEUP 1
 
+#constant ELEMENTLEFT 0
+#constant ELEMENTRIGHT 1
+
 #constant FALLACCELERATION 0.01
 
 #constant REGENERGY 1
@@ -95,6 +98,8 @@ type TObjectData
 	Rotation as float
 	RotationAlignment as integer
 	Angle as float
+	AngleAnimate as float
+	AngleDelta as float
 	Radius as float
 	Position as TPosition
 	AnchorPosition as TPosition
@@ -262,25 +267,25 @@ endtype
 type TWalkerObjectData
 	Tower as TObjectData
 	Corpus as TObjectData
-	Thigh as TObjectData
-	Shank as TObjectData
-	Socket as TObjectData
+	Thigh as TObjectData[1]
+	Shank as TObjectData[1]
+	Socket as TObjectData[1]
 endtype
 
 type TWalkerSpriteData
 	Tower as TSpriteData
 	Corpus as TSpriteData
-	Thigh as TSpriteData
-	Shank as TSpriteData
-	Socket as TSpriteData
+	Thigh as TSpriteData[1]
+	Shank as TSpriteData[1]
+	Socket as TSpriteData[1]
 endtype
 
 type TWalkerCollisionData
 	Tower as TCollisionData
 	Corpus as TCollisionData
-	Thigh as TCollisionData
-	Shank as TCollisionData
-	Socket as TCollisionData
+	Thigh as TCollisionData[1]
+	Shank as TCollisionData[1]
+	Socket as TCollisionData[1]
 endtype
 
 type TWalker
@@ -290,6 +295,7 @@ type TWalker
 	WalkerObjectData as TWalkerObjectData
 	WalkerSpriteData as TWalkerSpriteData
 	WalkerCollisionData as TWalkerCollisionData
+	AnimationData as TAnimationData
 	Health as THealth	
 	State as TObjectState
 endtype
@@ -616,6 +622,8 @@ endtype
 type TGame
 	
 	Screen as TSize
+	
+	JoystickIndex as integer
 	
 	Sound as TSound
 	

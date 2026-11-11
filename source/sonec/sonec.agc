@@ -247,13 +247,13 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function SonecFlameGunInput(Sonec ref as TSonec,FlameList ref as TFlameList,ProtoFlame ref as TProtoFlame,World ref as TWorld,Sound ref as TSound,Now as integer)
+function SonecFlameGunInput(Sonec ref as TSonec,FlameList ref as TFlameList,ProtoFlame ref as TProtoFlame,World ref as TWorld,Sound ref as TSound,JoystickIndex as integer,Now as integer)
 	
 	local Position as TPosition
 	local Angle as float
 	local Radius as float
 	
-	if (GetRawKeyState(KEY_3) = 1 or GetRawJoystickButtonState(1,joystickButtonX) = 1 )and Sonec.Energy.State >= COSTFLAME
+	if (GetKeyState(KEY_3) = 1 or GetJoyState(JoystickIndex,joystickButtonX) = 1 )and Sonec.Energy.State >= COSTFLAME
 		if TimeGet(Sonec.FlameGun.FireTimer,Now) > 0
 			
 			if Sonec.State.LookAlignment = LOOKLEFT
@@ -274,7 +274,7 @@ function SonecFlameGunInput(Sonec ref as TSonec,FlameList ref as TFlameList,Prot
 			endif
 			
 			if GetSoundInstances(Sound.MFlameSound) = 0
-				PlaySound(Sound.MFlameSound)
+				SoundPlay(Sound.MFlameSound)
 			endif
 			
 			FlameAdd(FlameList,ProtoFlame,World,Sonec.ObjectData,Position,Angle,Radius,Now)
@@ -291,13 +291,13 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function SonecPlasmaBlitzGunInput(Sonec ref as TSonec,FlashList ref as TFlashList,ProtoFlash ref as TProtoFlash,PlasmaBlitzList ref as TPlasmaBlitzList,ProtoPlasmaBlitz ref as TProtoPlasmaBlitz,World ref as TWorld,Now as integer)
+function SonecPlasmaBlitzGunInput(Sonec ref as TSonec,FlashList ref as TFlashList,ProtoFlash ref as TProtoFlash,PlasmaBlitzList ref as TPlasmaBlitzList,ProtoPlasmaBlitz ref as TProtoPlasmaBlitz,World ref as TWorld,JoystickIndex as integer,Now as integer)
 	
 	local Position as TPosition
 	local Angle as float
 	local Radius as float
 	
-	if (GetRawKeyState(KEY_1) = 1 or GetRawJoystickButtonState(1,joystickButtonY) = 1) and Sonec.Energy.State >= COSTPLASMABLITZ
+	if (GetKeyState(KEY_1) = 1 or GetJoyState(JoystickIndex,joystickButtonY) = 1) and Sonec.Energy.State >= COSTPLASMABLITZ
 		if TimeGet(Sonec.PlasmaBlitzGun.FireTimer,Now) > 0
 			
 			if Sonec.State.LookAlignment = LOOKLEFT
@@ -350,13 +350,13 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function SonecMGunInput(Sonec ref as TSonec,FlashList ref as TFlashList,ProtoFlash ref as TProtoFlash,BulletList ref as TBulletList,ProtoBullet ref as TProtoBullet,World ref as TWorld,Sound ref as TSound,Now as integer)
+function SonecMGunInput(Sonec ref as TSonec,FlashList ref as TFlashList,ProtoFlash ref as TProtoFlash,BulletList ref as TBulletList,ProtoBullet ref as TProtoBullet,World ref as TWorld,Sound ref as TSound,JoystickIndex as integer,Now as integer)
 	
 	local Position as TPosition
 	local Angle as float
 	local Radius as float
 	
-	if (GetRawKeyState(KEY_2) = 1 or GetRawJoystickButtonState(1,joystickButtonA) = 1 or Sonec.MGun.FireBurst > 0) and Sonec.MGun.Ammo > 0
+	if (GetKeyState(KEY_2) = 1 or GetJoyState(JoystickIndex,joystickButtonA) = 1 or Sonec.MGun.FireBurst > 0) and Sonec.MGun.Ammo > 0
 		if (Sonec.MGun.FireBurst = 0 and TimeGet(Sonec.MGun.FireTimer,Now) > 0)  or (Sonec.MGun.FireBurst > 0 and TimeGet(Sonec.MGun.FireBurstTimer,Now) > 0)
 			
 			if Sonec.MGun.FireBurst = 0 then Sonec.MGun.FireBurst = Sonec.MGun.FireBurstMax
@@ -387,7 +387,7 @@ function SonecMGunInput(Sonec ref as TSonec,FlashList ref as TFlashList,ProtoFla
 			if Sonec.MGun.FlashIndex >= 0
 				FlashDelete(FlashList,Sonec.MGun.FlashIndex)
 			endif
-			PlaySound(Sound.MGunSound)
+			SoundPlay(Sound.MGunSound)
 			Sonec.MGun.FlashIndex = FlashAdd(FlashList,ProtoFlash,World,0,10,Position,Angle,Radius,Now)
 			Radius = 25
 			BulletAdd(BulletList,ProtoBullet,World,Position,Angle,Radius,TYPEPLAYERONE,Now)
@@ -403,14 +403,14 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function SonecGrenadeLauncherInput(Sonec ref as TSonec,GrenadeList ref as TGrenadeList,ProtoGrenade ref as TProtoGrenade,World ref as TWorld,Sound ref as TSound,Now as integer)
+function SonecGrenadeLauncherInput(Sonec ref as TSonec,GrenadeList ref as TGrenadeList,ProtoGrenade ref as TProtoGrenade,World ref as TWorld,Sound ref as TSound,JoystickIndex as integer,Now as integer)
 	
 	local Position as TPosition
 	local Angle as float
 	local Radius as float
 	local Recoil as float
 	
-	if (GetRawKeyState(KEY_2) = 1 or GetRawJoystickButtonState(1,joystickButtonB) = 1) and Sonec.GrenadeLauncher.Ammo > 0
+	if (GetKeyState(KEY_2) = 1 or GetJoyState(JoystickIndex,joystickButtonB) = 1) and Sonec.GrenadeLauncher.Ammo > 0
 		if TimeGet(Sonec.GrenadeLauncher.FireTimer,Now) > 0
 			
 			Position.x = Sonec.ObjectData.Position.x
@@ -429,7 +429,7 @@ function SonecGrenadeLauncherInput(Sonec ref as TSonec,GrenadeList ref as TGrena
 			
 			Sonec.GrenadeLauncher.Ammo = Sonec.GrenadeLauncher.Ammo -1
 				
-			PlaySound(Sound.GrenadeLauncherSound)
+			SoundPlay(Sound.GrenadeLauncherSound)
 			Radius = 25
 			GrenadeAdd(GrenadeList,ProtoGrenade,World,Position,Angle,Radius,Now)
 			TimeReset(Sonec.GrenadeLauncher.FireTimer,Now)
@@ -491,11 +491,11 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function SonecShieldInput(Sonec ref as TSonec,Shield ref as TShield,World ref as TWorld,Now as integer)
+function SonecShieldInput(Sonec ref as TSonec,Shield ref as TShield,World ref as TWorld,JoystickIndex as integer,Now as integer)
 
 	local Position as TPosition
 	
-	if GetRawKeyPressed(KEY_5) = 1 or GetRawJoystickButtonPressed(1,joystickButtonRR) = 1
+	if GetKeyPressed(KEY_5) = 1 or GetJoyPressed(JoystickIndex,joystickButtonRR) = 1
 		if Shield.Enabled = FALSE
 			if Sonec.Energy.State >= COSTSHIELD
 				Shield.Enabled = TRUE
@@ -558,11 +558,11 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function SonecInenergieInput(Sonec ref as TSonec,Inenergie ref as TInenergie,EnergieList ref as TEnergieList,World ref as TWorld,Now as integer)
+function SonecInenergieInput(Sonec ref as TSonec,Inenergie ref as TInenergie,EnergieList ref as TEnergieList,World ref as TWorld,JoystickIndex as integer,Now as integer)
 	
 	local Position as TPosition
 	
-	if GetRawKeyPressed(KEY_4) = 1 or GetRawJoystickButtonPressed(1,joystickButtonLR) = 1
+	if GetKeyPressed(KEY_4) = 1 or GetJoyPressed(JoystickIndex,joystickButtonLR) = 1
 		if Inenergie.Enabled = FALSE
 			if Sonec.Energy.State >= COSTATTRACT
 				Inenergie.Enabled = TRUE
@@ -610,7 +610,7 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function SonecInput(Sonec ref as TSonec,JetfireList ref as TJetfireList,ProtoJetfire ref as TProtoJetfire,World ref as TWorld,Now as integer)
+function SonecInput(Sonec ref as TSonec,JetfireList ref as TJetfireList,ProtoJetfire ref as TProtoJetfire,World ref as TWorld,JoystickIndex as integer,Now as integer)
 	
 	local Position as TPosition
 	
@@ -623,7 +623,7 @@ function SonecInput(Sonec ref as TSonec,JetfireList ref as TJetfireList,ProtoJet
 			Position.x = Sonec.ObjectData.Position.x -12
 		endif
 		
-		if (GetRawKeyState(Key_W) = 1 or GetRawJoystickY(1) < -0.25 or GetRawJoystickButtonState(1,joystickButtonCrossUp) = 1) and ((Sonec.State.Fly = FALSE and Sonec.Energy.State > COSTJETFIRE*10) or (Sonec.State.Fly = TRUE and Sonec.Energy.State >= COSTJETFIRE))
+		if (GetKeyState(Key_W) = 1 or GetJoyY(JoystickIndex) < -0.5 or GetJoyState(JoystickIndex,joystickButtonCrossUp) = 1) and ((Sonec.State.Fly = FALSE and Sonec.Energy.State > COSTJETFIRE*10) or (Sonec.State.Fly = TRUE and Sonec.Energy.State >= COSTJETFIRE))
 			if Sonec.State.Fly = FALSE
 				Sonec.Energy.State = Sonec.Energy.State - COSTJETFIRE*10
 			endif
@@ -633,7 +633,7 @@ function SonecInput(Sonec ref as TSonec,JetfireList ref as TJetfireList,ProtoJet
 			Sonec.AnimationData.Frame = 0
 			SonecJetfireAdd(Sonec,JetfireList,ProtoJetfire,World,Position,Now)
 		else
-			if (GetRawKeyState(Key_W) = 1 or GetRawJoystickY(1) < -0.25 or GetRawJoystickButtonState(1,joystickButtonCrossUp) = 1) and Sonec.State.Stand = TRUE
+			if (GetKeyState(Key_W) = 1 or GetJoyY(JoystickIndex) < -0.5 or GetJoyState(JoystickIndex,joystickButtonCrossUp) = 1) and Sonec.State.Stand = TRUE
 				Sonec.State.Jump = TRUE
 				Sonec.State.Stand = FALSE
 				Sonec.State.Fly = FALSE
@@ -647,7 +647,7 @@ function SonecInput(Sonec ref as TSonec,JetfireList ref as TJetfireList,ProtoJet
 			endif
 		endif
 		
-		if GetRawKeyState(Key_S) = 1 or GetRawJoystickY(1) > 0.5 or GetRawJoystickButtonState(1,joystickButtonCrossDown) = 1
+		if GetKeyState(Key_S) = 1 or GetJoyY(JoystickIndex) > 0.5 or GetJoyState(JoystickIndex,joystickButtonCrossDown) = 1
 			Sonec.State.Duck = TRUE
 			Sonec.AnimationData.Frame = 0
 		else
@@ -656,13 +656,13 @@ function SonecInput(Sonec ref as TSonec,JetfireList ref as TJetfireList,ProtoJet
 		
 		Sonec.State.Move = FALSE
 		
-		if GetRawKeyState(Key_A) = 1 or GetRawKeyState(Key_Q) = 1 or GetRawJoystickX(1) < -0.5 or GetRawJoystickZ(1) > 0.5 or GetRawJoystickButtonState(1,joystickButtonCrossLeft) = 1
-			if GetRawKeyState(Key_A) = 1 or GetRawJoystickX(1) < -0.5 or GetRawJoystickButtonState(1,joystickButtonCrossLeft) = 1
-				if GetRawJoystickZ(1) = 0
+		if GetKeyState(Key_A) = 1 or GetKeyState(Key_Q) = 1 or GetJoyX(JoystickIndex) < -0.5 or GetJoyZ(JoystickIndex) > 0.5 or GetJoyState(JoystickIndex,joystickButtonCrossLeft) = 1
+			if GetKeyState(Key_A) = 1 or GetJoyX(JoystickIndex) < -0.5 or GetJoyState(JoystickIndex,joystickButtonCrossLeft) = 1
+				if GetJoyZ(JoystickIndex) = 0
 					Sonec.State.LookAlignment = LOOKLEFT
 				endif
 			endif
-			if GetRawKeyState(Key_Q) = 1 or GetRawJoystickZ(1) > 0.5
+			if GetKeyState(Key_Q) = 1 or GetJoyZ(1) > 0.5
 				Sonec.State.LookAlignment = LOOKRIGHT
 			endif
 			if (Sonec.State.Fly = TRUE or Sonec.State.Fall = TRUE) and Sonec.Energy.State >= COSTJETFIRE
@@ -674,7 +674,7 @@ function SonecInput(Sonec ref as TSonec,JetfireList ref as TJetfireList,ProtoJet
 				Sonec.State.Move = TRUE
 				Sonec.State.Alignment = MOVELEFT
 			endif
-			if GetRawKeyState(Key_CONTROL) = 1 or GetRawJoystickButtonState(1,joystickButtonPadLeft) = 1
+			if GetKeyState(Key_CONTROL) = 1 or GetJoyState(JoystickIndex,joystickButtonPadLeft) = 1
 				//Sonec.State.LookAlignment = LOOKRIGHT
 				Sonec.State.Hover = TRUE
 			else	
@@ -682,13 +682,13 @@ function SonecInput(Sonec ref as TSonec,JetfireList ref as TJetfireList,ProtoJet
 			endif
 		endif
 		
-		if GetRawKeyState(Key_D) = 1 or GetRawKeyState(Key_E) = 1 or GetRawJoystickX(1) > 0.5 or GetRawJoystickRZ(1) > 0.5 or GetRawJoystickButtonState(1,joystickButtonCrossRight) = 1
-			if GetRawKeyState(Key_D) = 1 or GetRawJoystickX(1) > 0.5 or GetRawJoystickButtonState(1,joystickButtonCrossRight) = 1
-				if GetRawJoystickRZ(1) = 0
+		if GetKeyState(Key_D) = 1 or GetKeyState(Key_E) = 1 or GetJoyX(JoystickIndex) > 0.5 or GetJoyRZ(JoystickIndex) > 0.5 or GetJoyState(JoystickIndex,joystickButtonCrossRight) = 1
+			if GetKeyState(Key_D) = 1 or GetJoyX(JoystickIndex) > 0.5 or GetJoyState(JoystickIndex,joystickButtonCrossRight) = 1
+				if GetJoyRZ(1) = 0
 					Sonec.State.LookAlignment = LOOKRIGHT
 				endif
 			endif
-			if GetRawKeyState(Key_E) = 1 or GetRawJoystickRZ(1) > 0.5
+			if GetKeyState(Key_E) = 1 or GetJoyRZ(JoystickIndex) > 0.5
 				Sonec.State.LookAlignment = LOOKLEFT
 			endif
 			if (Sonec.State.Fly = TRUE or Sonec.State.Fall = TRUE) and Sonec.Energy.State >= COSTJETFIRE
@@ -700,7 +700,7 @@ function SonecInput(Sonec ref as TSonec,JetfireList ref as TJetfireList,ProtoJet
 				Sonec.State.Move = TRUE
 				Sonec.State.Alignment = MOVERIGHT
 			endif
-			if GetRawKeyState(Key_CONTROL) = 1 or GetRawJoystickButtonState(1,joystickButtonPadLeft) = 1
+			if GetKeyState(Key_CONTROL) = 1 or GetJoyState(JoystickIndex,joystickButtonPadLeft) = 1
 				//Sonec.State.LookAlignment = LOOKLEFT
 				Sonec.State.Hover = TRUE
 			else	
