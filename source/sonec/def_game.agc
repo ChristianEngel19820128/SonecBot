@@ -295,6 +295,7 @@ type TWalker
 	WalkerObjectData as TWalkerObjectData
 	WalkerSpriteData as TWalkerSpriteData
 	WalkerCollisionData as TWalkerCollisionData
+	HitFlashUntil as integer
 	AnimationData as TAnimationData
 	Health as THealth	
 	State as TObjectState
