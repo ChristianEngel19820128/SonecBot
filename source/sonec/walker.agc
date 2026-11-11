@@ -467,12 +467,12 @@ endfunction
 
 function WalkerAnimate(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,World ref as TWorld,Now as integer)
 
-	// Adjustable test animation: 1.5 cycles/sec, 20 degree leg swing, up to 12 degree knee bend.
+	// Adjustable test animation: 0.75 cycles/sec, 20 degree leg swing, up to 12 degree knee bend.
 	local Phase as float
 	local Swing as float
 	local KneeRight as float
 	local KneeLeft as float
-	Phase = Now * 0.54
+	Phase = Now * 0.27
 	Swing = sin(Phase) * 20.0
 	KneeRight = (1.0 - cos(Phase)) * 6.0
 	KneeLeft = (1.0 + cos(Phase)) * 6.0
