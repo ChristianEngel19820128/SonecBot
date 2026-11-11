@@ -30,9 +30,11 @@ function SetJoystickIndex(Game ref as TGame)
 	
 	Game.JoystickIndex = 1
 	
-	for i = 8 to 1 step -1
-		if GetRawJoystickExists(i) then Game.JoystickIndex = i
-	next i
+	if Device$ <> "html5"
+		for i = 8 to 1 step -1
+			if GetRawJoystickExists(i) then Game.JoystickIndex = i
+		next i
+	endif
 	
 endfunction
 
