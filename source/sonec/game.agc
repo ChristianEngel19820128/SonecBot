@@ -263,6 +263,7 @@ function GameDo(Game ref as TGame,Now as integer)
 	BulletMoveall(Game.BulletList,Game.World,Now)
 	BulletCollide(Game.BulletList,Game.Sonec)
 	BulletCollideOrbs(Game.BulletList,Game.OrbList)
+	BulletCollideWalkers(Game.BulletList,Game.WalkerList,Now)
 	BulletCollideMine(Game.BulletList,Game.MineList)
 	BulletCollideChest(Game.BulletList,Game.ChestList)
 	
