@@ -1,0 +1,56 @@
+"sonec bot"
+
+rang 
+energie
+leben
+munition
+
+geschwindigkeit
+
+grösse dx,dy
+
+position
+
+
+ausrüstung:
+
+laser
+gewehr
+flammenwerfer
+jetpack
+granaten
+racketen
+sonde
+snipeuplink
+
+
+findekram:
+steigen auf
+werden von gegnern zurück gelassen
+
+
+coins
+energie
+bullets
+
+
+----------------------
+
+jumppod
+
+-------------------------
+
+verteidigungsanlagen
+
+laserbeam
+racketenstellung
+flammenfalle
+
+kameras
+mg stellung
+
+-------------------------
+
+miracles
+walker
+bots
