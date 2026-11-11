@@ -30,13 +30,25 @@ Weitere Module betreffen Hintergrund, Wolken, Türme, Energie, Waffen, Effekte, 
 
 ## 2. Hauptschleife und Zeit
 
-In `main.agc` sind Fenstergröße 1350 × 675, virtuelle Auflösung 900 × 450 und `SetSyncRate(60,1)` eingestellt. Ein älterer Stand verwendete 120 FPS; das ist eine dokumentierte Abweichung, noch kein Fehler.
+In `main.agc` sind Fenstergröße 1350 × 675, virtuelle Auflösung 900 × 450 und ursprünglich `SetSyncRate(60,1)` eingestellt; die HTML5-Ausnahme ist unten dokumentiert. Ein älterer Stand verwendete 120 FPS; das ist eine dokumentierte Abweichung, noch kein Fehler.
 
 Die Hauptschleife unterscheidet Intro/verlorenen Spielzustand, laufendes Spiel und Pause. Im aktiven Spiel werden `GameInput`, `GameActionInput`, `GameDo`, `GameAnimate` und `GameDraw` aufgerufen. Die interne Zeit wird anhand von `GetMilliseconds()` fortgeschrieben; bei Pause wird `CurrentNow` nicht weitergezählt.
 
 **Pflichtprüfung:** Zeitsystem, Zeitdifferenzen, Timer, Pause, Bewegungs- und Animationsberechnungen sowie Verhalten bei variabler Bildrate. Diese Untersuchung hat vor einer vertieften Walker-Fehlersuche Priorität.
 
-Aus dem Projekt *Columns* liegt die Erfahrung vor, dass eine VSync-orientierte Synchronisierung für HTML5 und dessen Architektur den Spielfluss verbessern kann. Die dortige konkrete Lösung ist noch nicht geprüft; `SetSyncRate(60,1)` wird nicht ohne Analyse geändert.
+Aus dem Projekt *Columns* liegt die Erfahrung vor, dass eine VSync-orientierte Synchronisierung für HTML5 und dessen Architektur den Spielfluss verbessern kann. Die konkrete Lösung wurde inzwischen im Repository Crystals geprüft; die HTML5-Ausnahme ist inzwischen umgesetzt.
+
+### Ergänzung: Untersuchung der Zeit- und HTML5-Synchronisierung (November 2026)
+
+**Quellcodebefund:** In `SonecMove` werden Beschleunigung und Bremsen teilweise mit `MoveTimer.CalcRange` skaliert, die Positionsänderungen (`Position.x += MoveSpeed.x`, `Position.y += MoveSpeed.y`) dagegen nicht. Daher ist die Bewegung bei unterschiedlichen Aktualisierungsraten voraussichtlich nicht gleich. Vereinfachte Rechenbeispiele zeigten Unterschiede zwischen 30 und 60 FPS; dies sind **keine Laufzeitmessungen**. Sprung, Jetpack und Landungen hängen zusätzlich von Eingabe-, Bewegungs- und Kollisionszuständen ab und müssen praktisch getestet werden.
+
+Die Bewegung von Walker, Plattformen, Orbs, Minen, Türmen, Projektilen und PlasmaBlitz berücksichtigt `CalcRange` in der Positionsänderung. Kisten folgen ihren Plattformen. Bei Granaten und Wolken werden dagegen Teile der Geschwindigkeitsänderung ohne entsprechenden Zeitfaktor ausgeführt. Die Untersuchung bestätigt damit keine allgemeine Bildratenunabhängigkeit aller Objekte; Sonec ist der auffälligste Fall.
+
+**Vergleichsprojekt:** [Crystal Columns / Crystals](https://github.com/ChristianEngel19820128/Crystals) verwendet in `source/crystals/main.agc` für HTML5 `SetVSync(1)` und sonst `SetSyncRate(120,0)`. Der grundlegende Timermechanismus ist ähnlich. Der Unterschied im Bewegungsmodell zwischen Rasterspiel und SonecBot bleibt relevant.
+
+**Umgesetzt auf `develop`:** In `main.agc` wird für HTML5 `SetVSync(1)` gewählt; andere Plattformen behalten `SetSyncRate(60,1)`. Commit `94f84f032a2c6b45ee82570deef16c67016ea206`. VSync ist **keine Korrektur** der bildratenabhängigen Physik.
+
+**Geplante Verifikation:** Sobald ein zuverlässig spielbarer HTML5-Build vorliegt, Sonecs freien Fall, horizontale Bewegung, Sprung, Jetpack, Plattformlandungen und Granaten bei verschiedenen Bildraten vergleichen. Das 60-FPS-Spielgefühl dient vorerst als Referenz. Keine Physikänderung beschlossen.
 
 ## 3. Daten und Objektverwaltung
 
@@ -76,7 +88,7 @@ Aus dem Projekt *Columns* liegt die Erfahrung vor, dass eine VSync-orientierte S
 
 **Erfahrungsbefund des Entwicklers:** Die derzeitige Gamepad-Abfragemethode wird unter HTML5 voraussichtlich erhebliche Probleme verursachen. Die Tastatursteuerung ist derzeit praktisch nicht sinnvoll nutzbar.
 
-Im Projekt *Columns* wurden HTML5-spezifische Probleme bereits gelöst. Der Dokumentationsstand dort ist unbekannt. Die konkrete Implementierung muss vor einer Übernahme geprüft werden; sie gilt noch nicht als in SonecBot umgesetzt.
+Im Projekt *Columns* wurden HTML5-spezifische Probleme bereits gelöst. Das Referenzprojekt liegt unter `ChristianEngel19820128/Crystals`. Die konkrete Implementierung wurde inzwischen mit Crystals verglichen. Für HTML5 wird in `def_joypad.agc` Index 1 fest gewählt; andere Plattformen behalten die bisherige Indexsuche (Commit `1f96fcb7981869238f0026a33a0c526630fdaa03`). Laut Entwickler lieferte die HTML5-Suche zuvor oft Index 4 und scheinbar unkontrollierte Eingaben. Die Ursache ist ungeklärt; ein Laufzeittest in SonecBot steht aus.
 
 **Priorität:** Hoch für die HTML5-Alpha. Ein Browsertest steht aus.
 
@@ -95,14 +107,14 @@ Für die Beta ist ein Online-Highscore-System vorgesehen. Nach Angaben des Entwi
 | Bereich | Statischer Befund | Laufzeittest |
 |---|---|---|
 | Hauptschleife | Vorhanden | Ausstehend |
-| Zeitsystem | Vorhanden, eingehende Prüfung erforderlich | Ausstehend |
+| Zeitsystem | Erste Analyse abgeschlossen; Sonec-Position bildratenabhängig | Ausstehend |
 | Sonec, Waffen und Schild | Funktionen vorhanden | Ausstehend |
 | Plattformen und Minen | Funktionen vorhanden | Ausstehend |
 | Kisten und Orbs | Module vorhanden; Belohnungsmechanik ungeklärt | Ausstehend |
 | Walker-Erzeugung | Aktiv in Spielschleife | Ausstehend |
 | Walker-Bewegung/Animation | Aufrufe vorhanden | Ausstehend |
 | Walker-Kampfsystem | Ungeklärt | Ausstehend |
-| HTML5-Steuerung | Potenzielle Inkompatibilität laut Projekterfahrung | Ausstehend |
+| HTML5-Steuerung | Index-1-Workaround auf develop umgesetzt; ungetestet | Ausstehend |
 | Kollisionen | Primitive/Box-Prüfungen vorhanden; AGK-Alternativen ungeprüft | Ausstehend |
 
 „Vorhanden“ bedeutet nicht „fertig“ oder „fehlerfrei“.
@@ -122,4 +134,4 @@ Die Punkte sind Untersuchungsaufgaben, keine Änderungsfreigaben. Es werden kein
 
 Statisch gesichtet auf `develop`: `main.agc`, `game.agc`, `def_game.agc`, `sonec.agc`, `walker.agc`, `mine.agc`, `plate.agc`, `controls.agc`, `def_joypad.agc`, `world.agc`, `collision.agc`, `sound.agc`.
 
-Aussagen über Columns, die praktische Tastaturbedienung, den Upgrade-Regen und das Highscore-System stammen vorerst aus dem Erinnerungsprotokoll des Entwicklers und sind noch nicht anhand der betreffenden Implementierungen verifiziert.
+Der Vergleich mit Crystal Columns/Crystals erfolgte anhand von `main.agc`, `def_joypad.agc`, `input.agc`, `controls.agc`, `timer.agc` und `highscore_online.agc` auf `main`. Angaben zur praktischen Tastaturbedienung und zu Upgrade-Belohnungen bleiben noch zu verifizieren. Die vorhandene PurpleToken-Online-Highscore-Integration in Crystals wurde im Quellcode bestätigt, aber nicht auf Erreichbarkeit getestet.
