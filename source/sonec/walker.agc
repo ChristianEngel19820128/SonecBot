@@ -512,6 +512,10 @@ function WalkerAnimate(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,Wor
 	endif
 
 	WalkerPartsCalculate(Walker,ProtoWalker,World)
+	WalkerTowerCollisionCalculate(Walker,ProtoWalker)
+	if Walker.HitFlashUntil > Now
+		ColorSet(Walker.WalkerSpriteData.Tower.Color,255,0,0,255)
+	endif
 
 endfunction
 
@@ -519,6 +523,41 @@ endfunction
 //----------------------------------------------------------------------
 // 
 //----------------------------------------------------------------------
+
+// Calculate the turret hitbox from its rotated image and sprite offset.
+function WalkerTowerCollisionCalculate(Walker ref as TWalker,ProtoWalker ref as TProtoWalker)
+	local Offset as TPosition
+	local Width as float
+	local Height as float
+	local CenterX as float
+	local CenterY as float
+	local HalfX as float
+	local HalfY as float
+	local c as float
+	local sn as float
+
+	if Walker.State.LookAlignment = LOOKLEFT
+		Offset = ProtoWalker.AnimLeft.Tower.Offset
+	else
+		Offset = ProtoWalker.AnimRight.Tower.Offset
+	endif
+
+	Width = Walker.WalkerObjectData.Tower.Size.Width
+	Height = Walker.WalkerObjectData.Tower.Size.Height
+	c = cos(Walker.WalkerObjectData.Tower.Rotation)
+	sn = sin(Walker.WalkerObjectData.Tower.Rotation)
+	CenterX = Width*0.5 - Offset.x
+	CenterY = Height*0.5 - Offset.y
+	HalfX = Width*0.45
+	HalfY = Height*0.45
+
+	Walker.WalkerCollisionData.Tower.Position.x = Walker.WalkerObjectData.Tower.Position.x + CenterX*c - CenterY*sn
+	Walker.WalkerCollisionData.Tower.Position.y = Walker.WalkerObjectData.Tower.Position.y + CenterX*sn + CenterY*c
+	Walker.WalkerCollisionData.Tower.Position1.x = Walker.WalkerCollisionData.Tower.Position.x - abs(HalfX*c) - abs(HalfY*sn)
+	Walker.WalkerCollisionData.Tower.Position1.y = Walker.WalkerCollisionData.Tower.Position.y - abs(HalfX*sn) - abs(HalfY*c)
+	Walker.WalkerCollisionData.Tower.Position2.x = Walker.WalkerCollisionData.Tower.Position.x + abs(HalfX*c) + abs(HalfY*sn)
+	Walker.WalkerCollisionData.Tower.Position2.y = Walker.WalkerCollisionData.Tower.Position.y + abs(HalfX*sn) + abs(HalfY*c)
+endfunction
 
 function WalkerAnimateAll(WalkerList ref as TWalkerList,ProtoWalker ref as TProtoWalker,World ref as TWorld,Now as integer)
 	
