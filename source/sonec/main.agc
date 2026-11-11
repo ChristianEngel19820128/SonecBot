@@ -31,7 +31,13 @@ SetOrientationAllowed(0,0,1,0)
 SetWindowSize(wx,wy,0)
 SetWindowAllowResize(1)
 SetVirtualResolution(vx,vy)
-SetSyncRate(60,1)
+
+if GetDeviceBaseName() = "html5"
+	SetVSync(1)
+else
+	SetSyncRate(60,1)
+endif
+
 SetScissor(0,0,0,0)
 UseNewDefaultFonts(1)
 
