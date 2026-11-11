@@ -193,13 +193,12 @@ function BulletCollideWalkers(BulletList ref as TBulletList,WalkerList ref as TW
 	for i = 0 to BulletList.Bullet.Length
 		if BulletList.Bullet[i].Enabled = TRUE
 			for k = 0 to WalkerList.Walker.Length
-				if WalkerList.Walker[k].Enabled = TRUE
+				if WalkerList.Walker[k].Enabled = TRUE and BulletList.Bullet[i].Enabled = TRUE
 					if BoxInBox(BulletList.Bullet[i].CollisionData.Position1,BulletList.Bullet[i].CollisionData.Position2,WalkerList.Walker[k].WalkerCollisionData.Tower.Position1,WalkerList.Walker[k].WalkerCollisionData.Tower.Position2)
 						WalkerList.Walker[k].Health.State = WalkerList.Walker[k].Health.State - BulletList.Bullet[i].BulletData.Damage
 						WalkerList.Walker[k].HitFlashUntil = Now + 150
 						ColorSet(WalkerList.Walker[k].WalkerSpriteData.Tower.Color,255,0,0,255)
 						BulletDelete(BulletList,i)
-						exit
 					endif
 				endif
 			next k
