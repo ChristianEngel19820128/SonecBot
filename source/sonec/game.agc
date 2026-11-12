@@ -14,6 +14,11 @@ function GameCreate(Game ref as TGame,vx as integer,vy as integer)
 	
 	SoundLoad(Game.Sound)
 	
+	Game.DebugText.Length = 0
+	Game.DebugText[0] = CreateText("")
+	SetTextPosition(Game.DebugText[0],10,35)
+	SetTextSize(Game.DebugText[0],16)
+	SetTextColor(Game.DebugText[0],255,255,255,255)
 	Game.IsLost = TRUE
 	Game.IsPause = FALSE
 	
@@ -237,7 +242,7 @@ function GameDo(Game ref as TGame,Now as integer)
 	EnergieCollect(Game.EnergieList,Game.Sonec)
 	
 	ExplosionMoveAll(Game.ExplosionList,Game.World,Now)
-	ShieldShapeTest(Game.Shield,Game.ProtoShield,Game.ExplosionList,Game.ProtoExplosion)
+	ShieldShapeTest(Game.Shield,Game.ProtoShield,Game.ExplosionList,Game.ProtoExplosion,Game.DebugText[0])
 	ExplosionCollideSonec(Game.ExplosionList,Game.Sonec)
 	ExplosionCollideChest(Game.ExplosionList,Game.ChestList)
 	ExplosionCollideOrb(Game.ExplosionList,Game.OrbList)
@@ -328,15 +333,19 @@ function GameDraw(Game ref as TGame)
 	FlashDrawAll(Game.FlashList,Game.ProtoFlash)
 	SonecDraw(Game.Sonec,Game.ProtoSonec)
 	ShieldDraw(Game.Shield,Game.ProtoShield)
-	if SHIELD_SHAPE_TEST = 1 and Device$ = "windows"
-		Print("Shield shape: "+str(Game.Shield.ShapeTestHits)+" / "+str(Game.Shield.ShapeTestChecks)+"  radius: "+str(Game.Shield.ShapeTestRadiusHits))
-	endif
+
 
 	ExplosionDrawAll(Game.ExplosionList,Game.ProtoExplosion)
 
 	CloudDrawAll(Game.CloudList,Game.ProtoCloud,1,1.75)
 
 	GuiEnergyDraw(Game.Gui,Game.Sonec,Game.Screen)
+	if SHIELD_SHAPE_TEST = 1 and Device$ = "windows"
+		local debugIndex as integer
+		for debugIndex = 0 to Game.DebugText.Length
+			DrawText(Game.DebugText[debugIndex])
+		next debugIndex
+	endif
 
 endfunction
 
