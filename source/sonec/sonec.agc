@@ -527,22 +527,10 @@ function SonecShieldInput(Sonec ref as TSonec,Shield ref as TShield,World ref as
 			if Shield.AnimationData.Uninitialize = FALSE
 				if Sonec.Energy.State >= COSTSHIELD
 					Sonec.Energy.State = Sonec.Energy.State - COSTSHIELD
-					// leben aufbauen
-					if Sonec.EnergyShield.State + Sonec.EnergyShield.StateChange <= Sonec.EnergyShield.StateMax
-						Sonec.EnergyShield.State = Sonec.EnergyShield.State + Sonec.EnergyShield.StateChange
-					else
-						Sonec.EnergyShield.State = Sonec.EnergyShield.StateMax
-					endif
 				else
+					Shield.AnimationData.FrameAlignment = 1
 					Shield.AnimationData.Initialize = FALSE
 					Shield.AnimationData.Uninitialize = TRUE
-				endif
-			else
-				// leben abbauen
-				if Sonec.EnergyShield.State - Sonec.EnergyShield.StateChange >= 0
-					Sonec.EnergyShield.State = Sonec.EnergyShield.State - Sonec.EnergyShield.StateChange
-				else
-					Sonec.EnergyShield.State = 0
 				endif
 			endif
 			TimeReset(Sonec.EnergyShield.ShieldTimer,Now)
@@ -550,6 +538,7 @@ function SonecShieldInput(Sonec ref as TSonec,Shield ref as TShield,World ref as
 		
 	else
 		ShieldReset(Shield,Sonec.EnergyShield.StateMax,Now)
+		Sonec.EnergyShield.State = 0
 	endif
 	
 endfunction
