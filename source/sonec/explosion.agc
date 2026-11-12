@@ -254,7 +254,7 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function ExplosionCollideSonec(ExplosionList ref as TExplosionList,Sonec ref as TSonec)
+function ExplosionCollideSonec(ExplosionList ref as TExplosionList,Sonec ref as TSonec,Shield ref as TShield,Now as integer)
 	
 	local i as integer
 	local Radius as float
@@ -268,7 +268,7 @@ function ExplosionCollideSonec(ExplosionList ref as TExplosionList,Sonec ref as 
 					ExplosionList.Explosion[i].LastSonecHitMs = GetMilliseconds()
 					ExplosionList.Explosion[i].MeasureHits = ExplosionList.Explosion[i].MeasureHits + 1
 					ExplosionList.Explosion[i].MeasureDamage = ExplosionList.Explosion[i].MeasureDamage + ExplosionList.Explosion[i].BulletData.Damage
-					Sonec.Health.State = Sonec.Health.State - ExplosionList.Explosion[i].BulletData.Damage
+					Sonec.Health.State = Sonec.Health.State - (ExplosionList.Explosion[i].BulletData.Damage - ShieldAbsorbDamage(Shield,Sonec,ExplosionList.Explosion[i].BulletData.Damage,Now))
 				endif
 			endif
 		endif
