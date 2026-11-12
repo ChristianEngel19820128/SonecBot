@@ -108,7 +108,7 @@ function WalkerPartCalculate(State ref as TObjectState,AnchorProto ref as TProto
 	SpriteData.Offset.y = ProtoData.Offset.y
 	SpriteData.Scale  = 1
 	
-	ColorSet(SpriteData.Color,255,255,255,255)
+	ColorSet(SpriteData.Color,0,255,0,255)
 	
 	SpriteAngleCalc(SpriteData,ObjectData)
 	SpritePositionCalc(SpriteData.Position,ObjectData.Position,World.Position)
