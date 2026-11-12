@@ -1,6 +1,6 @@
 # SonecBot – Technische Dokumentation
 
-**Dokumentstatus:** Bestandsaufnahme 0.2  
+**Dokumentstatus:** Bestandsaufnahme 0.3  
 **Branch:** `develop`  
 **Engine:** AppGameKit Studio (AGK)  
 **Erste Zielplattform:** HTML5  
@@ -100,6 +100,20 @@ Die bestehende Kollisionserkennung arbeitet nach bisherigem Kenntnisstand überw
 
 AGK bietet eigene Kollisionsfunktionen. Vor einem möglichen Einsatz muss untersucht werden, ob diese mit der bestehenden Objekt-, Sprite- und Bewegungsarchitektur vereinbar sind. **Keine pauschale Umstellung beschlossen.**
 
+## 7a. Energieschild, Explosionen und HUD (November 2026)
+
+**Implementiert und vom Entwickler lokal geprüft:** Der Schild absorbiert bei voller Ladung bis zu 80 % des eintreffenden Explosionsschadens. Die Absorption sinkt proportional zur verbleibenden Ladung und verbraucht Schildenergie. Der Restschaden trifft Sonecs Gesundheit. Nach dem letzten registrierten Schaden pausiert die Schildregeneration 500 ms; der Entwickler hat bestätigt, dass der Schild während einer vollständig laufenden Explosion nicht vorzeitig regeneriert. Schildgröße und HUD-Ladung folgen der Animation. Das erneute Aktivieren während des Abbaus funktioniert im lokalen Test.
+
+**Rote HUD-Schadensspur:** Der blaue Schildbalken sinkt sofort; die rote Spur zeigt den verlorenen Ladungswert, nimmt über die Zeit bis null ab und berücksichtigt weitere Treffer. Die Grunddauer beträgt 1000 ms; jeder weitere Treffer addiert 1000 ms zur verbleibenden Dauer. Die Funktionsweise wurde vom Entwickler grundsätzlich getestet.
+
+**Größe und mögliche Upgrades:** `TShield.SizeMultiplier` mit `SHIELD_DEFAULT_SIZE_MULTIPLIER 0.8` skaliert den Schild auf ungefähr 80 px statt zuvor 100 px. Diese Standardgröße wurde im Spieltest als optimal bestätigt und soll nicht weiter verkleinert werden. Spätere mögliche Upgrades: Faktoren 0.9 und 1.0; noch keine Upgrade-Mechanik implementiert. Das gewollte dynamische Schrumpfen bei Schaden oder Abbau bleibt bestehen.
+
+**Shape-Prototyp:** Unter Windows ist `SHIELD_SHAPE_TEST` aktivierbar; `SetSpriteShape` und `GetSpriteCollision` prüfen Schild und Explosion und vergleichen das Ergebnis mit der bisherigen Radiusprüfung. Die Debug-Ausgabe verwendet Textobjekte (`CreateText`, `SetTextString`, `DrawText`) und das dynamische Array `TGame.DebugText`. Der Entwickler meldete zuletzt 119 Prüfungen, 99 Shape-Treffer, 73 Radius-Treffer, 26 nur durch Shape und 0 nur durch Radius erkannte Treffer. Diese Zähler sind diagnostisch; unterschiedliche Geometrien erklären möglicherweise die Abweichungen, ohne die Genauigkeit abschließend zu belegen. **Die echte Schadensberechnung wurde nicht auf Shape-Kollision umgestellt.** Ein späterer Ausbau des Debug-Systems ist vorgesehen.
+
+**Explosionen:** `EXPLOSION_TIMED_DAMAGE 1` verwendet 30 Schaden pro Ziel in Intervallen von 100 ms; `0` stellt den alten Modus mit 5 Schaden pro überlappendem Frame wieder her. Explosionen sollen grundsätzlich neutral sein und alle zerstörbaren Ziele unabhängig vom Verursacher treffen; Kettenreaktionen sind erwünscht. Eine Walker-Kollision für Explosionen fehlt noch. Eine Windows-spezifische CSV-Messung (`explosion_measurements.csv`) dient der Diagnose. Die derzeitige Schadensbalance soll bis zur Integration weiterer Gegner unverändert bleiben.
+
+**Noch offen:** Schildladung technisch von Animationsframes trennen; Shape-Kollision an Randfällen und bei skalierter Darstellung weiter prüfen; Schutz gegen weitere Schadensarten (geplant: kinetisch, Explosion, Plasma, Flamme). `BulletType` ist derzeit nicht mit diesen Schadensarten gleichzusetzen. Für Energieobjekte ist eine vom Energiewert abhängige, begrenzte Transparenz gewünscht; Inenergie-Animation und HUD sollen ebenfalls teilweise transparent werden. Die Energieaufnahme verbraucht aktuell selbst Energie, möglicherweise eine ältere Designentscheidung; keine Änderung beschlossen.
+
 ## 8. Spätere Online-Highscores
 
 Für die Beta ist ein Online-Highscore-System vorgesehen. Nach Angaben des Entwicklers existieren bereits produktive Lösungen; voraussichtlich genügt eine Online-Tabelle als Datenbasis. Die bestehende Lösung soll geprüft und möglichst wiederverwendet werden. Nicht Bestandteil der ersten Alpha.
@@ -110,14 +124,15 @@ Für die Beta ist ein Online-Highscore-System vorgesehen. Nach Angaben des Entwi
 |---|---|---|
 | Hauptschleife | Vorhanden | Ausstehend |
 | Zeitsystem | Erste Analyse abgeschlossen; Sonec-Position bildratenabhängig | Ausstehend |
-| Sonec, Waffen und Schild | Funktionen vorhanden | Ausstehend |
+| Sonec und Waffen | Funktionen vorhanden | Vollständiger Test ausstehend |
+| Energieschild | Absorption, Regeneration, HUD-Schadensspur, 80-%-Größe und Abbau-Reaktivierung implementiert | Wesentliche Funktionen vom Entwickler lokal bestätigt |
 | Plattformen und Minen | Funktionen vorhanden | Ausstehend |
 | Kisten und Orbs | Module vorhanden; Belohnungsmechanik ungeklärt | Ausstehend |
 | Walker-Erzeugung | Aktiv in Spielschleife | Vom Entwickler lokal bestätigt |
 | Walker-Bewegung/Animation | Mechanische Bein-/Fußanimation implementiert | Vom Entwickler lokal bestätigt |
 | Walker-Kampfsystem | Turm-Hitbox, Projektilschaden, roter Trefferblitz, Zerstörung und Energie-Drops implementiert; Walker-Bewaffnung offen | Turmtreffer und Zerstörung vom Entwickler lokal bestätigt |
 | HTML5-Steuerung | Index-1-Workaround auf develop umgesetzt; ungetestet | Ausstehend |
-| Kollisionen | Primitive/Box-Prüfungen vorhanden; AGK-Alternativen ungeprüft | Ausstehend |
+| Kollisionen | Primitive/Box-Prüfungen; Schild-Shape-Prototyp mit Vergleichszählern | Schild-Shape-Test lokal durchgeführt; nicht für Schaden aktiv |
 
 „Vorhanden“ bedeutet nicht „fertig“ oder „fehlerfrei“.
 
@@ -125,8 +140,8 @@ Für die Beta ist ein Online-Highscore-System vorgesehen. Nach Angaben des Entwi
 
 1. Zeitsystem, Pause, Bildratenabhängigkeit und Synchronisierung
 2. HTML5-Gamepad-Steuerung im Vergleich mit Columns
-3. Walker: eigene Bewaffnung, ungeklärte Gesamtgröße und später ggf. Torso-Hitbox/Kollisionsfeinschliff
-4. Kollisionserkennung und mögliche AGK-Alternativen
+3. Walker: Spawn auf Plattformen, Kanten und Kisten als Umkehrpunkte, eigene Bewaffnung über Bullet, mögliche Turm-/Torso-Neigung bis etwa 30°, ungeklärte Gesamtgröße und später ggf. Torso-Hitbox
+4. Schild-Shape-Kollision weiter testen; allgemeine Kollisionserkennung und mögliche AGK-Alternativen
 5. Kisten, Orbs und Upgrade-Mechanik
 6. Wiederverwendung der Highscore-Lösung für die Beta
 
