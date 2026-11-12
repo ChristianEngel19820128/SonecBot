@@ -100,6 +100,9 @@ function SonecInit(Sonec ref as TSonec,ProtoSonec ref as TProtoSonec,World ref a
 	
 	Sonec.EnergyShield.StateMax = 250
 	Sonec.EnergyShield.State = 0
+	Sonec.EnergyShield.DamageTrailAmount = 0
+	Sonec.EnergyShield.DamageTrailStartMs = 0
+	Sonec.EnergyShield.DamageTrailEndMs = 0
 	Sonec.EnergyShield.StateChange = 1
 	
 	Sonec.Energy.StateMax = 3500
