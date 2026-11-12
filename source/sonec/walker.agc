@@ -162,9 +162,10 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function WalkerNew(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,World ref as TWorld,y as integer,Now as integer)
+function WalkerNew(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,World ref as TWorld,Plate ref as TPlate,PlateIndex as integer,Now as integer)
 	
 	Walker.Enabled = TRUE
+	Walker.PlateIndex = PlateIndex
 	TimeSet(Walker.ObjectData.MoveTimer,10,10)
 	TimeReset(Walker.ObjectData.MoveTimer,Now)
 	
@@ -183,8 +184,9 @@ function WalkerNew(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,World r
 	Walker.State.LookAlignment = LOOKLEFT
 	Walker.State.Alignment = MOVELEFT
 	
-	Walker.ObjectData.Position.x = World.Size.Width + Walker.ObjectData.Size.Width*0.5
-	Walker.ObjectData.Position.y = y
+	// Place the body anchor above the platform; feet offset can be tuned after visual testing.
+	Walker.ObjectData.Position.x = Plate.ObjectData.Position.x + Plate.ObjectData.Size.Width*0.5
+	Walker.ObjectData.Position.y = Plate.ObjectData.Position.y - 40
 	
 	if Walker.State.LookAlignment = LOOKLEFT
 		
@@ -282,7 +284,7 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function WalkerAdd(WalkerList ref as TWalkerList,ProtoWalker ref as TProtoWalker,World ref as TWorld,Now as integer)
+function WalkerAdd(WalkerList ref as TWalkerList,ProtoWalker ref as TProtoWalker,World ref as TWorld,Plate ref as TPlate,PlateIndex as integer,Now as integer)
 	
 	local Value as integer
 	local Found as integer
@@ -290,7 +292,7 @@ function WalkerAdd(WalkerList ref as TWalkerList,ProtoWalker ref as TProtoWalker
 	local Walker as TWalker
 	local y as integer
 
-	y = random(64,floor((World.Size.Height-64)/8))*8
+	y = Plate.ObjectData.Position.y
 	
 	Value = -1
 	
@@ -298,7 +300,7 @@ function WalkerAdd(WalkerList ref as TWalkerList,ProtoWalker ref as TProtoWalker
 	
 		if TimeGet(WalkerList.CreateTimer,Now) > 0
 			
-			WalkerNew(Walker,ProtoWalker,World,y,Now)
+			WalkerNew(Walker,ProtoWalker,World,Plate,PlateIndex,Now)
 			
 			Found = FALSE
 			i = WalkerList.FirstFree
