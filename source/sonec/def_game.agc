@@ -187,6 +187,7 @@ type TEnergyShield
 endtype
 
 type TShield
+	SizeMultiplier as float
 	LastDamageMs as integer
 	DamageCooldownActive as integer
 	ShapeTestChecks as integer
