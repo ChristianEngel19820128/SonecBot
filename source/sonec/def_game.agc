@@ -301,6 +301,8 @@ endtype
 
 type TWalker
 	PlateIndex as integer
+	PlateOffsetX as float
+	PlateOffsetY as float
 	Enabled as integer
 	ObjectData as TObjectData
 	CollisionData as TCollisionData
