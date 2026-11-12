@@ -79,6 +79,9 @@ endfunction
 
 // Measurement switch: only Windows, and only when explicitly enabled.
 #constant EXPLOSION_MEASURE 1
+#constant EXPLOSION_TIMED_DAMAGE 1
+#constant EXPLOSION_DAMAGE_INTERVAL_MS 100
+#constant EXPLOSION_TIMED_DAMAGE_AMOUNT 30
 
 function ExplosionMeasureSave(Explosion ref as TExplosion)
 	if EXPLOSION_MEASURE = 1 and Device$ = "windows"
@@ -102,6 +105,10 @@ function ExplosionNew(Explosion ref as TExplosion,ProtoExplosion ref as TProtoEx
 
 	Explosion.Enabled = TRUE
 	Explosion.MeasureStartMs = GetMilliseconds()
+	Explosion.LastSonecHitMs = 0
+	Explosion.LastChestHitMs.Length = -1
+	Explosion.LastOrbHitMs.Length = -1
+	Explosion.LastMineHitMs.Length = -1
 	Explosion.MeasureChecks = 0
 	Explosion.MeasureHits = 0
 	Explosion.MeasureDamage = 0
@@ -149,6 +156,9 @@ function ExplosionNew(Explosion ref as TExplosion,ProtoExplosion ref as TProtoEx
 
 	Explosion.BulletData.BulletType = 1
 	Explosion.BulletData.Damage = 5
+	if EXPLOSION_TIMED_DAMAGE = 1
+		Explosion.BulletData.Damage = EXPLOSION_TIMED_DAMAGE_AMOUNT
+	endif
 
 	Explosion.CollisionData.Position1.x = Explosion.ObjectData.Position.x - Explosion.ObjectData.Size.Width  * 0.5
 	Explosion.CollisionData.Position1.y = Explosion.ObjectData.Position.y - Explosion.ObjectData.Size.Height * 0.5
@@ -254,9 +264,12 @@ function ExplosionCollideSonec(ExplosionList ref as TExplosionList,Sonec ref as 
 			ExplosionList.Explosion[i].MeasureChecks = ExplosionList.Explosion[i].MeasureChecks + 1
 			Radius = CalcRadius(ExplosionList.Explosion[i].ObjectData.Position,Sonec.ObjectData.Position)
 			if Radius < ExplosionList.Explosion[i].ObjectData.Radius
-				ExplosionList.Explosion[i].MeasureHits = ExplosionList.Explosion[i].MeasureHits + 1
-				ExplosionList.Explosion[i].MeasureDamage = ExplosionList.Explosion[i].MeasureDamage + ExplosionList.Explosion[i].BulletData.Damage
-				Sonec.Health.State = Sonec.Health.State - ExplosionList.Explosion[i].BulletData.Damage
+				if EXPLOSION_TIMED_DAMAGE = 0 or ExplosionList.Explosion[i].LastSonecHitMs = 0 or GetMilliseconds()-ExplosionList.Explosion[i].LastSonecHitMs >= EXPLOSION_DAMAGE_INTERVAL_MS
+					ExplosionList.Explosion[i].LastSonecHitMs = GetMilliseconds()
+					ExplosionList.Explosion[i].MeasureHits = ExplosionList.Explosion[i].MeasureHits + 1
+					ExplosionList.Explosion[i].MeasureDamage = ExplosionList.Explosion[i].MeasureDamage + ExplosionList.Explosion[i].BulletData.Damage
+					Sonec.Health.State = Sonec.Health.State - ExplosionList.Explosion[i].BulletData.Damage
+				endif
 			endif
 		endif
 	next i
@@ -279,8 +292,14 @@ function ExplosionCollideChest(ExplosionList ref as TExplosionList,ChestList ref
 				if ChestList.Chest[k].Enabled = TRUE
 					Radius = CalcRadius(ExplosionList.Explosion[i].ObjectData.Position,ChestList.Chest[k].ObjectData.Position)
 					if Radius < ExplosionList.Explosion[i].ObjectData.Radius
-						ExplosionList.Explosion[i].MeasureChestHits = ExplosionList.Explosion[i].MeasureChestHits + 1
-						ChestList.Chest[k].Health.State = ChestList.Chest[k].Health.State - ExplosionList.Explosion[i].BulletData.Damage
+						if ExplosionList.Explosion[i].LastChestHitMs.Length < k
+							ExplosionList.Explosion[i].LastChestHitMs.Length = k
+						endif
+						if EXPLOSION_TIMED_DAMAGE = 0 or ExplosionList.Explosion[i].LastChestHitMs[k] = 0 or GetMilliseconds()-ExplosionList.Explosion[i].LastChestHitMs[k] >= EXPLOSION_DAMAGE_INTERVAL_MS
+							ExplosionList.Explosion[i].LastChestHitMs[k] = GetMilliseconds()
+							ExplosionList.Explosion[i].MeasureChestHits = ExplosionList.Explosion[i].MeasureChestHits + 1
+							ChestList.Chest[k].Health.State = ChestList.Chest[k].Health.State - ExplosionList.Explosion[i].BulletData.Damage
+						endif
 					endif
 				endif
 			next k
@@ -305,8 +324,14 @@ function ExplosionCollideOrb(ExplosionList ref as TExplosionList,OrbList ref as 
 				if OrbList.Orb[k].Enabled = TRUE
 					Radius = CalcRadius(ExplosionList.Explosion[i].ObjectData.Position,OrbList.Orb[k].ObjectData.Position)
 					if Radius < ExplosionList.Explosion[i].ObjectData.Radius
-						ExplosionList.Explosion[i].MeasureOrbHits = ExplosionList.Explosion[i].MeasureOrbHits + 1
-						OrbList.Orb[k].Health.State = OrbList.Orb[k].Health.State - ExplosionList.Explosion[i].BulletData.Damage
+						if ExplosionList.Explosion[i].LastOrbHitMs.Length < k
+							ExplosionList.Explosion[i].LastOrbHitMs.Length = k
+						endif
+						if EXPLOSION_TIMED_DAMAGE = 0 or ExplosionList.Explosion[i].LastOrbHitMs[k] = 0 or GetMilliseconds()-ExplosionList.Explosion[i].LastOrbHitMs[k] >= EXPLOSION_DAMAGE_INTERVAL_MS
+							ExplosionList.Explosion[i].LastOrbHitMs[k] = GetMilliseconds()
+							ExplosionList.Explosion[i].MeasureOrbHits = ExplosionList.Explosion[i].MeasureOrbHits + 1
+							OrbList.Orb[k].Health.State = OrbList.Orb[k].Health.State - ExplosionList.Explosion[i].BulletData.Damage
+						endif
 					endif
 				endif
 			next k
@@ -331,8 +356,14 @@ function ExplosionCollideMine(ExplosionList ref as TExplosionList,MineList ref a
 				if MineList.Mine[k].Enabled = TRUE
 					Radius = CalcRadius(ExplosionList.Explosion[i].ObjectData.Position,MineList.Mine[k].ObjectData.Position)
 					if Radius < ExplosionList.Explosion[i].ObjectData.Radius
-						ExplosionList.Explosion[i].MeasureMineHits = ExplosionList.Explosion[i].MeasureMineHits + 1
-						MineList.Mine[k].Health.State = MineList.Mine[k].Health.State - ExplosionList.Explosion[i].BulletData.Damage
+						if ExplosionList.Explosion[i].LastMineHitMs.Length < k
+							ExplosionList.Explosion[i].LastMineHitMs.Length = k
+						endif
+						if EXPLOSION_TIMED_DAMAGE = 0 or ExplosionList.Explosion[i].LastMineHitMs[k] = 0 or GetMilliseconds()-ExplosionList.Explosion[i].LastMineHitMs[k] >= EXPLOSION_DAMAGE_INTERVAL_MS
+							ExplosionList.Explosion[i].LastMineHitMs[k] = GetMilliseconds()
+							ExplosionList.Explosion[i].MeasureMineHits = ExplosionList.Explosion[i].MeasureMineHits + 1
+							MineList.Mine[k].Health.State = MineList.Mine[k].Health.State - ExplosionList.Explosion[i].BulletData.Damage
+						endif
 					endif
 				endif
 			next k
