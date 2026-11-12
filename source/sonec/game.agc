@@ -195,6 +195,11 @@ function GameDo(Game ref as TGame,Now as integer)
 			Index = PlateAdd(Game.PlateList,Game.ProtoPlate,Game.World,Now)
 			if Index >= 0
 				ChestAdd(Game.ChestList,Game.ProtoChest,Game.World,Game.PlateList.Plate[Index],Index,Now)
+				if WalkerCountAll(Game.WalkerList) < 5
+					if random(0,10000) < 3500
+						WalkerAdd(Game.WalkerList,Game.ProtoWalker,Game.World,Game.PlateList.Plate[Index],Index,Now)
+					endif
+				endif
 			endif
 		endif
 	endif
@@ -219,12 +224,7 @@ function GameDo(Game ref as TGame,Now as integer)
 		endif
 	endif
 	
-	if WalkerCountAll(Game.WalkerList) < 5
-		if random(0,10000) < 35
-			WalkerAdd(Game.WalkerList,Game.ProtoWalker,Game.World,Now)
-		endif
-	endif
-	
+
 	OrbMoveAll(Game.OrbList,Game.World,Now)
 	OrbHealthRegenerate(Game.OrbList,Game,Now)
 	
