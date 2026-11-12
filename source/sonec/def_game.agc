@@ -184,6 +184,9 @@ type TEnergyShield
 endtype
 
 type TShield
+	ShapeTestChecks as integer
+	ShapeTestHits as integer
+	ShapeTestRadiusHits as integer
 	Enabled as integer
 	ObjectData as TObjectData
 	SpriteData as TSpriteData
