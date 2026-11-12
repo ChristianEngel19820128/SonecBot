@@ -39,6 +39,8 @@ endfunction
 function ShieldReset(Shield ref as TShield,AFrameMax as integer,Now as integer)
 	
 	Shield.Enabled = FALSE
+	Shield.LastDamageMs = 0
+	Shield.DamageCooldownActive = FALSE
 	Shield.ShapeTestChecks = 0
 	Shield.ShapeTestHits = 0
 	Shield.ShapeTestRadiusHits = 0
@@ -73,7 +75,14 @@ function ShieldAnimate(Shield ref as TShield,Sonec ref as TSonec,Now as integer)
 			Shield.SpriteData.Angle = NormalizeAngle(Shield.SpriteData.Angle+1)
 			
 			if Shield.AnimationData.FrameAlignment = 0
-				Shield.AnimationData.Frame = Shield.AnimationData.Frame + Shield.AnimationData.FrameStep
+				if Shield.DamageCooldownActive = TRUE
+					if Now-Shield.LastDamageMs >= SHIELD_REGEN_DELAY_MS
+						Shield.DamageCooldownActive = FALSE
+					endif
+				endif
+				if Shield.DamageCooldownActive = FALSE and Sonec.Energy.State >= COSTSHIELD
+					Shield.AnimationData.Frame = Shield.AnimationData.Frame + Shield.AnimationData.FrameStep
+				endif
 			endif
 			
 			if Shield.AnimationData.FrameAlignment = 1
@@ -146,6 +155,8 @@ endfunction
 
 // Read-only collision prototype: the existing damage routines remain unchanged.
 #constant SHIELD_SHAPE_TEST 1
+#constant SHIELD_MAX_PROTECTION_PERCENT 80
+#constant SHIELD_REGEN_DELAY_MS 500
 
 function ShieldShapeTest(Shield ref as TShield,ProtoShield ref as TProtoShield,ExplosionList ref as TExplosionList,ProtoExplosion ref as TProtoExplosion,DebugTextID as integer)
 	if SHIELD_SHAPE_TEST = 1 and Device$ = "windows" and Shield.Enabled = TRUE
@@ -180,3 +191,27 @@ function ShieldShapeTest(Shield ref as TShield,ProtoShield ref as TProtoShield,E
 		SetTextString(DebugTextID,"Shield shape: "+str(Shield.ShapeTestHits)+" / "+str(Shield.ShapeTestChecks)+"  radius: "+str(Shield.ShapeTestRadiusHits))
 	endif
 endfunction
+
+// Apply proportional absorption and reduce visible shield charge.
+// The caller handles the remaining damage to Sonec's health.
+function ShieldAbsorbDamage(Shield ref as TShield,Sonec ref as TSonec,Damage as integer,Now as integer)
+	local absorbed as integer
+	local charge as integer
+	local frameRange as integer
+	absorbed = 0
+	if Shield.Enabled = TRUE and Shield.AnimationData.Uninitialize = FALSE and Damage > 0
+		charge = Sonec.EnergyShield.State
+		if charge > Sonec.EnergyShield.StateMax then charge = Sonec.EnergyShield.StateMax
+		if charge < 0 then charge = 0
+		if charge > 0
+			absorbed = Damage * SHIELD_MAX_PROTECTION_PERCENT * charge / (100*Sonec.EnergyShield.StateMax)
+			if absorbed > charge then absorbed = charge
+			Sonec.EnergyShield.State = charge - absorbed
+			frameRange = Shield.AnimationData.FrameMax-Shield.AnimationData.FrameMin
+			Shield.AnimationData.Frame = Shield.AnimationData.FrameMin + Sonec.EnergyShield.State*frameRange/Sonec.EnergyShield.StateMax
+			Shield.SpriteData.Scale = 1.0*Shield.AnimationData.Frame/Shield.AnimationData.FrameMax
+			Shield.LastDamageMs = Now
+			Shield.DamageCooldownActive = TRUE
+		endif
+	endif
+endfunction absorbed
