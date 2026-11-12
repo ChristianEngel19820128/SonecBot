@@ -187,6 +187,8 @@ function WalkerNew(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,World r
 	// Place the body anchor above the platform; feet offset can be tuned after visual testing.
 	Walker.ObjectData.Position.x = Plate.ObjectData.Position.x + Plate.ObjectData.Size.Width*0.5
 	Walker.ObjectData.Position.y = Plate.ObjectData.Position.y - 40
+	Walker.PlateOffsetX = Walker.ObjectData.Position.x - Plate.ObjectData.Position.x
+	Walker.PlateOffsetY = Walker.ObjectData.Position.y - Plate.ObjectData.Position.y
 	
 	if Walker.State.LookAlignment = LOOKLEFT
 		
@@ -575,50 +577,71 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function WalkerMove(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,World ref as TWorld,Now as integer)
+function WalkerMove(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,PlateList ref as TPlateList,World ref as TWorld,Now as integer)
 
-	local x as float
-	local y as float
-	local sx as float
-	local sy as float
-	local r as float
-	
+	local PlateIndex as integer
+	local PlateWidth as float
+	local EdgeMargin as float
+	local StepX as float
+
 	if Walker.Enabled = TRUE
-		if TimeGet(Walker.ObjectData.MoveTimer,Now) > 0
-			
-			x = Walker.ObjectData.Position.x
-			y = Walker.ObjectData.Position.y
-			sx = Walker.ObjectData.MoveSpeed.x
-			sy = Walker.ObjectData.MoveSpeed.y
-			r = Walker.ObjectData.MoveTimer.CalcRange
-			
-			Walker.ObjectData.Position.x = x - sx*r
-			
-			WalkerPartsCalculate(Walker,ProtoWalker,World)
-			
-			Walker.CollisionData.Position1.x = Walker.ObjectData.Position.x - (Walker.ObjectData.Size.Width  * 0.5)
-			Walker.CollisionData.Position1.y = Walker.ObjectData.Position.y - (Walker.ObjectData.Size.Height * 0.5)
-			Walker.CollisionData.Position2.x = Walker.ObjectData.Position.x + (Walker.ObjectData.Size.Width  * 0.5)
-			Walker.CollisionData.Position2.y = Walker.ObjectData.Position.y + (Walker.ObjectData.Size.Height * 0.5)
-			
-			TimeReset(Walker.ObjectData.MoveTimer,Now)
-			
+		PlateIndex = Walker.PlateIndex
+		if PlateIndex < 0 or PlateIndex > PlateList.Plate.Length
+			Walker.Enabled = FALSE
+		else
+			if PlateList.Plate[PlateIndex].Enabled = FALSE
+				Walker.Enabled = FALSE
+			else
+				PlateWidth = PlateList.Plate[PlateIndex].ObjectData.Size.Width
+				EdgeMargin = 20
+				if PlateWidth < EdgeMargin*2 then EdgeMargin = PlateWidth*0.25
+
+				if TimeGet(Walker.ObjectData.MoveTimer,Now) > 0
+					StepX = Walker.ObjectData.MoveSpeed.x*Walker.ObjectData.MoveTimer.CalcRange
+					if Walker.State.Alignment = MOVELEFT
+						Walker.PlateOffsetX = Walker.PlateOffsetX - StepX
+					else
+						Walker.PlateOffsetX = Walker.PlateOffsetX + StepX
+					endif
+
+					if Walker.PlateOffsetX <= EdgeMargin
+						Walker.PlateOffsetX = EdgeMargin
+						Walker.State.Alignment = MOVERIGHT
+						Walker.State.LookAlignment = LOOKRIGHT
+					endif
+					if Walker.PlateOffsetX >= PlateWidth-EdgeMargin
+						Walker.PlateOffsetX = PlateWidth-EdgeMargin
+						Walker.State.Alignment = MOVELEFT
+						Walker.State.LookAlignment = LOOKLEFT
+					endif
+					TimeReset(Walker.ObjectData.MoveTimer,Now)
+				endif
+
+				Walker.ObjectData.Position.x = PlateList.Plate[PlateIndex].ObjectData.Position.x + Walker.PlateOffsetX
+				Walker.ObjectData.Position.y = PlateList.Plate[PlateIndex].ObjectData.Position.y + Walker.PlateOffsetY
+				WalkerPartsCalculate(Walker,ProtoWalker,World)
+
+				Walker.CollisionData.Position1.x = Walker.ObjectData.Position.x - Walker.ObjectData.Size.Width*0.5
+				Walker.CollisionData.Position1.y = Walker.ObjectData.Position.y - Walker.ObjectData.Size.Height*0.5
+				Walker.CollisionData.Position2.x = Walker.ObjectData.Position.x + Walker.ObjectData.Size.Width*0.5
+				Walker.CollisionData.Position2.y = Walker.ObjectData.Position.y + Walker.ObjectData.Size.Height*0.5
+			endif
 		endif
 	endif
-		
+
 endfunction
 
 //----------------------------------------------------------------------
 // 
 //----------------------------------------------------------------------
 
-function WalkerMoveAll(WalkerList ref as TWalkerList,ProtoWalker ref as TProtoWalker,World ref as TWorld,Now as integer)
+function WalkerMoveAll(WalkerList ref as TWalkerList,ProtoWalker ref as TProtoWalker,PlateList ref as TPlateList,World ref as TWorld,Now as integer)
 	
 	local i as integer
 	
 	for i = 0 to WalkerList.Walker.Length
-		WalkerMove(WalkerList.Walker[i],ProtoWalker,World,Now)
-		if WalkerList.Walker[i].ObjectData.Position.x + WalkerList.Walker[i].ObjectData.Size.Width < World.Position.x
+		WalkerMove(WalkerList.Walker[i],ProtoWalker,PlateList,World,Now)
+		if WalkerList.Walker[i].Enabled = TRUE and WalkerList.Walker[i].ObjectData.Position.x + WalkerList.Walker[i].ObjectData.Size.Width < World.Position.x
 			WalkerDelete(WalkerList,i)
 		endif
 	next i
