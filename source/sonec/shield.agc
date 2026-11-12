@@ -147,7 +147,7 @@ endfunction
 // Read-only collision prototype: the existing damage routines remain unchanged.
 #constant SHIELD_SHAPE_TEST 1
 
-function ShieldShapeTest(Shield ref as TShield,ProtoShield ref as TProtoShield,ExplosionList ref as TExplosionList,ProtoExplosion ref as TProtoExplosion)
+function ShieldShapeTest(Shield ref as TShield,ProtoShield ref as TProtoShield,ExplosionList ref as TExplosionList,ProtoExplosion ref as TProtoExplosion,DebugTextID as integer)
 	if SHIELD_SHAPE_TEST = 1 and Device$ = "windows" and Shield.Enabled = TRUE
 		local shieldID as integer
 		local explosionID as integer
@@ -177,5 +177,6 @@ function ShieldShapeTest(Shield ref as TShield,ProtoShield ref as TProtoShield,E
 				endif
 			next i
 		endif
+		SetTextString(DebugTextID,"Shield shape: "+str(Shield.ShapeTestHits)+" / "+str(Shield.ShapeTestChecks)+"  radius: "+str(Shield.ShapeTestRadiusHits))
 	endif
 endfunction
