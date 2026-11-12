@@ -38,6 +38,7 @@ endfunction
 
 function ShieldReset(Shield ref as TShield,AFrameMax as integer,Now as integer)
 	
+	if Shield.SizeMultiplier <= 0 then Shield.SizeMultiplier = SHIELD_DEFAULT_SIZE_MULTIPLIER
 	Shield.Enabled = FALSE
 	Shield.LastDamageMs = 0
 	Shield.DamageCooldownActive = FALSE
@@ -59,7 +60,7 @@ function ShieldReset(Shield ref as TShield,AFrameMax as integer,Now as integer)
 	Shield.SpriteData.Scale = 1
 	Shield.SpriteData.Angle = 0
 	ColorSet(Shield.SpriteData.Color,55,255,155,110)
-	Shield.SpriteData.Scale = 1.0*Shield.AnimationData.Frame/Shield.AnimationData.FrameMax
+	Shield.SpriteData.Scale = Shield.SizeMultiplier*Shield.AnimationData.Frame/Shield.AnimationData.FrameMax
 	
 endfunction
 	
@@ -124,7 +125,7 @@ function ShieldAnimate(Shield ref as TShield,Sonec ref as TSonec,Now as integer)
 			ColorSet(Shield.SpriteData.Color,55,255,155,55+Shield.AnimationData.Frame*155/Shield.AnimationData.FrameMax)
 			
 			// Ein einheitlicher Größenverlauf für Auf- und Abbau.
-			Shield.SpriteData.Scale = 1.0*Shield.AnimationData.Frame/Shield.AnimationData.FrameMax
+			Shield.SpriteData.Scale = Shield.SizeMultiplier*Shield.AnimationData.Frame/Shield.AnimationData.FrameMax
 			// HUD-Wert folgt denselben Keyframes wie die sichtbare Größe.
 			if Shield.Enabled = TRUE
 				Sonec.EnergyShield.State = (Shield.AnimationData.Frame-Shield.AnimationData.FrameMin)*Sonec.EnergyShield.StateMax/(Shield.AnimationData.FrameMax-Shield.AnimationData.FrameMin)
@@ -156,6 +157,7 @@ endfunction
 
 
 // Read-only collision prototype: the existing damage routines remain unchanged.
+#constant SHIELD_DEFAULT_SIZE_MULTIPLIER 0.8
 #constant SHIELD_SHAPE_TEST 1
 #constant SHIELD_MAX_PROTECTION_PERCENT 80
 #constant SHIELD_REGEN_DELAY_MS 500
@@ -235,7 +237,7 @@ function ShieldAbsorbDamage(Shield ref as TShield,Sonec ref as TSonec,Damage as 
 			Sonec.EnergyShield.State = charge - absorbed
 			frameRange = Shield.AnimationData.FrameMax-Shield.AnimationData.FrameMin
 			Shield.AnimationData.Frame = Shield.AnimationData.FrameMin + Sonec.EnergyShield.State*frameRange/Sonec.EnergyShield.StateMax
-			Shield.SpriteData.Scale = 1.0*Shield.AnimationData.Frame/Shield.AnimationData.FrameMax
+			Shield.SpriteData.Scale = Shield.SizeMultiplier*Shield.AnimationData.Frame/Shield.AnimationData.FrameMax
 			Shield.LastDamageMs = Now
 			Shield.DamageCooldownActive = TRUE
 		endif
