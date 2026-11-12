@@ -303,6 +303,9 @@ type TWalker
 	PlateIndex as integer
 	PlateOffsetX as float
 	PlateOffsetY as float
+	WalkPhase as float
+	NextPauseMs as integer
+	PauseUntilMs as integer
 	Enabled as integer
 	ObjectData as TObjectData
 	CollisionData as TCollisionData
