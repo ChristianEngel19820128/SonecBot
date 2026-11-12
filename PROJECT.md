@@ -1,6 +1,6 @@
 # SonecBot – Projektübersicht
 
-**Dokumentstatus:** Version 0.3  
+**Dokumentstatus:** Version 0.4  
 **Projektstatus:** In Entwicklung  
 **Engine:** AppGameKit Studio (AGK)  
 **Aktiver Entwicklungszweig:** `develop`  
@@ -102,6 +102,23 @@ Im bisherigen Spielkonzept sind folgende Systeme vorgesehen beziehungsweise teil
 
 Der tatsächliche Implementierungsstand wird in `TECHNICAL.md` festgehalten.
 
+
+### Energieschild – Stand November 2026
+
+Der Energieschild ist für die Alpha in seinen wesentlichen Funktionen lokal getestet: Auf- und Abbau, erneutes Aktivieren während des Abbaus, proportionaler Schutz gegen Explosionen, Schadensverbrauch der Schildladung, verzögerte Regeneration und eine rote HUD-Schadensanzeige. Die rote Anzeige wächst bei weiteren Treffern und baut sich anschließend ab. Die Schildregeneration beginnt nach dem letzten Explosionsschaden verzögert; dies wurde im Spieltest bestätigt.
+
+**Größenentscheidung:** Die Standardgröße beträgt ungefähr 80 px (80 % der bisherigen Grafikgröße) bei etwa 50 px großer Spielfigur. Diese Standardgröße soll nicht weiter verkleinert werden; dynamisches Schrumpfen durch Schaden und Ausschalten bleibt gewollt. Für spätere Upgrades sind etwa 90 px und 100 px als mögliche Stufen vorgemerkt, aber noch nicht implementiert.
+
+**Offen:** Die experimentelle Shape-Kollision ist noch keine Grundlage des tatsächlichen Explosionsschutzes. Zusätzliche Schadensarten und ein vom Animationsframe unabhängiger Ladungswert sind spätere technische Aufgaben.
+
+### Gesammelte Wünsche zur Transparenz
+
+- Das HUD soll teilweise transparent werden.
+- Die Inenergie-Animation soll teilweise transparent sein, ungefähr wie der Schild.
+- Energie-Sammelobjekte sollen mit sinkendem Energiewert transparenter werden, innerhalb festgelegter Minimal- und Maximalwerte.
+
+Die Energieaufnahme verbraucht derzeit selbst Energie; dies wird zunächst als mögliche ältere Designentscheidung beibehalten und nicht ungeprüft geändert.
+
 ## 5. Gegner und Gefahren
 
 ### Minen
@@ -118,7 +135,7 @@ Für die aktuelle AGK-Version sind schwere Maschinengewehre als Bewaffnung vorge
 
 **Aktueller Stand (November 2026):** Der Walker ist als beweglicher, mechanisch animierter und zerstörbarer Gegner im lokalen Spieltest bestätigt. Maschinengewehr-Projektile treffen derzeit ausschließlich den Turm; bei Treffern blinkt dieser kurz rot. Die Grafiken wurden auf neutrale Graustufen umgestellt, die Standardfarbe wird im Code grün gesetzt. Bei Zerstörung entstehen Energie-Bubbles. Die Animation darf vorerst bewusst mechanisch wirken.
 
-**Später zu prüfen:** Torso als zusätzliche Trefferzone für ein faireres Spielgefühl, Feinschliff der Animation und das übergreifende Kollisionskonzept. Eine eigene Walker-Bewaffnung ist damit noch nicht als funktionsfähig bestätigt.
+**Geplante Walker-Arbeiten:** Erzeugung auf Plattformen, möglichst direkt bei deren Spawn; auf Plattformen bleiben und an Kanten oder Kisten umkehren; eigene Schüsse über das vorhandene Bullet-System; Torso und Turm gegebenenfalls um bis zu etwa 30° neigen.\n\n**Später zu prüfen:** Torso als zusätzliche Trefferzone für ein faireres Spielgefühl, Feinschliff der Animation und das übergreifende Kollisionskonzept. Eine eigene Walker-Bewaffnung ist damit noch nicht als funktionsfähig bestätigt.
 
 **Projektentscheidung: Ein funktionsfähiger Walker ist Pflichtbestandteil der ersten Alpha-Version.**
 
@@ -250,4 +267,4 @@ Unbestätigte Annahmen dürfen nicht als gesicherte Eigenschaften des Spiels dar
 - Mögliche Aufgaben und Missionen
 - Späteres Veröffentlichungs- und Versionsschema
 
-**Nächster Meilenstein:** HTML5-Build und Gamepad-Steuerung praktisch testen; anschließend die noch offenen Alpha-Anforderungen priorisieren.
+**Nächster Meilenstein:** Walker-Verhalten und Bewaffnung weiterentwickeln sowie HTML5-Build und Gamepad-Steuerung praktisch testen; anschließend die noch offenen Alpha-Anforderungen priorisieren.
