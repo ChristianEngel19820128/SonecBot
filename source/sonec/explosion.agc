@@ -77,9 +77,33 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
+// Measurement switch: only Windows, and only when explicitly enabled.
+#constant EXPLOSION_MEASURE 1
+
+function ExplosionMeasureSave(Explosion ref as TExplosion)
+	if EXPLOSION_MEASURE = 1 and Device$ = "windows"
+		local fileID as integer
+		local filename as string
+		local isNew as integer
+		filename = "explosion_measurements.csv"
+		isNew = GetFileExists(filename) = 0
+		fileID = 999
+		OpenToWrite(fileID,filename,1)
+		if isNew
+			WriteLine(fileID,"StartMs,ExplosionType,DurationMs,CollisionChecks,HitCount,TotalDamage")
+		endif
+		WriteLine(fileID,str(Explosion.MeasureStartMs)+","+str(Explosion.ExplosionType)+","+str(GetMilliseconds()-Explosion.MeasureStartMs)+","+str(Explosion.MeasureChecks)+","+str(Explosion.MeasureHits)+","+str(Explosion.MeasureDamage))
+		CloseFile(fileID)
+	endif
+endfunction
+
 function ExplosionNew(Explosion ref as TExplosion,ProtoExplosion ref as TProtoExplosion,Game ref as TGame,ExplosionType as integer,Position ref as TPosition,Now as integer)
 
 	Explosion.Enabled = TRUE
+	Explosion.MeasureStartMs = GetMilliseconds()
+	Explosion.MeasureChecks = 0
+	Explosion.MeasureHits = 0
+	Explosion.MeasureDamage = 0
 	
 	TimeSet(Explosion.AnimationData.AnimTimer,random(20,30),1)
 	TimeReset(Explosion.AnimationData.AnimTimer,Now)
@@ -179,6 +203,9 @@ endfunction
 
 function ExplosionDelete(ExplosionList ref as TExplosionList,Index as integer)
 	
+		if ExplosionList.Explosion[Index].Enabled = TRUE
+		ExplosionMeasureSave(ExplosionList.Explosion[Index])
+	endif
 	ExplosionList.Explosion[Index].Enabled = FALSE
 	if ExplosionList.FirstFree > Index
 		ExplosionList.FirstFree = Index
@@ -220,8 +247,11 @@ function ExplosionCollideSonec(ExplosionList ref as TExplosionList,Sonec ref as 
 
 	for i = 0 to ExplosionList.Explosion.Length
 		if ExplosionList.Explosion[i].Enabled = TRUE
+			ExplosionList.Explosion[i].MeasureChecks = ExplosionList.Explosion[i].MeasureChecks + 1
 			Radius = CalcRadius(ExplosionList.Explosion[i].ObjectData.Position,Sonec.ObjectData.Position)
 			if Radius < ExplosionList.Explosion[i].ObjectData.Radius
+				ExplosionList.Explosion[i].MeasureHits = ExplosionList.Explosion[i].MeasureHits + 1
+				ExplosionList.Explosion[i].MeasureDamage = ExplosionList.Explosion[i].MeasureDamage + ExplosionList.Explosion[i].BulletData.Damage
 				Sonec.Health.State = Sonec.Health.State - ExplosionList.Explosion[i].BulletData.Damage
 			endif
 		endif
