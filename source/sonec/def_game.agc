@@ -522,6 +522,10 @@ type TProtoExplosion
 endtype
 
 type TExplosion
+	MeasureStartMs as integer
+	MeasureChecks as integer
+	MeasureHits as integer
+	MeasureDamage as integer
 	Enabled as integer
 	ExplosionType as integer
 	ObjectData as TObjectData
