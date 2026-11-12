@@ -237,6 +237,7 @@ function GameDo(Game ref as TGame,Now as integer)
 	EnergieCollect(Game.EnergieList,Game.Sonec)
 	
 	ExplosionMoveAll(Game.ExplosionList,Game.World,Now)
+	ShieldShapeTest(Game.Shield,Game.ProtoShield,Game.ExplosionList,Game.ProtoExplosion)
 	ExplosionCollideSonec(Game.ExplosionList,Game.Sonec)
 	ExplosionCollideChest(Game.ExplosionList,Game.ChestList)
 	ExplosionCollideOrb(Game.ExplosionList,Game.OrbList)
@@ -327,6 +328,9 @@ function GameDraw(Game ref as TGame)
 	FlashDrawAll(Game.FlashList,Game.ProtoFlash)
 	SonecDraw(Game.Sonec,Game.ProtoSonec)
 	ShieldDraw(Game.Shield,Game.ProtoShield)
+	if SHIELD_SHAPE_TEST = 1 and Device$ = "windows"
+		Print("Shield shape: "+str(Game.Shield.ShapeTestHits)+" / "+str(Game.Shield.ShapeTestChecks)+"  radius: "+str(Game.Shield.ShapeTestRadiusHits))
+	endif
 
 	ExplosionDrawAll(Game.ExplosionList,Game.ProtoExplosion)
 
