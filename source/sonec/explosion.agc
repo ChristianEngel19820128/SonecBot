@@ -85,14 +85,15 @@ function ExplosionMeasureSave(Explosion ref as TExplosion)
 		local fileID as integer
 		local filename as string
 		local isNew as integer
+		SetFolder("/")
 		filename = "explosion_measurements.csv"
 		isNew = GetFileExists(filename) = 0
 		fileID = 999
 		OpenToWrite(fileID,filename,1)
 		if isNew
-			WriteLine(fileID,"StartMs,ExplosionType,DurationMs,CollisionChecks,HitCount,TotalDamage")
+			WriteLine(fileID,"StartMs,ExplosionType,DurationMs,CollisionChecks,HitCount,TotalDamage,ChestHits,OrbHits,MineHits")
 		endif
-		WriteLine(fileID,str(Explosion.MeasureStartMs)+","+str(Explosion.ExplosionType)+","+str(GetMilliseconds()-Explosion.MeasureStartMs)+","+str(Explosion.MeasureChecks)+","+str(Explosion.MeasureHits)+","+str(Explosion.MeasureDamage))
+		WriteLine(fileID,str(Explosion.MeasureStartMs)+","+str(Explosion.ExplosionType)+","+str(GetMilliseconds()-Explosion.MeasureStartMs)+","+str(Explosion.MeasureChecks)+","+str(Explosion.MeasureHits)+","+str(Explosion.MeasureDamage)+","+str(Explosion.MeasureChestHits)+","+str(Explosion.MeasureOrbHits)+","+str(Explosion.MeasureMineHits))
 		CloseFile(fileID)
 	endif
 endfunction
@@ -104,6 +105,9 @@ function ExplosionNew(Explosion ref as TExplosion,ProtoExplosion ref as TProtoEx
 	Explosion.MeasureChecks = 0
 	Explosion.MeasureHits = 0
 	Explosion.MeasureDamage = 0
+	Explosion.MeasureChestHits = 0
+	Explosion.MeasureOrbHits = 0
+	Explosion.MeasureMineHits = 0
 	
 	TimeSet(Explosion.AnimationData.AnimTimer,random(20,30),1)
 	TimeReset(Explosion.AnimationData.AnimTimer,Now)
@@ -275,6 +279,7 @@ function ExplosionCollideChest(ExplosionList ref as TExplosionList,ChestList ref
 				if ChestList.Chest[k].Enabled = TRUE
 					Radius = CalcRadius(ExplosionList.Explosion[i].ObjectData.Position,ChestList.Chest[k].ObjectData.Position)
 					if Radius < ExplosionList.Explosion[i].ObjectData.Radius
+						ExplosionList.Explosion[i].MeasureChestHits = ExplosionList.Explosion[i].MeasureChestHits + 1
 						ChestList.Chest[k].Health.State = ChestList.Chest[k].Health.State - ExplosionList.Explosion[i].BulletData.Damage
 					endif
 				endif
@@ -300,6 +305,7 @@ function ExplosionCollideOrb(ExplosionList ref as TExplosionList,OrbList ref as 
 				if OrbList.Orb[k].Enabled = TRUE
 					Radius = CalcRadius(ExplosionList.Explosion[i].ObjectData.Position,OrbList.Orb[k].ObjectData.Position)
 					if Radius < ExplosionList.Explosion[i].ObjectData.Radius
+						ExplosionList.Explosion[i].MeasureOrbHits = ExplosionList.Explosion[i].MeasureOrbHits + 1
 						OrbList.Orb[k].Health.State = OrbList.Orb[k].Health.State - ExplosionList.Explosion[i].BulletData.Damage
 					endif
 				endif
@@ -325,6 +331,7 @@ function ExplosionCollideMine(ExplosionList ref as TExplosionList,MineList ref a
 				if MineList.Mine[k].Enabled = TRUE
 					Radius = CalcRadius(ExplosionList.Explosion[i].ObjectData.Position,MineList.Mine[k].ObjectData.Position)
 					if Radius < ExplosionList.Explosion[i].ObjectData.Radius
+						ExplosionList.Explosion[i].MeasureMineHits = ExplosionList.Explosion[i].MeasureMineHits + 1
 						MineList.Mine[k].Health.State = MineList.Mine[k].Health.State - ExplosionList.Explosion[i].BulletData.Damage
 					endif
 				endif
