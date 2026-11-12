@@ -1,6 +1,6 @@
 # SonecBot – Projektübersicht
 
-**Dokumentstatus:** Version 0.2  
+**Dokumentstatus:** Version 0.3  
 **Projektstatus:** In Entwicklung  
 **Engine:** AppGameKit Studio (AGK)  
 **Aktiver Entwicklungszweig:** `develop`  
@@ -116,7 +116,9 @@ Der Walker ist ein größerer, mehrteiliger Gegner mit gelenkbasiert animierten 
 
 Für die aktuelle AGK-Version sind schwere Maschinengewehre als Bewaffnung vorgesehen.
 
-Der Walker befindet sich noch in Entwicklung.
+**Aktueller Stand (November 2026):** Der Walker ist als beweglicher, mechanisch animierter und zerstörbarer Gegner im lokalen Spieltest bestätigt. Maschinengewehr-Projektile treffen derzeit ausschließlich den Turm; bei Treffern blinkt dieser kurz rot. Die Grafiken wurden auf neutrale Graustufen umgestellt, die Standardfarbe wird im Code grün gesetzt. Bei Zerstörung entstehen Energie-Bubbles. Die Animation darf vorerst bewusst mechanisch wirken.
+
+**Später zu prüfen:** Torso als zusätzliche Trefferzone für ein faireres Spielgefühl, Feinschliff der Animation und das übergreifende Kollisionskonzept. Eine eigene Walker-Bewaffnung ist damit noch nicht als funktionsfähig bestätigt.
 
 **Projektentscheidung: Ein funktionsfähiger Walker ist Pflichtbestandteil der ersten Alpha-Version.**
 
@@ -248,4 +250,4 @@ Unbestätigte Annahmen dürfen nicht als gesicherte Eigenschaften des Spiels dar
 - Mögliche Aufgaben und Missionen
 - Späteres Veröffentlichungs- und Versionsschema
 
-**Nächster Meilenstein:** Den aktuellen Entwicklungsstand technisch dokumentieren und anschließend den Walker gezielt untersuchen.
+**Nächster Meilenstein:** HTML5-Build und Gamepad-Steuerung praktisch testen; anschließend die noch offenen Alpha-Anforderungen priorisieren.
