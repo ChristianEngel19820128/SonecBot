@@ -39,6 +39,9 @@ endfunction
 function ShieldReset(Shield ref as TShield,AFrameMax as integer,Now as integer)
 	
 	Shield.Enabled = FALSE
+	Shield.ShapeTestChecks = 0
+	Shield.ShapeTestHits = 0
+	Shield.ShapeTestRadiusHits = 0
 	TimeSet(Shield.AnimationData.AnimTimer,25,1)
 	TimeReset(Shield.AnimationData.AnimTimer,Now)
 	Shield.AnimationData.Frame = 1
@@ -140,3 +143,39 @@ endfunction
 //----------------------------------------------------------------------
 
 
+
+// Read-only collision prototype: the existing damage routines remain unchanged.
+#constant SHIELD_SHAPE_TEST 1
+
+function ShieldShapeTest(Shield ref as TShield,ProtoShield ref as TProtoShield,ExplosionList ref as TExplosionList,ProtoExplosion ref as TProtoExplosion)
+	if SHIELD_SHAPE_TEST = 1 and Device$ = "windows" and Shield.Enabled = TRUE
+		local shieldID as integer
+		local explosionID as integer
+		local i as integer
+		local radius as float
+		shieldID = ProtoShield.AnimShield.Sprite.ID
+		if shieldID > 0
+			SetSpriteShape(shieldID,1)
+			SetSpriteScaleByOffset(shieldID,Shield.SpriteData.Scale,Shield.SpriteData.Scale)
+			SetSpritePositionByOffset(shieldID,Shield.SpriteData.Position.x,Shield.SpriteData.Position.y)
+			for i = 0 to ExplosionList.Explosion.Length
+				if ExplosionList.Explosion[i].Enabled = TRUE
+					explosionID = ProtoExplosion.AnimExplosion[ExplosionList.Explosion[i].ExplosionType,0].Sprite.ID
+					if explosionID > 0
+						SetSpriteShape(explosionID,1)
+						SetSpriteScaleByOffset(explosionID,ExplosionList.Explosion[i].SpriteData.Scale,ExplosionList.Explosion[i].SpriteData.Scale)
+						SetSpritePositionByOffset(explosionID,ExplosionList.Explosion[i].SpriteData.Position.x,ExplosionList.Explosion[i].SpriteData.Position.y)
+						Shield.ShapeTestChecks = Shield.ShapeTestChecks + 1
+						if GetSpriteCollision(shieldID,explosionID) = 1
+							Shield.ShapeTestHits = Shield.ShapeTestHits + 1
+						endif
+						radius = CalcRadius(Shield.ObjectData.Position,ExplosionList.Explosion[i].ObjectData.Position)
+						if radius < ExplosionList.Explosion[i].ObjectData.Radius
+							Shield.ShapeTestRadiusHits = Shield.ShapeTestRadiusHits + 1
+						endif
+					endif
+				endif
+			next i
+		endif
+	endif
+endfunction
