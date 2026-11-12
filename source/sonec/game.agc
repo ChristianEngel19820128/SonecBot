@@ -291,7 +291,7 @@ function GameAnimate(Game ref as TGame,Now as integer)
 	
 	InenergieAnimate(Game.Inenergie,Now)
 	SonecAnimate(Game.Sonec,Game.ProtoSonec,Now)
-	ShieldAnimate(Game.Shield,Now)
+	ShieldAnimate(Game.Shield,Game.Sonec,Now)
 	ExplosionAnimateAll(Game.ExplosionList,Game.ProtoExplosion,Now)
 	
 endfunction
