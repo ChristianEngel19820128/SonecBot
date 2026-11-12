@@ -300,6 +300,7 @@ type TWalkerCollisionData
 endtype
 
 type TWalker
+	PlateIndex as integer
 	Enabled as integer
 	ObjectData as TObjectData
 	CollisionData as TCollisionData
