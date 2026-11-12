@@ -243,7 +243,7 @@ function GameDo(Game ref as TGame,Now as integer)
 	
 	ExplosionMoveAll(Game.ExplosionList,Game.World,Now)
 	ShieldShapeTest(Game.Shield,Game.ProtoShield,Game.ExplosionList,Game.ProtoExplosion,Game.DebugText[0])
-	ExplosionCollideSonec(Game.ExplosionList,Game.Sonec)
+	ExplosionCollideSonec(Game.ExplosionList,Game.Sonec,Game.Shield,Now)
 	ExplosionCollideChest(Game.ExplosionList,Game.ChestList)
 	ExplosionCollideOrb(Game.ExplosionList,Game.OrbList)
 	ExplosionCollideMine(Game.ExplosionList,Game.MineList)
