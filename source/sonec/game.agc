@@ -339,7 +339,7 @@ function GameDraw(Game ref as TGame)
 
 	CloudDrawAll(Game.CloudList,Game.ProtoCloud,1,1.75)
 
-	GuiEnergyDraw(Game.Gui,Game.Sonec,Game.Screen)
+	GuiEnergyDraw(Game.Gui,Game.Sonec,Game.Screen,GetMilliseconds())
 	if SHIELD_SHAPE_TEST = 1 and Device$ = "windows"
 		local debugIndex as integer
 		for debugIndex = 0 to Game.DebugText.Length
