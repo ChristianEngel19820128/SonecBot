@@ -1,10 +1,10 @@
 # SonecBot – Technische Dokumentation
 
-**Dokumentstatus:** Bestandsaufnahme 0.1  
+**Dokumentstatus:** Bestandsaufnahme 0.2  
 **Branch:** `develop`  
 **Engine:** AppGameKit Studio (AGK)  
 **Erste Zielplattform:** HTML5  
-**Prüfmethode:** Statische Quellcodeanalyse; kein Build oder Laufzeittest
+**Prüfmethode:** Statische Quellcodeanalyse sowie vom Entwickler berichtete lokale Spieltests; kein eigener Build- oder Laufzeittest durch den Assistenten
 
 ## 1. Projektstruktur
 
@@ -34,7 +34,7 @@ In `main.agc` sind Fenstergröße 1350 × 675, virtuelle Auflösung 900 × 450 u
 
 Die Hauptschleife unterscheidet Intro/verlorenen Spielzustand, laufendes Spiel und Pause. Im aktiven Spiel werden `GameInput`, `GameActionInput`, `GameDo`, `GameAnimate` und `GameDraw` aufgerufen. Die interne Zeit wird anhand von `GetMilliseconds()` fortgeschrieben; bei Pause wird `CurrentNow` nicht weitergezählt.
 
-**Pflichtprüfung:** Zeitsystem, Zeitdifferenzen, Timer, Pause, Bewegungs- und Animationsberechnungen sowie Verhalten bei variabler Bildrate. Diese Untersuchung hat vor einer vertieften Walker-Fehlersuche Priorität.
+**Weiterhin offen:** Zeitsystem, Zeitdifferenzen, Timer, Pause sowie Verhalten bei variabler Bildrate im Laufzeittest prüfen. Die erste statische Untersuchung ist erfolgt; die grundlegende Walker-Funktion wurde inzwischen separat lokal getestet.
 
 Aus dem Projekt *Columns* liegt die Erfahrung vor, dass eine VSync-orientierte Synchronisierung für HTML5 und dessen Architektur den Spielfluss verbessern kann. Die konkrete Lösung wurde inzwischen im Repository Crystals geprüft; die HTML5-Ausnahme ist inzwischen umgesetzt.
 
@@ -72,11 +72,13 @@ Die Bewegung von Walker, Plattformen, Orbs, Minen, Türmen, Projektilen und Plas
 
 `walker.agc` enthält unter anderem `ProtoWalkerLoad`, `WalkerNew`, `WalkerAdd`, `WalkerPartsCalculate`, `WalkerMove`, `WalkerAnimate` und `WalkerDraw`.
 
-**Bestätigt:** In `game.agc` ist `WalkerAdd(...)` auf `develop` aktiv. Bewegung, Regeneration und Animation werden im Spielablauf aufgerufen. Der Walker ist somit in die Spielschleife eingebunden.
+**Quellcodebefund:** In `game.agc` sind Walker-Erzeugung, Bewegung, Regeneration und Animation eingebunden. Die Laufanimation bewegt Oberschenkel, Unterschenkel und Füße zeitabhängig. `BulletCollideWalkers(...)` prüft Maschinengewehr-Projektile gegen die aus Bildgröße, Offset und Rotation berechnete Turm-Trefferzone; Treffer verringern die Gesundheit, löschen das Projektil und setzen `HitFlashUntil` für einen etwa 150 ms langen roten Trefferblitz.
+
+**Lokaler Spieltest des Entwicklers (November 2026):** Walker bewegt sich mit bewusst mechanisch wirkender Bein-/Fußanimation; Treffer werden nur am Turm erkannt; nach genügend Treffern wird der Walker zerstört und Energie-Bubbles entstehen. Nach Umstellung der Walker-Bilder auf Graustufen und Änderung der Standardfarbe in `WalkerPartCalculate` auf Grün wird der Turm bei einem Treffer sichtbar rot. Diese Aussagen beruhen auf dem Testbericht des Entwicklers, nicht auf einem eigenen Laufzeittest des Assistenten.
 
 **Offen:** In `WalkerNew` sind Zuweisungen für Breite und Höhe auskommentiert, obwohl Größenwerte für Radius und Kollisionsgrenzen verwendet werden. Es ist zu prüfen, ob die Größen anderswo korrekt gesetzt werden. Das ist ein Verdacht, kein bestätigter Bug.
 
-**Offen:** Bewaffnung, Kollisionen und tatsächliche Funktionsfähigkeit des Walkers müssen weiter untersucht werden. Der Walker ist Pflichtbestandteil der Alpha.
+**Offen:** Eine eigene Walker-Bewaffnung ist nicht als funktionierend bestätigt. Eine zusätzliche Torso-Trefferzone und Feinabstimmung der Kollisionen sind mögliche spätere Verbesserungen, nicht Voraussetzung für den aktuellen Teststand. Der Walker ist Pflichtbestandteil der Alpha; die grundlegenden Funktionen sind lokal bestätigt.
 
 ### Kisten und Orbs
 
@@ -111,9 +113,9 @@ Für die Beta ist ein Online-Highscore-System vorgesehen. Nach Angaben des Entwi
 | Sonec, Waffen und Schild | Funktionen vorhanden | Ausstehend |
 | Plattformen und Minen | Funktionen vorhanden | Ausstehend |
 | Kisten und Orbs | Module vorhanden; Belohnungsmechanik ungeklärt | Ausstehend |
-| Walker-Erzeugung | Aktiv in Spielschleife | Ausstehend |
-| Walker-Bewegung/Animation | Aufrufe vorhanden | Ausstehend |
-| Walker-Kampfsystem | Ungeklärt | Ausstehend |
+| Walker-Erzeugung | Aktiv in Spielschleife | Vom Entwickler lokal bestätigt |
+| Walker-Bewegung/Animation | Mechanische Bein-/Fußanimation implementiert | Vom Entwickler lokal bestätigt |
+| Walker-Kampfsystem | Turm-Hitbox, Projektilschaden, roter Trefferblitz, Zerstörung und Energie-Drops implementiert; Walker-Bewaffnung offen | Turmtreffer und Zerstörung vom Entwickler lokal bestätigt |
 | HTML5-Steuerung | Index-1-Workaround auf develop umgesetzt; ungetestet | Ausstehend |
 | Kollisionen | Primitive/Box-Prüfungen vorhanden; AGK-Alternativen ungeprüft | Ausstehend |
 
@@ -123,7 +125,7 @@ Für die Beta ist ein Online-Highscore-System vorgesehen. Nach Angaben des Entwi
 
 1. Zeitsystem, Pause, Bildratenabhängigkeit und Synchronisierung
 2. HTML5-Gamepad-Steuerung im Vergleich mit Columns
-3. Walker: Prototyp, Größen, Gelenke, Animation, Bewegung, Bewaffnung und Kollision
+3. Walker: eigene Bewaffnung, ungeklärte Gesamtgröße und später ggf. Torso-Hitbox/Kollisionsfeinschliff
 4. Kollisionserkennung und mögliche AGK-Alternativen
 5. Kisten, Orbs und Upgrade-Mechanik
 6. Wiederverwendung der Highscore-Lösung für die Beta
@@ -132,6 +134,6 @@ Die Punkte sind Untersuchungsaufgaben, keine Änderungsfreigaben. Es werden kein
 
 ## 11. Quellen und Gültigkeit
 
-Statisch gesichtet auf `develop`: `main.agc`, `game.agc`, `def_game.agc`, `sonec.agc`, `walker.agc`, `mine.agc`, `plate.agc`, `controls.agc`, `def_joypad.agc`, `world.agc`, `collision.agc`, `sound.agc`.
+Statisch gesichtet auf `develop` (ergänzt durch lokale Testberichte des Entwicklers zum Walker): `main.agc`, `game.agc`, `def_game.agc`, `sonec.agc`, `walker.agc`, `mine.agc`, `plate.agc`, `controls.agc`, `def_joypad.agc`, `world.agc`, `collision.agc`, `sound.agc`.
 
 Der Vergleich mit Crystal Columns/Crystals erfolgte anhand von `main.agc`, `def_joypad.agc`, `input.agc`, `controls.agc`, `timer.agc` und `highscore_online.agc` auf `main`. Angaben zur praktischen Tastaturbedienung und zu Upgrade-Belohnungen bleiben noch zu verifizieren. Die vorhandene PurpleToken-Online-Highscore-Integration in Crystals wurde im Quellcode bestätigt, aber nicht auf Erreichbarkeit getestet.
