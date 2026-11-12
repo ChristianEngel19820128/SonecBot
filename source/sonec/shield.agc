@@ -157,7 +157,7 @@ endfunction
 #constant SHIELD_SHAPE_TEST 1
 #constant SHIELD_MAX_PROTECTION_PERCENT 80
 #constant SHIELD_REGEN_DELAY_MS 500
-#constant SHIELD_DAMAGE_TRAIL_MS 300
+#constant SHIELD_DAMAGE_TRAIL_MS 1000
 
 function ShieldShapeTest(Shield ref as TShield,ProtoShield ref as TProtoShield,ExplosionList ref as TExplosionList,ProtoExplosion ref as TProtoExplosion,DebugTextID as integer)
 	if SHIELD_SHAPE_TEST = 1 and Device$ = "windows" and Shield.Enabled = TRUE
