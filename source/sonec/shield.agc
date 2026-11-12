@@ -44,6 +44,8 @@ function ShieldReset(Shield ref as TShield,AFrameMax as integer,Now as integer)
 	Shield.ShapeTestChecks = 0
 	Shield.ShapeTestHits = 0
 	Shield.ShapeTestRadiusHits = 0
+	Shield.ShapeTestOnlyHits = 0
+	Shield.ShapeTestRadiusOnlyHits = 0
 	TimeSet(Shield.AnimationData.AnimTimer,25,1)
 	TimeReset(Shield.AnimationData.AnimTimer,Now)
 	Shield.AnimationData.Frame = 1
@@ -178,18 +180,28 @@ function ShieldShapeTest(Shield ref as TShield,ProtoShield ref as TProtoShield,E
 						SetSpriteScaleByOffset(explosionID,ExplosionList.Explosion[i].SpriteData.Scale,ExplosionList.Explosion[i].SpriteData.Scale)
 						SetSpritePositionByOffset(explosionID,ExplosionList.Explosion[i].SpriteData.Position.x,ExplosionList.Explosion[i].SpriteData.Position.y)
 						Shield.ShapeTestChecks = Shield.ShapeTestChecks + 1
-						if GetSpriteCollision(shieldID,explosionID) = 1
+						local shapeHit as integer
+						local radiusHit as integer
+						shapeHit = GetSpriteCollision(shieldID,explosionID)
+						radius = CalcRadius(Shield.ObjectData.Position,ExplosionList.Explosion[i].ObjectData.Position)
+						radiusHit = radius < ExplosionList.Explosion[i].ObjectData.Radius
+						if shapeHit = 1
 							Shield.ShapeTestHits = Shield.ShapeTestHits + 1
 						endif
-						radius = CalcRadius(Shield.ObjectData.Position,ExplosionList.Explosion[i].ObjectData.Position)
-						if radius < ExplosionList.Explosion[i].ObjectData.Radius
+						if radiusHit = 1
 							Shield.ShapeTestRadiusHits = Shield.ShapeTestRadiusHits + 1
+						endif
+						if shapeHit = 1 and radiusHit = 0
+							Shield.ShapeTestOnlyHits = Shield.ShapeTestOnlyHits + 1
+						endif
+						if shapeHit = 0 and radiusHit = 1
+							Shield.ShapeTestRadiusOnlyHits = Shield.ShapeTestRadiusOnlyHits + 1
 						endif
 					endif
 				endif
 			next i
 		endif
-		SetTextString(DebugTextID,"Shield shape: "+str(Shield.ShapeTestHits)+" / "+str(Shield.ShapeTestChecks)+"  radius: "+str(Shield.ShapeTestRadiusHits))
+		SetTextString(DebugTextID,"Shield shape: "+str(Shield.ShapeTestHits)+" / "+str(Shield.ShapeTestChecks)+"  radius: "+str(Shield.ShapeTestRadiusHits)+"  only shape/radius: "+str(Shield.ShapeTestOnlyHits)+"/"+str(Shield.ShapeTestRadiusOnlyHits))
 	endif
 endfunction
 
