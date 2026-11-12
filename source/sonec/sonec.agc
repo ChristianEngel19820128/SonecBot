@@ -507,9 +507,18 @@ function SonecShieldInput(Sonec ref as TSonec,Shield ref as TShield,World ref as
 				Shield.AnimationData.Uninitialize = FALSE
 			endif
 		else
-			Shield.AnimationData.FrameAlignment = 1
-			Shield.AnimationData.Initialize = FALSE
-			Shield.AnimationData.Uninitialize = TRUE
+			if Shield.AnimationData.Uninitialize = TRUE
+				// Reverse dismantling without resetting the current charge.
+				if Sonec.Energy.State >= COSTSHIELD
+					Shield.AnimationData.FrameAlignment = 0
+					Shield.AnimationData.Initialize = TRUE
+					Shield.AnimationData.Uninitialize = FALSE
+				endif
+			else
+				Shield.AnimationData.FrameAlignment = 1
+				Shield.AnimationData.Initialize = FALSE
+				Shield.AnimationData.Uninitialize = TRUE
+			endif
 		endif
 		
 	endif
