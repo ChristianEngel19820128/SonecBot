@@ -184,6 +184,8 @@ type TEnergyShield
 endtype
 
 type TShield
+	LastDamageMs as integer
+	DamageCooldownActive as integer
 	ShapeTestChecks as integer
 	ShapeTestHits as integer
 	ShapeTestRadiusHits as integer
