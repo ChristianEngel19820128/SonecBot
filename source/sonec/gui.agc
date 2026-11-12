@@ -52,7 +52,7 @@ endfunction
 //
 //----------------------------------------------------------------------
 
-function GuiEnergyDraw(Gui ref as TGui,Sonec ref as TSonec,Screen as TSize)
+function GuiEnergyDraw(Gui ref as TGui,Sonec ref as TSonec,Screen as TSize,Now as integer)
 	
 	local Data as TSpriteData
 	local i as integer
@@ -60,6 +60,9 @@ function GuiEnergyDraw(Gui ref as TGui,Sonec ref as TSonec,Screen as TSize)
 	local maxOverload as integer
 	local EnergyLoad as integer
 	local EnergyOverload as integer
+	local shieldTrail as float
+	local trailBars as integer
+	local shieldTop as integer
 	
 	Data.Position.x = 10
 	max = ceil(Sonec.Health.State*150.0/Sonec.Health.StateMax)
@@ -79,6 +82,21 @@ function GuiEnergyDraw(Gui ref as TGui,Sonec ref as TSonec,Screen as TSize)
 	ColorSet(Data.Color,0,127,255,255)
 	
 	for i = max+1 to max+maxOverload
+		Data.Position.y = Screen.Height -37 - i*(GetSpriteHeight(Gui.bar_horizontal_small.Sprite.ID))
+		SpriteDraw(Gui.bar_horizontal_small.Sprite,Data)
+	next i
+
+	// Red trail follows the current blue shield bar and fades toward zero.
+	shieldTrail = 0
+	if Sonec.EnergyShield.DamageTrailEndMs > Now and Sonec.EnergyShield.DamageTrailEndMs > Sonec.EnergyShield.DamageTrailStartMs
+		shieldTrail = Sonec.EnergyShield.DamageTrailAmount * (Sonec.EnergyShield.DamageTrailEndMs-Now) / (Sonec.EnergyShield.DamageTrailEndMs-Sonec.EnergyShield.DamageTrailStartMs)
+	endif
+	trailBars = ceil(shieldTrail*25.0/Sonec.EnergyShield.StateMax)
+	if trailBars > 25-maxOverload then trailBars = 25-maxOverload
+	if trailBars < 0 then trailBars = 0
+	shieldTop = max+maxOverload
+	ColorSet(Data.Color,255,40,40,255)
+	for i = shieldTop+1 to shieldTop+trailBars
 		Data.Position.y = Screen.Height -37 - i*(GetSpriteHeight(Gui.bar_horizontal_small.Sprite.ID))
 		SpriteDraw(Gui.bar_horizontal_small.Sprite,Data)
 	next i
