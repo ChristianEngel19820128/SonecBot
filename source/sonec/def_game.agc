@@ -635,6 +635,7 @@ type TSound
 endtype
 
 type TGame
+	DebugText as integer[-1]
 	
 	Screen as TSize
 	
