@@ -526,6 +526,9 @@ type TExplosion
 	MeasureChecks as integer
 	MeasureHits as integer
 	MeasureDamage as integer
+	MeasureChestHits as integer
+	MeasureOrbHits as integer
+	MeasureMineHits as integer
 	Enabled as integer
 	ExplosionType as integer
 	ObjectData as TObjectData
