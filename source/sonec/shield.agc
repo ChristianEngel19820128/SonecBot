@@ -60,7 +60,7 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function ShieldAnimate(Shield ref as TShield,Now as integer)
+function ShieldAnimate(Shield ref as TShield,Sonec ref as TSonec,Now as integer)
 	
 	if Shield.Enabled = TRUE
 		if TimeGet(Shield.AnimationData.AnimTimer,Now) > 0
@@ -74,7 +74,7 @@ function ShieldAnimate(Shield ref as TShield,Now as integer)
 			endif
 			
 			if Shield.AnimationData.FrameAlignment = 1
-				Shield.AnimationData.Frame = Shield.AnimationData.Frame - Shield.AnimationData.FrameStep
+				Shield.AnimationData.Frame = Shield.AnimationData.Frame - Shield.AnimationData.FrameStep*2
 			endif
 			
 			
@@ -88,7 +88,7 @@ function ShieldAnimate(Shield ref as TShield,Now as integer)
 			
 			
 			if Shield.AnimationData.Frame >= Shield.AnimationData.FrameMax
-				Shield.AnimationData.FrameAlignment = 1
+				Shield.AnimationData.Frame = Shield.AnimationData.FrameMax
 				//if Shield.AnimationData.Animating = FALSE
 					if Shield.AnimationData.Initialize = TRUE
 						Shield.AnimationData.Initialize = FALSE
@@ -98,7 +98,7 @@ function ShieldAnimate(Shield ref as TShield,Now as integer)
 			endif
 			
 			if Shield.AnimationData.Frame <= Shield.AnimationData.FrameMin
-				Shield.AnimationData.FrameAlignment = 0
+				Shield.AnimationData.Frame = Shield.AnimationData.FrameMin
 				//if Shield.AnimationData.Animating = FALSE
 					if Shield.AnimationData.Uninitialize = TRUE
 						Shield.AnimationData.Uninitialize = FALSE
@@ -109,12 +109,15 @@ function ShieldAnimate(Shield ref as TShield,Now as integer)
 			
 			ColorSet(Shield.SpriteData.Color,55,255,155,55+Shield.AnimationData.Frame*155/Shield.AnimationData.FrameMax)
 			
-			if (Shield.AnimationData.Initialize = TRUE or Shield.AnimationData.Uninitialize = TRUE) and Shield.AnimationData.Animating = FALSE
-				Shield.SpriteData.Scale = 1.0*Shield.AnimationData.Frame/Shield.AnimationData.FrameMax
+			// Ein einheitlicher Größenverlauf für Auf- und Abbau.
+			Shield.SpriteData.Scale = 1.0*Shield.AnimationData.Frame/Shield.AnimationData.FrameMax
+			// HUD-Wert folgt denselben Keyframes wie die sichtbare Größe.
+			if Shield.Enabled = TRUE
+				Sonec.EnergyShield.State = (Shield.AnimationData.Frame-Shield.AnimationData.FrameMin)*Sonec.EnergyShield.StateMax/(Shield.AnimationData.FrameMax-Shield.AnimationData.FrameMin)
 			else
-				Shield.SpriteData.Scale = 0.75+(1.0*Shield.AnimationData.Frame/Shield.AnimationData.FrameMax)*0.25
+				Sonec.EnergyShield.State = 0
 			endif
-			
+
 		endif
 	endif
 	
