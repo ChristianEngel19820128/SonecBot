@@ -157,6 +157,7 @@ endfunction
 #constant SHIELD_SHAPE_TEST 1
 #constant SHIELD_MAX_PROTECTION_PERCENT 80
 #constant SHIELD_REGEN_DELAY_MS 500
+#constant SHIELD_DAMAGE_TRAIL_MS 300
 
 function ShieldShapeTest(Shield ref as TShield,ProtoShield ref as TProtoShield,ExplosionList ref as TExplosionList,ProtoExplosion ref as TProtoExplosion,DebugTextID as integer)
 	if SHIELD_SHAPE_TEST = 1 and Device$ = "windows" and Shield.Enabled = TRUE
@@ -206,6 +207,19 @@ function ShieldAbsorbDamage(Shield ref as TShield,Sonec ref as TSonec,Damage as 
 		if charge > 0
 			absorbed = Damage * SHIELD_MAX_PROTECTION_PERCENT * charge / (100*Sonec.EnergyShield.StateMax)
 			if absorbed > charge then absorbed = charge
+			// Add new damage to the remaining visible trail and extend its lifetime.
+			local trailRemaining as float
+			trailRemaining = 0
+			if Sonec.EnergyShield.DamageTrailEndMs > Now and Sonec.EnergyShield.DamageTrailEndMs > Sonec.EnergyShield.DamageTrailStartMs
+				trailRemaining = Sonec.EnergyShield.DamageTrailAmount * (Sonec.EnergyShield.DamageTrailEndMs-Now) / (Sonec.EnergyShield.DamageTrailEndMs-Sonec.EnergyShield.DamageTrailStartMs)
+			endif
+			Sonec.EnergyShield.DamageTrailAmount = trailRemaining + absorbed
+			Sonec.EnergyShield.DamageTrailStartMs = Now
+			if Sonec.EnergyShield.DamageTrailEndMs > Now
+				Sonec.EnergyShield.DamageTrailEndMs = Sonec.EnergyShield.DamageTrailEndMs + SHIELD_DAMAGE_TRAIL_MS
+			else
+				Sonec.EnergyShield.DamageTrailEndMs = Now + SHIELD_DAMAGE_TRAIL_MS
+			endif
 			Sonec.EnergyShield.State = charge - absorbed
 			frameRange = Shield.AnimationData.FrameMax-Shield.AnimationData.FrameMin
 			Shield.AnimationData.Frame = Shield.AnimationData.FrameMin + Sonec.EnergyShield.State*frameRange/Sonec.EnergyShield.StateMax
