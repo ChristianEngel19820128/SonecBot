@@ -192,6 +192,8 @@ type TShield
 	ShapeTestChecks as integer
 	ShapeTestHits as integer
 	ShapeTestRadiusHits as integer
+	ShapeTestOnlyHits as integer
+	ShapeTestRadiusOnlyHits as integer
 	Enabled as integer
 	ObjectData as TObjectData
 	SpriteData as TSpriteData
