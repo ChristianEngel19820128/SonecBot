@@ -177,6 +177,9 @@ type TProtoShield
 endtype
 
 type TEnergyShield
+	DamageTrailAmount as float
+	DamageTrailStartMs as integer
+	DamageTrailEndMs as integer
 	ShieldTimer as TTime
 	State as integer
 	StateMax as integer
