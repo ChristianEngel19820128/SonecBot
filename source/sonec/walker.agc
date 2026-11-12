@@ -189,6 +189,9 @@ function WalkerNew(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,World r
 	Walker.ObjectData.Position.y = Plate.ObjectData.Position.y - 40
 	Walker.PlateOffsetX = Walker.ObjectData.Position.x - Plate.ObjectData.Position.x
 	Walker.PlateOffsetY = Walker.ObjectData.Position.y - Plate.ObjectData.Position.y
+	Walker.WalkPhase = 0
+	Walker.PauseUntilMs = 0
+	Walker.NextPauseMs = Now + random(2500,5000)
 	
 	if Walker.State.LookAlignment = LOOKLEFT
 		
@@ -471,17 +474,17 @@ endfunction
 
 function WalkerAnimate(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,World ref as TWorld,Now as integer)
 
-	// Adjustable test animation: 0.75 cycles/sec, 20 degree leg swing, up to 12 degree knee bend.
+	// Heavy gait follows distance travelled on the platform; no leg cycling while idle.
 	local Phase as float
 	local Swing as float
 	local KneeRight as float
 	local KneeLeft as float
 	local FootSwing as float
-	Phase = Now * 0.27
-	Swing = sin(Phase) * 20.0
+	Phase = Walker.WalkPhase
+	Swing = sin(Phase) * 15.0
 	KneeRight = (1.0 - cos(Phase)) * 6.0
 	KneeLeft = (1.0 + cos(Phase)) * 6.0
-	FootSwing = sin(Phase) * 10.0
+	FootSwing = sin(Phase) * 7.0
 	
 	if Walker.State.LookAlignment = LOOKLEFT
 		Walker.WalkerObjectData.Tower.Rotation  = ProtoWalker.AnimLeft.Tower.Rotation-90
@@ -568,7 +571,7 @@ function WalkerAnimateAll(WalkerList ref as TWalkerList,ProtoWalker ref as TProt
 	local i as integer
 	
 	for i = 0 to WalkerList.Walker.Length
-		WalkerAnimate(WalkerList.Walker[i],ProtoWalker,World,Now)
+		if WalkerList.Walker[i].Enabled = TRUE then WalkerAnimate(WalkerList.Walker[i],ProtoWalker,World,Now)
 	next i
 	
 endfunction
@@ -597,11 +600,25 @@ function WalkerMove(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,PlateL
 				if PlateWidth < EdgeMargin*2 then EdgeMargin = PlateWidth*0.25
 
 				if TimeGet(Walker.ObjectData.MoveTimer,Now) > 0
-					StepX = Walker.ObjectData.MoveSpeed.x*Walker.ObjectData.MoveTimer.CalcRange
-					if Walker.State.Alignment = MOVELEFT
-						Walker.PlateOffsetX = Walker.PlateOffsetX - StepX
+					StepX = 0
+					if Walker.PauseUntilMs > 0
+						if Now >= Walker.PauseUntilMs
+							Walker.PauseUntilMs = 0
+							Walker.NextPauseMs = Now + random(2500,5000)
+						endif
 					else
-						Walker.PlateOffsetX = Walker.PlateOffsetX + StepX
+						if Now >= Walker.NextPauseMs
+							Walker.PauseUntilMs = Now + random(1000,3000)
+						else
+							StepX = Walker.ObjectData.MoveSpeed.x*Walker.ObjectData.MoveTimer.CalcRange
+							if Walker.State.Alignment = MOVELEFT
+								Walker.PlateOffsetX = Walker.PlateOffsetX - StepX
+							else
+								Walker.PlateOffsetX = Walker.PlateOffsetX + StepX
+							endif
+							// AGK trigonometry uses degrees: one heavy step cycle per ~80 pixels.
+							Walker.WalkPhase = Walker.WalkPhase + StepX*4.5
+						endif
 					endif
 
 					if Walker.PlateOffsetX <= EdgeMargin
