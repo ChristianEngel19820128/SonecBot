@@ -522,6 +522,10 @@ type TProtoExplosion
 endtype
 
 type TExplosion
+	LastSonecHitMs as integer
+	LastChestHitMs as integer[-1]
+	LastOrbHitMs as integer[-1]
+	LastMineHitMs as integer[-1]
 	MeasureStartMs as integer
 	MeasureChecks as integer
 	MeasureHits as integer
