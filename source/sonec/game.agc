@@ -196,7 +196,11 @@ function GameDo(Game ref as TGame,Now as integer)
 			if Index >= 0
 				ChestAdd(Game.ChestList,Game.ProtoChest,Game.World,Game.PlateList.Plate[Index],Index,Now)
 				if WalkerCountAll(Game.WalkerList) < 5
-					if random(0,10000) < 3500
+					// Longer platforms provide more room for walkers (35% at 200 px).
+					local WalkerChance as integer
+					WalkerChance = 3500 * Game.PlateList.Plate[Index].ObjectData.Size.Width / 200
+					if WalkerChance > 8500 then WalkerChance = 8500
+					if random(0,10000) < WalkerChance
 						WalkerAdd(Game.WalkerList,Game.ProtoWalker,Game.World,Game.PlateList.Plate[Index],Index,Now)
 					endif
 				endif
