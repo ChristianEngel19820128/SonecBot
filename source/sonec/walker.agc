@@ -580,12 +580,17 @@ endfunction
 //----------------------------------------------------------------------
 
 // Update foot targets in platform-relative coordinates, never during drawing.
-function WalkerSkeletonUpdate(Walker ref as TWalker)
+function WalkerSkeletonUpdate(Walker ref as TWalker,Moving as integer)
 	local i as integer
 	local progress as float
 	local t as float
 	local forward as float
 	for i = 0 to 1
+		// No new swing while paused or blocked at a platform edge.
+		if Moving = 0
+			Walker.SkeletonSwing[i] = 0
+			Walker.SkeletonFootY[i] = 0
+		else
 		progress = mod(Walker.WalkPhase+i*180,360)
 		if progress < 180
 			if Walker.SkeletonSwing[i] = 0
@@ -603,6 +608,7 @@ function WalkerSkeletonUpdate(Walker ref as TWalker)
 		else
 			Walker.SkeletonSwing[i] = 0
 			Walker.SkeletonFootY[i] = 0
+		endif
 		endif
 	next i
 endfunction
@@ -661,7 +667,7 @@ function WalkerMove(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,PlateL
 					TimeReset(Walker.ObjectData.MoveTimer,Now)
 				endif
 
-				WalkerSkeletonUpdate(Walker)
+				WalkerSkeletonUpdate(Walker,StepX > 0)
 				Walker.ObjectData.Position.x = PlateList.Plate[PlateIndex].ObjectData.Position.x + Walker.PlateOffsetX
 				Walker.ObjectData.Position.y = PlateList.Plate[PlateIndex].ObjectData.Position.y + Walker.PlateOffsetY
 				WalkerPartsCalculate(Walker,ProtoWalker,World)
