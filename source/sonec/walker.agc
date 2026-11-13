@@ -753,26 +753,13 @@ global WalkerAngleDebugText as integer
 // Align the Proto Offset-to-Anchor direction to IK, then apply the
 // Proto rotation as an explicit artwork calibration offset.
 // Unlike the previous formula, Proto.Rotation is not cancelled out.
+// Shared skeleton-to-sprite transform. All artwork is drawn vertically
+// in its neutral pose: 0 degrees means pointing up (12 o'clock).
+// Proto Offset controls the pivot; Anchor is not an angle correction.
+// A terminal part with no IK direction keeps the neutral Proto pose.
 function WalkerIKSpriteAngle(Proto ref as TProtoData,IKDirection as float)
-	local BaseDirection as float
 	local Result as float
-
-	// A zero-length reference has no direction (e.g. a terminal part).
-	// In that case use the Proto's neutral rotation without a hidden correction.
-	if Proto.Anchor.x = Proto.Offset.x and Proto.Anchor.y = Proto.Offset.y
-		Result = NormalizeAngle(Proto.Rotation)
-	else
-		BaseDirection = ATan2(Proto.Anchor.y-Proto.Offset.y,Proto.Anchor.x-Proto.Offset.x)
-		Result = NormalizeAngle(IKDirection-BaseDirection+Proto.Rotation)
-	endif
-endfunction Result
-
-// Return the unrotated direction from this sprite's pivot to its next joint.
-// Left-facing art has a mirrored direction, so a raw sprite-minus-IK angle
-// is not a useful alignment error.
-function WalkerIKProtoDirection(Proto ref as TProtoData)
-	local Result as float
-	Result = ATan2(Proto.Anchor.y-Proto.Offset.y,Proto.Anchor.x-Proto.Offset.x)
+	Result = NormalizeAngle(IKDirection+Proto.Rotation)
 endfunction Result
 
 // Place the existing limb sprites at the IK joints, using the same screen
@@ -826,8 +813,8 @@ function WalkerIKBindSprites(Walker ref as TWalker,ProtoWalker ref as TProtoWalk
 		kneeY = midY+dx/dist*height*direction
 		// IK directions are absolute. Proto reference pose supplies each
 		// sprite's original joint-to-joint direction and base rotation.
-		upperAngle = ATan2(kneeY-hipY,kneeX-hipX)
-		lowerAngle = ATan2(footY-kneeY,footX-kneeX)
+		upperAngle = CalcAngleIK(kneeX-hipX,kneeY-hipY)
+		lowerAngle = CalcAngleIK(footX-kneeX,footY-kneeY)
 
 		Walker.WalkerSpriteData.Thigh[i].Position.x = hipX
 		Walker.WalkerSpriteData.Thigh[i].Position.y = hipY
@@ -985,20 +972,14 @@ function WalkerDrawAll(WalkerList ref as TWalkerList,ProtoWalker ref as TProtoWa
 			// sprite rotation alone (left/right Proto artwork is mirrored).
 			local delta as float
 			local shankDelta as float
-			local thighBase as float
-			local shankBase as float
-			if WalkerList.Walker[i].State.Alignment = MOVELEFT
-				thighBase = WalkerIKProtoDirection(ProtoWalker.AnimLeft.Thigh)
-				shankBase = WalkerIKProtoDirection(ProtoWalker.AnimLeft.Shank)
-			else
-				thighBase = WalkerIKProtoDirection(ProtoWalker.AnimRight.Thigh)
-				shankBase = WalkerIKProtoDirection(ProtoWalker.AnimRight.Shank)
-			endif
-			delta = NormalizeAngle(WalkerList.Walker[i].SkeletonDebugSprite+thighBase-WalkerList.Walker[i].SkeletonDebugIK)
+			// Show the actual angular difference to the IK target.
+			local delta as float
+			local shankDelta as float
+			delta = NormalizeAngle(WalkerList.Walker[i].SkeletonDebugSprite-WalkerList.Walker[i].SkeletonDebugIK)
 			if delta > 180 then delta = delta-360
-			shankDelta = NormalizeAngle(WalkerList.Walker[i].SkeletonDebugShankSprite+shankBase-WalkerList.Walker[i].SkeletonDebugShankIK)
+			shankDelta = NormalizeAngle(WalkerList.Walker[i].SkeletonDebugShankSprite-WalkerList.Walker[i].SkeletonDebugShankIK)
 			if shankDelta > 180 then shankDelta = shankDelta-360
-			SetTextString(WalkerAngleDebugText,"Thigh IK: "+Str(WalkerList.Walker[i].SkeletonDebugIK)+ " Base: "+Str(thighBase)+ " Sprite: "+Str(WalkerList.Walker[i].SkeletonDebugSprite)+ " Error: "+Str(delta)+Chr(10)+"Shank IK: "+Str(WalkerList.Walker[i].SkeletonDebugShankIK)+ " Base: "+Str(shankBase)+ " Sprite: "+Str(WalkerList.Walker[i].SkeletonDebugShankSprite)+ " Error: "+Str(shankDelta))
+			SetTextString(WalkerAngleDebugText,"Thigh IK: "+Str(WalkerList.Walker[i].SkeletonDebugIK)+" Sprite: "+Str(WalkerList.Walker[i].SkeletonDebugSprite)+" Delta: "+Str(delta)+Chr(10)+"Shank IK: "+Str(WalkerList.Walker[i].SkeletonDebugShankIK)+" Sprite: "+Str(WalkerList.Walker[i].SkeletonDebugShankSprite)+" Delta: "+Str(shankDelta))
 			SetTextPosition(WalkerAngleDebugText,WalkerList.Walker[i].WalkerSpriteData.Corpus.Position.x-45,WalkerList.Walker[i].WalkerSpriteData.Corpus.Position.y-70)
 			DrawText(WalkerAngleDebugText)
 		endif
