@@ -619,7 +619,10 @@ function WalkerMove(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,PlateL
 	local PlateWidth as float
 	local EdgeMargin as float
 	local StepX as float
+	local Moving as integer
 
+	StepX = 0
+	Moving = 0
 	if Walker.Enabled = TRUE
 		PlateIndex = Walker.PlateIndex
 		if PlateIndex < 0 or PlateIndex > PlateList.Plate.Length
@@ -667,7 +670,8 @@ function WalkerMove(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,PlateL
 					TimeReset(Walker.ObjectData.MoveTimer,Now)
 				endif
 
-				WalkerSkeletonUpdate(Walker,StepX > 0)
+								if StepX > 0 then Moving = 1
+				WalkerSkeletonUpdate(Walker,Moving)
 				Walker.ObjectData.Position.x = PlateList.Plate[PlateIndex].ObjectData.Position.x + Walker.PlateOffsetX
 				Walker.ObjectData.Position.y = PlateList.Plate[PlateIndex].ObjectData.Position.y + Walker.PlateOffsetY
 				WalkerPartsCalculate(Walker,ProtoWalker,World)
