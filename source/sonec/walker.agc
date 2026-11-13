@@ -610,6 +610,10 @@ endfunction
 // Temporary stand-pose diagnostic: set to 0 to restore walking.
 // Keep the original IK geometry and Proto transforms unchanged.
 #constant WALKER_STAND_POSE_TEST 0
+// Walking distance per half-cycle: 180 / 12 = 15 platform pixels.
+// The planted foot can stay fixed without exceeding the ~41 px leg reach.
+#constant WALKER_GAIT_DEGREES_PER_PIXEL 12.0
+#constant WALKER_GAIT_FORWARD_OFFSET 12.0
 
 // Update foot targets in platform-relative coordinates, never during drawing.
 function WalkerSkeletonUpdate(Walker ref as TWalker,Moving as integer)
@@ -648,8 +652,10 @@ function WalkerSkeletonUpdate(Walker ref as TWalker,Moving as integer)
 			if Walker.SkeletonSwing[i] = 0
 				Walker.SkeletonSwing[i] = 1
 				Walker.SkeletonFootStartX[i] = Walker.SkeletonFootX[i]
-				forward = 12
-				if Walker.State.Alignment = MOVELEFT then forward = -12
+				// Aim ahead of the expected touchdown. The body advances by
+				// 180 / WALKER_GAIT_DEGREES_PER_PIXEL pixels during this swing.
+				forward = WALKER_GAIT_FORWARD_OFFSET + 180.0/WALKER_GAIT_DEGREES_PER_PIXEL
+				if Walker.State.Alignment = MOVELEFT then forward = -forward
 				// Keep the original left/right foot separation during each step.
 				StanceOffset = -10
 				if i = 1 then StanceOffset = 10
@@ -661,6 +667,7 @@ function WalkerSkeletonUpdate(Walker ref as TWalker,Moving as integer)
 			Walker.SkeletonFootX[i] = Walker.SkeletonFootStartX[i]+(Walker.SkeletonFootTargetX[i]-Walker.SkeletonFootStartX[i])*t
 			Walker.SkeletonFootY[i] = -sin(progress)*7
 		else
+			// Stance phase: foot X stays planted in platform coordinates.
 			Walker.SkeletonSwing[i] = 0
 			Walker.SkeletonFootY[i] = 0
 		endif
@@ -712,8 +719,8 @@ function WalkerMove(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,PlateL
 							else
 								Walker.PlateOffsetX = Walker.PlateOffsetX + StepX
 							endif
-							// AGK trigonometry uses degrees: one heavy step cycle per ~80 pixels.
-							if WALKER_STAND_POSE_TEST = 0 then Walker.WalkPhase = Walker.WalkPhase + StepX*4.5
+							// Alternate swing feet every 15 px; planted feet stay fixed.
+							if WALKER_STAND_POSE_TEST = 0 then Walker.WalkPhase = Walker.WalkPhase + StepX*WALKER_GAIT_DEGREES_PER_PIXEL
 						endif
 					endif
 
