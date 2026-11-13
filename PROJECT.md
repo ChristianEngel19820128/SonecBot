@@ -1,6 +1,6 @@
 # SonecBot – Projektübersicht
 
-**Dokumentstatus:** Version 0.4  
+**Dokumentstatus:** Version 0.5  
 **Projektstatus:** In Entwicklung  
 **Engine:** AppGameKit Studio (AGK)  
 **Aktiver Entwicklungszweig:** `develop`  
@@ -133,9 +133,15 @@ Der Walker ist ein größerer, mehrteiliger Gegner mit gelenkbasiert animierten 
 
 Für die aktuelle AGK-Version sind schwere Maschinengewehre als Bewaffnung vorgesehen.
 
-**Aktueller Stand (November 2026):** Der Walker ist als beweglicher, mechanisch animierter und zerstörbarer Gegner im lokalen Spieltest bestätigt. Maschinengewehr-Projektile treffen derzeit ausschließlich den Turm; bei Treffern blinkt dieser kurz rot. Die Grafiken wurden auf neutrale Graustufen umgestellt, die Standardfarbe wird im Code grün gesetzt. Bei Zerstörung entstehen Energie-Bubbles. Die Animation darf vorerst bewusst mechanisch wirken.
+**Aktueller Stand (13. November 2026):** Der Walker ist als plattformgebundener, zerstörbarer Gegner im lokalen Spieltest bestätigt. Er erscheint auf Plattformen; seine Spawnwahrscheinlichkeit steigt mit deren Länge. Maschinengewehr-Projektile treffen derzeit ausschließlich den Turm. Dieser blinkt nach Treffern kurz rot; bei Zerstörung entstehen Energie-Bubbles. Die ursprünglich grauen Sprite-Grafiken werden im Code grün eingefärbt.
 
-**Geplante Walker-Arbeiten:** Erzeugung auf Plattformen, möglichst direkt bei deren Spawn; auf Plattformen bleiben und an Kanten oder Kisten umkehren; eigene Schüsse über das vorhandene Bullet-System; Torso und Turm gegebenenfalls um bis zu etwa 30° neigen.\n\n**Später zu prüfen:** Torso als zusätzliche Trefferzone für ein faireres Spielgefühl, Feinschliff der Animation und das übergreifende Kollisionskonzept. Eine eigene Walker-Bewaffnung ist damit noch nicht als funktionsfähig bestätigt.
+**Meilenstein: Prozedurales Skelett und stabile Standpose.** Der ursprüngliche Beinanimationsweg wurde durch eine 2-Knochen-Inverse-Kinematik (IK) mit individuell aus den Proto-Daten berechneten Segmentlängen ersetzt. Hüfte, Knie und Füße sind über die Bild-Drehpunkte und Anschlusskoordinaten miteinander verbunden. Der Corpus hängt mit seinem Anchor an der IK-Hüfte; der Turm ist am Corpus-Drehpunkt befestigt. Die neue Grundhaltung wurde am 13. November 2026 anhand lokaler Screenshots des Entwicklers bestätigt. Die zugrunde liegenden Offset- und Anchor-Daten mussten dafür nicht umgeschrieben werden. Technischer Referenzstand der Körperanbindung: Commit `deb8b74` auf `develop`.
+
+**Wichtig zur Einordnung:** Der Walker befindet sich noch im eingeschalteten Standpose-Diagnosemodus. Die endgültige Laufbewegung nach der neuen Körperanbindung, das saubere Anhalten und Umdrehen sowie die eigene Bewaffnung sind noch nicht abschließend getestet. Die Fußwinkel werden momentan über eine vorläufige richtungsabhängige Korrektur im Code gesetzt.
+
+**Nächste Walker-Arbeiten:** Standpose-Test kontrolliert abschalten; die abwechselnde Schrittbewegung, Fußkontakte und Richtungswechsel prüfen; das Debug-Skelett später ausblenden, aber für neue Gegner wiederverwendbar halten; anschließend Schüsse über das vorhandene Bullet-System sowie eine begrenzte Torso-/Turm-Neigung zum Zielen entwickeln. Plattformkanten sind als Bewegungsgrenzen berücksichtigt; das Umkehren an Kisten ist gesondert zu prüfen.
+
+**Später zu prüfen:** Torso als zusätzliche Trefferzone, Animationsfeinschliff und das übergreifende Kollisionskonzept. Für besondere Animationen wie Knien, Aufstehen oder Zerstörung bleibt ein Keyframe-Werkzeug wie Spriter als mögliche Ergänzung zum prozeduralen Skelett vorgemerkt.
 
 **Projektentscheidung: Ein funktionsfähiger Walker ist Pflichtbestandteil der ersten Alpha-Version.**
 
@@ -267,4 +273,4 @@ Unbestätigte Annahmen dürfen nicht als gesicherte Eigenschaften des Spiels dar
 - Mögliche Aufgaben und Missionen
 - Späteres Veröffentlichungs- und Versionsschema
 
-**Nächster Meilenstein:** Walker-Verhalten und Bewaffnung weiterentwickeln sowie HTML5-Build und Gamepad-Steuerung praktisch testen; anschließend die noch offenen Alpha-Anforderungen priorisieren.
+**Nächster Meilenstein:** Die bestätigte Walker-Standpose als Referenz sichern, den Standpose-Diagnosemodus deaktivieren und die Laufbewegung mit der neuen Körperanbindung testen. Danach Walker-Bewaffnung entwickeln sowie HTML5-Build und Gamepad-Steuerung praktisch prüfen; anschließend die offenen Alpha-Anforderungen priorisieren.
