@@ -618,7 +618,7 @@ endfunction
 #constant WALKER_GAIT_FORWARD_OFFSET 12.0
 // Visual foot sole lies below the Proto.Socket pivot; lift joint, not platform.
 // Keep both the rendered IK and diagnostic skeleton on exactly this target.
-#constant WALKER_FOOT_JOINT_LIFT 7.0
+#constant WALKER_FOOT_JOINT_LIFT 8.0
 
 // Update foot targets in platform-relative coordinates, never during drawing.
 function WalkerSkeletonUpdate(Walker ref as TWalker,Moving as integer)
