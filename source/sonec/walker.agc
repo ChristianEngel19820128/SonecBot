@@ -804,7 +804,13 @@ function WalkerIKBindSprites(Walker ref as TWalker,ProtoWalker ref as TProtoWalk
 
 		Walker.WalkerSpriteData.Thigh[i].Position.x = hipX
 		Walker.WalkerSpriteData.Thigh[i].Position.y = hipY
-		Walker.WalkerSpriteData.Thigh[i].Angle = NormalizeAngle(upperAngle)
+		// Calibrate the upper-leg sprite using its direction-specific Proto rotation.
+		// Keep the IK segment angle; only adjust the graphic's local orientation.
+		if Walker.State.Alignment = MOVELEFT
+			Walker.WalkerSpriteData.Thigh[i].Angle = NormalizeAngle(upperAngle+ProtoWalker.AnimLeft.Thigh.Rotation-90)
+		else
+			Walker.WalkerSpriteData.Thigh[i].Angle = NormalizeAngle(upperAngle+ProtoWalker.AnimRight.Thigh.Rotation+90)
+		endif
 		Walker.WalkerSpriteData.Shank[i].Position.x = kneeX
 		Walker.WalkerSpriteData.Shank[i].Position.y = kneeY
 		Walker.WalkerSpriteData.Shank[i].Angle = NormalizeAngle(lowerAngle)
