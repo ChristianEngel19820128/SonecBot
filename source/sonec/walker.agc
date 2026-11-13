@@ -829,6 +829,15 @@ function WalkerIKBindSprites(Walker ref as TWalker,ProtoWalker ref as TProtoWalk
 		else
 			Walker.WalkerSpriteData.Thigh[i].Angle = WalkerIKSpriteAngle(ProtoWalker.AnimRight.Thigh,upperAngle)
 		endif
+		if i = 0
+			Walker.SkeletonDebugIK = NormalizeAngle(upperAngle)
+			if Walker.State.Alignment = MOVELEFT
+				Walker.SkeletonDebugProto = ProtoWalker.AnimLeft.Thigh.Rotation
+			else
+				Walker.SkeletonDebugProto = ProtoWalker.AnimRight.Thigh.Rotation
+			endif
+			Walker.SkeletonDebugSprite = Walker.WalkerSpriteData.Thigh[i].Angle
+		endif
 		Walker.WalkerSpriteData.Shank[i].Position.x = kneeX
 		Walker.WalkerSpriteData.Shank[i].Position.y = kneeY
 		if Walker.State.Alignment = MOVELEFT
@@ -837,13 +846,8 @@ function WalkerIKBindSprites(Walker ref as TWalker,ProtoWalker ref as TProtoWalk
 			Walker.WalkerSpriteData.Shank[i].Angle = WalkerIKSpriteAngle(ProtoWalker.AnimRight.Shank,lowerAngle)
 		endif
 		if i = 0
-			Walker.SkeletonDebugIK = NormalizeAngle(lowerAngle)
-			if Walker.State.Alignment = MOVELEFT
-				Walker.SkeletonDebugProto = ProtoWalker.AnimLeft.Shank.Rotation
-			else
-				Walker.SkeletonDebugProto = ProtoWalker.AnimRight.Shank.Rotation
-			endif
-			Walker.SkeletonDebugSprite = Walker.WalkerSpriteData.Shank[i].Angle
+			Walker.SkeletonDebugShankIK = NormalizeAngle(lowerAngle)
+			Walker.SkeletonDebugShankSprite = Walker.WalkerSpriteData.Shank[i].Angle
 		endif
 		Walker.WalkerSpriteData.Socket[i].Position.x = footX
 		Walker.WalkerSpriteData.Socket[i].Position.y = footY
@@ -970,11 +974,14 @@ function WalkerDrawAll(WalkerList ref as TWalkerList,ProtoWalker ref as TProtoWa
 			WalkerSkeletonDraw(WalkerList.Walker[i],World)
 		endif
 		if WALKER_ANGLE_DEBUG = 1 and WALKER_IK_SPRITES = 1 and WalkerList.Walker[i].Enabled = TRUE
-			// One shank per Walker; show signed shortest angular difference.
+			// Compare both segments on the same leg, frame by frame.
 			local delta as float
+			local shankDelta as float
 			delta = NormalizeAngle(WalkerList.Walker[i].SkeletonDebugSprite-WalkerList.Walker[i].SkeletonDebugIK)
 			if delta > 180 then delta = delta-360
-			SetTextString(WalkerAngleDebugText,"IK: "+Str(WalkerList.Walker[i].SkeletonDebugIK)+ "  Proto: "+Str(WalkerList.Walker[i].SkeletonDebugProto)+ "  Sprite: "+Str(WalkerList.Walker[i].SkeletonDebugSprite)+ "  Diff: "+Str(delta))
+			shankDelta = NormalizeAngle(WalkerList.Walker[i].SkeletonDebugShankSprite-WalkerList.Walker[i].SkeletonDebugShankIK)
+			if shankDelta > 180 then shankDelta = shankDelta-360
+			SetTextString(WalkerAngleDebugText,"Thigh IK: "+Str(WalkerList.Walker[i].SkeletonDebugIK)+ " Proto: "+Str(WalkerList.Walker[i].SkeletonDebugProto)+ " Sprite: "+Str(WalkerList.Walker[i].SkeletonDebugSprite)+ " Diff: "+Str(delta)+Chr(10)+"Shank IK: "+Str(WalkerList.Walker[i].SkeletonDebugShankIK)+ " Sprite: "+Str(WalkerList.Walker[i].SkeletonDebugShankSprite)+ " Diff: "+Str(shankDelta))
 			SetTextPosition(WalkerAngleDebugText,WalkerList.Walker[i].WalkerSpriteData.Corpus.Position.x-45,WalkerList.Walker[i].WalkerSpriteData.Corpus.Position.y-70)
 			DrawText(WalkerAngleDebugText)
 		endif
