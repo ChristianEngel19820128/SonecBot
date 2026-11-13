@@ -752,7 +752,7 @@ endfunction
 
 // Place the existing limb sprites at the IK joints, using the same screen
 // coordinates as the skeleton overlay. Keep torso and turret unchanged.
-function WalkerIKBindSprites(Walker ref as TWalker,World ref as TWorld)
+function WalkerIKBindSprites(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,World ref as TWorld)
 	local i as integer
 	local hipX as float
 	local hipY as float
@@ -810,7 +810,13 @@ function WalkerIKBindSprites(Walker ref as TWalker,World ref as TWorld)
 		Walker.WalkerSpriteData.Shank[i].Angle = NormalizeAngle(lowerAngle)
 		Walker.WalkerSpriteData.Socket[i].Position.x = footX
 		Walker.WalkerSpriteData.Socket[i].Position.y = footY
-		Walker.WalkerSpriteData.Socket[i].Angle = 180
+		// Keep the foot level using its direction-specific Proto baseline.
+		// Sprite offset/anchor are already supplied by WalkerPartsCalculate.
+		if Walker.State.Alignment = MOVELEFT
+			Walker.WalkerSpriteData.Socket[i].Angle = NormalizeAngle(ProtoWalker.AnimLeft.Socket.Rotation-90)
+		else
+			Walker.WalkerSpriteData.Socket[i].Angle = NormalizeAngle(ProtoWalker.AnimRight.Socket.Rotation+90)
+		endif
 	next i
 endfunction
 
@@ -915,7 +921,7 @@ function WalkerDrawAll(WalkerList ref as TWalkerList,ProtoWalker ref as TProtoWa
 	
 	for i = 0 to WalkerList.Walker.Length
 		if WALKER_IK_SPRITES = 1 and WalkerList.Walker[i].Enabled = TRUE
-			WalkerIKBindSprites(WalkerList.Walker[i],World)
+			WalkerIKBindSprites(WalkerList.Walker[i],ProtoWalker,World)
 		endif
 		WalkerDraw(WalkerList.Walker[i],ProtoWalker)
 		if WALKER_SKELETON_DEBUG = 1 and WalkerList.Walker[i].Enabled = TRUE
