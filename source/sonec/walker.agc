@@ -859,9 +859,9 @@ function WalkerIKBindSprites(Walker ref as TWalker,ProtoWalker ref as TProtoWalk
 		// Keep the foot level using its direction-specific Proto baseline.
 		// Sprite offset/anchor are already supplied by WalkerPartsCalculate.
 		if Walker.State.Alignment = MOVELEFT
-			Walker.WalkerSpriteData.Socket[i].Angle = NormalizeAngle(ProtoWalker.AnimLeft.Socket.Rotation-90)
+			Walker.WalkerSpriteData.Socket[i].Angle = NormalizeAngle(ProtoWalker.AnimLeft.Socket.Rotation)
 		else
-			Walker.WalkerSpriteData.Socket[i].Angle = NormalizeAngle(ProtoWalker.AnimRight.Socket.Rotation+90)
+			Walker.WalkerSpriteData.Socket[i].Angle = NormalizeAngle(ProtoWalker.AnimRight.Socket.Rotation)
 		endif
 	next i
 endfunction
