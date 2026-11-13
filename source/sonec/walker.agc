@@ -749,6 +749,8 @@ endfunction
 
 // Experimental IK sprite binding. Set to 0 to compare with the old sine gait.
 #constant WALKER_IK_SPRITES 1
+#constant WALKER_ANGLE_DEBUG 1
+global WalkerAngleDebugText as integer
 
 // Place the existing limb sprites at the IK joints, using the same screen
 // coordinates as the skeleton overlay. Keep torso and turret unchanged.
@@ -812,6 +814,15 @@ function WalkerIKBindSprites(Walker ref as TWalker,ProtoWalker ref as TProtoWalk
 		else
 			Walker.WalkerSpriteData.Thigh[i].Angle = NormalizeAngle(upperAngle+ProtoWalker.AnimRight.Thigh.Rotation+90)
 		endif
+		if i = 0
+			Walker.SkeletonDebugIK = NormalizeAngle(upperAngle)
+			if Walker.State.Alignment = MOVELEFT
+				Walker.SkeletonDebugProto = ProtoWalker.AnimLeft.Thigh.Rotation
+			else
+				Walker.SkeletonDebugProto = ProtoWalker.AnimRight.Thigh.Rotation
+			endif
+			Walker.SkeletonDebugSprite = Walker.WalkerSpriteData.Thigh[i].Angle
+		endif
 		Walker.WalkerSpriteData.Shank[i].Position.x = kneeX
 		Walker.WalkerSpriteData.Shank[i].Position.y = kneeY
 		// Calibrate the lower-leg sprite with its direction-specific Proto rotation.
@@ -838,6 +849,11 @@ global WalkerDebugLineSprite as integer
 global WalkerDebugJointSprite as integer
 
 function WalkerSkeletonInit()
+	if WALKER_ANGLE_DEBUG = 1
+		WalkerAngleDebugText = CreateText("")
+		SetTextSize(WalkerAngleDebugText,12)
+		SetTextColor(WalkerAngleDebugText,255,255,0,255)
+	endif
 	if WALKER_SKELETON_DEBUG = 1
 		WalkerDebugLineSprite = CreateSprite(0)
 		SetSpriteVisible(WalkerDebugLineSprite,1)
@@ -938,6 +954,15 @@ function WalkerDrawAll(WalkerList ref as TWalkerList,ProtoWalker ref as TProtoWa
 		WalkerDraw(WalkerList.Walker[i],ProtoWalker)
 		if WALKER_SKELETON_DEBUG = 1 and WalkerList.Walker[i].Enabled = TRUE
 			WalkerSkeletonDraw(WalkerList.Walker[i],World)
+		endif
+		if WALKER_ANGLE_DEBUG = 1 and WALKER_IK_SPRITES = 1 and WalkerList.Walker[i].Enabled = TRUE
+			// One thigh per Walker; show signed shortest angular difference.
+			local delta as float
+			delta = NormalizeAngle(WalkerList.Walker[i].SkeletonDebugSprite-WalkerList.Walker[i].SkeletonDebugIK)
+			if delta > 180 then delta = delta-360
+			SetTextString(WalkerAngleDebugText,"IK: "+Str(WalkerList.Walker[i].SkeletonDebugIK)+ "  Proto: "+Str(WalkerList.Walker[i].SkeletonDebugProto)+ "  Sprite: "+Str(WalkerList.Walker[i].SkeletonDebugSprite)+ "  Diff: "+Str(delta))
+			SetTextPosition(WalkerAngleDebugText,WalkerList.Walker[i].WalkerSpriteData.Corpus.Position.x-45,WalkerList.Walker[i].WalkerSpriteData.Corpus.Position.y-70)
+			DrawText(WalkerAngleDebugText)
 		endif
 	next i
 	
