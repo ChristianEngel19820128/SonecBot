@@ -312,6 +312,8 @@ type TWalker
 	SkeletonDebugIK as float
 	SkeletonDebugProto as float
 	SkeletonDebugSprite as float
+	SkeletonDebugShankIK as float
+	SkeletonDebugShankSprite as float
 	NextPauseMs as integer
 	PauseUntilMs as integer
 	Enabled as integer
