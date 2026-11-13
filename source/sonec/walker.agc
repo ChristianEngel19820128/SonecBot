@@ -753,13 +753,22 @@ global WalkerAngleDebugText as integer
 // Align the Proto Offset-to-Anchor direction to IK, then apply the
 // Proto rotation as an explicit artwork calibration offset.
 // Unlike the previous formula, Proto.Rotation is not cancelled out.
-// Shared skeleton-to-sprite transform. All artwork is drawn vertically
-// in its neutral pose: 0 degrees means pointing up (12 o'clock).
-// Proto Offset controls the pivot; Anchor is not an angle correction.
-// A terminal part with no IK direction keeps the neutral Proto pose.
+// Convert the IK target direction (0 = up, clockwise) to the image's
+// local Offset-to-Anchor direction. This is the same rule for all bones.
+// Terminal parts with coincident points retain their neutral Proto angle.
 function WalkerIKSpriteAngle(Proto ref as TProtoData,IKDirection as float)
+	local dx as float
+	local dy as float
+	local ReferenceAngle as float
 	local Result as float
-	Result = NormalizeAngle(IKDirection+Proto.Rotation)
+	dx = Proto.Anchor.x-Proto.Offset.x
+	dy = Proto.Anchor.y-Proto.Offset.y
+	if dx = 0 and dy = 0
+		Result = NormalizeAngle(Proto.Rotation)
+	else
+		ReferenceAngle = CalcAngleIK(dx,dy)
+		Result = NormalizeAngle(IKDirection-ReferenceAngle+Proto.Rotation)
+	endif
 endfunction Result
 
 // Length of a bone in its unrotated Proto image.
