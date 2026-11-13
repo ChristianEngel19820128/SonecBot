@@ -761,8 +761,14 @@ function WalkerIKSpriteAngle(Proto ref as TProtoData,IKDirection as float)
 	local BaseDirection as float
 	local Result as float
 
-	BaseDirection = ATan2(Proto.Anchor.y-Proto.Offset.y,Proto.Anchor.x-Proto.Offset.x)
-	Result = NormalizeAngle(IKDirection-BaseDirection+Proto.Rotation)
+	// A zero-length reference has no direction (e.g. a terminal part).
+	// In that case use the Proto's neutral rotation without a hidden correction.
+	if Proto.Anchor.x = Proto.Offset.x and Proto.Anchor.y = Proto.Offset.y
+		Result = NormalizeAngle(Proto.Rotation)
+	else
+		BaseDirection = ATan2(Proto.Anchor.y-Proto.Offset.y,Proto.Anchor.x-Proto.Offset.x)
+		Result = NormalizeAngle(IKDirection-BaseDirection+Proto.Rotation)
+	endif
 endfunction Result
 
 // Return the unrotated direction from this sprite's pivot to its next joint.
@@ -856,12 +862,12 @@ function WalkerIKBindSprites(Walker ref as TWalker,ProtoWalker ref as TProtoWalk
 		endif
 		Walker.WalkerSpriteData.Socket[i].Position.x = footX
 		Walker.WalkerSpriteData.Socket[i].Position.y = footY
-		// Keep the foot level using its direction-specific Proto baseline.
-		// Sprite offset/anchor are already supplied by WalkerPartsCalculate.
+		// All leg parts use the same Proto-to-sprite transform.
+		// A terminal part without an Offset-to-Anchor direction stays at its Proto pose.
 		if Walker.State.Alignment = MOVELEFT
-			Walker.WalkerSpriteData.Socket[i].Angle = NormalizeAngle(ProtoWalker.AnimLeft.Socket.Rotation)
+			Walker.WalkerSpriteData.Socket[i].Angle = WalkerIKSpriteAngle(ProtoWalker.AnimLeft.Socket,0)
 		else
-			Walker.WalkerSpriteData.Socket[i].Angle = NormalizeAngle(ProtoWalker.AnimRight.Socket.Rotation)
+			Walker.WalkerSpriteData.Socket[i].Angle = WalkerIKSpriteAngle(ProtoWalker.AnimRight.Socket,0)
 		endif
 	next i
 endfunction
