@@ -579,6 +579,10 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
+// Temporary stand-pose diagnostic: set to 0 to restore walking.
+// Keep the original IK geometry and Proto transforms unchanged.
+#constant WALKER_STAND_POSE_TEST 1
+
 // Update foot targets in platform-relative coordinates, never during drawing.
 function WalkerSkeletonUpdate(Walker ref as TWalker,Moving as integer)
 	local i as integer
@@ -586,6 +590,15 @@ function WalkerSkeletonUpdate(Walker ref as TWalker,Moving as integer)
 	local t as float
 	local forward as float
 	for i = 0 to 1
+		if WALKER_STAND_POSE_TEST = 1
+			Walker.SkeletonSwing[i] = 0
+			Walker.SkeletonFootY[i] = 0
+			if i = 0
+				Walker.SkeletonFootX[i] = Walker.PlateOffsetX-10
+			else
+				Walker.SkeletonFootX[i] = Walker.PlateOffsetX+10
+			endif
+		else
 		// No new swing while paused or blocked at a platform edge.
 		if Moving = 0
 			Walker.SkeletonSwing[i] = 0
@@ -608,6 +621,7 @@ function WalkerSkeletonUpdate(Walker ref as TWalker,Moving as integer)
 		else
 			Walker.SkeletonSwing[i] = 0
 			Walker.SkeletonFootY[i] = 0
+		endif
 		endif
 		endif
 	next i
@@ -635,6 +649,10 @@ function WalkerMove(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,PlateL
 				EdgeMargin = 20
 				if PlateWidth < EdgeMargin*2 then EdgeMargin = PlateWidth*0.25
 
+				if WALKER_STAND_POSE_TEST = 1
+					Walker.PauseUntilMs = 0
+					Walker.NextPauseMs = Now + 5000
+				endif
 				if TimeGet(Walker.ObjectData.MoveTimer,Now) > 0
 					StepX = 0
 					if Walker.PauseUntilMs > 0
@@ -646,14 +664,14 @@ function WalkerMove(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,PlateL
 						if Now >= Walker.NextPauseMs
 							Walker.PauseUntilMs = Now + random(1000,3000)
 						else
-							StepX = Walker.ObjectData.MoveSpeed.x*Walker.ObjectData.MoveTimer.CalcRange
+							if WALKER_STAND_POSE_TEST = 0 then StepX = Walker.ObjectData.MoveSpeed.x*Walker.ObjectData.MoveTimer.CalcRange
 							if Walker.State.Alignment = MOVELEFT
 								Walker.PlateOffsetX = Walker.PlateOffsetX - StepX
 							else
 								Walker.PlateOffsetX = Walker.PlateOffsetX + StepX
 							endif
 							// AGK trigonometry uses degrees: one heavy step cycle per ~80 pixels.
-							Walker.WalkPhase = Walker.WalkPhase + StepX*4.5
+							if WALKER_STAND_POSE_TEST = 0 then Walker.WalkPhase = Walker.WalkPhase + StepX*4.5
 						endif
 					endif
 
@@ -670,7 +688,7 @@ function WalkerMove(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,PlateL
 					TimeReset(Walker.ObjectData.MoveTimer,Now)
 				endif
 
-								if StepX > 0 then Moving = 1
+				if StepX > 0 then Moving = 1
 				WalkerSkeletonUpdate(Walker,Moving)
 				Walker.ObjectData.Position.x = PlateList.Plate[PlateIndex].ObjectData.Position.x + Walker.PlateOffsetX
 				Walker.ObjectData.Position.y = PlateList.Plate[PlateIndex].ObjectData.Position.y + Walker.PlateOffsetY
