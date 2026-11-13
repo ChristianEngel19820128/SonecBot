@@ -609,7 +609,7 @@ endfunction
 
 // Temporary stand-pose diagnostic: set to 0 to restore walking.
 // Keep the original IK geometry and Proto transforms unchanged.
-#constant WALKER_STAND_POSE_TEST 1
+#constant WALKER_STAND_POSE_TEST 0
 
 // Update foot targets in platform-relative coordinates, never during drawing.
 function WalkerSkeletonUpdate(Walker ref as TWalker,Moving as integer)
