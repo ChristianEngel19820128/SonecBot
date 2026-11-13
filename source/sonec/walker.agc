@@ -70,6 +70,7 @@ endfunction
 //----------------------------------------------------------------------
 
 function WalkerInit(WalkerList ref as TWalkerList)
+	WalkerSkeletonInit()
 	
 	TimeSet(WalkerList.CreateTimer,1000,1)
 	WalkerList.Walker.Length = -1
@@ -711,9 +712,42 @@ endfunction
 //----------------------------------------------------------------------
 
 
-// Temporary joint overlay: displays the existing sprite anchors, without changing movement.
-// Set to 0 after testing. The next step is foot targets and two-bone IK.
+// Debug geometry uses manually drawn sprites so it shares the Swap() render path.
 #constant WALKER_SKELETON_DEBUG 1
+global WalkerDebugLineSprite as integer
+global WalkerDebugJointSprite as integer
+
+function WalkerSkeletonInit()
+	if WALKER_SKELETON_DEBUG = 1
+		WalkerDebugLineSprite = CreateSprite(0)
+		SetSpriteVisible(WalkerDebugLineSprite,0)
+		SetSpriteOffset(WalkerDebugLineSprite,0,1)
+		WalkerDebugJointSprite = CreateSprite(0)
+		SetSpriteVisible(WalkerDebugJointSprite,0)
+		SetSpriteSize(WalkerDebugJointSprite,5,5)
+		SetSpriteOffset(WalkerDebugJointSprite,2.5,2.5)
+	endif
+endfunction
+
+function WalkerSkeletonLine(x1 as float,y1 as float,x2 as float,y2 as float)
+	local dx as float
+	local dy as float
+	local length as float
+	dx = x2-x1
+	dy = y2-y1
+	length = sqrt(dx*dx+dy*dy)
+	if length > 0
+		SetSpriteSize(WalkerDebugLineSprite,length,2)
+		SetSpriteAngle(WalkerDebugLineSprite,ATan2(dy,dx))
+		SetSpritePosition(WalkerDebugLineSprite,x1,y1)
+		DrawSprite(WalkerDebugLineSprite)
+	endif
+endfunction
+
+function WalkerSkeletonJoint(x as float,y as float)
+	SetSpritePosition(WalkerDebugJointSprite,x,y)
+	DrawSprite(WalkerDebugJointSprite)
+endfunction
 
 function WalkerSkeletonDraw(Walker ref as TWalker)
 	local i as integer
@@ -723,7 +757,6 @@ function WalkerSkeletonDraw(Walker ref as TWalker)
 	local KneeY as float
 	local FootX as float
 	local FootY as float
-
 	HipX = Walker.WalkerSpriteData.Corpus.Position.x
 	HipY = Walker.WalkerSpriteData.Corpus.Position.y
 	for i = 0 to 1
@@ -731,12 +764,12 @@ function WalkerSkeletonDraw(Walker ref as TWalker)
 		KneeY = Walker.WalkerSpriteData.Shank[i].Position.y
 		FootX = Walker.WalkerSpriteData.Socket[i].Position.x
 		FootY = Walker.WalkerSpriteData.Socket[i].Position.y
-		DrawLine(HipX,HipY,KneeX,KneeY,255,220,40)
-		DrawLine(KneeX,KneeY,FootX,FootY,40,220,255)
-		DrawEllipse(HipX-3,HipY-3,HipX+3,HipY+3,255,255,255)
-		DrawEllipse(KneeX-3,KneeY-3,KneeX+3,KneeY+3,255,255,255)
-		DrawEllipse(FootX-3,FootY-3,FootX+3,FootY+3,255,255,255)
+		WalkerSkeletonLine(HipX,HipY,KneeX,KneeY)
+		WalkerSkeletonLine(KneeX,KneeY,FootX,FootY)
+		WalkerSkeletonJoint(KneeX,KneeY)
+		WalkerSkeletonJoint(FootX,FootY)
 	next i
+	WalkerSkeletonJoint(HipX,HipY)
 endfunction
 
 function WalkerDrawAll(WalkerList ref as TWalkerList,ProtoWalker ref as TProtoWalker)
