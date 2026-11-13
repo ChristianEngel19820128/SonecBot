@@ -191,6 +191,10 @@ function WalkerNew(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,World r
 	Walker.PlateOffsetX = Walker.ObjectData.Position.x - Plate.ObjectData.Position.x
 	Walker.PlateOffsetY = Walker.ObjectData.Position.y - Plate.ObjectData.Position.y
 	Walker.WalkPhase = 0
+	Walker.SkeletonFootX[0] = Walker.PlateOffsetX-14
+	Walker.SkeletonFootX[1] = Walker.PlateOffsetX+14
+	Walker.SkeletonSwing[0] = 0
+	Walker.SkeletonSwing[1] = 0
 	Walker.PauseUntilMs = 0
 	Walker.NextPauseMs = Now + random(2500,5000)
 	
@@ -749,27 +753,78 @@ function WalkerSkeletonJoint(x as float,y as float)
 	DrawSprite(WalkerDebugJointSprite)
 endfunction
 
+// Independent two-bone IK preview. Coordinates are platform-relative.
+// Foot targets are fixed during stance and advance during swing.
 function WalkerSkeletonDraw(Walker ref as TWalker)
 	local i as integer
-	local HipX as float
-	local HipY as float
-	local KneeX as float
-	local KneeY as float
-	local FootX as float
-	local FootY as float
-	HipX = Walker.WalkerSpriteData.Corpus.Position.x
-	HipY = Walker.WalkerSpriteData.Corpus.Position.y
+	local phase as float
+	local progress as float
+	local footX as float
+	local footY as float
+	local hipX as float
+	local hipY as float
+	local dx as float
+	local dy as float
+	local distance as float
+	local midX as float
+	local midY as float
+	local height as float
+	local kneeX as float
+	local kneeY as float
+	local direction as float
+	local length as float
+	local baseX as float
+	local baseY as float
+
+	length = 31
+	baseX = Walker.ObjectData.Position.x-Walker.PlateOffsetX
+	baseY = Walker.ObjectData.Position.y-Walker.PlateOffsetY
+	phase = mod(Walker.WalkPhase,360)
+	hipX = Walker.ObjectData.Position.x
+	hipY = baseY-40
 	for i = 0 to 1
-		KneeX = Walker.WalkerSpriteData.Shank[i].Position.x
-		KneeY = Walker.WalkerSpriteData.Shank[i].Position.y
-		FootX = Walker.WalkerSpriteData.Socket[i].Position.x
-		FootY = Walker.WalkerSpriteData.Socket[i].Position.y
-		WalkerSkeletonLine(HipX,HipY,KneeX,KneeY)
-		WalkerSkeletonLine(KneeX,KneeY,FootX,FootY)
-		WalkerSkeletonJoint(KneeX,KneeY)
-		WalkerSkeletonJoint(FootX,FootY)
+		progress = mod(phase+i*180,360)
+		if progress < 180
+			if Walker.SkeletonSwing[i] = 0
+				Walker.SkeletonSwing[i] = 1
+				Walker.SkeletonFootStartX[i] = Walker.SkeletonFootX[i]
+				if Walker.State.Alignment = MOVELEFT
+					Walker.SkeletonFootTargetX[i] = Walker.PlateOffsetX-18
+				else
+					Walker.SkeletonFootTargetX[i] = Walker.PlateOffsetX+18
+				endif
+			endif
+			Walker.SkeletonFootX[i] = Walker.SkeletonFootStartX[i]+(Walker.SkeletonFootTargetX[i]-Walker.SkeletonFootStartX[i])*(progress/180.0)
+			footY = baseY-sin(progress)*12
+		else
+			Walker.SkeletonSwing[i] = 0
+			footY = baseY
+		endif
+		footX = baseX+Walker.SkeletonFootX[i]
+		dx = footX-hipX
+		dy = footY-hipY
+		distance = sqrt(dx*dx+dy*dy)
+		if distance > length*1.98
+			dx = dx*(length*1.98/distance)
+			dy = dy*(length*1.98/distance)
+			distance = length*1.98
+			footX = hipX+dx
+			footY = hipY+dy
+		endif
+		if distance < 0.01 then distance = 0.01
+		midX = (hipX+footX)*0.5
+		midY = (hipY+footY)*0.5
+		height = sqrt(length*length-distance*distance*0.25)
+		direction = 1
+		if Walker.State.Alignment = MOVELEFT then direction = -1
+		kneeX = midX+(-dy/distance)*height*direction
+		kneeY = midY+(dx/distance)*height*direction
+		WalkerSkeletonLine(hipX,hipY,kneeX,kneeY)
+		WalkerSkeletonLine(kneeX,kneeY,footX,footY)
+		WalkerSkeletonJoint(kneeX,kneeY)
+		WalkerSkeletonJoint(footX,footY)
 	next i
-	WalkerSkeletonJoint(HipX,HipY)
+	WalkerSkeletonJoint(hipX,hipY)
 endfunction
 
 function WalkerDrawAll(WalkerList ref as TWalkerList,ProtoWalker ref as TProtoWalker)
