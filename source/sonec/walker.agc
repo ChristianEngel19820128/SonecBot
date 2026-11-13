@@ -617,6 +617,7 @@ function WalkerSkeletonUpdate(Walker ref as TWalker,Moving as integer)
 	local progress as float
 	local t as float
 	local forward as float
+	local StanceOffset as float
 	for i = 0 to 1
 		if WALKER_STAND_POSE_TEST = 1
 			Walker.SkeletonSwing[i] = 0
@@ -639,7 +640,10 @@ function WalkerSkeletonUpdate(Walker ref as TWalker,Moving as integer)
 				Walker.SkeletonFootStartX[i] = Walker.SkeletonFootX[i]
 				forward = 12
 				if Walker.State.Alignment = MOVELEFT then forward = -12
-				Walker.SkeletonFootTargetX[i] = Walker.PlateOffsetX+forward
+				// Keep the original left/right foot separation during each step.
+				StanceOffset = -10
+				if i = 1 then StanceOffset = 10
+				Walker.SkeletonFootTargetX[i] = Walker.PlateOffsetX+StanceOffset+forward
 			endif
 			t = progress/180.0
 			// Smooth acceleration and deceleration at touchdown.
