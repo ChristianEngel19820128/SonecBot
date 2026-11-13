@@ -195,6 +195,8 @@ function WalkerNew(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,World r
 	Walker.SkeletonFootX[1] = Walker.PlateOffsetX+14
 	Walker.SkeletonSwing[0] = 0
 	Walker.SkeletonSwing[1] = 0
+	Walker.SkeletonFootY[0] = 0
+	Walker.SkeletonFootY[1] = 0
 	Walker.PauseUntilMs = 0
 	Walker.NextPauseMs = Now + random(2500,5000)
 	
@@ -585,6 +587,34 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
+// Update foot targets in platform-relative coordinates, never during drawing.
+function WalkerSkeletonUpdate(Walker ref as TWalker)
+	local i as integer
+	local progress as float
+	local t as float
+	local forward as float
+	for i = 0 to 1
+		progress = mod(Walker.WalkPhase+i*180,360)
+		if progress < 180
+			if Walker.SkeletonSwing[i] = 0
+				Walker.SkeletonSwing[i] = 1
+				Walker.SkeletonFootStartX[i] = Walker.SkeletonFootX[i]
+				forward = 18
+				if Walker.State.Alignment = MOVELEFT then forward = -18
+				Walker.SkeletonFootTargetX[i] = Walker.PlateOffsetX+forward
+			endif
+			t = progress/180.0
+			// Smooth acceleration and deceleration at touchdown.
+			t = t*t*(3-2*t)
+			Walker.SkeletonFootX[i] = Walker.SkeletonFootStartX[i]+(Walker.SkeletonFootTargetX[i]-Walker.SkeletonFootStartX[i])*t
+			Walker.SkeletonFootY[i] = -sin(progress)*12
+		else
+			Walker.SkeletonSwing[i] = 0
+			Walker.SkeletonFootY[i] = 0
+		endif
+	next i
+endfunction
+
 function WalkerMove(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,PlateList ref as TPlateList,World ref as TWorld,Now as integer)
 
 	local PlateIndex as integer
@@ -639,6 +669,7 @@ function WalkerMove(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,PlateL
 					TimeReset(Walker.ObjectData.MoveTimer,Now)
 				endif
 
+				WalkerSkeletonUpdate(Walker)
 				Walker.ObjectData.Position.x = PlateList.Plate[PlateIndex].ObjectData.Position.x + Walker.PlateOffsetX
 				Walker.ObjectData.Position.y = PlateList.Plate[PlateIndex].ObjectData.Position.y + Walker.PlateOffsetY
 				WalkerPartsCalculate(Walker,ProtoWalker,World)
@@ -757,8 +788,6 @@ endfunction
 // Foot targets are fixed during stance and advance during swing.
 function WalkerSkeletonDraw(Walker ref as TWalker,World ref as TWorld)
 	local i as integer
-	local phase as float
-	local progress as float
 	local footX as float
 	local footY as float
 	local hipX as float
@@ -782,27 +811,10 @@ function WalkerSkeletonDraw(Walker ref as TWalker,World ref as TWorld)
 	// Convert world coordinates to the same screen space as WalkerSpriteData.
 	baseX = baseX-World.Position.x
 	baseY = baseY-World.Position.y
-	phase = mod(Walker.WalkPhase,360)
 	hipX = Walker.ObjectData.Position.x-World.Position.x
-	hipY = baseY-40
+	hipY = Walker.ObjectData.Position.y-World.Position.y
 	for i = 0 to 1
-		progress = mod(phase+i*180,360)
-		if progress < 180
-			if Walker.SkeletonSwing[i] = 0
-				Walker.SkeletonSwing[i] = 1
-				Walker.SkeletonFootStartX[i] = Walker.SkeletonFootX[i]
-				if Walker.State.Alignment = MOVELEFT
-					Walker.SkeletonFootTargetX[i] = Walker.PlateOffsetX-18
-				else
-					Walker.SkeletonFootTargetX[i] = Walker.PlateOffsetX+18
-				endif
-			endif
-			Walker.SkeletonFootX[i] = Walker.SkeletonFootStartX[i]+(Walker.SkeletonFootTargetX[i]-Walker.SkeletonFootStartX[i])*(progress/180.0)
-			footY = baseY-sin(progress)*12
-		else
-			Walker.SkeletonSwing[i] = 0
-			footY = baseY
-		endif
+		footY = baseY+Walker.SkeletonFootY[i]
 		footX = baseX+Walker.SkeletonFootX[i]
 		dx = footX-hipX
 		dy = footY-hipY
