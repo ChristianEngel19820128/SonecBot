@@ -710,12 +710,44 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
+
+// Temporary joint overlay: displays the existing sprite anchors, without changing movement.
+// Set to 0 after testing. The next step is foot targets and two-bone IK.
+#constant WALKER_SKELETON_DEBUG 1
+
+function WalkerSkeletonDraw(Walker ref as TWalker)
+	local i as integer
+	local HipX as float
+	local HipY as float
+	local KneeX as float
+	local KneeY as float
+	local FootX as float
+	local FootY as float
+
+	HipX = Walker.WalkerSpriteData.Corpus.Position.x
+	HipY = Walker.WalkerSpriteData.Corpus.Position.y
+	for i = 0 to 1
+		KneeX = Walker.WalkerSpriteData.Shank[i].Position.x
+		KneeY = Walker.WalkerSpriteData.Shank[i].Position.y
+		FootX = Walker.WalkerSpriteData.Socket[i].Position.x
+		FootY = Walker.WalkerSpriteData.Socket[i].Position.y
+		DrawLine(HipX,HipY,KneeX,KneeY,255,220,40)
+		DrawLine(KneeX,KneeY,FootX,FootY,40,220,255)
+		DrawEllipse(HipX-3,HipY-3,HipX+3,HipY+3,255,255,255)
+		DrawEllipse(KneeX-3,KneeY-3,KneeX+3,KneeY+3,255,255,255)
+		DrawEllipse(FootX-3,FootY-3,FootX+3,FootY+3,255,255,255)
+	next i
+endfunction
+
 function WalkerDrawAll(WalkerList ref as TWalkerList,ProtoWalker ref as TProtoWalker)
 	
 	local i as integer
 	
 	for i = 0 to WalkerList.Walker.Length
 		WalkerDraw(WalkerList.Walker[i],ProtoWalker)
+		if WALKER_SKELETON_DEBUG = 1 and WalkerList.Walker[i].Enabled = TRUE
+			WalkerSkeletonDraw(WalkerList.Walker[i])
+		endif
 	next i
 	
 endfunction
