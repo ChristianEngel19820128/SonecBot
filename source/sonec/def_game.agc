@@ -304,6 +304,7 @@ type TWalker
 	PlateOffsetX as float
 	PlateOffsetY as float
 	WalkPhase as float
+	TurnPending as integer
 	SkeletonFootX as float[1]
 	SkeletonFootY as float[1]
 	SkeletonFootStartX as float[1]
