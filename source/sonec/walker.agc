@@ -199,12 +199,12 @@ function WalkerNew(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,World r
 	
 	// Place the body anchor above the platform; feet offset can be tuned after visual testing.
 	Walker.ObjectData.Position.x = Plate.ObjectData.Position.x + Plate.ObjectData.Size.Width*0.5
-	Walker.ObjectData.Position.y = Plate.ObjectData.Position.y - 40
+	Walker.ObjectData.Position.y = Plate.ObjectData.Position.y - 32
 	Walker.PlateOffsetX = Walker.ObjectData.Position.x - Plate.ObjectData.Position.x
 	Walker.PlateOffsetY = Walker.ObjectData.Position.y - Plate.ObjectData.Position.y
 	Walker.WalkPhase = 0
-	Walker.SkeletonFootX[0] = Walker.PlateOffsetX-14
-	Walker.SkeletonFootX[1] = Walker.PlateOffsetX+14
+	Walker.SkeletonFootX[0] = Walker.PlateOffsetX-10
+	Walker.SkeletonFootX[1] = Walker.PlateOffsetX+10
 	Walker.SkeletonSwing[0] = 0
 	Walker.SkeletonSwing[1] = 0
 	Walker.SkeletonFootY[0] = 0
@@ -591,15 +591,15 @@ function WalkerSkeletonUpdate(Walker ref as TWalker)
 			if Walker.SkeletonSwing[i] = 0
 				Walker.SkeletonSwing[i] = 1
 				Walker.SkeletonFootStartX[i] = Walker.SkeletonFootX[i]
-				forward = 18
-				if Walker.State.Alignment = MOVELEFT then forward = -18
+				forward = 12
+				if Walker.State.Alignment = MOVELEFT then forward = -12
 				Walker.SkeletonFootTargetX[i] = Walker.PlateOffsetX+forward
 			endif
 			t = progress/180.0
 			// Smooth acceleration and deceleration at touchdown.
 			t = t*t*(3-2*t)
 			Walker.SkeletonFootX[i] = Walker.SkeletonFootStartX[i]+(Walker.SkeletonFootTargetX[i]-Walker.SkeletonFootStartX[i])*t
-			Walker.SkeletonFootY[i] = -sin(progress)*12
+			Walker.SkeletonFootY[i] = -sin(progress)*7
 		else
 			Walker.SkeletonSwing[i] = 0
 			Walker.SkeletonFootY[i] = 0
