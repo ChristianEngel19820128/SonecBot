@@ -750,6 +750,10 @@ endfunction
 // Experimental IK sprite binding. Set to 0 to compare with the old sine gait.
 #constant WALKER_IK_SPRITES 1
 #constant WALKER_ANGLE_DEBUG 1
+// Diagnostic: sprite angle = raw IK angle + one explicit calibration per facing.
+// Zero is intentional for this test; tune only after checking the source artwork.
+#constant WALKER_THIGH_OFFSET_LEFT 0
+#constant WALKER_THIGH_OFFSET_RIGHT 0
 global WalkerAngleDebugText as integer
 
 // Place the existing limb sprites at the IK joints, using the same screen
@@ -807,12 +811,13 @@ function WalkerIKBindSprites(Walker ref as TWalker,ProtoWalker ref as TProtoWalk
 
 		Walker.WalkerSpriteData.Thigh[i].Position.x = hipX
 		Walker.WalkerSpriteData.Thigh[i].Position.y = hipY
-		// IK gives the absolute hip-to-knee direction. Only the sprite's
-		// direction-specific baseline is added here (no trial +/-45 degrees).
+		// Diagnostic calibration: remove accumulated Proto +/-90 offsets.
+		// The IK direction is absolute; only the artwork's local zero-angle
+		// correction belongs here. Keep left/right independently adjustable.
 		if Walker.State.Alignment = MOVELEFT
-			Walker.WalkerSpriteData.Thigh[i].Angle = NormalizeAngle(upperAngle+ProtoWalker.AnimLeft.Thigh.Rotation-90)
+			Walker.WalkerSpriteData.Thigh[i].Angle = NormalizeAngle(upperAngle+WALKER_THIGH_OFFSET_LEFT)
 		else
-			Walker.WalkerSpriteData.Thigh[i].Angle = NormalizeAngle(upperAngle+ProtoWalker.AnimRight.Thigh.Rotation+90)
+			Walker.WalkerSpriteData.Thigh[i].Angle = NormalizeAngle(upperAngle+WALKER_THIGH_OFFSET_RIGHT)
 		endif
 		if i = 0
 			Walker.SkeletonDebugIK = NormalizeAngle(upperAngle)
