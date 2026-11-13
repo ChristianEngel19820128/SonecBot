@@ -199,7 +199,7 @@ function WalkerNew(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,World r
 	
 	// Place the body anchor above the platform; feet offset can be tuned after visual testing.
 	Walker.ObjectData.Position.x = Plate.ObjectData.Position.x + Plate.ObjectData.Size.Width*0.5
-	Walker.ObjectData.Position.y = Plate.ObjectData.Position.y - 29
+	Walker.ObjectData.Position.y = Plate.ObjectData.Position.y - 30
 	Walker.PlateOffsetX = Walker.ObjectData.Position.x - Plate.ObjectData.Position.x
 	Walker.PlateOffsetY = Walker.ObjectData.Position.y - Plate.ObjectData.Position.y
 	Walker.WalkPhase = 0
