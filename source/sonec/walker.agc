@@ -210,7 +210,8 @@ function WalkerNew(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,World r
 	TimeSet(Walker.ObjectData.MoveTimer,10,10)
 	TimeReset(Walker.ObjectData.MoveTimer,Now)
 	
-	Walker.ObjectData.MoveSpeed.x = random(35,100)*0.001
+	// Fixed slower test pace: compare foot contact and turns at a consistent speed.
+	Walker.ObjectData.MoveSpeed.x = 0.05
 	Walker.ObjectData.MoveSpeed.y = random(25,50)*0.001
 	
 	//Walker.ObjectData.Size.Width =
