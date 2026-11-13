@@ -616,6 +616,9 @@ endfunction
 // The planted foot can stay fixed without exceeding the ~41 px leg reach.
 #constant WALKER_GAIT_DEGREES_PER_PIXEL 12.0
 #constant WALKER_GAIT_FORWARD_OFFSET 12.0
+// Visual foot sole lies below the Proto.Socket pivot; lift joint, not platform.
+// Keep both the rendered IK and diagnostic skeleton on exactly this target.
+#constant WALKER_FOOT_JOINT_LIFT 7.0
 
 // Update foot targets in platform-relative coordinates, never during drawing.
 function WalkerSkeletonUpdate(Walker ref as TWalker,Moving as integer)
@@ -929,7 +932,7 @@ function WalkerIKBindSprites(Walker ref as TWalker,ProtoWalker ref as TProtoWalk
 	if Walker.State.Alignment = MOVELEFT then direction = -1
 	for i = 0 to 1
 		footX = baseX+Walker.SkeletonFootX[i]
-		footY = baseY+Walker.SkeletonFootY[i]
+		footY = baseY+Walker.SkeletonFootY[i]-WALKER_FOOT_JOINT_LIFT
 		dx = footX-hipX
 		dy = footY-hipY
 		dist = sqrt(dx*dx+dy*dy)
@@ -1096,7 +1099,7 @@ function WalkerSkeletonDraw(Walker ref as TWalker,World ref as TWorld,ProtoWalke
 	hipX = Walker.ObjectData.Position.x-World.Position.x
 	hipY = Walker.ObjectData.Position.y-World.Position.y
 	for i = 0 to 1
-		footY = baseY+Walker.SkeletonFootY[i]
+		footY = baseY+Walker.SkeletonFootY[i]-WALKER_FOOT_JOINT_LIFT
 		footX = baseX+Walker.SkeletonFootX[i]
 		dx = footX-hipX
 		dy = footY-hipY
