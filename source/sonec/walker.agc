@@ -706,14 +706,12 @@ function WalkerDraw(Walker ref as TWalker,ProtoWalker ref as TProtoWalker)
 			
 			SpriteDraw(ProtoWalker.AnimLeft.Thigh.Sprite,Walker.WalkerSpriteData.Thigh[ELEMENTRIGHT])
 			SpriteDraw(ProtoWalker.AnimLeft.Shank.Sprite,Walker.WalkerSpriteData.Shank[ELEMENTRIGHT])
-			// Diagnostic: verify the foot angle reaches AGK even if the sprite cache matches.
-			SetSpriteAngle(ProtoWalker.AnimLeft.Socket.Sprite.ID,Walker.WalkerSpriteData.Socket[ELEMENTRIGHT].Angle)
+
 			SpriteDraw(ProtoWalker.AnimLeft.Socket.Sprite,Walker.WalkerSpriteData.Socket[ELEMENTRIGHT])
 			
 			SpriteDraw(ProtoWalker.AnimLeft.Thigh.Sprite,Walker.WalkerSpriteData.Thigh[ELEMENTLEFT])
 			SpriteDraw(ProtoWalker.AnimLeft.Shank.Sprite,Walker.WalkerSpriteData.Shank[ELEMENTLEFT])
-			// Diagnostic: verify the foot angle reaches AGK even if the sprite cache matches.
-			SetSpriteAngle(ProtoWalker.AnimLeft.Socket.Sprite.ID,Walker.WalkerSpriteData.Socket[ELEMENTLEFT].Angle)
+
 			SpriteDraw(ProtoWalker.AnimLeft.Socket.Sprite,Walker.WalkerSpriteData.Socket[ELEMENTLEFT])
 			
 			SpriteDraw(ProtoWalker.AnimLeft.Corpus.Sprite,Walker.WalkerSpriteData.Corpus)
@@ -722,14 +720,12 @@ function WalkerDraw(Walker ref as TWalker,ProtoWalker ref as TProtoWalker)
 			
 			SpriteDraw(ProtoWalker.AnimRight.Thigh.Sprite,Walker.WalkerSpriteData.Thigh[ELEMENTLEFT])
 			SpriteDraw(ProtoWalker.AnimRight.Shank.Sprite,Walker.WalkerSpriteData.Shank[ELEMENTLEFT])
-			// Diagnostic: verify the foot angle reaches AGK even if the sprite cache matches.
-			SetSpriteAngle(ProtoWalker.AnimRight.Socket.Sprite.ID,Walker.WalkerSpriteData.Socket[ELEMENTLEFT].Angle)
+
 			SpriteDraw(ProtoWalker.AnimRight.Socket.Sprite,Walker.WalkerSpriteData.Socket[ELEMENTLEFT])
 			
 			SpriteDraw(ProtoWalker.AnimRight.Thigh.Sprite,Walker.WalkerSpriteData.Thigh[ELEMENTRIGHT])
 			SpriteDraw(ProtoWalker.AnimRight.Shank.Sprite,Walker.WalkerSpriteData.Shank[ELEMENTRIGHT])
-			// Diagnostic: verify the foot angle reaches AGK even if the sprite cache matches.
-			SetSpriteAngle(ProtoWalker.AnimRight.Socket.Sprite.ID,Walker.WalkerSpriteData.Socket[ELEMENTRIGHT].Angle)
+
 			SpriteDraw(ProtoWalker.AnimRight.Socket.Sprite,Walker.WalkerSpriteData.Socket[ELEMENTRIGHT])
 			
 			SpriteDraw(ProtoWalker.AnimRight.Corpus.Sprite,Walker.WalkerSpriteData.Corpus)
