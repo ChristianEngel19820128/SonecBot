@@ -834,8 +834,7 @@ function WalkerDrawAll(WalkerList ref as TWalkerList,ProtoWalker ref as TProtoWa
 	for i = 0 to WalkerList.Walker.Length
 		WalkerDraw(WalkerList.Walker[i],ProtoWalker)
 		if WALKER_SKELETON_DEBUG = 1 and WalkerList.Walker[i].Enabled = TRUE
-			// Isolate the render path: draw only one 5px square at the Walker anchor.
-			WalkerSkeletonJoint(WalkerList.Walker[i].WalkerSpriteData.Corpus.Position.x,WalkerList.Walker[i].WalkerSpriteData.Corpus.Position.y)
+			WalkerSkeletonDraw(WalkerList.Walker[i])
 		endif
 	next i
 	
