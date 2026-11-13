@@ -750,14 +750,23 @@ endfunction
 // Experimental IK sprite binding. Set to 0 to compare with the old sine gait.
 #constant WALKER_IK_SPRITES 1
 #constant WALKER_ANGLE_DEBUG 1
-// Diagnostic: sprite angle = raw IK angle + one explicit calibration per facing.
-// Zero is intentional for this test; tune only after checking the source artwork.
-#constant WALKER_THIGH_OFFSET_LEFT 0
-#constant WALKER_THIGH_OFFSET_RIGHT 0
-// Independent lower-leg calibration for the next visual test.
-#constant WALKER_SHANK_OFFSET_LEFT 0
-#constant WALKER_SHANK_OFFSET_RIGHT 0
+// Limb rotations now come from Proto Offset/Anchor reference directions.
 global WalkerAngleDebugText as integer
+
+// Calibrate from the Proto reference pose: Offset is the current joint,
+// Anchor is the next joint in the unrotated image. Apply only the difference
+// between that reference direction and the requested IK direction.
+function WalkerIKSpriteAngle(Proto ref as TProtoData,IKDirection as float)
+	local BaseDirection as float
+	local ReferenceDirection as float
+	local Delta as float
+	local Result as float
+
+	BaseDirection = ATan2(Proto.Anchor.y-Proto.Offset.y,Proto.Anchor.x-Proto.Offset.x)
+	ReferenceDirection = NormalizeAngle(BaseDirection+Proto.Rotation)
+	Delta = NormalizeAngle(IKDirection-ReferenceDirection)
+	Result = NormalizeAngle(Proto.Rotation+Delta)
+endfunction Result
 
 // Place the existing limb sprites at the IK joints, using the same screen
 // coordinates as the skeleton overlay. Keep torso and turret unchanged.
@@ -808,28 +817,24 @@ function WalkerIKBindSprites(Walker ref as TWalker,ProtoWalker ref as TProtoWalk
 		height = sqrt(length*length-dist*dist*0.25)
 		kneeX = midX-dy/dist*height*direction
 		kneeY = midY+dx/dist*height*direction
-		upperAngle = ATan2(kneeY-hipY,kneeX-hipX)-90
-		// Source artwork points downward at zero sprite rotation; subtract 90 degrees.
-		lowerAngle = ATan2(footY-kneeY,footX-kneeX)-90
+		// IK directions are absolute. Proto reference pose supplies each
+		// sprite's original joint-to-joint direction and base rotation.
+		upperAngle = ATan2(kneeY-hipY,kneeX-hipX)
+		lowerAngle = ATan2(footY-kneeY,footX-kneeX)
 
 		Walker.WalkerSpriteData.Thigh[i].Position.x = hipX
 		Walker.WalkerSpriteData.Thigh[i].Position.y = hipY
-		// Diagnostic calibration: remove accumulated Proto +/-90 offsets.
-		// The IK direction is absolute; only the artwork's local zero-angle
-		// correction belongs here. Keep left/right independently adjustable.
 		if Walker.State.Alignment = MOVELEFT
-			Walker.WalkerSpriteData.Thigh[i].Angle = NormalizeAngle(upperAngle+WALKER_THIGH_OFFSET_LEFT)
+			Walker.WalkerSpriteData.Thigh[i].Angle = WalkerIKSpriteAngle(ProtoWalker.AnimLeft.Thigh,upperAngle)
 		else
-			Walker.WalkerSpriteData.Thigh[i].Angle = NormalizeAngle(upperAngle+WALKER_THIGH_OFFSET_RIGHT)
+			Walker.WalkerSpriteData.Thigh[i].Angle = WalkerIKSpriteAngle(ProtoWalker.AnimRight.Thigh,upperAngle)
 		endif
 		Walker.WalkerSpriteData.Shank[i].Position.x = kneeX
 		Walker.WalkerSpriteData.Shank[i].Position.y = kneeY
-		// Diagnostic: use the raw knee-to-foot direction plus one explicit
-		// correction per facing, without stacking Proto and +/-90 offsets.
 		if Walker.State.Alignment = MOVELEFT
-			Walker.WalkerSpriteData.Shank[i].Angle = NormalizeAngle(lowerAngle+WALKER_SHANK_OFFSET_LEFT)
+			Walker.WalkerSpriteData.Shank[i].Angle = WalkerIKSpriteAngle(ProtoWalker.AnimLeft.Shank,lowerAngle)
 		else
-			Walker.WalkerSpriteData.Shank[i].Angle = NormalizeAngle(lowerAngle+WALKER_SHANK_OFFSET_RIGHT)
+			Walker.WalkerSpriteData.Shank[i].Angle = WalkerIKSpriteAngle(ProtoWalker.AnimRight.Shank,lowerAngle)
 		endif
 		if i = 0
 			Walker.SkeletonDebugIK = NormalizeAngle(lowerAngle)
