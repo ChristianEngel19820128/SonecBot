@@ -706,35 +706,30 @@ endfunction
 //----------------------------------------------------------------------
 
 // Diagnostic: force the current leg angle onto the shared AGK sprite on every draw.
-function WalkerLegDraw(Sprite ref as TSprite,Data ref as TSpriteData)
-	if Sprite.ID > 0 then SetSpriteAngle(Sprite.ID,Data.Angle)
-	SpriteDraw(Sprite,Data)
-endfunction
-
 function WalkerDraw(Walker ref as TWalker,ProtoWalker ref as TProtoWalker)
 	
 	if Walker.Enabled = TRUE
 		
 		if Walker.State.Alignment = MOVELEFT
 			
-			WalkerLegDraw(ProtoWalker.AnimLeft.Thigh.Sprite,Walker.WalkerSpriteData.Thigh[ELEMENTRIGHT])
-			WalkerLegDraw(ProtoWalker.AnimLeft.Shank.Sprite,Walker.WalkerSpriteData.Shank[ELEMENTRIGHT])
+			SpriteDraw(ProtoWalker.AnimLeft.Thigh.Sprite,Walker.WalkerSpriteData.Thigh[ELEMENTRIGHT])
+			SpriteDraw(ProtoWalker.AnimLeft.Shank.Sprite,Walker.WalkerSpriteData.Shank[ELEMENTRIGHT])
 			SpriteDraw(ProtoWalker.AnimLeft.Socket.Sprite,Walker.WalkerSpriteData.Socket[ELEMENTRIGHT])
 			
-			WalkerLegDraw(ProtoWalker.AnimLeft.Thigh.Sprite,Walker.WalkerSpriteData.Thigh[ELEMENTLEFT])
-			WalkerLegDraw(ProtoWalker.AnimLeft.Shank.Sprite,Walker.WalkerSpriteData.Shank[ELEMENTLEFT])
+			SpriteDraw(ProtoWalker.AnimLeft.Thigh.Sprite,Walker.WalkerSpriteData.Thigh[ELEMENTLEFT])
+			SpriteDraw(ProtoWalker.AnimLeft.Shank.Sprite,Walker.WalkerSpriteData.Shank[ELEMENTLEFT])
 			SpriteDraw(ProtoWalker.AnimLeft.Socket.Sprite,Walker.WalkerSpriteData.Socket[ELEMENTLEFT])
 			
 			SpriteDraw(ProtoWalker.AnimLeft.Corpus.Sprite,Walker.WalkerSpriteData.Corpus)
 			
 		else
 			
-			WalkerLegDraw(ProtoWalker.AnimRight.Thigh.Sprite,Walker.WalkerSpriteData.Thigh[ELEMENTLEFT])
-			WalkerLegDraw(ProtoWalker.AnimRight.Shank.Sprite,Walker.WalkerSpriteData.Shank[ELEMENTLEFT])
+			SpriteDraw(ProtoWalker.AnimRight.Thigh.Sprite,Walker.WalkerSpriteData.Thigh[ELEMENTLEFT])
+			SpriteDraw(ProtoWalker.AnimRight.Shank.Sprite,Walker.WalkerSpriteData.Shank[ELEMENTLEFT])
 			SpriteDraw(ProtoWalker.AnimRight.Socket.Sprite,Walker.WalkerSpriteData.Socket[ELEMENTLEFT])
 			
-			WalkerLegDraw(ProtoWalker.AnimRight.Thigh.Sprite,Walker.WalkerSpriteData.Thigh[ELEMENTRIGHT])
-			WalkerLegDraw(ProtoWalker.AnimRight.Shank.Sprite,Walker.WalkerSpriteData.Shank[ELEMENTRIGHT])
+			SpriteDraw(ProtoWalker.AnimRight.Thigh.Sprite,Walker.WalkerSpriteData.Thigh[ELEMENTRIGHT])
+			SpriteDraw(ProtoWalker.AnimRight.Shank.Sprite,Walker.WalkerSpriteData.Shank[ELEMENTRIGHT])
 			SpriteDraw(ProtoWalker.AnimRight.Socket.Sprite,Walker.WalkerSpriteData.Socket[ELEMENTRIGHT])
 			
 			SpriteDraw(ProtoWalker.AnimRight.Corpus.Sprite,Walker.WalkerSpriteData.Corpus)
@@ -759,19 +754,15 @@ endfunction
 // Limb rotations now come from Proto Offset/Anchor reference directions.
 global WalkerAngleDebugText as integer
 
-// Calibrate from the Proto reference pose: Offset is the current joint,
-// Anchor is the next joint in the unrotated image. Apply only the difference
-// between that reference direction and the requested IK direction.
+// Align the Proto Offset-to-Anchor direction to IK, then apply the
+// Proto rotation as an explicit artwork calibration offset.
+// Unlike the previous formula, Proto.Rotation is not cancelled out.
 function WalkerIKSpriteAngle(Proto ref as TProtoData,IKDirection as float)
 	local BaseDirection as float
-	local ReferenceDirection as float
-	local Delta as float
 	local Result as float
 
 	BaseDirection = ATan2(Proto.Anchor.y-Proto.Offset.y,Proto.Anchor.x-Proto.Offset.x)
-	ReferenceDirection = NormalizeAngle(BaseDirection+Proto.Rotation)
-	Delta = NormalizeAngle(IKDirection-ReferenceDirection)
-	Result = NormalizeAngle(Proto.Rotation+Delta)
+	Result = NormalizeAngle(IKDirection-BaseDirection+Proto.Rotation)
 endfunction Result
 
 // Return the unrotated direction from this sprite's pivot to its next joint.
