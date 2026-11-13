@@ -130,31 +130,61 @@ function WalkerIKPartSetup(Proto ref as TProtoData,SpriteData ref as TSpriteData
 	ColorSet(SpriteData.Color,0,255,0,255)
 endfunction
 
+// Place a body part by either its local pivot (Offset) or its local connector
+// (Anchor). Both points are unrotated image coordinates. No extra angle
+// correction is applied here; use the same rotation as the rendered sprite.
+function WalkerBodyPartAttach(Proto ref as TProtoData,ObjectData ref as TObjectData,SpriteData ref as TSpriteData,JointPosition as TPosition,AttachAtAnchor as integer,World ref as TWorld)
+	local dx as float
+	local dy as float
+	local rx as float
+	local ry as float
+	local c as float
+	local sn as float
+
+	ObjectData.Rotation = NormalizeAngle(ObjectData.Rotation)
+	dx = Proto.Anchor.x-Proto.Offset.x
+	dy = Proto.Anchor.y-Proto.Offset.y
+	c = Cos(ObjectData.Rotation)
+	sn = Sin(ObjectData.Rotation)
+	rx = dx*c-dy*sn
+	ry = dx*sn+dy*c
+
+	if AttachAtAnchor = TRUE
+		ObjectData.AnchorPosition = JointPosition
+		ObjectData.Position.x = JointPosition.x-rx
+		ObjectData.Position.y = JointPosition.y-ry
+	else
+		ObjectData.Position = JointPosition
+		ObjectData.AnchorPosition.x = JointPosition.x+rx
+		ObjectData.AnchorPosition.y = JointPosition.y+ry
+	endif
+
+	ObjectData.Size.Width = GetImageWidth(Proto.Image.ID)
+	ObjectData.Size.Height = GetImageHeight(Proto.Image.ID)
+	WalkerIKPartSetup(Proto,SpriteData)
+	SpriteAngleCalc(SpriteData,ObjectData)
+	SpritePositionCalc(SpriteData.Position,ObjectData.Position,World.Position)
+endfunction
+
 function WalkerPartsCalculate(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,World ref as TWorld)
 	local i as integer
-	
-	Walker.WalkerObjectData.Corpus.Position       = Walker.ObjectData.Position
-	Walker.WalkerObjectData.Corpus.AnchorPosition = Walker.ObjectData.Position
-	
-	if Walker.State.LookAlignment = LOOKLEFT
-		WalkerPartCalculate(Walker.State,ProtoWalker.AnimLeft.Corpus,Walker.WalkerObjectData.Corpus,ProtoWalker.AnimLeft.Tower,Walker.WalkerObjectData.Tower,Walker.WalkerSpriteData.Tower,World)
-	else
-		WalkerPartCalculate(Walker.State,ProtoWalker.AnimRight.Corpus,Walker.WalkerObjectData.Corpus,ProtoWalker.AnimRight.Tower,Walker.WalkerObjectData.Tower,Walker.WalkerSpriteData.Tower,World)
-	endif
-	
+
+	// Walker.ObjectData.Position remains the IK hip. Attach the Corpus by
+	// its Anchor, leaving all IK joints and platform-relative feet unchanged.
 	if Walker.State.Alignment = MOVELEFT
-		
-		WalkerPartCalculate(Walker.State,ProtoWalker.AnimLeft.Tower,Walker.WalkerObjectData.Tower,ProtoWalker.AnimLeft.Corpus,Walker.WalkerObjectData.Corpus,Walker.WalkerSpriteData.Corpus,World)
-		
-
-
+		WalkerBodyPartAttach(ProtoWalker.AnimLeft.Corpus,Walker.WalkerObjectData.Corpus,Walker.WalkerSpriteData.Corpus,Walker.ObjectData.Position,TRUE,World)
 	else
-		
-		WalkerPartCalculate(Walker.State,ProtoWalker.AnimRight.Tower,Walker.WalkerObjectData.Tower,  ProtoWalker.AnimRight.Corpus, Walker.WalkerObjectData.Corpus, Walker.WalkerSpriteData.Corpus, World)
-		
-	
-	
+		WalkerBodyPartAttach(ProtoWalker.AnimRight.Corpus,Walker.WalkerObjectData.Corpus,Walker.WalkerSpriteData.Corpus,Walker.ObjectData.Position,TRUE,World)
 	endif
+
+	// The tower pivot docks at the Corpus pivot, not at the IK hip.
+	// Update ObjectData as well as SpriteData so the turret hitbox follows.
+	if Walker.State.LookAlignment = LOOKLEFT
+		WalkerBodyPartAttach(ProtoWalker.AnimLeft.Tower,Walker.WalkerObjectData.Tower,Walker.WalkerSpriteData.Tower,Walker.WalkerObjectData.Corpus.Position,FALSE,World)
+	else
+		WalkerBodyPartAttach(ProtoWalker.AnimRight.Tower,Walker.WalkerObjectData.Tower,Walker.WalkerSpriteData.Tower,Walker.WalkerObjectData.Corpus.Position,FALSE,World)
+	endif
+
 	// Both legs share the same Proto setup; no legacy joint chain.
 	for i = 0 to 1
 		if Walker.State.Alignment = MOVELEFT
@@ -167,8 +197,6 @@ function WalkerPartsCalculate(Walker ref as TWalker,ProtoWalker ref as TProtoWal
 			WalkerIKPartSetup(ProtoWalker.AnimRight.Socket,Walker.WalkerSpriteData.Socket[i])
 		endif
 	next i
-
-		
 endfunction
 
 //----------------------------------------------------------------------
