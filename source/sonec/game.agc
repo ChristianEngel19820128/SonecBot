@@ -322,7 +322,7 @@ function GameDraw(Game ref as TGame)
 	
 	OrbDrawAll(Game.OrbList,Game.ProtoOrb)
 	MineDrawAll(Game.MineList,Game.ProtoMine)
-	WalkerDrawAll(Game.WalkerList,Game.ProtoWalker)
+	WalkerDrawAll(Game.WalkerList,Game.ProtoWalker,Game.World)
 	
 	InenergieDraw(Game.Inenergie,Game.ProtoInenergie)
 	JetfireDrawAll(Game.JetfireList,Game.ProtoJetfire)
