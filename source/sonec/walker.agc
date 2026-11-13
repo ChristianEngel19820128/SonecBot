@@ -618,6 +618,11 @@ function WalkerSkeletonUpdate(Walker ref as TWalker,Moving as integer)
 	local t as float
 	local forward as float
 	local StanceOffset as float
+	local StandTargetX as float
+	local SettleBlend as float
+	// Use elapsed frame time for a gentle, frame-rate-independent return to stance.
+	SettleBlend = GetFrameTime()*8.0
+	if SettleBlend > 1 then SettleBlend = 1
 	for i = 0 to 1
 		if WALKER_STAND_POSE_TEST = 1
 			Walker.SkeletonSwing[i] = 0
@@ -628,10 +633,15 @@ function WalkerSkeletonUpdate(Walker ref as TWalker,Moving as integer)
 				Walker.SkeletonFootX[i] = Walker.PlateOffsetX+10
 			endif
 		else
-		// No new swing while paused or blocked at a platform edge.
+		// Return both feet smoothly to their own stance targets when stopped.
 		if Moving = 0
 			Walker.SkeletonSwing[i] = 0
-			Walker.SkeletonFootY[i] = 0
+			StandTargetX = Walker.PlateOffsetX-10
+			if i = 1 then StandTargetX = Walker.PlateOffsetX+10
+			Walker.SkeletonFootX[i] = Walker.SkeletonFootX[i]+(StandTargetX-Walker.SkeletonFootX[i])*SettleBlend
+			Walker.SkeletonFootY[i] = Walker.SkeletonFootY[i]*(1.0-SettleBlend)
+			if abs(StandTargetX-Walker.SkeletonFootX[i]) < 0.1 then Walker.SkeletonFootX[i] = StandTargetX
+			if abs(Walker.SkeletonFootY[i]) < 0.1 then Walker.SkeletonFootY[i] = 0
 		else
 		progress = mod(Walker.WalkPhase+i*180,360)
 		if progress < 180
