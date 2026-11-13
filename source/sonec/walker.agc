@@ -753,7 +753,7 @@ endfunction
 // Diagnostic: sprite angle = raw IK angle + one explicit calibration per facing.
 // Zero is intentional for this test; tune only after checking the source artwork.
 #constant WALKER_THIGH_OFFSET_LEFT 0
-#constant WALKER_THIGH_OFFSET_RIGHT 0
+#constant WALKER_THIGH_OFFSET_RIGHT -45
 global WalkerAngleDebugText as integer
 
 // Place the existing limb sprites at the IK joints, using the same screen
