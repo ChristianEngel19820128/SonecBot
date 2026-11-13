@@ -755,7 +755,7 @@ endfunction
 
 // Independent two-bone IK preview. Coordinates are platform-relative.
 // Foot targets are fixed during stance and advance during swing.
-function WalkerSkeletonDraw(Walker ref as TWalker)
+function WalkerSkeletonDraw(Walker ref as TWalker,World ref as TWorld)
 	local i as integer
 	local phase as float
 	local progress as float
@@ -779,8 +779,11 @@ function WalkerSkeletonDraw(Walker ref as TWalker)
 	length = 31
 	baseX = Walker.ObjectData.Position.x-Walker.PlateOffsetX
 	baseY = Walker.ObjectData.Position.y-Walker.PlateOffsetY
+	// Convert world coordinates to the same screen space as WalkerSpriteData.
+	baseX = baseX-World.Position.x
+	baseY = baseY-World.Position.y
 	phase = mod(Walker.WalkPhase,360)
-	hipX = Walker.ObjectData.Position.x
+	hipX = Walker.ObjectData.Position.x-World.Position.x
 	hipY = baseY-40
 	for i = 0 to 1
 		progress = mod(phase+i*180,360)
@@ -827,14 +830,14 @@ function WalkerSkeletonDraw(Walker ref as TWalker)
 	WalkerSkeletonJoint(hipX,hipY)
 endfunction
 
-function WalkerDrawAll(WalkerList ref as TWalkerList,ProtoWalker ref as TProtoWalker)
+function WalkerDrawAll(WalkerList ref as TWalkerList,ProtoWalker ref as TProtoWalker,World ref as TWorld)
 	
 	local i as integer
 	
 	for i = 0 to WalkerList.Walker.Length
 		WalkerDraw(WalkerList.Walker[i],ProtoWalker)
 		if WALKER_SKELETON_DEBUG = 1 and WalkerList.Walker[i].Enabled = TRUE
-			WalkerSkeletonDraw(WalkerList.Walker[i])
+			WalkerSkeletonDraw(WalkerList.Walker[i],World)
 		endif
 	next i
 	
