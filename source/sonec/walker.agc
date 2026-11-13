@@ -747,6 +747,73 @@ endfunction
 //----------------------------------------------------------------------
 
 
+// Experimental IK sprite binding. Set to 0 to compare with the old sine gait.
+#constant WALKER_IK_SPRITES 1
+
+// Place the existing limb sprites at the IK joints, using the same screen
+// coordinates as the skeleton overlay. Keep torso and turret unchanged.
+function WalkerIKBindSprites(Walker ref as TWalker,World ref as TWorld)
+	local i as integer
+	local hipX as float
+	local hipY as float
+	local footX as float
+	local footY as float
+	local dx as float
+	local dy as float
+	local dist as float
+	local length as float
+	local height as float
+	local midX as float
+	local midY as float
+	local kneeX as float
+	local kneeY as float
+	local direction as float
+	local upperAngle as float
+	local lowerAngle as float
+	local baseX as float
+	local baseY as float
+
+	length = 31
+	baseX = Walker.ObjectData.Position.x-Walker.PlateOffsetX-World.Position.x
+	baseY = Walker.ObjectData.Position.y-Walker.PlateOffsetY-World.Position.y
+	hipX = Walker.ObjectData.Position.x-World.Position.x
+	hipY = Walker.ObjectData.Position.y-World.Position.y
+	direction = 1
+	if Walker.State.Alignment = MOVELEFT then direction = -1
+	for i = 0 to 1
+		footX = baseX+Walker.SkeletonFootX[i]
+		footY = baseY+Walker.SkeletonFootY[i]
+		dx = footX-hipX
+		dy = footY-hipY
+		dist = sqrt(dx*dx+dy*dy)
+		if dist > length*1.98
+			dx = dx*length*1.98/dist
+			dy = dy*length*1.98/dist
+			dist = length*1.98
+			footX = hipX+dx
+			footY = hipY+dy
+		endif
+		if dist < 0.01 then dist = 0.01
+		midX = (hipX+footX)*0.5
+		midY = (hipY+footY)*0.5
+		height = sqrt(length*length-dist*dist*0.25)
+		kneeX = midX-dy/dist*height*direction
+		kneeY = midY+dx/dist*height*direction
+		upperAngle = ATan2(kneeY-hipY,kneeX-hipX)-90
+		lowerAngle = ATan2(footY-kneeY,footX-kneeX)-90
+
+		Walker.WalkerSpriteData.Thigh[i].Position.x = hipX
+		Walker.WalkerSpriteData.Thigh[i].Position.y = hipY
+		Walker.WalkerSpriteData.Thigh[i].Angle = NormalizeAngle(upperAngle)
+		Walker.WalkerSpriteData.Shank[i].Position.x = kneeX
+		Walker.WalkerSpriteData.Shank[i].Position.y = kneeY
+		Walker.WalkerSpriteData.Shank[i].Angle = NormalizeAngle(lowerAngle)
+		Walker.WalkerSpriteData.Socket[i].Position.x = footX
+		Walker.WalkerSpriteData.Socket[i].Position.y = footY
+		Walker.WalkerSpriteData.Socket[i].Angle = 180
+	next i
+endfunction
+
 // Debug geometry uses manually drawn sprites so it shares the Swap() render path.
 #constant WALKER_SKELETON_DEBUG 1
 global WalkerDebugLineSprite as integer
@@ -847,6 +914,9 @@ function WalkerDrawAll(WalkerList ref as TWalkerList,ProtoWalker ref as TProtoWa
 	local i as integer
 	
 	for i = 0 to WalkerList.Walker.Length
+		if WALKER_IK_SPRITES = 1 and WalkerList.Walker[i].Enabled = TRUE
+			WalkerIKBindSprites(WalkerList.Walker[i],World)
+		endif
 		WalkerDraw(WalkerList.Walker[i],ProtoWalker)
 		if WALKER_SKELETON_DEBUG = 1 and WalkerList.Walker[i].Enabled = TRUE
 			WalkerSkeletonDraw(WalkerList.Walker[i],World)
