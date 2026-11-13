@@ -231,6 +231,7 @@ function WalkerNew(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,World r
 	Walker.PlateOffsetX = Walker.ObjectData.Position.x - Plate.ObjectData.Position.x
 	Walker.PlateOffsetY = Walker.ObjectData.Position.y - Plate.ObjectData.Position.y
 	Walker.WalkPhase = 0
+	Walker.TurnPending = 0
 	Walker.SkeletonFootX[0] = Walker.PlateOffsetX-10
 	Walker.SkeletonFootX[1] = Walker.PlateOffsetX+10
 	Walker.SkeletonSwing[0] = 0
@@ -704,41 +705,68 @@ function WalkerMove(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,PlateL
 				endif
 				if TimeGet(Walker.ObjectData.MoveTimer,Now) > 0
 					StepX = 0
-					if Walker.PauseUntilMs > 0
-						if Now >= Walker.PauseUntilMs
-							Walker.PauseUntilMs = 0
-							Walker.NextPauseMs = Now + random(2500,5000)
-						endif
-					else
-						if Now >= Walker.NextPauseMs
-							Walker.PauseUntilMs = Now + random(1000,3000)
-						else
-							if WALKER_STAND_POSE_TEST = 0 then StepX = Walker.ObjectData.MoveSpeed.x*Walker.ObjectData.MoveTimer.CalcRange
-							if Walker.State.Alignment = MOVELEFT
-								Walker.PlateOffsetX = Walker.PlateOffsetX - StepX
-							else
-								Walker.PlateOffsetX = Walker.PlateOffsetX + StepX
+					// The walker does not advance while waiting for both feet to settle.
+					if Walker.TurnPending = 0
+						if Walker.PauseUntilMs > 0
+							if Now >= Walker.PauseUntilMs
+								Walker.PauseUntilMs = 0
+								Walker.NextPauseMs = Now + random(2500,5000)
 							endif
-							// Alternate swing feet every 15 px; planted feet stay fixed.
-							if WALKER_STAND_POSE_TEST = 0 then Walker.WalkPhase = Walker.WalkPhase + StepX*WALKER_GAIT_DEGREES_PER_PIXEL
+						else
+							if Now >= Walker.NextPauseMs
+								Walker.PauseUntilMs = Now + random(1000,3000)
+							else
+								if WALKER_STAND_POSE_TEST = 0 then StepX = Walker.ObjectData.MoveSpeed.x*Walker.ObjectData.MoveTimer.CalcRange
+								if Walker.State.Alignment = MOVELEFT
+									Walker.PlateOffsetX = Walker.PlateOffsetX - StepX
+								else
+									Walker.PlateOffsetX = Walker.PlateOffsetX + StepX
+								endif
+								// Alternate swing feet every 15 px; planted feet stay fixed.
+								if WALKER_STAND_POSE_TEST = 0 then Walker.WalkPhase = Walker.WalkPhase + StepX*WALKER_GAIT_DEGREES_PER_PIXEL
+							endif
 						endif
-					endif
 
-					if Walker.PlateOffsetX <= EdgeMargin
-						Walker.PlateOffsetX = EdgeMargin
-						Walker.State.Alignment = MOVERIGHT
-						Walker.State.LookAlignment = LOOKRIGHT
-					endif
-					if Walker.PlateOffsetX >= PlateWidth-EdgeMargin
-						Walker.PlateOffsetX = PlateWidth-EdgeMargin
-						Walker.State.Alignment = MOVELEFT
-						Walker.State.LookAlignment = LOOKLEFT
+						// Begin turning only when moving toward the respective edge.
+						// Keep the old facing until both feet have reached their stand pose.
+						if WALKER_STAND_POSE_TEST = 0
+							if Walker.State.Alignment = MOVELEFT and Walker.PlateOffsetX <= EdgeMargin
+								Walker.PlateOffsetX = EdgeMargin
+								Walker.TurnPending = 1
+								StepX = 0
+							endif
+							if Walker.State.Alignment = MOVERIGHT and Walker.PlateOffsetX >= PlateWidth-EdgeMargin
+								Walker.PlateOffsetX = PlateWidth-EdgeMargin
+								Walker.TurnPending = 1
+								StepX = 0
+							endif
+						endif
 					endif
 					TimeReset(Walker.ObjectData.MoveTimer,Now)
 				endif
 
-				if StepX > 0 then Moving = 1
+				if StepX > 0 and Walker.TurnPending = 0 then Moving = 1
 				WalkerSkeletonUpdate(Walker,Moving)
+				if Walker.TurnPending = 1
+					// Only reverse when both feet are back on the platform at
+					// their neutral offsets. The IK geometry is unchanged.
+					if abs(Walker.SkeletonFootX[0]-(Walker.PlateOffsetX-10)) < 0.1 and abs(Walker.SkeletonFootX[1]-(Walker.PlateOffsetX+10)) < 0.1 and abs(Walker.SkeletonFootY[0]) < 0.1 and abs(Walker.SkeletonFootY[1]) < 0.1
+						if Walker.State.Alignment = MOVELEFT
+							Walker.State.Alignment = MOVERIGHT
+							Walker.State.LookAlignment = LOOKRIGHT
+							// Rightmost foot initiates the first step after turning right.
+							Walker.WalkPhase = 180
+						else
+							Walker.State.Alignment = MOVELEFT
+							Walker.State.LookAlignment = LOOKLEFT
+							// Leftmost foot initiates the first step after turning left.
+							Walker.WalkPhase = 0
+						endif
+						Walker.TurnPending = 0
+						Walker.PauseUntilMs = 0
+						Walker.NextPauseMs = Now + random(2500,5000)
+					endif
+				endif
 				Walker.ObjectData.Position.x = PlateList.Plate[PlateIndex].ObjectData.Position.x + Walker.PlateOffsetX
 				Walker.ObjectData.Position.y = PlateList.Plate[PlateIndex].ObjectData.Position.y + Walker.PlateOffsetY
 				WalkerPartsCalculate(Walker,ProtoWalker,World)
