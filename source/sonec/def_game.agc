@@ -309,6 +309,9 @@ type TWalker
 	SkeletonFootStartX as float[1]
 	SkeletonFootTargetX as float[1]
 	SkeletonSwing as integer[1]
+	SkeletonDebugIK as float
+	SkeletonDebugProto as float
+	SkeletonDebugSprite as float
 	NextPauseMs as integer
 	PauseUntilMs as integer
 	Enabled as integer
