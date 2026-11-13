@@ -766,9 +766,11 @@ endfunction Result
 function WalkerProtoBoneLength(Proto ref as TProtoData)
 	local dx as float
 	local dy as float
+	local Result as float
 	dx = Proto.Anchor.x-Proto.Offset.x
 	dy = Proto.Anchor.y-Proto.Offset.y
-endfunction Sqrt(dx*dx+dy*dy)
+	Result = Sqrt(dx*dx+dy*dy)
+endfunction Result
 
 // Place the existing limb sprites at the IK joints, using the same screen
 // coordinates as the skeleton overlay. Keep torso and turret unchanged.
