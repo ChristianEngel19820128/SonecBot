@@ -304,6 +304,10 @@ type TWalker
 	PlateOffsetX as float
 	PlateOffsetY as float
 	WalkPhase as float
+	SkeletonFootX as float[1]
+	SkeletonFootStartX as float[1]
+	SkeletonFootTargetX as float[1]
+	SkeletonSwing as integer[1]
 	NextPauseMs as integer
 	PauseUntilMs as integer
 	Enabled as integer
