@@ -859,6 +859,9 @@ endfunction
 #constant WALKER_SKELETON_DEBUG 1
 global WalkerDebugLineSprite as integer
 global WalkerDebugJointSprite as integer
+#constant WALKER_PROTO_POINTS_DEBUG 1
+global WalkerProtoPivotSprite as integer
+global WalkerProtoAnchorSprite as integer
 
 function WalkerSkeletonInit()
 	if WALKER_ANGLE_DEBUG = 1
@@ -874,6 +877,18 @@ function WalkerSkeletonInit()
 		SetSpriteVisible(WalkerDebugJointSprite,1)
 		SetSpriteSize(WalkerDebugJointSprite,5,5)
 		SetSpriteOffset(WalkerDebugJointSprite,2.5,2.5)
+	endif
+	if WALKER_PROTO_POINTS_DEBUG = 1
+		WalkerProtoPivotSprite = CreateSprite(0)
+		SetSpriteVisible(WalkerProtoPivotSprite,1)
+		SetSpriteSize(WalkerProtoPivotSprite,5,5)
+		SetSpriteOffset(WalkerProtoPivotSprite,2.5,2.5)
+		SetSpriteColor(WalkerProtoPivotSprite,255,60,60,255)
+		WalkerProtoAnchorSprite = CreateSprite(0)
+		SetSpriteVisible(WalkerProtoAnchorSprite,1)
+		SetSpriteSize(WalkerProtoAnchorSprite,5,5)
+		SetSpriteOffset(WalkerProtoAnchorSprite,2.5,2.5)
+		SetSpriteColor(WalkerProtoAnchorSprite,0,255,255,255)
 	endif
 endfunction
 
@@ -959,6 +974,38 @@ function WalkerSkeletonDraw(Walker ref as TWalker,World ref as TWorld)
 	WalkerSkeletonJoint(hipX,hipY)
 endfunction
 
+// Red = actual sprite pivot (Proto.Offset); cyan = rotated Proto.Anchor.
+// Markers use the same offset-based screen placement as the leg sprites.
+function WalkerProtoPartPoints(Proto ref as TProtoData,Data ref as TSpriteData)
+	local dx as float
+	local dy as float
+	local ax as float
+	local ay as float
+	dx = (Proto.Anchor.x-Proto.Offset.x)*Data.Scale
+	dy = (Proto.Anchor.y-Proto.Offset.y)*Data.Scale
+	ax = Data.Position.x+dx*Cos(Data.Angle)-dy*Sin(Data.Angle)
+	ay = Data.Position.y+dx*Sin(Data.Angle)+dy*Cos(Data.Angle)
+	SetSpritePositionByOffset(WalkerProtoPivotSprite,Data.Position.x,Data.Position.y)
+	DrawSprite(WalkerProtoPivotSprite)
+	SetSpritePositionByOffset(WalkerProtoAnchorSprite,ax,ay)
+	DrawSprite(WalkerProtoAnchorSprite)
+endfunction
+
+function WalkerProtoPointsDraw(Walker ref as TWalker,ProtoWalker ref as TProtoWalker)
+	local i as integer
+	for i = 0 to 1
+		if Walker.State.Alignment = MOVELEFT
+			WalkerProtoPartPoints(ProtoWalker.AnimLeft.Thigh,Walker.WalkerSpriteData.Thigh[i])
+			WalkerProtoPartPoints(ProtoWalker.AnimLeft.Shank,Walker.WalkerSpriteData.Shank[i])
+			WalkerProtoPartPoints(ProtoWalker.AnimLeft.Socket,Walker.WalkerSpriteData.Socket[i])
+		else
+			WalkerProtoPartPoints(ProtoWalker.AnimRight.Thigh,Walker.WalkerSpriteData.Thigh[i])
+			WalkerProtoPartPoints(ProtoWalker.AnimRight.Shank,Walker.WalkerSpriteData.Shank[i])
+			WalkerProtoPartPoints(ProtoWalker.AnimRight.Socket,Walker.WalkerSpriteData.Socket[i])
+		endif
+	next i
+endfunction
+
 function WalkerDrawAll(WalkerList ref as TWalkerList,ProtoWalker ref as TProtoWalker,World ref as TWorld)
 	
 	local i as integer
@@ -970,6 +1017,9 @@ function WalkerDrawAll(WalkerList ref as TWalkerList,ProtoWalker ref as TProtoWa
 		WalkerDraw(WalkerList.Walker[i],ProtoWalker)
 		if WALKER_SKELETON_DEBUG = 1 and WalkerList.Walker[i].Enabled = TRUE
 			WalkerSkeletonDraw(WalkerList.Walker[i],World)
+		endif
+		if WALKER_PROTO_POINTS_DEBUG = 1 and WalkerList.Walker[i].Enabled = TRUE
+			WalkerProtoPointsDraw(WalkerList.Walker[i],ProtoWalker)
 		endif
 		if WALKER_ANGLE_DEBUG = 1 and WALKER_IK_SPRITES = 1 and WalkerList.Walker[i].Enabled = TRUE
 			// Show the angular difference between sprite and IK directions.
