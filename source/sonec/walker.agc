@@ -762,6 +762,14 @@ function WalkerIKSpriteAngle(Proto ref as TProtoData,IKDirection as float)
 	Result = NormalizeAngle(IKDirection+Proto.Rotation)
 endfunction Result
 
+// Length of a bone in its unrotated Proto image.
+function WalkerProtoBoneLength(Proto ref as TProtoData)
+	local dx as float
+	local dy as float
+	dx = Proto.Anchor.x-Proto.Offset.x
+	dy = Proto.Anchor.y-Proto.Offset.y
+endfunction Sqrt(dx*dx+dy*dy)
+
 // Place the existing limb sprites at the IK joints, using the same screen
 // coordinates as the skeleton overlay. Keep torso and turret unchanged.
 function WalkerIKBindSprites(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,World ref as TWorld)
@@ -773,7 +781,10 @@ function WalkerIKBindSprites(Walker ref as TWalker,ProtoWalker ref as TProtoWalk
 	local dx as float
 	local dy as float
 	local dist as float
-	local length as float
+	local thighLength as float
+	local shankLength as float
+	local reach as float
+	local along as float
 	local height as float
 	local midX as float
 	local midY as float
@@ -785,7 +796,14 @@ function WalkerIKBindSprites(Walker ref as TWalker,ProtoWalker ref as TProtoWalk
 	local baseX as float
 	local baseY as float
 
-	length = 31
+	if Walker.State.Alignment = MOVELEFT
+		thighLength = WalkerProtoBoneLength(ProtoWalker.AnimLeft.Thigh)
+		shankLength = WalkerProtoBoneLength(ProtoWalker.AnimLeft.Shank)
+	else
+		thighLength = WalkerProtoBoneLength(ProtoWalker.AnimRight.Thigh)
+		shankLength = WalkerProtoBoneLength(ProtoWalker.AnimRight.Shank)
+	endif
+	reach = thighLength+shankLength
 	baseX = Walker.ObjectData.Position.x-Walker.PlateOffsetX-World.Position.x
 	baseY = Walker.ObjectData.Position.y-Walker.PlateOffsetY-World.Position.y
 	hipX = Walker.ObjectData.Position.x-World.Position.x
@@ -798,17 +816,22 @@ function WalkerIKBindSprites(Walker ref as TWalker,ProtoWalker ref as TProtoWalk
 		dx = footX-hipX
 		dy = footY-hipY
 		dist = sqrt(dx*dx+dy*dy)
-		if dist > length*1.98
-			dx = dx*length*1.98/dist
-			dy = dy*length*1.98/dist
-			dist = length*1.98
+		if dist > reach*0.999
+			dx = dx*reach*0.999/dist
+			dy = dy*reach*0.999/dist
+			dist = reach*0.999
 			footX = hipX+dx
 			footY = hipY+dy
 		endif
 		if dist < 0.01 then dist = 0.01
-		midX = (hipX+footX)*0.5
-		midY = (hipY+footY)*0.5
-		height = sqrt(length*length-dist*dist*0.25)
+		along = (thighLength*thighLength-shankLength*shankLength+dist*dist)/(2*dist)
+		if along > thighLength then along = thighLength
+		if along < -thighLength then along = -thighLength
+		height = sqrt(thighLength*thighLength-along*along)
+		midX = hipX+dx*along/dist
+		midY = hipY+dy*along/dist
+		direction = 1
+		if Walker.State.Alignment = MOVELEFT then direction = -1
 		kneeX = midX-dy/dist*height*direction
 		kneeY = midY+dx/dist*height*direction
 		// IK directions are absolute. Proto reference pose supplies each
@@ -918,7 +941,7 @@ endfunction
 
 // Independent two-bone IK preview. Coordinates are platform-relative.
 // Foot targets are fixed during stance and advance during swing.
-function WalkerSkeletonDraw(Walker ref as TWalker,World ref as TWorld)
+function WalkerSkeletonDraw(Walker ref as TWalker,World ref as TWorld,ProtoWalker ref as TProtoWalker)
 	local i as integer
 	local footX as float
 	local footY as float
@@ -933,11 +956,21 @@ function WalkerSkeletonDraw(Walker ref as TWalker,World ref as TWorld)
 	local kneeX as float
 	local kneeY as float
 	local direction as float
-	local length as float
+	local thighLength as float
+	local shankLength as float
+	local reach as float
+	local along as float
 	local baseX as float
 	local baseY as float
 
-	length = 31
+	if Walker.State.Alignment = MOVELEFT
+		thighLength = WalkerProtoBoneLength(ProtoWalker.AnimLeft.Thigh)
+		shankLength = WalkerProtoBoneLength(ProtoWalker.AnimLeft.Shank)
+	else
+		thighLength = WalkerProtoBoneLength(ProtoWalker.AnimRight.Thigh)
+		shankLength = WalkerProtoBoneLength(ProtoWalker.AnimRight.Shank)
+	endif
+	reach = thighLength+shankLength
 	baseX = Walker.ObjectData.Position.x-Walker.PlateOffsetX
 	baseY = Walker.ObjectData.Position.y-Walker.PlateOffsetY
 	// Convert world coordinates to the same screen space as WalkerSpriteData.
@@ -951,21 +984,24 @@ function WalkerSkeletonDraw(Walker ref as TWalker,World ref as TWorld)
 		dx = footX-hipX
 		dy = footY-hipY
 		distance = sqrt(dx*dx+dy*dy)
-		if distance > length*1.98
-			dx = dx*(length*1.98/distance)
-			dy = dy*(length*1.98/distance)
-			distance = length*1.98
+		if distance > reach*0.999
+			dx = dx*reach*0.999/distance
+			dy = dy*reach*0.999/distance
+			distance = reach*0.999
 			footX = hipX+dx
 			footY = hipY+dy
 		endif
 		if distance < 0.01 then distance = 0.01
-		midX = (hipX+footX)*0.5
-		midY = (hipY+footY)*0.5
-		height = sqrt(length*length-distance*distance*0.25)
+		along = (thighLength*thighLength-shankLength*shankLength+distance*distance)/(2*distance)
+		if along > thighLength then along = thighLength
+		if along < -thighLength then along = -thighLength
+		height = sqrt(thighLength*thighLength-along*along)
+		midX = hipX+dx*along/distance
+		midY = hipY+dy*along/distance
 		direction = 1
 		if Walker.State.Alignment = MOVELEFT then direction = -1
-		kneeX = midX+(-dy/distance)*height*direction
-		kneeY = midY+(dx/distance)*height*direction
+		kneeX = midX-dy/distance*height*direction
+		kneeY = midY+dx/distance*height*direction
 		WalkerSkeletonLine(hipX,hipY,kneeX,kneeY)
 		WalkerSkeletonLine(kneeX,kneeY,footX,footY)
 		WalkerSkeletonJoint(kneeX,kneeY)
@@ -1016,7 +1052,7 @@ function WalkerDrawAll(WalkerList ref as TWalkerList,ProtoWalker ref as TProtoWa
 		endif
 		WalkerDraw(WalkerList.Walker[i],ProtoWalker)
 		if WALKER_SKELETON_DEBUG = 1 and WalkerList.Walker[i].Enabled = TRUE
-			WalkerSkeletonDraw(WalkerList.Walker[i],World)
+			WalkerSkeletonDraw(WalkerList.Walker[i],World,ProtoWalker)
 		endif
 		if WALKER_PROTO_POINTS_DEBUG = 1 and WalkerList.Walker[i].Enabled = TRUE
 			WalkerProtoPointsDraw(WalkerList.Walker[i],ProtoWalker)
