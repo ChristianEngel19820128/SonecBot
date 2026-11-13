@@ -754,6 +754,9 @@ endfunction
 // Zero is intentional for this test; tune only after checking the source artwork.
 #constant WALKER_THIGH_OFFSET_LEFT 0
 #constant WALKER_THIGH_OFFSET_RIGHT -45
+// Independent lower-leg calibration for the next visual test.
+#constant WALKER_SHANK_OFFSET_LEFT 0
+#constant WALKER_SHANK_OFFSET_RIGHT 0
 global WalkerAngleDebugText as integer
 
 // Place the existing limb sprites at the IK joints, using the same screen
@@ -819,22 +822,23 @@ function WalkerIKBindSprites(Walker ref as TWalker,ProtoWalker ref as TProtoWalk
 		else
 			Walker.WalkerSpriteData.Thigh[i].Angle = NormalizeAngle(upperAngle+WALKER_THIGH_OFFSET_RIGHT)
 		endif
-		if i = 0
-			Walker.SkeletonDebugIK = NormalizeAngle(upperAngle)
-			if Walker.State.Alignment = MOVELEFT
-				Walker.SkeletonDebugProto = ProtoWalker.AnimLeft.Thigh.Rotation
-			else
-				Walker.SkeletonDebugProto = ProtoWalker.AnimRight.Thigh.Rotation
-			endif
-			Walker.SkeletonDebugSprite = Walker.WalkerSpriteData.Thigh[i].Angle
-		endif
 		Walker.WalkerSpriteData.Shank[i].Position.x = kneeX
 		Walker.WalkerSpriteData.Shank[i].Position.y = kneeY
-		// Calibrate the lower-leg sprite with its direction-specific Proto rotation.
+		// Diagnostic: use the raw knee-to-foot direction plus one explicit
+		// correction per facing, without stacking Proto and +/-90 offsets.
 		if Walker.State.Alignment = MOVELEFT
-			Walker.WalkerSpriteData.Shank[i].Angle = NormalizeAngle(lowerAngle+ProtoWalker.AnimLeft.Shank.Rotation-90)
+			Walker.WalkerSpriteData.Shank[i].Angle = NormalizeAngle(lowerAngle+WALKER_SHANK_OFFSET_LEFT)
 		else
-			Walker.WalkerSpriteData.Shank[i].Angle = NormalizeAngle(lowerAngle+ProtoWalker.AnimRight.Shank.Rotation+90)
+			Walker.WalkerSpriteData.Shank[i].Angle = NormalizeAngle(lowerAngle+WALKER_SHANK_OFFSET_RIGHT)
+		endif
+		if i = 0
+			Walker.SkeletonDebugIK = NormalizeAngle(lowerAngle)
+			if Walker.State.Alignment = MOVELEFT
+				Walker.SkeletonDebugProto = ProtoWalker.AnimLeft.Shank.Rotation
+			else
+				Walker.SkeletonDebugProto = ProtoWalker.AnimRight.Shank.Rotation
+			endif
+			Walker.SkeletonDebugSprite = Walker.WalkerSpriteData.Shank[i].Angle
 		endif
 		Walker.WalkerSpriteData.Socket[i].Position.x = footX
 		Walker.WalkerSpriteData.Socket[i].Position.y = footY
@@ -961,7 +965,7 @@ function WalkerDrawAll(WalkerList ref as TWalkerList,ProtoWalker ref as TProtoWa
 			WalkerSkeletonDraw(WalkerList.Walker[i],World)
 		endif
 		if WALKER_ANGLE_DEBUG = 1 and WALKER_IK_SPRITES = 1 and WalkerList.Walker[i].Enabled = TRUE
-			// One thigh per Walker; show signed shortest angular difference.
+			// One shank per Walker; show signed shortest angular difference.
 			local delta as float
 			delta = NormalizeAngle(WalkerList.Walker[i].SkeletonDebugSprite-WalkerList.Walker[i].SkeletonDebugIK)
 			if delta > 180 then delta = delta-360
