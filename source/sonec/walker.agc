@@ -870,7 +870,7 @@ function WalkerIKBindSprites(Walker ref as TWalker,ProtoWalker ref as TProtoWalk
 endfunction
 
 // Debug geometry uses manually drawn sprites so it shares the Swap() render path.
-#constant WALKER_SKELETON_DEBUG 1
+#constant WALKER_SKELETON_DEBUG 0
 global WalkerDebugLineSprite as integer
 global WalkerDebugJointSprite as integer
 
