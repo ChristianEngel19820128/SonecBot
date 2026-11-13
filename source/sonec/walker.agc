@@ -968,11 +968,7 @@ function WalkerDrawAll(WalkerList ref as TWalkerList,ProtoWalker ref as TProtoWa
 			WalkerSkeletonDraw(WalkerList.Walker[i],World)
 		endif
 		if WALKER_ANGLE_DEBUG = 1 and WALKER_IK_SPRITES = 1 and WalkerList.Walker[i].Enabled = TRUE
-			// Compare the *rendered joint direction* against IK, not the
-			// sprite rotation alone (left/right Proto artwork is mirrored).
-			local delta as float
-			local shankDelta as float
-			// Show the actual angular difference to the IK target.
+			// Show the angular difference between sprite and IK directions.
 			local delta as float
 			local shankDelta as float
 			delta = NormalizeAngle(WalkerList.Walker[i].SkeletonDebugSprite-WalkerList.Walker[i].SkeletonDebugIK)
