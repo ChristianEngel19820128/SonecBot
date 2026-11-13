@@ -1,6 +1,6 @@
 # SonecBot – Technische Dokumentation
 
-**Dokumentstatus:** Bestandsaufnahme 0.3  
+**Dokumentstatus:** Bestandsaufnahme 0.4 (Walker-IK-Meilenstein, 13. November 2026)  
 **Branch:** `develop`  
 **Engine:** AppGameKit Studio (AGK)  
 **Erste Zielplattform:** HTML5  
@@ -68,17 +68,55 @@ Die Bewegung von Walker, Plattformen, Orbs, Minen, Türmen, Projektilen und Plas
 
 `mine.agc` enthält Erzeugung, Bewegung, Regeneration, Kollision, Zerstörung und Darstellung. Die Bewegung berücksichtigt Sonec und das Energieaufnahmesystem.
 
-### Walker
+### Walker – prozedurales Skelett und Standpose (13. November 2026)
 
-`walker.agc` enthält unter anderem `ProtoWalkerLoad`, `WalkerNew`, `WalkerAdd`, `WalkerPartsCalculate`, `WalkerMove`, `WalkerAnimate` und `WalkerDraw`.
+`walker.agc` enthält Erzeugung, Plattformbindung, Bewegung, 2-Knochen-IK, Körperanbindung, Darstellung und Diagnosehilfen. `game.agc` erzeugt Walker auf Plattformen; die Erzeugungswahrscheinlichkeit steigt mit der Plattformbreite (35 % bei 200 px, maximal 85 %). Die bestehende Plattformbindung und die Richtungswechsel an Plattformrändern sind implementiert. Das Umkehren an Kisten ist noch zu prüfen.
 
-**Quellcodebefund:** In `game.agc` sind Walker-Erzeugung, Bewegung, Regeneration und Animation eingebunden. Die Laufanimation bewegt Oberschenkel, Unterschenkel und Füße zeitabhängig. `BulletCollideWalkers(...)` prüft Maschinengewehr-Projektile gegen die aus Bildgröße, Offset und Rotation berechnete Turm-Trefferzone; Treffer verringern die Gesundheit, löschen das Projektil und setzen `HitFlashUntil` für einen etwa 150 ms langen roten Trefferblitz.
+**Lokal bestätigter Meilenstein:** Nach mehreren kleinen Änderungen und Screenshottests am 13. November 2026 stehen die Walker-Beine in einer nachvollziehbaren, gelenkverbundenen Grundpose, und Corpus sowie Turm sitzen deutlich besser über der IK-Hüfte. Die letzte Körperanbindung ist in Commit `deb8b74` auf `develop` dokumentiert. Diese Bewertung beruht auf lokalen Screenshots des Entwicklers. Ein eigener AGK-Build durch den Assistenten ist nicht erfolgt; die Laufanimation **nach** dieser Änderung ist noch nicht praktisch freigegeben.
 
-**Lokaler Spieltest des Entwicklers (November 2026):** Walker bewegt sich mit bewusst mechanisch wirkender Bein-/Fußanimation; Treffer werden nur am Turm erkannt; nach genügend Treffern wird der Walker zerstört und Energie-Bubbles entstehen. Nach Umstellung der Walker-Bilder auf Graustufen und Änderung der Standardfarbe in `WalkerPartCalculate` auf Grün wird der Turm bei einem Treffer sichtbar rot. Diese Aussagen beruhen auf dem Testbericht des Entwicklers, nicht auf einem eigenen Laufzeittest des Assistenten.
+#### Proto-Daten und Gelenkgeometrie
 
-**Offen:** In `WalkerNew` sind Zuweisungen für Breite und Höhe auskommentiert, obwohl Größenwerte für Radius und Kollisionsgrenzen verwendet werden. Es ist zu prüfen, ob die Größen anderswo korrekt gesetzt werden. Das ist ein Verdacht, kein bestätigter Bug.
+- `protowalker.json` beschreibt für linke/rechte Sprites `Offset` (lokaler Drehpunkt), `Anchor` (lokaler Anschluss zum nächsten Gelenk) und `Rotation`. Diese Bildkoordinaten stammen aus den ungedrehten Originalgrafiken.
+- Die IK-Knochenlänge ergibt sich aus `WalkerProtoBoneLength()`: `sqrt((Anchor.x-Offset.x)^2 + (Anchor.y-Offset.y)^2)`. Sie ist **nicht** mehr für beide Segmente pauschal 31 px. Der linke/rechte Oberschenkel misst ungefähr 12,17 px; die Unterschenkel ungefähr 29,07/30,07 px. Die Längen sind nicht identisch.
+- Die Knieposition wird in `WalkerIKBindSprites()` per Schnitt zweier Kreise für unterschiedlich lange Knochen berechnet. Unerreichbare Fußziele werden auf die Reichweite begrenzt. Fußziele und Standhöhe müssen zu diesen Längen passen.
+- Das Startziel ist ein fester Stand: Die Hüfte liegt aktuell 30 px über der Plattform, die beiden Fußziele bei ±10 px. Ein früherer Test mit 29 px und die Paint.NET-Referenz bleiben als gestalterische Vergleichswerte erhalten; 30 px ist der momentan eingecheckte Stand.
 
-**Offen:** Eine eigene Walker-Bewaffnung ist nicht als funktionierend bestätigt. Eine zusätzliche Torso-Trefferzone und Feinabstimmung der Kollisionen sind mögliche spätere Verbesserungen, nicht Voraussetzung für den aktuellen Teststand. Der Walker ist Pflichtbestandteil der Alpha; die grundlegenden Funktionen sind lokal bestätigt.
+#### Winkelkonvention und Sprite-Transformation
+
+Die ursprüngliche `CalcAngle()` in `math.agc` bleibt unverändert. Die neue `CalcAngleIK(dx,dy)` verwendet die IK-Konvention 0° = oben (12 Uhr), 90° = rechts, 180° = unten, 270° = links und behandelt auch achsenparallele Richtungen.
+
+`WalkerIKSpriteAngle()` richtet die lokale Bildrichtung von `Offset → Anchor` auf die berechnete IK-Richtung aus. Die Grundformel lautet:
+
+```agk
+ReferenceAngle = CalcAngleIK(Proto.Anchor.x-Proto.Offset.x, Proto.Anchor.y-Proto.Offset.y)
+SpriteAngle = NormalizeAngle(IKDirection-ReferenceAngle+Proto.Rotation)
+```
+
+Für ein Endglied ohne gerichteten Anschluss (`Offset = Anchor`, hier der Fuß) gibt es keine solche Referenzrichtung. Die Implementierung übernimmt in diesem Fall die Proto-Rotation. **Aktuell experimentell:** Bei der endgültigen Fußwinkelzuweisung in `WalkerIKBindSprites()` kommt richtungsabhängig noch −90° (links) beziehungsweise +90° (rechts) hinzu. In der aktuellen JSON stehen die Fuß-Proto-Rotationen wieder auf 0°. Diese Korrektur ist kein endgültig verallgemeinertes Endglied-Konzept.
+
+`WalkerIKPartSetup()` übernimmt die unveränderten lokalen Sprite-Offsets. `SpriteDraw()` setzt sie mit `SetSpriteOffset()` und zeichnet bei `Data.Center = TRUE` mit `SetSpritePositionByOffset()`; die vorhandene Änderungsprüfung für Winkel und Skalierung bleibt erhalten. Die ursprünglichen Proto-Rotationen von ±45° bei Thigh und Shank wurden für die IK-Tests in Commit `fcf20db` auf null gesetzt. Blindes Wiederherstellen würde die bereits aus der IK berechneten Spritewinkel zusätzlich verdrehen; die historischen Werte beschreiben eine frühere Pose, nicht automatisch eine heute erforderliche Korrektur.
+
+#### Corpus, Turm und Hüftgelenk
+
+Die alte `WalkerPartsCalculate()`-Kette setzte Oberschenkel und Corpus über `AnchorPosition` zusammen. Beim frühen IK-Umbau wurde die Hüfte stattdessen direkt aus `Walker.ObjectData.Position` genommen; der Corpus-Anchor wurde für die Beinverbindung nicht mehr berücksichtigt. Dadurch konnte das Skelett richtig sein, während Körper und Turm am falschen gemeinsamen Ursprung saßen.
+
+**Korrigierte Anbindung (Commit `deb8b74`):** `Walker.ObjectData.Position` bleibt der feste IK-Hüftpunkt. `WalkerBodyPartAttach()` berechnet den gedrehten lokalen Abstand `Corpus.Anchor - Corpus.Offset` und setzt den Corpus so, dass **sein Anchor genau auf der Hüfte** liegt. Anschließend wird der Turm mit seinem `Offset` am Corpus-`Offset` befestigt. Die Turm-`ObjectData` werden mitverschoben, sodass die bestehende Trefferzonenberechnung seine Position verwenden kann. Die originalen Corpus-, Turm- und Beinpunkte in der JSON blieben unverändert.
+
+#### Debug-Methodik und Erkenntnisse aus der Fehlersuche
+
+- Weiße IK-Linien sind 2 px breit und am Linienanfang über `SetSpritePositionByOffset()` befestigt. Weiße Gelenkquadrate sind 5 × 5 px groß und über `SetSpriteOffset(2.5,2.5)` zentriert. Anfangs war die Debug-Referenz selbst nicht konsequent nach Offset positioniert; dies wurde korrigiert.
+- Rot markiert das gedrehte Sprite-Pivot (`Offset`), Türkis den gedrehten `Anchor`. Dadurch ließ sich prüfen, ob die vorgesehenen Bildanschlüsse die weißen IK-Gelenke erreichen. Der Vergleich der Original-PNGs mit der JSON war entscheidend.
+- `SpriteAngle - IKAngle` muss **nicht** 0° sein: Der Unterschied enthält die lokale Referenzrichtung der Grafik. Ebenso war das zuvor angezeigte `Error: 0` mathematisch tautologisch und kein unabhängiger Beweis für optische Passung.
+- Das vorübergehende Erzwingen von `SetSpriteAngle()` vor dem Zeichnen brachte keine überzeugende Abhilfe. Die bestehende Sprite-Cache-Optimierung sollte erhalten bleiben.
+- Die Fehlersuche verlief von alten ±90°-/±45°-Winkelannahmen und gleich langen 31-px-Beinen über den Vergleich von Knie- und Fußpunkten bis zur gemeinsamen Proto/IK-Transformation und schließlich zur korrekten Corpus-Anbindung. Die funktionierenden Zwischenstände sind über Git-Commits nachvollziehbar. Die Originalgrafiken und manuell ermittelten Proto-Anker sollten nicht aufgrund eines bloß visuellen Verdachts pauschal verändert werden.
+
+#### Momentaner Testmodus und offene Punkte
+
+`WALKER_STAND_POSE_TEST = 1` ist derzeit aktiv. In diesem Modus bleibt der Walker stehen und erhält feste, ruhende Fußziele auf Plattformhöhe. Mit `0` kann die bisherige Laufsteuerung wieder erprobt werden. Die Winkel- und Gelenkdiagnose (`WALKER_SKELETON_DEBUG`, `WALKER_PROTO_POINTS_DEBUG`, `WALKER_ANGLE_DEBUG`) ist weiterhin aktiviert; die Diagnose-Schalter sollen für weitere Gegnertypen erhalten bleiben.
+
+**Nächster Pflicht-Test:** Standmodus kontrolliert deaktivieren; Wechsel zwischen Stand- und Schwungbein, Bodenhaftung der Füße, Pausen, Richtungswechsel und Körper-Turm-Anbindung in Bewegung prüfen. Eine Neigung des Torsos beim Zielen (eventuell bis etwa 30°), eigene Geschosse über das Bullet-System sowie eine mögliche spätere Torso-Trefferzone sind noch keine bestätigten Funktionen. Für besondere Übergangsanimationen bleibt ein Keyframe-Werkzeug wie Spriter als optionale Ergänzung vorgemerkt.
+
+**Bestehendes Kampfsystem:** `BulletCollideWalkers(...)` prüft Projektile derzeit gegen die aus Bildgröße, Offset und Rotation berechnete Turm-Trefferzone. Treffer verringern die Gesundheit und lösen einen kurzen roten Hitflash aus. Zerstörung und Energie-Drops wurden vom Entwickler lokal getestet. `WalkerNew` enthält weiterhin auskommentierte Zuweisungen für Breite und Höhe; ob die Größen anderweitig zuverlässig gesetzt werden, ist noch zu prüfen, kein bestätigter Fehler.
 
 ### Kisten und Orbs
 
@@ -129,7 +167,7 @@ Für die Beta ist ein Online-Highscore-System vorgesehen. Nach Angaben des Entwi
 | Plattformen und Minen | Funktionen vorhanden | Ausstehend |
 | Kisten und Orbs | Module vorhanden; Belohnungsmechanik ungeklärt | Ausstehend |
 | Walker-Erzeugung | Aktiv in Spielschleife | Vom Entwickler lokal bestätigt |
-| Walker-Bewegung/Animation | Mechanische Bein-/Fußanimation implementiert | Vom Entwickler lokal bestätigt |
+| Walker-Bewegung/Animation | Zweiknochen-IK, Proto-Längen und Sprite-Transformation; Standpose-Test aktiv, Laufsteuerung vorhanden | Stabile Grundpose und neue Körperanbindung per Screenshots lokal bestätigt; vollständiger Lauf- und Richtungswechseltest nach der letzten Änderung ausstehend |
 | Walker-Kampfsystem | Turm-Hitbox, Projektilschaden, roter Trefferblitz, Zerstörung und Energie-Drops implementiert; Walker-Bewaffnung offen | Turmtreffer und Zerstörung vom Entwickler lokal bestätigt |
 | HTML5-Steuerung | Index-1-Workaround auf develop umgesetzt; ungetestet | Ausstehend |
 | Kollisionen | Primitive/Box-Prüfungen; Schild-Shape-Prototyp mit Vergleichszählern | Schild-Shape-Test lokal durchgeführt; nicht für Schaden aktiv |
@@ -140,7 +178,7 @@ Für die Beta ist ein Online-Highscore-System vorgesehen. Nach Angaben des Entwi
 
 1. Zeitsystem, Pause, Bildratenabhängigkeit und Synchronisierung
 2. HTML5-Gamepad-Steuerung im Vergleich mit Columns
-3. Walker: Spawn auf Plattformen, Kanten und Kisten als Umkehrpunkte, eigene Bewaffnung über Bullet, mögliche Turm-/Torso-Neigung bis etwa 30°, ungeklärte Gesamtgröße und später ggf. Torso-Hitbox
+3. Walker: Standpose-Diagnosemodus ausschalten und neue IK-Anbindung in Bewegung testen; Fußkontakt, Pausen und Umkehr überprüfen; dann Kisten als Umkehrpunkte, eigene Bewaffnung über Bullet, mögliche Turm-/Torso-Neigung bis etwa 30°, ungeklärte Gesamtgröße und später ggf. Torso-Hitbox
 4. Schild-Shape-Kollision weiter testen; allgemeine Kollisionserkennung und mögliche AGK-Alternativen
 5. Kisten, Orbs und Upgrade-Mechanik
 6. Wiederverwendung der Highscore-Lösung für die Beta
@@ -149,6 +187,6 @@ Die Punkte sind Untersuchungsaufgaben, keine Änderungsfreigaben. Es werden kein
 
 ## 11. Quellen und Gültigkeit
 
-Statisch gesichtet auf `develop` (ergänzt durch lokale Testberichte des Entwicklers zum Walker): `main.agc`, `game.agc`, `def_game.agc`, `sonec.agc`, `walker.agc`, `mine.agc`, `plate.agc`, `controls.agc`, `def_joypad.agc`, `world.agc`, `collision.agc`, `sound.agc`.
+Statisch gesichtet auf `develop` (Walker-IK und neue Körperanbindung bis Commit `deb8b74` am 13. November 2026; ergänzt durch lokale Screenshots und Spieltests des Entwicklers): `main.agc`, `game.agc`, `def_game.agc`, `sonec.agc`, `walker.agc`, `mine.agc`, `plate.agc`, `controls.agc`, `def_joypad.agc`, `world.agc`, `collision.agc`, `sound.agc`.
 
 Der Vergleich mit Crystal Columns/Crystals erfolgte anhand von `main.agc`, `def_joypad.agc`, `input.agc`, `controls.agc`, `timer.agc` und `highscore_online.agc` auf `main`. Angaben zur praktischen Tastaturbedienung und zu Upgrade-Belohnungen bleiben noch zu verifizieren. Die vorhandene PurpleToken-Online-Highscore-Integration in Crystals wurde im Quellcode bestätigt, aber nicht auf Erreichbarkeit getestet.
