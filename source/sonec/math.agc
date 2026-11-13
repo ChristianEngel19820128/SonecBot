@@ -109,6 +109,18 @@ endfunction Value
 //
 //--------------------------------------------------------------------
 
+// IK direction: 0 = up (12 o'clock), 90 = right, 180 = down.
+// Unlike legacy CalcAngle, this also handles axis-aligned vectors.
+function CalcAngleIK(dx as float,dy as float)
+	local Result as float
+	Result = 0
+	if dx <> 0 or dy <> 0
+		Result = NormalizeAngle(ATan2(dy,dx)+90)
+	endif
+endfunction Result
+
+//--------------------------------------------------------------------
+
 function CalcPosition(Position ref as TPosition,Angle as float,Radius as float)
 	
 	Position.X = CalcPositionX(Position.X,Angle,Radius)
