@@ -799,18 +799,18 @@ function WalkerIKBindSprites(Walker ref as TWalker,ProtoWalker ref as TProtoWalk
 		height = sqrt(length*length-dist*dist*0.25)
 		kneeX = midX-dy/dist*height*direction
 		kneeY = midY+dx/dist*height*direction
-		upperAngle = ATan2(kneeY-hipY,kneeX-hipX)-90
+		upperAngle = ATan2(kneeY-hipY,kneeX-hipX)
 		// Keep the raw knee-to-foot direction; the Proto calibration below applies the sprite offset.
 		lowerAngle = ATan2(footY-kneeY,footX-kneeX)
 
 		Walker.WalkerSpriteData.Thigh[i].Position.x = hipX
 		Walker.WalkerSpriteData.Thigh[i].Position.y = hipY
-		// Calibrate the upper-leg sprite using its direction-specific Proto rotation.
-		// Keep the IK segment angle; only adjust the graphic's local orientation.
+		// IK gives the absolute hip-to-knee direction. Only the sprite's
+		// direction-specific baseline is added here (no trial +/-45 degrees).
 		if Walker.State.Alignment = MOVELEFT
-			Walker.WalkerSpriteData.Thigh[i].Angle = NormalizeAngle(upperAngle+ProtoWalker.AnimLeft.Thigh.Rotation-90-45)
+			Walker.WalkerSpriteData.Thigh[i].Angle = NormalizeAngle(upperAngle+ProtoWalker.AnimLeft.Thigh.Rotation-90)
 		else
-			Walker.WalkerSpriteData.Thigh[i].Angle = NormalizeAngle(upperAngle+ProtoWalker.AnimRight.Thigh.Rotation+90+45)
+			Walker.WalkerSpriteData.Thigh[i].Angle = NormalizeAngle(upperAngle+ProtoWalker.AnimRight.Thigh.Rotation+90)
 		endif
 		Walker.WalkerSpriteData.Shank[i].Position.x = kneeX
 		Walker.WalkerSpriteData.Shank[i].Position.y = kneeY
