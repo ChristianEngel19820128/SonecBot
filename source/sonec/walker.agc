@@ -886,14 +886,18 @@ function WalkerSkeletonLine(x1 as float,y1 as float,x2 as float,y2 as float)
 	length = sqrt(dx*dx+dy*dy)
 	if length > 0
 		SetSpriteSize(WalkerDebugLineSprite,length,2)
+		// Start of the 2 px line is anchored at the first IK joint.
+		SetSpriteOffset(WalkerDebugLineSprite,0,1)
 		SetSpriteAngle(WalkerDebugLineSprite,ATan2(dy,dx))
-		SetSpritePosition(WalkerDebugLineSprite,x1,y1)
+		SetSpritePositionByOffset(WalkerDebugLineSprite,x1,y1)
 		DrawSprite(WalkerDebugLineSprite)
 	endif
 endfunction
 
 function WalkerSkeletonJoint(x as float,y as float)
-	SetSpritePosition(WalkerDebugJointSprite,x,y)
+	// Center the 5x5 marker exactly on the IK joint.
+	SetSpriteOffset(WalkerDebugJointSprite,2.5,2.5)
+	SetSpritePositionByOffset(WalkerDebugJointSprite,x,y)
 	DrawSprite(WalkerDebugJointSprite)
 endfunction
 
