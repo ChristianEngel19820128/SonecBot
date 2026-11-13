@@ -720,10 +720,10 @@ global WalkerDebugJointSprite as integer
 function WalkerSkeletonInit()
 	if WALKER_SKELETON_DEBUG = 1
 		WalkerDebugLineSprite = CreateSprite(0)
-		SetSpriteVisible(WalkerDebugLineSprite,0)
+		SetSpriteVisible(WalkerDebugLineSprite,1)
 		SetSpriteOffset(WalkerDebugLineSprite,0,1)
 		WalkerDebugJointSprite = CreateSprite(0)
-		SetSpriteVisible(WalkerDebugJointSprite,0)
+		SetSpriteVisible(WalkerDebugJointSprite,1)
 		SetSpriteSize(WalkerDebugJointSprite,5,5)
 		SetSpriteOffset(WalkerDebugJointSprite,2.5,2.5)
 	endif
