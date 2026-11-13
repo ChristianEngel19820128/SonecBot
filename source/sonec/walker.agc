@@ -120,7 +120,18 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
+// Configure leg artwork; IK owns joint positions and rotations.
+function WalkerIKPartSetup(Proto ref as TProtoData,SpriteData ref as TSpriteData)
+	SpriteData.Center = TRUE
+	SpriteData.OffsetOn = TRUE
+	SpriteData.Offset.x = Proto.Offset.x
+	SpriteData.Offset.y = Proto.Offset.y
+	SpriteData.Scale = 1
+	ColorSet(SpriteData.Color,0,255,0,255)
+endfunction
+
 function WalkerPartsCalculate(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,World ref as TWorld)
+	local i as integer
 	
 	Walker.WalkerObjectData.Corpus.Position       = Walker.ObjectData.Position
 	Walker.WalkerObjectData.Corpus.AnchorPosition = Walker.ObjectData.Position
@@ -135,27 +146,28 @@ function WalkerPartsCalculate(Walker ref as TWalker,ProtoWalker ref as TProtoWal
 		
 		WalkerPartCalculate(Walker.State,ProtoWalker.AnimLeft.Tower,Walker.WalkerObjectData.Tower,ProtoWalker.AnimLeft.Corpus,Walker.WalkerObjectData.Corpus,Walker.WalkerSpriteData.Corpus,World)
 		
-		WalkerPartCalculate(Walker.State,ProtoWalker.AnimLeft.Corpus,Walker.WalkerObjectData.Corpus,ProtoWalker.AnimLeft.Thigh,Walker.WalkerObjectData.Thigh[ELEMENTRIGHT],Walker.WalkerSpriteData.Thigh[ELEMENTRIGHT],World)
-		WalkerPartCalculate(Walker.State,ProtoWalker.AnimLeft.Thigh,Walker.WalkerObjectData.Thigh[ELEMENTRIGHT],ProtoWalker.AnimLeft.Shank,Walker.WalkerObjectData.Shank[ELEMENTRIGHT],Walker.WalkerSpriteData.Shank[ELEMENTRIGHT],World)
-		WalkerPartCalculate(Walker.State,ProtoWalker.AnimLeft.Shank,Walker.WalkerObjectData.Shank[ELEMENTRIGHT],ProtoWalker.AnimLeft.Socket,Walker.WalkerObjectData.Socket[ELEMENTRIGHT],Walker.WalkerSpriteData.Socket[ELEMENTRIGHT],World)
 
-		WalkerPartCalculate(Walker.State,ProtoWalker.AnimLeft.Corpus,Walker.WalkerObjectData.Corpus,ProtoWalker.AnimLeft.Thigh,Walker.WalkerObjectData.Thigh[ELEMENTLEFT],Walker.WalkerSpriteData.Thigh[ELEMENTLEFT],World)
-		WalkerPartCalculate(Walker.State,ProtoWalker.AnimLeft.Thigh,Walker.WalkerObjectData.Thigh[ELEMENTLEFT],ProtoWalker.AnimLeft.Shank,Walker.WalkerObjectData.Shank[ELEMENTLEFT],Walker.WalkerSpriteData.Shank[ELEMENTLEFT],World)
-		WalkerPartCalculate(Walker.State,ProtoWalker.AnimLeft.Shank,Walker.WalkerObjectData.Shank[ELEMENTLEFT],ProtoWalker.AnimLeft.Socket,Walker.WalkerObjectData.Socket[ELEMENTLEFT],Walker.WalkerSpriteData.Socket[ELEMENTLEFT],World)
 
 	else
 		
 		WalkerPartCalculate(Walker.State,ProtoWalker.AnimRight.Tower,Walker.WalkerObjectData.Tower,  ProtoWalker.AnimRight.Corpus, Walker.WalkerObjectData.Corpus, Walker.WalkerSpriteData.Corpus, World)
 		
-		WalkerPartCalculate(Walker.State,ProtoWalker.AnimRight.Corpus, Walker.WalkerObjectData.Corpus,              ProtoWalker.AnimRight.Thigh,  Walker.WalkerObjectData.Thigh[ELEMENTLEFT],  Walker.WalkerSpriteData.Thigh[ELEMENTLEFT],  World)
-		WalkerPartCalculate(Walker.State,ProtoWalker.AnimRight.Thigh,  Walker.WalkerObjectData.Thigh[ELEMENTLEFT],  ProtoWalker.AnimRight.Shank,  Walker.WalkerObjectData.Shank[ELEMENTLEFT],  Walker.WalkerSpriteData.Shank[ELEMENTLEFT],  World)
-		WalkerPartCalculate(Walker.State,ProtoWalker.AnimRight.Shank,  Walker.WalkerObjectData.Shank[ELEMENTLEFT],  ProtoWalker.AnimRight.Socket, Walker.WalkerObjectData.Socket[ELEMENTLEFT], Walker.WalkerSpriteData.Socket[ELEMENTLEFT], World)
 	
-		WalkerPartCalculate(Walker.State,ProtoWalker.AnimRight.Corpus, Walker.WalkerObjectData.Corpus,               ProtoWalker.AnimRight.Thigh,  Walker.WalkerObjectData.Thigh[ELEMENTRIGHT],  Walker.WalkerSpriteData.Thigh[ELEMENTRIGHT], World)
-		WalkerPartCalculate(Walker.State,ProtoWalker.AnimRight.Thigh,  Walker.WalkerObjectData.Thigh[ELEMENTRIGHT],  ProtoWalker.AnimRight.Shank,  Walker.WalkerObjectData.Shank[ELEMENTRIGHT],  Walker.WalkerSpriteData.Shank[ELEMENTRIGHT], World)
-		WalkerPartCalculate(Walker.State,ProtoWalker.AnimRight.Shank,  Walker.WalkerObjectData.Shank[ELEMENTRIGHT],  ProtoWalker.AnimRight.Socket, Walker.WalkerObjectData.Socket[ELEMENTRIGHT], Walker.WalkerSpriteData.Socket[ELEMENTRIGHT], World)
 	
 	endif
+	// Both legs share the same Proto setup; no legacy joint chain.
+	for i = 0 to 1
+		if Walker.State.Alignment = MOVELEFT
+			WalkerIKPartSetup(ProtoWalker.AnimLeft.Thigh,Walker.WalkerSpriteData.Thigh[i])
+			WalkerIKPartSetup(ProtoWalker.AnimLeft.Shank,Walker.WalkerSpriteData.Shank[i])
+			WalkerIKPartSetup(ProtoWalker.AnimLeft.Socket,Walker.WalkerSpriteData.Socket[i])
+		else
+			WalkerIKPartSetup(ProtoWalker.AnimRight.Thigh,Walker.WalkerSpriteData.Thigh[i])
+			WalkerIKPartSetup(ProtoWalker.AnimRight.Shank,Walker.WalkerSpriteData.Shank[i])
+			WalkerIKPartSetup(ProtoWalker.AnimRight.Socket,Walker.WalkerSpriteData.Socket[i])
+		endif
+	next i
+
 		
 endfunction
 
@@ -495,25 +507,13 @@ function WalkerAnimate(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,Wor
 		
 		Walker.WalkerObjectData.Corpus.Rotation = ProtoWalker.AnimLeft.Corpus.Rotation-90
 		
-		Walker.WalkerObjectData.Thigh[ELEMENTRIGHT].Rotation  = ProtoWalker.AnimLeft.Thigh.Rotation
-		Walker.WalkerObjectData.Shank[ELEMENTRIGHT].Rotation  = ProtoWalker.AnimLeft.Shank.Rotation
-		Walker.WalkerObjectData.Socket[ELEMENTRIGHT].Rotation = ProtoWalker.AnimLeft.Socket.Rotation
 		
-		Walker.WalkerObjectData.Thigh[ELEMENTLEFT].Rotation  = ProtoWalker.AnimLeft.Thigh.Rotation
-		Walker.WalkerObjectData.Shank[ELEMENTLEFT].Rotation  = ProtoWalker.AnimLeft.Shank.Rotation
-		Walker.WalkerObjectData.Socket[ELEMENTLEFT].Rotation = ProtoWalker.AnimLeft.Socket.Rotation
 		
 	else
 
 		Walker.WalkerObjectData.Corpus.Rotation = ProtoWalker.AnimRight.Corpus.Rotation+90
 
-		Walker.WalkerObjectData.Thigh[ELEMENTLEFT].Rotation  = ProtoWalker.AnimRight.Thigh.Rotation
-		Walker.WalkerObjectData.Shank[ELEMENTLEFT].Rotation  = ProtoWalker.AnimRight.Shank.Rotation
-		Walker.WalkerObjectData.Socket[ELEMENTLEFT].Rotation = ProtoWalker.AnimRight.Socket.Rotation
 
-		Walker.WalkerObjectData.Thigh[ELEMENTRIGHT].Rotation  = ProtoWalker.AnimRight.Thigh.Rotation
-		Walker.WalkerObjectData.Shank[ELEMENTRIGHT].Rotation  = ProtoWalker.AnimRight.Shank.Rotation
-		Walker.WalkerObjectData.Socket[ELEMENTRIGHT].Rotation = ProtoWalker.AnimRight.Socket.Rotation
 		
 	endif
 
