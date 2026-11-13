@@ -907,12 +907,12 @@ function WalkerIKBindSprites(Walker ref as TWalker,ProtoWalker ref as TProtoWalk
 		endif
 		Walker.WalkerSpriteData.Socket[i].Position.x = footX
 		Walker.WalkerSpriteData.Socket[i].Position.y = footY
-		// All leg parts use the same Proto-to-sprite transform.
-		// A terminal part without an Offset-to-Anchor direction stays at its Proto pose.
+		// Temporary visual test: apply the facing-dependent foot angle only
+		// to the final sprite angle, keeping neutral Proto rotations.
 		if Walker.State.Alignment = MOVELEFT
-			Walker.WalkerSpriteData.Socket[i].Angle = WalkerIKSpriteAngle(ProtoWalker.AnimLeft.Socket,0)
+			Walker.WalkerSpriteData.Socket[i].Angle = NormalizeAngle(WalkerIKSpriteAngle(ProtoWalker.AnimLeft.Socket,0)-90)
 		else
-			Walker.WalkerSpriteData.Socket[i].Angle = WalkerIKSpriteAngle(ProtoWalker.AnimRight.Socket,0)
+			Walker.WalkerSpriteData.Socket[i].Angle = NormalizeAngle(WalkerIKSpriteAngle(ProtoWalker.AnimRight.Socket,0)+90)
 		endif
 	next i
 endfunction
