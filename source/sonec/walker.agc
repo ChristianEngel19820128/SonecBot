@@ -800,7 +800,8 @@ function WalkerIKBindSprites(Walker ref as TWalker,ProtoWalker ref as TProtoWalk
 		kneeX = midX-dy/dist*height*direction
 		kneeY = midY+dx/dist*height*direction
 		upperAngle = ATan2(kneeY-hipY,kneeX-hipX)-90
-		lowerAngle = ATan2(footY-kneeY,footX-kneeX)-90
+		// Keep the raw knee-to-foot direction; the Proto calibration below applies the sprite offset.
+		lowerAngle = ATan2(footY-kneeY,footX-kneeX)
 
 		Walker.WalkerSpriteData.Thigh[i].Position.x = hipX
 		Walker.WalkerSpriteData.Thigh[i].Position.y = hipY
