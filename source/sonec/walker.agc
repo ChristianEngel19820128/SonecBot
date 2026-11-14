@@ -665,11 +665,14 @@ endfunction Angle
 
 function WalkerFireShot(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,BulletList ref as TBulletList,ProtoBullet ref as TProtoBullet,FlashList ref as TFlashList,ProtoFlash ref as TProtoFlash,World ref as TWorld,Now as integer)
 	local MuzzlePosition as TPosition
+	local FlashPosition as TPosition
 	local FireAngle as float
 	FireAngle = WalkerMuzzlePositionCalculate(Walker,ProtoWalker,MuzzlePosition)
 	BulletAdd(BulletList,ProtoBullet,World,MuzzlePosition,FireAngle,0.0,TYPEENEMY,Now)
-	// Flash and bullet use the same origin and are drawn above the turret.
-	FlashAdd(FlashList,ProtoFlash,World,0,WALKER_MUZZLE_FLASH_CYCLES,MuzzlePosition,FireAngle,0.0,Now)
+	// Use the first barrel's actual Anchor for the flash; the bullet stays at its old origin.
+	// Both barrel instances currently overlap, so the second muzzle can be used later.
+	FlashPosition = Walker.WalkerObjectData.Barrel[0].AnchorPosition
+	FlashAdd(FlashList,ProtoFlash,World,0,WALKER_MUZZLE_FLASH_CYCLES,FlashPosition,FireAngle,0.0,Now)
 endfunction
 
 // FireState: 0 = idle, 1 = waiting to fire second bullet, 2 = recoil/recovery.
