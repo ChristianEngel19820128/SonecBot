@@ -648,7 +648,7 @@ endfunction
 // Angle conventions match Sonec's horizontal machine-gun fire (90 / 270).
 // We deliberately do not track Sonec or change torso/turret rotations here.
 // One horizontal projectile from the current turret pivot and direction.
-// This exact float origin is shared by real bullets/flashes and debug visualization.
+// This float origin is used for bullets and debug; flashes use Barrel[0].AnchorPosition.
 function WalkerMuzzlePositionCalculate(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,Position ref as TPosition)
 	local Radius as float
 	local Angle as float
@@ -983,9 +983,9 @@ endfunction
 // Experimental IK sprite binding. Set to 0 to compare with the old sine gait.
 #constant WALKER_IK_SPRITES 1
 // Runtime Walker diagnosis is off by default. F1 toggles overlays, not IK behavior.
+#constant WALKER_DEBUG_MAX_ENTRIES 3
 global WalkerDebugEnabled as integer
 // Limb rotations now come from Proto Offset/Anchor reference directions.
-global WalkerAngleDebugText as integer
 
 // Align the Proto Offset-to-Anchor direction to IK, then apply the
 // Proto rotation as an explicit artwork calibration offset.
@@ -1135,7 +1135,7 @@ global WalkerMuzzlePivotSprite as integer
 global WalkerMuzzleOriginSprite as integer
 global WalkerBarrelAnchor0Sprite as integer
 global WalkerBarrelAnchor1Sprite as integer
-global WalkerMuzzleDebugText as integer
+global WalkerDebugHudText as integer
 
 function WalkerDebugToggle()
 	if WalkerDebugEnabled = 0
@@ -1146,11 +1146,6 @@ function WalkerDebugToggle()
 endfunction
 
 function WalkerSkeletonInit()
-	if WalkerAngleDebugText = 0
-		WalkerAngleDebugText = CreateText("")
-		SetTextSize(WalkerAngleDebugText,12)
-		SetTextColor(WalkerAngleDebugText,255,255,0,255)
-	endif
 	if WalkerDebugLineSprite = 0
 		WalkerDebugLineSprite = CreateSprite(0)
 		SetSpriteVisible(WalkerDebugLineSprite,1)
@@ -1199,10 +1194,10 @@ function WalkerSkeletonInit()
 		SetSpriteOffset(WalkerBarrelAnchor1Sprite,1.5,1.5)
 		SetSpriteColor(WalkerBarrelAnchor1Sprite,255,130,30,255)
 	endif
-	if WalkerMuzzleDebugText = 0
-		WalkerMuzzleDebugText = CreateText("")
-		SetTextSize(WalkerMuzzleDebugText,10)
-		SetTextColor(WalkerMuzzleDebugText,255,240,0,255)
+	if WalkerDebugHudText = 0
+		WalkerDebugHudText = CreateText("")
+		SetTextSize(WalkerDebugHudText,10)
+		SetTextColor(WalkerDebugHudText,255,240,0,255)
 	endif
 endfunction
 
@@ -1348,18 +1343,7 @@ function WalkerDrawAll(WalkerList ref as TWalkerList,ProtoWalker ref as TProtoWa
 		if WalkerDebugEnabled = 1 and WalkerList.Walker[i].Enabled = TRUE
 			WalkerProtoPointsDraw(WalkerList.Walker[i],ProtoWalker)
 		endif
-		if WalkerDebugEnabled = 1 and WALKER_IK_SPRITES = 1 and WalkerList.Walker[i].Enabled = TRUE
-			// Show the angular difference between sprite and IK directions.
-			local delta as float
-			local shankDelta as float
-			delta = NormalizeAngle(WalkerList.Walker[i].SkeletonDebugSprite-WalkerList.Walker[i].SkeletonDebugIK)
-			if delta > 180 then delta = delta-360
-			shankDelta = NormalizeAngle(WalkerList.Walker[i].SkeletonDebugShankSprite-WalkerList.Walker[i].SkeletonDebugShankIK)
-			if shankDelta > 180 then shankDelta = shankDelta-360
-			SetTextString(WalkerAngleDebugText,"Thigh IK: "+Str(WalkerList.Walker[i].SkeletonDebugIK)+" Sprite: "+Str(WalkerList.Walker[i].SkeletonDebugSprite)+" Delta: "+Str(delta)+Chr(10)+"Shank IK: "+Str(WalkerList.Walker[i].SkeletonDebugShankIK)+" Sprite: "+Str(WalkerList.Walker[i].SkeletonDebugShankSprite)+" Delta: "+Str(shankDelta))
-			SetTextPosition(WalkerAngleDebugText,WalkerList.Walker[i].WalkerSpriteData.Corpus.Position.x-45,WalkerList.Walker[i].WalkerSpriteData.Corpus.Position.y-70)
-			DrawText(WalkerAngleDebugText)
-		endif
+
 	next i
 	
 endfunction
@@ -1369,35 +1353,73 @@ endfunction
 //----------------------------------------------------------------------
 
 // Foreground overlay: magenta is turret pivot; yellow is bullet/flash origin.
+// Screen-fixed Walker diagnostics: one text object, markers for every active Walker.
+// Show at most three Walker blocks so long lists cannot overlap the HUD or run off-screen.
+// The original IK, projectile and flash positions are not changed here.
 function WalkerMuzzleDebugDrawAll(WalkerList ref as TWalkerList,ProtoWalker ref as TProtoWalker,World ref as TWorld)
 	local i as integer
 	local Pivot as TPosition
-	local Muzzle as TPosition
+	local BulletPosition as TPosition
+	local FlashPosition as TPosition
 	local Barrel0 as TPosition
 	local Barrel1 as TPosition
 	local Angle as float
+	local Delta as float
+	local ShankDelta as float
+	local WalkerCount as integer
+	local Shown as integer
+	local HudText as string
 	if WalkerDebugEnabled = 1
+		WalkerCount = 0
+		for i = 0 to WalkerList.Walker.Length
+			if WalkerList.Walker[i].Enabled = TRUE then WalkerCount = WalkerCount+1
+		next i
+
+		Shown = 0
+		HudText = "WALKER DEBUG (F1) - active: "+Str(WalkerCount)+Chr(10)
 		for i = 0 to WalkerList.Walker.Length
 			if WalkerList.Walker[i].Enabled = TRUE
 				Pivot = WalkerList.Walker[i].WalkerObjectData.Tower.Position
 				Barrel0 = WalkerList.Walker[i].WalkerObjectData.Barrel[0].AnchorPosition
 				Barrel1 = WalkerList.Walker[i].WalkerObjectData.Barrel[1].AnchorPosition
-				Angle = WalkerMuzzlePositionCalculate(WalkerList.Walker[i],ProtoWalker,Muzzle)
+				Angle = WalkerMuzzlePositionCalculate(WalkerList.Walker[i],ProtoWalker,BulletPosition)
+				FlashPosition = Barrel0
+
+				// The world-space markers remain unchanged, including when the HUD is full.
 				SetSpritePositionByOffset(WalkerMuzzlePivotSprite,Pivot.x-World.Position.x,Pivot.y-World.Position.y)
 				DrawSprite(WalkerMuzzlePivotSprite)
-				SetSpritePositionByOffset(WalkerMuzzleOriginSprite,Muzzle.x-World.Position.x,Muzzle.y-World.Position.y)
+				SetSpritePositionByOffset(WalkerMuzzleOriginSprite,BulletPosition.x-World.Position.x,BulletPosition.y-World.Position.y)
 				DrawSprite(WalkerMuzzleOriginSprite)
-				// Draw the 7x7 B0 anchor first, then the 3x3 B1 anchor inside it.
+				// B0 and B1 overlap for now: draw the smaller orange marker inside blue.
 				SetSpritePositionByOffset(WalkerBarrelAnchor0Sprite,Barrel0.x-World.Position.x,Barrel0.y-World.Position.y)
 				DrawSprite(WalkerBarrelAnchor0Sprite)
 				SetSpritePositionByOffset(WalkerBarrelAnchor1Sprite,Barrel1.x-World.Position.x,Barrel1.y-World.Position.y)
 				DrawSprite(WalkerBarrelAnchor1Sprite)
-				SetTextString(WalkerMuzzleDebugText,"Muzzle "+Str(Muzzle.x)+","+Str(Muzzle.y)+Chr(10)+"Pivot "+Str(Pivot.x)+","+Str(Pivot.y)+Chr(10)+"Barrel0 "+Str(Barrel0.x)+","+Str(Barrel0.y)+Chr(10)+"Barrel1 "+Str(Barrel1.x)+","+Str(Barrel1.y)+Chr(10)+"Angle "+Str(Angle)+" Fire "+Str(WalkerList.Walker[i].FireState))
-				// Show all five lines above the platform, keeping the marker positions untouched.
-				SetTextPosition(WalkerMuzzleDebugText,Muzzle.x-World.Position.x+10,Muzzle.y-World.Position.y-65)
-				DrawText(WalkerMuzzleDebugText)
+
+				if Shown < WALKER_DEBUG_MAX_ENTRIES
+					HudText = HudText + Chr(10) + "Walker #"+Str(i)+" | Angle "+Str(Angle,1)+" | Fire "+Str(WalkerList.Walker[i].FireState)+Chr(10)
+					if WALKER_IK_SPRITES = 1
+						Delta = NormalizeAngle(WalkerList.Walker[i].SkeletonDebugSprite-WalkerList.Walker[i].SkeletonDebugIK)
+						if Delta > 180 then Delta = Delta-360
+						ShankDelta = NormalizeAngle(WalkerList.Walker[i].SkeletonDebugShankSprite-WalkerList.Walker[i].SkeletonDebugShankIK)
+						if ShankDelta > 180 then ShankDelta = ShankDelta-360
+						HudText = HudText + "  IK Thigh: "+Str(WalkerList.Walker[i].SkeletonDebugIK,1)+" / Sprite "+Str(WalkerList.Walker[i].SkeletonDebugSprite,1)+" / Delta "+Str(Delta,1)+Chr(10)
+						HudText = HudText + "  IK Shank: "+Str(WalkerList.Walker[i].SkeletonDebugShankIK,1)+" / Sprite "+Str(WalkerList.Walker[i].SkeletonDebugShankSprite,1)+" / Delta "+Str(ShankDelta,1)+Chr(10)
+					endif
+					HudText = HudText + "  Pivot: "+Str(Pivot.x,1)+", "+Str(Pivot.y,1)+Chr(10)
+					HudText = HudText + "  Bullet: "+Str(BulletPosition.x,1)+", "+Str(BulletPosition.y,1)+Chr(10)
+					HudText = HudText + "  Flash: "+Str(FlashPosition.x,1)+", "+Str(FlashPosition.y,1)+Chr(10)
+					HudText = HudText + "  Barrel0: "+Str(Barrel0.x,1)+", "+Str(Barrel0.y,1)+" | Barrel1: "+Str(Barrel1.x,1)+", "+Str(Barrel1.y,1)+Chr(10)
+					Shown = Shown+1
+				endif
 			endif
 		next i
+		if WalkerCount > Shown
+			HudText = HudText + Chr(10)+"More Walkers: "+Str(WalkerCount-Shown)+" (markers still drawn)"
+		endif
+		SetTextString(WalkerDebugHudText,HudText)
+		SetTextPosition(WalkerDebugHudText,12,12)
+		DrawText(WalkerDebugHudText)
 	endif
 endfunction
 
