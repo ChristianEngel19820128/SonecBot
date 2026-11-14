@@ -256,6 +256,8 @@ function GameDo(Game ref as TGame,Now as integer)
 	WalkerMoveAll(Game.WalkerList,Game.ProtoWalker,Game.PlateList,Game.World,Now)
 	WalkerHealthRegenerate(Game.WalkerList,Game,Now)
 	WalkerAnimateAll(Game.WalkerList,Game.ProtoWalker,Game.World,Now)
+	// Turret world positions are current; enemy bullets join the normal Bullet pipeline.
+	WalkerFireAll(Game.WalkerList,Game.ProtoWalker,Game.BulletList,Game.ProtoBullet,Game.World,Now)
 	ChestMoveAll(Game.ChestList,Game.PlateList,Game.World)
 	ChestCheckAll(Game.ChestList,Game.ProtoChest)
 	PlateCheckAll(Game.PlateList,Game.ProtoPlate)
