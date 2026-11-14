@@ -2,6 +2,8 @@
 // Walker gun trial: predictable horizontal shots without targeting or torso tilt.
 #constant WALKER_TEST_FIRE 1
 #constant WALKER_FIRE_INTERVAL_MS 1800
+#constant WALKER_BURST_SHOT_DELAY_MS 150
+#constant WALKER_BURST_RECOVERY_MS 200
 
 //----------------------------------------------------------------------
 // 
@@ -215,6 +217,8 @@ function WalkerNew(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,World r
 	TimeReset(Walker.ObjectData.MoveTimer,Now)
 	TimeSet(Walker.FireTimer,WALKER_FIRE_INTERVAL_MS,1)
 	TimeReset(Walker.FireTimer,Now)
+	Walker.FireState = 0
+	Walker.FireStateUntilMs = 0
 	
 	// Fixed slower test pace: compare foot contact and turns at a consistent speed.
 	Walker.ObjectData.MoveSpeed.x = 0.05
@@ -614,29 +618,60 @@ endfunction
 // First weapon trial: use the existing bullet pool and tower pivot.
 // Angle conventions match Sonec's horizontal machine-gun fire (90 / 270).
 // We deliberately do not track Sonec or change torso/turret rotations here.
-function WalkerFireAll(WalkerList ref as TWalkerList,ProtoWalker ref as TProtoWalker,BulletList ref as TBulletList,ProtoBullet ref as TProtoBullet,World ref as TWorld,Now as integer)
-	local i as integer
+// One horizontal projectile from the current turret pivot and direction.
+function WalkerFireShot(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,BulletList ref as TBulletList,ProtoBullet ref as TProtoBullet,World ref as TWorld,Now as integer)
 	local MuzzlePosition as TPosition
 	local MuzzleRadius as float
 	local FireAngle as float
 
+	MuzzlePosition = Walker.WalkerObjectData.Tower.Position
+	if Walker.State.LookAlignment = LOOKLEFT
+		FireAngle = 270
+		MuzzleRadius = ProtoWalker.AnimLeft.Tower.Offset.y
+	else
+		FireAngle = 90
+		MuzzleRadius = ProtoWalker.AnimRight.Tower.Offset.y
+	endif
+	BulletAdd(BulletList,ProtoBullet,World,MuzzlePosition,FireAngle,MuzzleRadius,TYPEENEMY,Now)
+endfunction
+
+// FireState: 0 = idle, 1 = waiting to fire second bullet, 2 = recoil/recovery.
+// A started burst always finishes before WalkerMove may resume walking.
+function WalkerFireAll(WalkerList ref as TWalkerList,ProtoWalker ref as TProtoWalker,BulletList ref as TBulletList,ProtoBullet ref as TProtoBullet,World ref as TWorld,Now as integer)
+	local i as integer
+	local LeftFootX as float
+	local RightFootX as float
+
 	if WALKER_TEST_FIRE = 1
 		for i = 0 to WalkerList.Walker.Length
-			if WalkerList.Walker[i].Enabled = TRUE and WalkerList.Walker[i].TurnPending = 0
-				// Avoid filling the projectile pool with off-screen Walkers.
-				if WalkerList.Walker[i].WalkerObjectData.Tower.Position.x >= 0 and WalkerList.Walker[i].WalkerObjectData.Tower.Position.x <= World.Size.Width
-					if TimeGet(WalkerList.Walker[i].FireTimer,Now) > 0
-						MuzzlePosition = WalkerList.Walker[i].WalkerObjectData.Tower.Position
-						if WalkerList.Walker[i].State.LookAlignment = LOOKLEFT
-							FireAngle = 270
-							MuzzleRadius = ProtoWalker.AnimLeft.Tower.Offset.y
-						else
-							FireAngle = 90
-							MuzzleRadius = ProtoWalker.AnimRight.Tower.Offset.y
+			if WalkerList.Walker[i].Enabled = TRUE
+				if WalkerList.Walker[i].FireState = 1
+					if Now >= WalkerList.Walker[i].FireStateUntilMs
+						WalkerFireShot(WalkerList.Walker[i],ProtoWalker,BulletList,ProtoBullet,World,Now)
+						WalkerList.Walker[i].FireState = 2
+						WalkerList.Walker[i].FireStateUntilMs = Now + WALKER_BURST_RECOVERY_MS
+					endif
+				else
+					if WalkerList.Walker[i].FireState = 2
+						if Now >= WalkerList.Walker[i].FireStateUntilMs then WalkerList.Walker[i].FireState = 0
+					else
+						// Begin a burst only in a regular stand pause, never while walking/turning.
+						if WalkerList.Walker[i].PauseUntilMs > 0 and WalkerList.Walker[i].TurnPending = 0
+							// The feet must have finished settling before the firing phase starts.
+							LeftFootX = WalkerList.Walker[i].PlateOffsetX - 10
+							RightFootX = WalkerList.Walker[i].PlateOffsetX + 10
+							if abs(WalkerList.Walker[i].SkeletonFootX[0]-LeftFootX) < 0.1 and abs(WalkerList.Walker[i].SkeletonFootX[1]-RightFootX) < 0.1 and abs(WalkerList.Walker[i].SkeletonFootY[0]) < 0.1 and abs(WalkerList.Walker[i].SkeletonFootY[1]) < 0.1
+							// Avoid generating shots for Walkers outside the world.
+							if WalkerList.Walker[i].WalkerObjectData.Tower.Position.x >= 0 and WalkerList.Walker[i].WalkerObjectData.Tower.Position.x <= World.Size.Width
+							if TimeGet(WalkerList.Walker[i].FireTimer,Now) > 0
+								WalkerFireShot(WalkerList.Walker[i],ProtoWalker,BulletList,ProtoBullet,World,Now)
+								WalkerList.Walker[i].FireState = 1
+								WalkerList.Walker[i].FireStateUntilMs = Now + WALKER_BURST_SHOT_DELAY_MS
+								TimeReset(WalkerList.Walker[i].FireTimer,Now)
+							endif
+							endif
+							endif
 						endif
-						// BulletNew offsets the origin by Radius along FireAngle.
-						BulletAdd(BulletList,ProtoBullet,World,MuzzlePosition,FireAngle,MuzzleRadius,TYPEENEMY,Now)
-						TimeReset(WalkerList.Walker[i].FireTimer,Now)
 					endif
 				endif
 			endif
@@ -753,11 +788,13 @@ function WalkerMove(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,PlateL
 					// The walker does not advance while waiting for both feet to settle.
 					if Walker.TurnPending = 0
 						if Walker.PauseUntilMs > 0
-							if Now >= Walker.PauseUntilMs
+							if Now >= Walker.PauseUntilMs and Walker.FireState = 0
 								Walker.PauseUntilMs = 0
 								Walker.NextPauseMs = Now + random(2500,5000)
 							endif
 						else
+							// Do not restart walking or enter a turn until the fire state finishes.
+							if Walker.FireState = 0
 							if Now >= Walker.NextPauseMs
 								Walker.PauseUntilMs = Now + random(1000,3000)
 							else
@@ -770,7 +807,8 @@ function WalkerMove(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,PlateL
 								// Alternate swing feet every 15 px; planted feet stay fixed.
 								if WALKER_STAND_POSE_TEST = 0 then Walker.WalkPhase = Walker.WalkPhase + StepX*WALKER_GAIT_DEGREES_PER_PIXEL
 							endif
-						endif
+							endif
+							endif
 
 						// Begin turning only when moving toward the respective edge.
 						// Keep the old facing until both feet have reached their stand pose.
