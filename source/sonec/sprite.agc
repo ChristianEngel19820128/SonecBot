@@ -73,10 +73,11 @@ function SpriteDraw(Sprite ref as TSprite,Data ref as TSpriteData)
 		if Sprite.Data.Angle <> Data.Angle
 			SetSpriteAngle(Sprite.ID,Data.Angle)
 		endif
+		// Keep subpixel positions for rendering; compare visually with the former Floor() path.
 		if Data.Center = TRUE
-			SetSpritePositionByOffset(Sprite.ID,Floor(Data.Position.x),Floor(Data.Position.y))
+			SetSpritePositionByOffset(Sprite.ID,Data.Position.x,Data.Position.y)
 		else
-			SetSpritePosition(Sprite.ID,Floor(Data.Position.x),Floor(Data.Position.y))
+			SetSpritePosition(Sprite.ID,Data.Position.x,Data.Position.y)
 		endif
 		if Sprite.Data.Color.Value <> Data.Color.Value
 			SetSpriteColor(Sprite.ID,Data.Color.Red,Data.Color.Green,Data.Color.Blue,Data.Color.Alpha)
