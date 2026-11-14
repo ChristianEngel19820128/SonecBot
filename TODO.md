@@ -1,6 +1,6 @@
 # SonecBot – TODO und Meilensteine
 
-**Dokumentstatus:** Version 0.3  
+**Dokumentstatus:** Version 0.4  
 **Stand:** 14. November 2026  
 **Branch:** `develop`  
 **Ziel:** Kleine, überprüfbare Schritte zur spielbaren HTML5-Alpha
@@ -42,11 +42,13 @@
 
 - [x] Erste horizontale Walker-Testschüsse in Blickrichtung mit einem Timer von 1800 ms über `BulletAdd(...,TYPEENEMY,...)` eingebunden; Mündungsposition wirkt im lokalen Test plausibel. Schüsse treffen Sonec und verursachen Schaden.
 - [x] Walker-Turmtreffer auf Spielerprojektile (`TYPEPLAYERONE`) begrenzt, damit Walker-Geschosse nicht ihre eigenen Artgenossen beschädigen.
-- [ ] **Nächster Schusstest:** Walker feuert **ausschließlich im Stand** (nicht beim Laufen oder Wenden) eine Salve aus **zwei Geschossen mit kurzem Abstand**; danach längere Feuerruhe. Lauf-/Pause-/Salventimer getrennt halten und angefangenes Feuern bei Bewegung sauber unterbrechen.
+- [x] **Zwei-Schuss-Salve im Code implementiert:** Walker startet nur während einer normalen Standpause mit ruhig stehenden Füßen eine Salve aus zwei Geschossen (150 ms Abstand). Während `FireState` aktiv ist, darf weder die Laufbewegung noch eine Wendung beginnen; nach dem zweiten Schuss bleiben 200 ms Erholungszeit für einen späteren Rückstoß/eine Animation. Bestehender Schussabstand zwischen Salven 1800 ms. **Lokaler Laufzeittest noch offen.**
+- [ ] **Nächster Test:** Im Spiel prüfen, ob der Walker die Bewegung für beide Schüsse und bis zum Ende des Feuerzustands festhält, erst anschließend weiterläuft, nicht während des Wendens schießt und der Feuertimer bei längeren Standphasen sinnvoll bleibt.
 - [ ] Testen, ob die Geschosse mit Float-Weltkoordinaten tatsächlich mittig aus dem **2 px hohen Rohr** austreten; Bullet-Grafik ist laut Entwickler 6 px hoch. Den Grafikbestand nicht vorschnell umbauen. Gemessene Mündung (Proto-Anschluss) und sichtbare Spriteposition vergleichen; `Floor()` in `SpriteDraw()` keinesfalls ohne projektweiten Test entfernen.
 - [ ] Bestehendes Mündungsfeuer (`FlashAdd`) für Walker wiederverwenden, **ohne Sonecs Maschinengewehrcode zu verändern**. Ggf. gemeinsame kleine Aufruffunktion oder geeignete Parameter ergänzen; Position, Richtung, Effektlebensdauer und Scale prüfen.
 - [ ] Eine vorübergehende zuschaltbare Debug-Anzeige für Walker-Waffen entwickeln: Mündungs-Pivot, tatsächlicher Bullet-Startpunkt, Blickrichtung, Salvenzustand, Schuss-Timer sowie Bullet-Typ/Geschwindigkeit; optional Zeitlupe/Marker für einzelne Geschosse.
-- [ ] **Trefferregel-Matrix festlegen:** Welche Geschosse (Spieler, Walker/Feind) dürfen Sonec, Schild, Walker, Minen, Orbs, Kisten oder andere Objekte treffen? Kistenschaden durch Walker ist aktuell möglich und vom Entwickler als eventuell akzeptabel eingestuft, Entscheidung offen. Spieler- und Feindgeschosse sauber trennen.
+- [x] **Fairness-Regel Orbs:** Orbs sind keine neutralen Ziele für Geschosse: Nur `TYPEPLAYERONE` darf sie per `BulletCollideOrbs()` treffen; Walker-/Feind-Bullets werden ignoriert. Statisch eingecheckt, lokaler Test offen. Weitere Schadensquellen (Explosionen usw.) separat betrachten.
+- [ ] **Trefferregel-Matrix festlegen:** Welche Geschosse (Spieler, Walker/Feind) dürfen Sonec, Schild, Walker, Minen, Orbs, Kisten oder andere Objekte treffen? Kistenschaden durch Walker ist aktuell möglich und eventuell akzeptabel, Entscheidung offen. Bei allen Gegnerfähigkeiten auf **faire Computergegner** achten: erkennbare Angriffsmuster, realistische Reaktionszeiten und keine unbeabsichtigte Zerstörung spielerrelevanter Ressourcen.
 - [ ] Sehr schnelle Bullets (derzeit ungefähr 300 virtuelle px/s) auf **Tunneling** zwischen Kollisionsprüfungen testen; ggf. Strecke zwischen alter und neuer Position statt nur Endposition prüfen. Der gelegentliche Eindruck minimal verfehlter Treffer bei Sonec ist noch kein bestätigter Fehler.
 - [ ] Prüfen, wie feindliche Geschosse mit Sonecs Schild interagieren; `BulletCollide()` zieht derzeit unmittelbar Gesundheit ab.
 - [ ] Diagonal schießende Bullets, inklusive Projektilgrafik und korrekt rotierter Trefferbox, erst **nach** dem horizontalen Waffen-Grundtest entwickeln.
@@ -75,6 +77,9 @@
 - [ ] Freien Fall, Sprung, Jetpack, Landungen, Waffen und Plattformen bei unterschiedlichen Bildraten testen.
 - [ ] Offene bildratenabhängige Bewegungsberechnungen (insbesondere Sonec) bewerten; nicht allein wegen aktiviertem VSync als gelöst einstufen.
 - [ ] Spielrunde, Pause, Tod, Neustart und minimale Alpha-Abschlussbedingungen festlegen.
+- [ ] **Einfaches Punktesystem für die Alpha prüfen:** Vorhandene Punkte-/Score-Anzeige und Punktvergabe im aktuellen SonecBot-Code inventarisieren; minimale Regeln für Treffer, zerstörte Ziele, Ressourcen und Spielende festlegen und testen.
+- [ ] **Online-Highscore-Tabelle prüfen:** Bestehende Lösung aus Crystals und ihre technische Anbindung/Datenschutz/Fehlerfälle prüfen; entscheiden, ob eine einfache Online-Tabelle bereits mit der Alpha sinnvoll und zuverlässig ist oder erst mit der Beta veröffentlicht wird.
+- [ ] **Schwierigkeitsgrade für die Veröffentlichung vormerken:** mindestens das gewünschte Standard-Spielgefühl und mögliche Varianten prüfen; Spawnrate, Gegnerpräzision, Feuerpausen, Ressourcenverfügbarkeit und Fairness berücksichtigen. Kein sofortiger Umbau der Balance.
 - [ ] Alpha-Umfang bewusst klein halten: ein zuverlässig spielbarer Walker ist Pflicht, zusätzliche Gegner nicht automatisch.
 
 ## 3. Kampf, Energie und Kollisionen – mittlere Priorität
@@ -91,7 +96,7 @@
 
 - [ ] Weitere Gegnertypen und besondere Bewegungs-/Angriffssysteme erst nach stabiler Alpha-Basis planen.
 - [ ] Informationsavatar sowie mögliche Aufgaben/Missionen konkretisieren.
-- [ ] Vorhandene Online-Highscore-Lösung für eine spätere Beta prüfen.
+- [ ] Vorhandene Online-Highscore-Lösung als Option für Alpha/Beta prüfen (erste Prüfung und mögliche frühere Alpha-Integration im Abschnitt HTML5-Alpha).
 - [ ] Weiteren Grafik-, Sound- und UI-Feinschliff nach stabiler Kernmechanik priorisieren; Walker-Beindetails sind bewusst auf später verschoben.
 
 ## 5. Dokumentation und Nachvollziehbarkeit
@@ -100,6 +105,10 @@
 - [x] `TECHNICAL.md` auf Version 0.5 mit IK-Mathematik, Laufsteuerung, Fußhöhe, Debug-Verfahren und Testgrenzen aktualisieren.
 - [x] `TODO.md` angelegt und auf Version 0.2 mit priorisierten Walker-Bewaffnungsaufgaben erweitert.
 - [x] Ergebnis der lokalen Walker-Lauftests nachtragen; mögliche Randfälle und graphisches Polishing ausdrücklich später behandeln.
+- [ ] **README.md für die Alpha aktualisieren:** Bestehende Kurzbeschreibung und veraltete Aussage „only with Joypad“ anhand des tatsächlich getesteten Steuerungsstands korrigieren; Spielkonzept, Controls, bekannte Grenzen, HTML5-Start, Lizenz/Projektstatus und itch.io-Link verständlich darstellen.
+- [ ] **itch.io-Alpha-Seite vorbereiten:** Aussagekräftigen Titel, Kurz- und Langbeschreibung, Kategorie, Tags, Steuerung, Browserhinweise, Alpha-Stand und ehrliche bekannte Einschränkungen formulieren; README und Seite konsistent halten.
+- [ ] **Alpha-Screenshots erstellen und auswählen:** 3–5 aussagekräftige Spielszenen, sinnvolles Cover/Banner; für eingebettete HTML5-Seiten ggf. Bilder zusätzlich in der Beschreibung platzieren.
+- [ ] **Kurzen Gameplay-Trailer prüfen:** Video/MP4 bei Bedarf erstellen; itch.io unterstützt laut offizieller Dokumentation als Trailer derzeit Links zu extern gehosteten Videos (u. a. YouTube/Vimeo), keine direkte MP4-Einbettung als dokumentierte Trailer-Option. Veröffentlichung und Darstellung auf der HTML5-Seite testen.
 - [ ] Vor der HTML5-Alpha offene Anforderungen und tatsächlichen Teststatus der Kernsysteme erneut abgleichen.
 - [ ] Vor dem Alpha-Abnahmetest bzw. beim Wechsel in einen neuen Chat ein **Übergabeprotokoll** erstellen: Branch und Commits, getesteter Build, erledigte Funktionen, offene Fehler/Entscheidungen, aktuelle Prioritäten, relevante Dateien und bekannte AGK-Besonderheiten.
 
