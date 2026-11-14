@@ -318,6 +318,8 @@ type TWalker
 	NextPauseMs as integer
 	PauseUntilMs as integer
 	FireTimer as TTime
+	FireState as integer
+	FireStateUntilMs as integer
 	Enabled as integer
 	ObjectData as TObjectData
 	CollisionData as TCollisionData
