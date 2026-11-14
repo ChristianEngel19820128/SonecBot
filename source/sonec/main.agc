@@ -32,10 +32,18 @@ SetWindowSize(wx,wy,0)
 SetWindowAllowResize(1)
 SetVirtualResolution(vx,vy)
 
+// Windows VSync A/B test: 1 = monitor-synced, 0 = previous 60 FPS limiter.
+// HTML5 keeps its existing VSync setting; other platforms remain unchanged.
+#constant WINDOWS_VSYNC_TEST 1
+
 if GetDeviceBaseName() = "html5"
 	SetVSync(1)
 else
-	SetSyncRate(60,1)
+	if GetDeviceBaseName() = "windows" and WINDOWS_VSYNC_TEST = 1
+		SetVSync(1)
+	else
+		SetSyncRate(60,1)
+	endif
 endif
 
 SetScissor(0,0,0,0)
