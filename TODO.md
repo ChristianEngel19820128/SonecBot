@@ -1,7 +1,7 @@
 # SonecBot – TODO und Meilensteine
 
-**Dokumentstatus:** Erste Fassung 0.1  
-**Stand:** 13. November 2026  
+**Dokumentstatus:** Version 0.2  
+**Stand:** 14. November 2026  
 **Branch:** `develop`  
 **Ziel:** Kleine, überprüfbare Schritte zur spielbaren HTML5-Alpha
 
@@ -26,24 +26,38 @@
 - [x] Stabile Standpose mit 30 px Hüfthöhe und zwei Fußzielen bei ±10 px im lokalen Screenshot des Entwicklers grundsätzlich bestätigen. **Das bestätigt nicht automatisch die fertige Laufanimation.**
 - [x] Historische ±45°-Proto-Rotationen für Thigh und Shank als Altwerte identifizieren; aktuelle Testwerte bleiben 0°.
 
-### Nächste isolierte Tests – hohe Priorität
+### Abgeschlossener Laufanimations-Meilenstein (14. November 2026)
 
-- [ ] `WALKER_STAND_POSE_TEST` kontrolliert von `1` auf `0` stellen und die normale Schrittsteuerung wieder aktivieren.
-- [ ] Im Video beide Laufrichtungen, Schritte, Bodenkontakt, Pausen, Loslaufen und Richtungswechsel mit der neuen Körperanbindung prüfen.
-- [ ] Stand- und Schwungbein besser unterscheiden; Standfuß soll nicht sichtbar über die Plattform gleiten.
-- [ ] Übergang zwischen Bewegung und stabiler Standpose ohne abrupte Fußsprünge abstimmen.
-- [ ] Vorläufige richtungsabhängige Fußwinkel (`-90°` links, `+90°` rechts) anhand der Originalbilder überprüfen und endgültige Endglied-Referenz festlegen; keine verdeckten individuellen Beinwinkelkorrekturen einführen.
-- [ ] Nach erfolgreichem Bewegungstest Debug-Anzeigen standardmäßig deaktivieren, die Diagnosefunktionen und Schalter aber für spätere Gegner erhalten.
+- [x] Standpose-Diagnosemodus deaktivieren: `WALKER_STAND_POSE_TEST = 0`.
+- [x] Getrennte Fußziele von −10/+10 px auch während der Schritte beibehalten.
+- [x] Standbein auf der Plattform fixieren und Schwungbein mit an die Reichweite angepasstem Schrittziel bewegen (180° pro 15 px Weg).
+- [x] Füße beim Anhalten sanft zur Grundhaltung zurückführen.
+- [x] An Plattformkanten über `TurnPending` erst zur Standpose zurückkehren, dann die Blick- und Laufrichtung wechseln.
+- [x] Einheitliches, langsameres Lauftempo `0.05` für vergleichbare Tests setzen.
+- [x] Fußgelenke 8 px über der Plattformoberkante platzieren; die tatsächlichen Fußsohlen liegen im lokalen Screenshot optisch passend auf.
+- [x] Weißes Debug-Skelett, Proto-Markierungen und Winkelanzeige standardmäßig deaktivieren; Diagnoseroutinen erhalten.
+- [x] Gangbild, Pausen, Richtungswechsel und Animation ohne Debug in lokalen Screenshots/Videos grundsätzlich prüfen. **Bewertung des Entwicklers: Laufanimation alpha-tauglich.** Das ersetzt keinen umfassenden HTML5-/Randfalltest.
 
-### Walker – anschließende Arbeiten
+### Walker-Bewaffnung – nächster Schwerpunkt
 
-- [ ] Kollisions- und Bewegungsverhalten an Kisten sowie schmalen Plattformen überprüfen; Plattformkanten begrenzen die Bewegung bereits.
-- [ ] Eigene Walker-Projektile über das bestehende Bullet-System integrieren und auf korrekt positionierte Mündungen prüfen.
-- [ ] Kleine, kontrollierte Torso-/Turm-Neigung beim Zielen evaluieren; stabile Fuß- und Hüftanschlüsse dabei erhalten.
+- [ ] Vorhandene `BulletAdd`-/`BulletNew`-Schnittstellen sowie Kollisions- und Projektilbesitzerlogik untersuchen, bevor ein Gegner schießt.
+- [ ] Zielwahl und einfache Erkennungsbedingungen für Sonec festlegen; keine unbegrenzte Treffergenauigkeit oder Dauerfeuer.
+- [ ] Mündungsposition aus dem aktuellen Turm-Sprite und seinen Proto-Daten ableiten und im Debugtest prüfen.
+- [ ] Kontrollierte Walker-Schüsse mit Abklingzeit und sauberer Freund-/Feind-Unterscheidung auf Basis des bestehenden Bullet-Systems implementieren.
+- [ ] Kollision und Schaden feindlicher Geschosse gegen Sonec sowie Interaktion mit dem Schild lokal testen.
+- [ ] Optionale, begrenzte Turm-/Torso-Neigung beim Zielen separat evaluieren; die funktionierende Bein-IK nicht verändern.
+
+### Walker – spätere Arbeiten und Polishing
+
+- [ ] Verhalten an Kisten und auf besonders schmalen Plattformen überprüfen; Plattformkanten sind bereits berücksichtigt.
 - [ ] Größeninitialisierung in `WalkerNew` und die daraus abgeleiteten Begrenzungs-/Kollisionswerte prüfen.
 - [ ] Explosionstreffer für Walker ergänzen, wenn die allgemeine neutrale Explosionskollision erweitert wird.
-- [ ] Später entscheiden, ob eine Torso-Trefferzone das Spielgefühl verbessert.
-- [ ] Spriter oder ein vergleichbares Keyframe-Werkzeug optional für Spezialanimationen (Knien, Aufstehen, Zerstörung) evaluieren; das prozedurale IK-System bleibt die Grundlage.
+- [ ] Später entscheiden, ob eine zusätzliche Corpus-Trefferzone sinnvoll ist.
+- [ ] **Grafisches Polishing (nicht alpha-blockierend):** Beinsegmente bei Bedarf etwas schlanker zeichnen und Knie-/Gelenkdetails, Konturlinien oder kleine Highlights ergänzen. Dabei Sprite-Offsets und Anchors nur bei wirklicher Änderung der Bildgeometrie nachmessen.
+- [ ] Die vorhandene richtungsabhängige ±90°-Fußwinkelzuweisung für ein künftiges verallgemeinertes Skelett-/Endglied-Konzept dokumentiert lassen; nur bei konkretem Fehler anfassen.
+- [ ] Allgemeine, beobachtete 1-px-Darstellungsabweichung bei Plattformen/Kisten/Sonec gesondert untersuchen; Ursache durch `Floor()` ist noch nicht bestätigt.
+- [ ] Langfristig IK-Grundfunktionen und Debug-Skelett vereinheitlichen und bei Bedarf für weitere Gegnertypen auslagern; aktuelle Walker-Implementierung nicht vor der Alpha destabilisieren.
+- [ ] Spriter oder ein vergleichbares Keyframe-Werkzeug optional für Spezialanimationen evaluieren.
 
 ## 2. HTML5-Alpha – hohe Priorität
 
@@ -70,14 +84,14 @@
 - [ ] Weitere Gegnertypen und besondere Bewegungs-/Angriffssysteme erst nach stabiler Alpha-Basis planen.
 - [ ] Informationsavatar sowie mögliche Aufgaben/Missionen konkretisieren.
 - [ ] Vorhandene Online-Highscore-Lösung für eine spätere Beta prüfen.
-- [ ] Grafik-, Sound- und UI-Feinschliff nach stabiler Kernmechanik priorisieren.
+- [ ] Weiteren Grafik-, Sound- und UI-Feinschliff nach stabiler Kernmechanik priorisieren; Walker-Beindetails sind bewusst auf später verschoben.
 
 ## 5. Dokumentation und Nachvollziehbarkeit
 
-- [x] `PROJECT.md` auf Version 0.5 mit dem Walker-Meilenstein aktualisieren.
-- [x] `TECHNICAL.md` auf Version 0.4 mit IK-Mathematik, Proto-Verbindungen, Debug-Verfahren und Fehlergeschichte aktualisieren.
-- [x] `TODO.md` als priorisierte Aufgabenübersicht anlegen.
-- [ ] Nach erfolgreichem Walker-Lauftest dessen Ergebnis sowie mögliche neue Restfehler nachtragen.
+- [x] `PROJECT.md` auf Version 0.6 mit dem alpha-tauglichen Walker-Gangbild aktualisieren.
+- [x] `TECHNICAL.md` auf Version 0.5 mit IK-Mathematik, Laufsteuerung, Fußhöhe, Debug-Verfahren und Testgrenzen aktualisieren.
+- [x] `TODO.md` angelegt und auf Version 0.2 mit priorisierten Walker-Bewaffnungsaufgaben erweitert.
+- [x] Ergebnis der lokalen Walker-Lauftests nachtragen; mögliche Randfälle und graphisches Polishing ausdrücklich später behandeln.
 - [ ] Vor der HTML5-Alpha offene Anforderungen und tatsächlichen Teststatus der Kernsysteme erneut abgleichen.
 
-**Referenz des Walker-Meilensteins:** `deb8b74` auf `develop`. Bestätigt wurde die Standpose anhand lokaler Tests und Screenshots des Entwicklers; kein eigener AGK-Build durch den Assistenten.
+**Walker-Referenzstände:** Corpus-/Turmanbindung `deb8b74`; getrennte Fußziele `760c8c3`; angepasste Gangphase `20eced3`; Wendeverhalten `810d342`; einheitliche Geschwindigkeit `20b2d7d`; Fußhöhe 8 px `328c5e0`; Debug-Anzeigen aus `c6d47e6` (jeweils auf `develop`). Der Entwickler hat das lokale Gangbild als alpha-tauglich bewertet; ein eigener AGK-Build des Assistenten und ein HTML5-Praxistest stehen aus.
