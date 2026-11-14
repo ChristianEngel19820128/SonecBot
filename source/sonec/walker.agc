@@ -1418,7 +1418,9 @@ function WalkerMuzzleDebugDrawAll(WalkerList ref as TWalkerList,ProtoWalker ref 
 			HudText = HudText + Chr(10)+"More Walkers: "+Str(WalkerCount-Shown)+" (markers still drawn)"
 		endif
 		SetTextString(WalkerDebugHudText,HudText)
-		SetTextPosition(WalkerDebugHudText,12,12)
+		// Keep the left-aligned lines together, but dock the entire text block to the right edge.
+		// Measure after updating the string so changing Walker values do not clip at the edge.
+		SetTextPosition(WalkerDebugHudText,GetVirtualWidth()-GetTextTotalWidth(WalkerDebugHudText)-12,12)
 		DrawText(WalkerDebugHudText)
 	endif
 endfunction
