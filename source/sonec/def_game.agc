@@ -317,6 +317,7 @@ type TWalker
 	SkeletonDebugShankSprite as float
 	NextPauseMs as integer
 	PauseUntilMs as integer
+	FireTimer as TTime
 	Enabled as integer
 	ObjectData as TObjectData
 	CollisionData as TCollisionData
