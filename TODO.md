@@ -1,6 +1,6 @@
 # SonecBot – TODO und Meilensteine
 
-**Dokumentstatus:** Version 0.7  
+**Dokumentstatus:** Version 0.8  
 **Stand:** 14. November 2026  
 **Branch:** `develop`  
 **Ziel:** Kleine, überprüfbare Schritte zur spielbaren HTML5-Alpha
@@ -57,6 +57,9 @@
 - [ ] Sehr schnelle Bullets (derzeit ungefähr 300 virtuelle px/s) auf **Tunneling** zwischen Kollisionsprüfungen testen; ggf. Strecke zwischen alter und neuer Position statt nur Endposition prüfen. Der gelegentliche Eindruck minimal verfehlter Treffer bei Sonec ist noch kein bestätigter Fehler.
 - [ ] Prüfen, wie feindliche Geschosse mit Sonecs Schild interagieren; `BulletCollide()` zieht derzeit unmittelbar Gesundheit ab.
 - [ ] Diagonal schießende Bullets, inklusive Projektilgrafik und korrekt rotierter Trefferbox, erst **nach** dem horizontalen Waffen-Grundtest entwickeln.
+- [ ] **Walker: faire, sich verbessernde Zielgenauigkeit (Konzept, noch nicht implementiert):** Erste Salve mit kontrollierter zufälliger Abweichung. Mit weiteren Salven wird die Zielschätzung schrittweise besser, bleibt aber bewusst nie perfekt. Die Ungenauigkeit soll nachvollziehbare Ausweichmöglichkeiten lassen und nicht durch reine Zufalls-Treffer unfair wirken.
+- [ ] **Bewegungsprognose als Walker-Eigenschaft prüfen:** Sonecs Bewegungsrichtung und Geschwindigkeit beim Zielen teilweise berücksichtigen, ggf. mit begrenztem Vorhalt in seine Flugrichtung. Kein allwissendes Echtzeit-Tracking; Lernfortschritt nach Zielverlust/Unterbrechung wieder reduzieren oder zurücksetzen. Erkennungsbedingungen, maximale Zielkorrektur, Reaktionszeit und Schwierigkeitsgrad später festlegen.
+- [ ] **Technische Reihenfolge beachten:** Aktuell kann der Walker nur horizontal schießen; für echtes Zielen auf bewegte/anders hoch liegende Ziele zuerst diagonale Bullet-Flugbahnen und passende Kollisionserkennung zuverlässig testen. Aim-System in kleinen Schritten entwickeln; keine Änderungen an der funktionierenden Bein-IK.
 - [ ] Danach Zielwahl/Erkennungsbedingungen und optional eine begrenzte Turm-/Torso-Neigung separat planen, ohne die funktionierende Bein-IK zu verändern.
 
 ### Walker – spätere Arbeiten und Polishing
@@ -102,6 +105,7 @@
 ## 4. Spätere Erweiterungen – niedrige Priorität
 
 - [ ] Weitere Gegnertypen und besondere Bewegungs-/Angriffssysteme erst nach stabiler Alpha-Basis planen.
+- [ ] **Gegner sollen individuelle Charaktere haben:** Jeder Gegnertyp erhält ein eigenes, klar erkennbares Verhalten statt eines unnötig komplexen universellen KI-Systems. Für den Walker sind beispielsweise Stand-Salven, begrenzter Vorhalt und allmählich verbesserte, aber unperfekte Zielgenauigkeit vorgesehen. Unterschiede einzelner Exemplare nur bei tatsächlichem spielerischem Nutzen vorsehen; unnötige Sonderfälle und Doppelarbeit vermeiden.
 - [ ] Informationsavatar sowie mögliche Aufgaben/Missionen konkretisieren.
 - [ ] Vorhandene Online-Highscore-Lösung als Option für Alpha/Beta prüfen (erste Prüfung und mögliche frühere Alpha-Integration im Abschnitt HTML5-Alpha).
 - [ ] Weiteren Grafik-, Sound- und UI-Feinschliff nach stabiler Kernmechanik priorisieren; Walker-Beindetails sind bewusst auf später verschoben.
