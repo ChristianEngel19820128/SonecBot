@@ -287,13 +287,13 @@ function WalkerNew(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,World r
 		Walker.WalkerObjectData.Tower.Radius    = ProtoWalker.AnimRight.Tower.Radius
 		Walker.WalkerObjectData.Tower.Rotation  = ProtoWalker.AnimRight.Tower.Rotation+90
 
-		Walker.WalkerObjectData.Barrel[0].Angle     = ProtoWalker.AnimLeft.Barrel.Angle
-		Walker.WalkerObjectData.Barrel[0].Radius    = ProtoWalker.AnimLeft.Barrel.Radius
-		Walker.WalkerObjectData.Barrel[0].Rotation  = ProtoWalker.AnimLeft.Barrel.Rotation+180
+		Walker.WalkerObjectData.Barrel[0].Angle     = ProtoWalker.AnimRight.Barrel.Angle
+		Walker.WalkerObjectData.Barrel[0].Radius    = ProtoWalker.AnimRight.Barrel.Radius
+		Walker.WalkerObjectData.Barrel[0].Rotation  = ProtoWalker.AnimRight.Barrel.Rotation+90
 
-		Walker.WalkerObjectData.Barrel[1].Angle     = ProtoWalker.AnimLeft.Barrel.Angle
-		Walker.WalkerObjectData.Barrel[1].Radius    = ProtoWalker.AnimLeft.Barrel.Radius
-		Walker.WalkerObjectData.Barrel[1].Rotation  = ProtoWalker.AnimLeft.Barrel.Rotation+180
+		Walker.WalkerObjectData.Barrel[1].Angle     = ProtoWalker.AnimRight.Barrel.Angle
+		Walker.WalkerObjectData.Barrel[1].Radius    = ProtoWalker.AnimRight.Barrel.Radius
+		Walker.WalkerObjectData.Barrel[1].Rotation  = ProtoWalker.AnimRight.Barrel.Rotation+90
 
 	endif
 	
