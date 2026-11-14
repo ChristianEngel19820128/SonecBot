@@ -1,6 +1,6 @@
 # SonecBot – TODO und Meilensteine
 
-**Dokumentstatus:** Version 0.2  
+**Dokumentstatus:** Version 0.3  
 **Stand:** 14. November 2026  
 **Branch:** `develop`  
 **Ziel:** Kleine, überprüfbare Schritte zur spielbaren HTML5-Alpha
@@ -40,12 +40,17 @@
 
 ### Walker-Bewaffnung – nächster Schwerpunkt
 
-- [ ] Vorhandene `BulletAdd`-/`BulletNew`-Schnittstellen sowie Kollisions- und Projektilbesitzerlogik untersuchen, bevor ein Gegner schießt.
-- [ ] Zielwahl und einfache Erkennungsbedingungen für Sonec festlegen; keine unbegrenzte Treffergenauigkeit oder Dauerfeuer.
-- [ ] Mündungsposition aus dem aktuellen Turm-Sprite und seinen Proto-Daten ableiten und im Debugtest prüfen.
-- [ ] Kontrollierte Walker-Schüsse mit Abklingzeit und sauberer Freund-/Feind-Unterscheidung auf Basis des bestehenden Bullet-Systems implementieren.
-- [ ] Kollision und Schaden feindlicher Geschosse gegen Sonec sowie Interaktion mit dem Schild lokal testen.
-- [ ] Optionale, begrenzte Turm-/Torso-Neigung beim Zielen separat evaluieren; die funktionierende Bein-IK nicht verändern.
+- [x] Erste horizontale Walker-Testschüsse in Blickrichtung mit einem Timer von 1800 ms über `BulletAdd(...,TYPEENEMY,...)` eingebunden; Mündungsposition wirkt im lokalen Test plausibel. Schüsse treffen Sonec und verursachen Schaden.
+- [x] Walker-Turmtreffer auf Spielerprojektile (`TYPEPLAYERONE`) begrenzt, damit Walker-Geschosse nicht ihre eigenen Artgenossen beschädigen.
+- [ ] **Nächster Schusstest:** Walker feuert **ausschließlich im Stand** (nicht beim Laufen oder Wenden) eine Salve aus **zwei Geschossen mit kurzem Abstand**; danach längere Feuerruhe. Lauf-/Pause-/Salventimer getrennt halten und angefangenes Feuern bei Bewegung sauber unterbrechen.
+- [ ] Testen, ob die Geschosse mit Float-Weltkoordinaten tatsächlich mittig aus dem **2 px hohen Rohr** austreten; Bullet-Grafik ist laut Entwickler 6 px hoch. Den Grafikbestand nicht vorschnell umbauen. Gemessene Mündung (Proto-Anschluss) und sichtbare Spriteposition vergleichen; `Floor()` in `SpriteDraw()` keinesfalls ohne projektweiten Test entfernen.
+- [ ] Bestehendes Mündungsfeuer (`FlashAdd`) für Walker wiederverwenden, **ohne Sonecs Maschinengewehrcode zu verändern**. Ggf. gemeinsame kleine Aufruffunktion oder geeignete Parameter ergänzen; Position, Richtung, Effektlebensdauer und Scale prüfen.
+- [ ] Eine vorübergehende zuschaltbare Debug-Anzeige für Walker-Waffen entwickeln: Mündungs-Pivot, tatsächlicher Bullet-Startpunkt, Blickrichtung, Salvenzustand, Schuss-Timer sowie Bullet-Typ/Geschwindigkeit; optional Zeitlupe/Marker für einzelne Geschosse.
+- [ ] **Trefferregel-Matrix festlegen:** Welche Geschosse (Spieler, Walker/Feind) dürfen Sonec, Schild, Walker, Minen, Orbs, Kisten oder andere Objekte treffen? Kistenschaden durch Walker ist aktuell möglich und vom Entwickler als eventuell akzeptabel eingestuft, Entscheidung offen. Spieler- und Feindgeschosse sauber trennen.
+- [ ] Sehr schnelle Bullets (derzeit ungefähr 300 virtuelle px/s) auf **Tunneling** zwischen Kollisionsprüfungen testen; ggf. Strecke zwischen alter und neuer Position statt nur Endposition prüfen. Der gelegentliche Eindruck minimal verfehlter Treffer bei Sonec ist noch kein bestätigter Fehler.
+- [ ] Prüfen, wie feindliche Geschosse mit Sonecs Schild interagieren; `BulletCollide()` zieht derzeit unmittelbar Gesundheit ab.
+- [ ] Diagonal schießende Bullets, inklusive Projektilgrafik und korrekt rotierter Trefferbox, erst **nach** dem horizontalen Waffen-Grundtest entwickeln.
+- [ ] Danach Zielwahl/Erkennungsbedingungen und optional eine begrenzte Turm-/Torso-Neigung separat planen, ohne die funktionierende Bein-IK zu verändern.
 
 ### Walker – spätere Arbeiten und Polishing
 
@@ -63,7 +68,10 @@
 
 - [ ] Aktuellen HTML5-Build in einer Browserumgebung praktisch testen; Ziel für die erste Veröffentlichung ist itch.io.
 - [ ] Gamepad-Eingaben mit dem bestehenden HTML5-Index-1-Workaround verifizieren; bei Problemen mit dem Referenzprojekt Crystals vergleichen.
-- [ ] Eingabealternativen und Benutzbarkeit von Tastatursteuerung prüfen.
+- [ ] **Alpha:** Tastatur als zuverlässig spielbare Alternative zum Gamepad prüfen und vollständige Standardbelegung für Bewegung, Jetpack, Waffen, Schild und Pause festlegen und testen.
+- [ ] **Alpha-Optionen (Minimalumfang):** Entscheiden, ob ein kleines Optionsmenü vor der Veröffentlichung nötig ist (zumindest Steuerung anzeigen, Audio/Anzeige falls relevant); alternativ Standardbelegung im Spiel/Hilfetext dokumentieren. Kein komplexes Menü als automatische Alpha-Voraussetzung.
+- [ ] **Beta:** Frei belegbare Tastatursteuerung (Key-Rebinding) mit Konfliktprüfung, Standardwerte wiederherstellen und dauerhafter Speicherung als eigene Aufgabe vorsehen.
+- [ ] **Beta:** Optionsmenü um Eingabe-/Audio-/Grafikeinstellungen entsprechend tatsächlichem Bedarf erweitern.
 - [ ] Freien Fall, Sprung, Jetpack, Landungen, Waffen und Plattformen bei unterschiedlichen Bildraten testen.
 - [ ] Offene bildratenabhängige Bewegungsberechnungen (insbesondere Sonec) bewerten; nicht allein wegen aktiviertem VSync als gelöst einstufen.
 - [ ] Spielrunde, Pause, Tod, Neustart und minimale Alpha-Abschlussbedingungen festlegen.
@@ -93,5 +101,6 @@
 - [x] `TODO.md` angelegt und auf Version 0.2 mit priorisierten Walker-Bewaffnungsaufgaben erweitert.
 - [x] Ergebnis der lokalen Walker-Lauftests nachtragen; mögliche Randfälle und graphisches Polishing ausdrücklich später behandeln.
 - [ ] Vor der HTML5-Alpha offene Anforderungen und tatsächlichen Teststatus der Kernsysteme erneut abgleichen.
+- [ ] Vor dem Alpha-Abnahmetest bzw. beim Wechsel in einen neuen Chat ein **Übergabeprotokoll** erstellen: Branch und Commits, getesteter Build, erledigte Funktionen, offene Fehler/Entscheidungen, aktuelle Prioritäten, relevante Dateien und bekannte AGK-Besonderheiten.
 
 **Walker-Referenzstände:** Corpus-/Turmanbindung `deb8b74`; getrennte Fußziele `760c8c3`; angepasste Gangphase `20eced3`; Wendeverhalten `810d342`; einheitliche Geschwindigkeit `20b2d7d`; Fußhöhe 8 px `328c5e0`; Debug-Anzeigen aus `c6d47e6` (jeweils auf `develop`). Der Entwickler hat das lokale Gangbild als alpha-tauglich bewertet; ein eigener AGK-Build des Assistenten und ein HTML5-Praxistest stehen aus.
