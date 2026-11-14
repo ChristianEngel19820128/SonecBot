@@ -1,6 +1,6 @@
 # SonecBot – Technische Dokumentation
 
-**Dokumentstatus:** Bestandsaufnahme 0.6 (Walker-Waffentest und Feuerzustand, 14. November 2026)  
+**Dokumentstatus:** Bestandsaufnahme 0.7 (Walker-Mündungsfeuer, Windows-VSync und Float-Zeichentest, 14. November 2026)  
 **Branch:** `develop`  
 **Engine:** AppGameKit Studio (AGK)  
 **Erste Zielplattform:** HTML5  
@@ -46,7 +46,7 @@ Die Bewegung von Walker, Plattformen, Orbs, Minen, Türmen, Projektilen und Plas
 
 **Vergleichsprojekt:** [Crystal Columns / Crystals](https://github.com/ChristianEngel19820128/Crystals) verwendet in `source/crystals/main.agc` für HTML5 `SetVSync(1)` und sonst `SetSyncRate(120,0)`. Der grundlegende Timermechanismus ist ähnlich. Der Unterschied im Bewegungsmodell zwischen Rasterspiel und SonecBot bleibt relevant.
 
-**Umgesetzt auf `develop`:** In `main.agc` wird für HTML5 `SetVSync(1)` gewählt; andere Plattformen behalten `SetSyncRate(60,1)`. Commit `94f84f032a2c6b45ee82570deef16c67016ea206`. VSync ist **keine Korrektur** der bildratenabhängigen Physik.
+**Umgesetzt auf `develop`:** HTML5 verwendet `SetVSync(1)` (Commit `94f84f0`). Für Windows wurde `WINDOWS_VSYNC_TEST` als Umschalter ergänzt (Commit `46419f0`): bei `1` ebenfalls `SetVSync(1)`, bei `0` wie bisher `SetSyncRate(60,1)`; andere Plattformen verwenden weiter `SetSyncRate(60,1)`. **Lokaler Windows-Ersttest vom 14. November 2026:** konstante 59/60 FPS, kein auffälliges Tearing bei Sonecs freiem Fall mit hoher Endgeschwindigkeit. VSync bleibt für Windows vorerst aktiv. Die Ursache zuvor beobachteter horizontaler Bildverschiebungen ist **nicht abschließend bestätigt**; Langzeitbeobachtung und andere Monitorraten bleiben offen. VSync ist **keine Korrektur** der bildratenabhängigen Physik.
 
 **Geplante Verifikation:** Sobald ein zuverlässig spielbarer HTML5-Build vorliegt, Sonecs freien Fall, horizontale Bewegung, Sprung, Jetpack, Plattformlandungen und Granaten bei verschiedenen Bildraten vergleichen. Das 60-FPS-Spielgefühl dient vorerst als Referenz. Keine Physikänderung beschlossen.
 
@@ -125,11 +125,17 @@ Die alte `WalkerPartsCalculate()`-Kette setzte Oberschenkel und Corpus über `An
 
 **Waffentest, lokal bestätigt (14. November 2026):** Einfache horizontale Walker-Schüsse über `BulletAdd()` mit `TYPEENEMY` erscheinen nach Sichtprüfung an einer plausiblen Turmmündungsposition und verursachen bei Sonec Schaden. Feindliche Geschosse treffen derzeit auch Kisten; ob dies eine endgültige Spielregel wird, ist offen. Walker selbst nehmen über `BulletCollideWalkers()` nur Spieler-Geschosse (`TYPEPLAYERONE`) an; Orbs werden über `BulletCollideOrbs()` ebenfalls nur durch `TYPEPLAYERONE` getroffen, um die Fairness für Spieler und KI zu erhalten.
 
-**Neu implementiert, noch lokal zu testen:** Der Walker beginnt eine Zwei-Schuss-Salve nur in einer regulären Standpause und erst dann, wenn beide Füße wieder in ihrer neutralen Standpose sind. `TWalker.FireState` (0 = frei, 1 = zweiter Schuss ausstehend, 2 = Erholung) und `FireStateUntilMs` steuern einen Abstand von 150 ms und eine 200-ms-Abschlussphase. `WalkerMove()` blockiert das Wiederanlaufen, solange der Feuerzustand aktiv ist, auch wenn die normale Pause bereits endete. Die bestehende Plattformbewegung bleibt davon unabhängig. Der Timer `WALKER_FIRE_INTERVAL_MS = 1800` begrenzt den Beginn weiterer Salven; in längeren Standpausen können mehrere Salven auftreten. Rückstoß, Mündungsfeuer, diagonale Schüsse und Zielverfolgung sind noch nicht eingebaut.
+**Neu implementiert und teilweise lokal getestet:** Der Walker beginnt eine Zwei-Schuss-Salve nur in einer regulären Standpause und erst dann, wenn beide Füße ihre neutrale Standpose erreicht haben. `TWalker.FireState` (0 = frei, 1 = zweiter Schuss ausstehend, 2 = Erholung) und `FireStateUntilMs` steuern 150 ms Schussabstand und eine 200-ms-Abschlussphase. `WalkerMove()` blockiert das Wiederanlaufen, solange der Feuerzustand aktiv ist, auch wenn die normale Pause bereits endete. Die Plattformbewegung bleibt davon unabhängig. `WALKER_FIRE_INTERVAL_MS = 1800` begrenzt den Beginn weiterer Salven. **Der Entwickler hat den Salvenrhythmus lokal als gut bewertet; die gesamte Übergangslogik bleibt noch gezielt zu testen.** Rückstoß, diagonale Schüsse und Zielverfolgung sind nicht implementiert.
 
-**Technische Punkte für den nächsten Test:** `TPosition` speichert Gleitkommawerte, `SpriteDraw()` rundet sichtbare Positionen jedoch aktuell mit `Floor()`. Die horizontale Bullet-Grafik ist laut Entwickler 6 px hoch, das Rohr an der Mündung 2 px. Änderungen an Grafik, Rundung oder Mündungsgeometrie erfolgen erst nach Debug-Vergleich. Bei rund 300 virtuellen px/s besteht außerdem ein mögliches Risiko übersprungener Kollisionen (Tunneling), da die bisherigen Checks vorwiegend Endpositionen betrachten. Die Schusspause soll später genug Raum für Rückstoß- oder Turmanimationen bieten.
+**Mündungsfeuer integriert:** `WalkerFireShot()` berechnet den gemeinsamen Welt-Mündungspunkt mit `CalcPosition()` als Float und übergibt ihn unverändert an `BulletAdd(...,Radius=0)` und `FlashAdd(...,Radius=0)` (Commits `054aacb`, `83b6648`). `FlashDrawAll()` erfolgt nach Walker und Bullets, daher im Vordergrund. In `FlashNew()` wird nun `LifeCycleMax` vor der Startskalierung initialisiert. Screenshots bestätigen sichtbares Walker-Mündungsfeuer, aber nicht dessen pixelgenaue Ausrichtung.
 
-**Später:** Zielwahl, Fairness- und Schwierigkeitsbewertung, Kisten als Umkehrhindernis, zusätzliche Corpus-/Turm-Neigung, ggf. separate Corpus-Trefferzone und Einsatz vorhandener `FlashAdd()`-Mündungsfeuerfunktionen ohne Veränderung von Sonecs Maschinengewehr. Die funktionierende Bein-IK bleibt unangetastet.
+**Float-Zeichentest, neuer Stand:** `TPosition` speichert Gleitkommawerte. Bis Commit `fb45a28` rundete `SpriteDraw()` die Zeichnungspositionen mit `Floor()`; jetzt werden in beiden Zweigen (`SetSpritePositionByOffset` und `SetSpritePosition`) die Float-Werte unmittelbar verwendet. **Die Änderung ist noch kein bestätigter Qualitätsgewinn:** Sie betrifft sämtliche über `SpriteDraw()` gezeichneten Objekte, inklusive Sonec, Walker, Kisten, Bullet und Flash. Sichtbare Pixelkanten, Ausrichtung, Skalierung, Jitter und 1-px-Abstände im Langzeittest prüfen. Kollisionen und Originalgrafiken wurden nicht geändert; nicht jeder Draw-Pfad ist Teil von `SpriteDraw()`.
+
+**Optische Beobachtungen am Mündungsfeuer:** Die originale Bullet-Grafik ist laut Entwickler 6 px hoch, das Rohr am Walker im Original 2 px; skaliert wirkt das Rohr im Screenshot etwa 3 px hoch. Das Walker-Mündungsfeuer zeigt gegenüber dem Rohr eine kleine vertikale Pixelabweichung. Das Mündungsfeuer von Sonec erscheint horizontal deutlich weiter vom Schützen entfernt, ist vertikal aber plausibel ausgerichtet. Die Position und Anzeigedauer sollen später möglichst konsistent sein; die gewünschten Grafiken bleiben unverändert. Bei rund 300 virtuellen px/s bleibt Tunneling bei Bullet-Kollisionen ein möglicher Fehler.
+
+**Künftige Effekte und Sound:** Der derzeit aus `SonecMGunInput()` ausgelöste `SoundPlay(Sound.MGunSound)` ist noch nicht für Walker generalisiert. Eine gemeinsame Schuss-/Effektroutine wäre zu prüfen; `FlashNew()` selbst ist nicht zwingend der richtige Ort für Sound, da Flashes auch als rein visuelle Effekte dienen können. Für spätere getrennte Kanonen ist abwechselnder Rückstoß samt farblich unterscheidbarer Rohrspitzen geplant; dabei kann sich die dargestellte Rohrhöhe und damit der Mündungs-Referenzpunkt ändern.
+
+**Später:** Zielwahl, Fairness- und Schwierigkeitsbewertung, Kisten als Umkehrhindernis, zusätzliche Corpus-/Turm-Neigung, ggf. separate Corpus-Trefferzone sowie Feinausrichtung und Dauer des bereits integrierten `FlashAdd()`-Mündungsfeuers. Die funktionierende Bein-IK bleibt unangetastet.
 
 **Bestehendes Kampfsystem:** `BulletCollideWalkers(...)` prüft Projektile derzeit gegen die aus Bildgröße, Offset und Rotation berechnete Turm-Trefferzone. Treffer verringern die Gesundheit und lösen einen kurzen roten Hitflash aus. Zerstörung und Energie-Drops wurden vom Entwickler lokal getestet. `WalkerNew` enthält weiterhin auskommentierte Zuweisungen für Breite und Höhe; ob die Größen anderweitig zuverlässig gesetzt werden, ist noch zu prüfen, kein bestätigter Fehler.
 
@@ -183,7 +189,7 @@ Für die Beta ist ein Online-Highscore-System vorgesehen. Nach Angaben des Entwi
 | Kisten und Orbs | Module vorhanden; Belohnungsmechanik ungeklärt | Ausstehend |
 | Walker-Erzeugung | Aktiv in Spielschleife | Vom Entwickler lokal bestätigt |
 | Walker-Bewegung/Animation | Zweiknochen-IK, getrennte Fußziele, Stand-/Schwungbein, sanfte Standrückkehr, `TurnPending` und 8-px-Fußhöhe; Debug standardmäßig aus | Stand, Gang, Wende und Darstellung ohne Debug vom Entwickler lokal geprüft und als alpha-tauglich bewertet; HTML5-/Randfalltests ausstehend |
-| Walker-Kampfsystem | Horizontaler Gegner-Schuss mit `TYPEENEMY`, Turm-Hitbox, Zweischuss-Salve und getrenntem Feuer-/Laufzustand; Orb-Kollision auf Spieler-Bullets begrenzt | Erste Einzelschüsse gegen Sonec und Mündung lokal bestätigt; neue Salvenlogik und Orb-Schutz noch nicht praktisch getestet |
+| Walker-Kampfsystem | Horizontaler Gegner-Schuss mit `TYPEENEMY`, Turm-Hitbox, Zweischuss-Salve und getrenntem Feuer-/Laufzustand; gemeinsamer Float-Mündungspunkt für Bullet und Flash; Orb-Kollision auf Spieler-Bullets begrenzt | Schussschaden, gutes Salventempo und sichtbares Walker-Mündungsfeuer lokal bestätigt; optische Feinjustierung, Bewegungslock und Orb-Schutz noch gezielt zu testen |
 | HTML5-Steuerung | Index-1-Workaround auf develop umgesetzt; ungetestet | Ausstehend |
 | Kollisionen | Primitive/Box-Prüfungen; Schild-Shape-Prototyp mit Vergleichszählern | Schild-Shape-Test lokal durchgeführt; nicht für Schaden aktiv |
 
@@ -193,7 +199,7 @@ Für die Beta ist ein Online-Highscore-System vorgesehen. Nach Angaben des Entwi
 
 1. Zeitsystem, Pause, Bildratenabhängigkeit und Synchronisierung
 2. HTML5-Gamepad-Steuerung im Vergleich mit Columns
-3. Walker: Zwei-Schuss-Salve mit Bewegungslock und neue Orb-Fairness-Regel lokal testen; danach Mündungsfeuer, Projektil-Tunneling, Trefferregeln, Zielverhalten und mögliche Turm-/Torso-Neigung bearbeiten. Kisten als Umkehrhindernisse, ungeklärte Gesamtgröße und Torso-Hitbox später prüfen. Grafische Walker-Details nachrangig.
+3. Walker: Float-Zeichentest und Wirkung auf Bullet/Flash sowie übrige Sprites lokal prüfen; Salven-Bewegungslock und Orb-Fairness-Regel noch gezielt testen; danach Mündungsfeuer-Abstand/-Dauer, Projektil-Tunneling, Sound-Entkopplung, Trefferregeln und Zielverhalten bearbeiten. Turm-/Torso-Neigung, Kisten als Umkehrhindernisse, Gesamtgröße und Torso-Hitbox später prüfen. Grafisches Polishing nachrangig.
 4. Schild-Shape-Kollision weiter testen; allgemeine Kollisionserkennung und mögliche AGK-Alternativen
 5. Kisten, Orbs und Upgrade-Mechanik
 6. Einfache Punktevergabe für die Alpha und mögliche Wiederverwendung der Crystals-Online-Highscore-Lösung prüfen; geeigneten Release-Zeitpunkt für Online-Tabelle festlegen
@@ -202,6 +208,6 @@ Die Punkte sind Untersuchungsaufgaben, keine Änderungsfreigaben. Es werden kein
 
 ## 11. Quellen und Gültigkeit
 
-Statisch gesichtet auf `develop` (Walker-IK und Körperanbindung sowie Feuerzustand mit Salven bis Commit `2925a99`, Orb-Schutz bis `23e9ef1`, 14. November 2026; ergänzt durch lokale Screenshots und Spieltests des Entwicklers, wobei die letzten Salven-/Orb-Änderungen noch nicht lokal geprüft wurden): `main.agc`, `game.agc`, `def_game.agc`, `sonec.agc`, `walker.agc`, `mine.agc`, `plate.agc`, `controls.agc`, `def_joypad.agc`, `world.agc`, `collision.agc`, `sound.agc`.
+Statisch gesichtet auf `develop` (Walker-IK, Bewegung und Feuerzustand; Mündungsfeuer bis `83b6648`, Windows-VSync-Schalter `46419f0`, Float-Zeichenpfad bis `fb45a28`, 14. November 2026; ergänzt durch lokale Screenshots und Spieltests des Entwicklers, Float-Änderung noch nicht lokal getestet): `main.agc`, `game.agc`, `def_game.agc`, `sonec.agc`, `walker.agc`, `mine.agc`, `plate.agc`, `controls.agc`, `def_joypad.agc`, `world.agc`, `collision.agc`, `sound.agc`.
 
 Der Vergleich mit Crystal Columns/Crystals erfolgte anhand von `main.agc`, `def_joypad.agc`, `input.agc`, `controls.agc`, `timer.agc` und `highscore_online.agc` auf `main`. Angaben zur praktischen Tastaturbedienung und zu Upgrade-Belohnungen bleiben noch zu verifizieren. Die vorhandene PurpleToken-Online-Highscore-Integration in Crystals wurde im Quellcode bestätigt, aber nicht auf Erreichbarkeit getestet.
