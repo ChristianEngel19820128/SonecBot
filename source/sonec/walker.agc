@@ -620,23 +620,26 @@ endfunction
 // Angle conventions match Sonec's horizontal machine-gun fire (90 / 270).
 // We deliberately do not track Sonec or change torso/turret rotations here.
 // One horizontal projectile from the current turret pivot and direction.
+// This exact float origin is shared by real bullets/flashes and debug visualization.
+function WalkerMuzzlePositionCalculate(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,Position ref as TPosition,Angle ref as float)
+	local Radius as float
+	Position = Walker.WalkerObjectData.Tower.Position
+	if Walker.State.LookAlignment = LOOKLEFT
+		Angle = 270
+		Radius = ProtoWalker.AnimLeft.Tower.Offset.y
+	else
+		Angle = 90
+		Radius = ProtoWalker.AnimRight.Tower.Offset.y
+	endif
+	CalcPosition(Position,Angle,Radius)
+endfunction
+
 function WalkerFireShot(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,BulletList ref as TBulletList,ProtoBullet ref as TProtoBullet,FlashList ref as TFlashList,ProtoFlash ref as TProtoFlash,World ref as TWorld,Now as integer)
 	local MuzzlePosition as TPosition
-	local MuzzleRadius as float
 	local FireAngle as float
-
-	MuzzlePosition = Walker.WalkerObjectData.Tower.Position
-	if Walker.State.LookAlignment = LOOKLEFT
-		FireAngle = 270
-		MuzzleRadius = ProtoWalker.AnimLeft.Tower.Offset.y
-	else
-		FireAngle = 90
-		MuzzleRadius = ProtoWalker.AnimRight.Tower.Offset.y
-	endif
-	// Calculate the float world-space muzzle once. BulletNew must not offset it again.
-	CalcPosition(MuzzlePosition,FireAngle,MuzzleRadius)
+	WalkerMuzzlePositionCalculate(Walker,ProtoWalker,MuzzlePosition,FireAngle)
 	BulletAdd(BulletList,ProtoBullet,World,MuzzlePosition,FireAngle,0.0,TYPEENEMY,Now)
-	// Both effects share the same float muzzle position; the flash is drawn on top.
+	// Flash and bullet use the same origin and are drawn above the turret.
 	FlashAdd(FlashList,ProtoFlash,World,0,WALKER_MUZZLE_FLASH_CYCLES,MuzzlePosition,FireAngle,0.0,Now)
 endfunction
 
@@ -939,7 +942,8 @@ endfunction
 
 // Experimental IK sprite binding. Set to 0 to compare with the old sine gait.
 #constant WALKER_IK_SPRITES 1
-#constant WALKER_ANGLE_DEBUG 0
+// Runtime Walker diagnosis is off by default. F1 toggles overlays, not IK behavior.
+global WalkerDebugEnabled as integer
 // Limb rotations now come from Proto Offset/Anchor reference directions.
 global WalkerAngleDebugText as integer
 
@@ -1082,40 +1086,68 @@ function WalkerIKBindSprites(Walker ref as TWalker,ProtoWalker ref as TProtoWalk
 	next i
 endfunction
 
-// Debug geometry uses manually drawn sprites so it shares the Swap() render path.
-#constant WALKER_SKELETON_DEBUG 0
+// Allocate debug drawing objects once; rendering is controlled by WalkerDebugEnabled.
 global WalkerDebugLineSprite as integer
 global WalkerDebugJointSprite as integer
-#constant WALKER_PROTO_POINTS_DEBUG 0
 global WalkerProtoPivotSprite as integer
 global WalkerProtoAnchorSprite as integer
+global WalkerMuzzlePivotSprite as integer
+global WalkerMuzzleOriginSprite as integer
+global WalkerMuzzleDebugText as integer
+
+function WalkerDebugToggle()
+	if WalkerDebugEnabled = 0
+		WalkerDebugEnabled = 1
+	else
+		WalkerDebugEnabled = 0
+	endif
+endfunction
 
 function WalkerSkeletonInit()
-	if WALKER_ANGLE_DEBUG = 1
+	if WalkerAngleDebugText = 0
 		WalkerAngleDebugText = CreateText("")
 		SetTextSize(WalkerAngleDebugText,12)
 		SetTextColor(WalkerAngleDebugText,255,255,0,255)
 	endif
-	if WALKER_SKELETON_DEBUG = 1
+	if WalkerDebugLineSprite = 0
 		WalkerDebugLineSprite = CreateSprite(0)
 		SetSpriteVisible(WalkerDebugLineSprite,1)
 		SetSpriteOffset(WalkerDebugLineSprite,0,1)
+	endif
+	if WalkerDebugJointSprite = 0
 		WalkerDebugJointSprite = CreateSprite(0)
 		SetSpriteVisible(WalkerDebugJointSprite,1)
 		SetSpriteSize(WalkerDebugJointSprite,5,5)
 		SetSpriteOffset(WalkerDebugJointSprite,2.5,2.5)
 	endif
-	if WALKER_PROTO_POINTS_DEBUG = 1
+	if WalkerProtoPivotSprite = 0
 		WalkerProtoPivotSprite = CreateSprite(0)
-		SetSpriteVisible(WalkerProtoPivotSprite,1)
 		SetSpriteSize(WalkerProtoPivotSprite,5,5)
 		SetSpriteOffset(WalkerProtoPivotSprite,2.5,2.5)
 		SetSpriteColor(WalkerProtoPivotSprite,255,60,60,255)
+	endif
+	if WalkerProtoAnchorSprite = 0
 		WalkerProtoAnchorSprite = CreateSprite(0)
-		SetSpriteVisible(WalkerProtoAnchorSprite,1)
 		SetSpriteSize(WalkerProtoAnchorSprite,5,5)
 		SetSpriteOffset(WalkerProtoAnchorSprite,2.5,2.5)
 		SetSpriteColor(WalkerProtoAnchorSprite,0,255,255,255)
+	endif
+	if WalkerMuzzlePivotSprite = 0
+		WalkerMuzzlePivotSprite = CreateSprite(0)
+		SetSpriteSize(WalkerMuzzlePivotSprite,5,5)
+		SetSpriteOffset(WalkerMuzzlePivotSprite,2.5,2.5)
+		SetSpriteColor(WalkerMuzzlePivotSprite,255,60,255,255)
+	endif
+	if WalkerMuzzleOriginSprite = 0
+		WalkerMuzzleOriginSprite = CreateSprite(0)
+		SetSpriteSize(WalkerMuzzleOriginSprite,5,5)
+		SetSpriteOffset(WalkerMuzzleOriginSprite,2.5,2.5)
+		SetSpriteColor(WalkerMuzzleOriginSprite,255,240,0,255)
+	endif
+	if WalkerMuzzleDebugText = 0
+		WalkerMuzzleDebugText = CreateText("")
+		SetTextSize(WalkerMuzzleDebugText,10)
+		SetTextColor(WalkerMuzzleDebugText,255,240,0,255)
 	endif
 endfunction
 
@@ -1255,13 +1287,13 @@ function WalkerDrawAll(WalkerList ref as TWalkerList,ProtoWalker ref as TProtoWa
 			WalkerIKBindSprites(WalkerList.Walker[i],ProtoWalker,World)
 		endif
 		WalkerDraw(WalkerList.Walker[i],ProtoWalker)
-		if WALKER_SKELETON_DEBUG = 1 and WalkerList.Walker[i].Enabled = TRUE
+		if WalkerDebugEnabled = 1 and WalkerList.Walker[i].Enabled = TRUE
 			WalkerSkeletonDraw(WalkerList.Walker[i],World,ProtoWalker)
 		endif
-		if WALKER_PROTO_POINTS_DEBUG = 1 and WalkerList.Walker[i].Enabled = TRUE
+		if WalkerDebugEnabled = 1 and WalkerList.Walker[i].Enabled = TRUE
 			WalkerProtoPointsDraw(WalkerList.Walker[i],ProtoWalker)
 		endif
-		if WALKER_ANGLE_DEBUG = 1 and WALKER_IK_SPRITES = 1 and WalkerList.Walker[i].Enabled = TRUE
+		if WalkerDebugEnabled = 1 and WALKER_IK_SPRITES = 1 and WalkerList.Walker[i].Enabled = TRUE
 			// Show the angular difference between sprite and IK directions.
 			local delta as float
 			local shankDelta as float
@@ -1280,6 +1312,29 @@ endfunction
 //----------------------------------------------------------------------
 // 
 //----------------------------------------------------------------------
+
+// Foreground overlay: magenta is turret pivot; yellow is bullet/flash origin.
+function WalkerMuzzleDebugDrawAll(WalkerList ref as TWalkerList,ProtoWalker ref as TProtoWalker,World ref as TWorld)
+	local i as integer
+	local Pivot as TPosition
+	local Muzzle as TPosition
+	local Angle as float
+	if WalkerDebugEnabled = 1
+		for i = 0 to WalkerList.Walker.Length
+			if WalkerList.Walker[i].Enabled = TRUE
+				Pivot = WalkerList.Walker[i].WalkerObjectData.Tower.Position
+				WalkerMuzzlePositionCalculate(WalkerList.Walker[i],ProtoWalker,Muzzle,Angle)
+				SetSpritePositionByOffset(WalkerMuzzlePivotSprite,Pivot.x-World.Position.x,Pivot.y-World.Position.y)
+				DrawSprite(WalkerMuzzlePivotSprite)
+				SetSpritePositionByOffset(WalkerMuzzleOriginSprite,Muzzle.x-World.Position.x,Muzzle.y-World.Position.y)
+				DrawSprite(WalkerMuzzleOriginSprite)
+				SetTextString(WalkerMuzzleDebugText,"Muzzle "+Str(Muzzle.x)+","+Str(Muzzle.y)+Chr(10)+"Pivot "+Str(Pivot.x)+","+Str(Pivot.y)+Chr(10)+"Angle "+Str(Angle)+" Fire "+Str(WalkerList.Walker[i].FireState))
+				SetTextPosition(WalkerMuzzleDebugText,Muzzle.x-World.Position.x+10,Muzzle.y-World.Position.y+8)
+				DrawText(WalkerMuzzleDebugText)
+			endif
+		next i
+	endif
+endfunction
 
 function WalkerCountAll(WalkerList ref as TWalkerList)
 	

@@ -338,6 +338,8 @@ function GameDraw(Game ref as TGame)
 	PlasmaBlitzDrawAll(Game.PlasmaBlitzList,Game.ProtoPlasmaBlitz)
 	// Muzzle flashes are foreground effects: rendered after Walker and bullet sprites.
 	FlashDrawAll(Game.FlashList,Game.ProtoFlash)
+	// Debug muzzle markers remain visible above bullets and flashes.
+	WalkerMuzzleDebugDrawAll(Game.WalkerList,Game.ProtoWalker,Game.World)
 	SonecDraw(Game.Sonec,Game.ProtoSonec)
 	ShieldDraw(Game.Shield,Game.ProtoShield)
 

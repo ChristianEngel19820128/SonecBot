@@ -126,7 +126,11 @@ repeat
 	endif
 	
 	Now = GetMilliseconds()
-	
+	// Windows F1 toggles the Walker debug overlay even while paused.
+	if Device$ = "windows" and Game.IsLost = FALSE
+		if GetKeyPressed(KEY_F1) = 1 then WalkerDebugToggle()
+	endif
+
 	if Game.IsLost = TRUE
 		if IntroDo(Intro,Game.Sound,Game.JoystickIndex,CurrentNow) = TRUE
 			GameInit(Game,CurrentNow)
