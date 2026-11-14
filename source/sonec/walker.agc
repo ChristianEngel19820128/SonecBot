@@ -1366,7 +1366,8 @@ function WalkerMuzzleDebugDrawAll(WalkerList ref as TWalkerList,ProtoWalker ref 
 				SetSpritePositionByOffset(WalkerMuzzleOriginSprite,Muzzle.x-World.Position.x,Muzzle.y-World.Position.y)
 				DrawSprite(WalkerMuzzleOriginSprite)
 				SetTextString(WalkerMuzzleDebugText,"Muzzle "+Str(Muzzle.x)+","+Str(Muzzle.y)+Chr(10)+"Pivot "+Str(Pivot.x)+","+Str(Pivot.y)+Chr(10)+"Angle "+Str(Angle)+" Fire "+Str(WalkerList.Walker[i].FireState))
-				SetTextPosition(WalkerMuzzleDebugText,Muzzle.x-World.Position.x+10,Muzzle.y-World.Position.y+8)
+				// Keep the three debug text lines above the platform instead of across it.
+				SetTextPosition(WalkerMuzzleDebugText,Muzzle.x-World.Position.x+10,Muzzle.y-World.Position.y-32)
 				DrawText(WalkerMuzzleDebugText)
 			endif
 		next i
