@@ -1,6 +1,6 @@
 # SonecBot – Technische Dokumentation
 
-**Dokumentstatus:** Bestandsaufnahme 0.8 (Float-Screenshots, beidseitige Walker-Mündungsprüfung, 14. November 2026)  
+**Dokumentstatus:** Bestandsaufnahme 0.9 (Walker-Diagnose per F1 umschaltbar, 14. November 2026)  
 **Branch:** `develop`  
 **Engine:** AppGameKit Studio (AGK)  
 **Erste Zielplattform:** HTML5  
@@ -117,7 +117,8 @@ Die alte `WalkerPartsCalculate()`-Kette setzte Oberschenkel und Corpus über `An
 - Beim Anhalten nähern sich beide Füße über einen zeitabhängigen Übergang ihrer jeweiligen Standposition. An der Plattformkante hält `TurnPending` die bisherige Blickrichtung fest, bis beide Füße wieder unter dem Körper stehen; erst danach erfolgt der Richtungswechsel.
 - Die anfänglich zufällige horizontale Geschwindigkeit `random(35,100)*0.001` wurde für vergleichbare Tests durch eine **einheitliche Geschwindigkeit von `0.05`** ersetzt (Commit `20b2d7d`). Der Schrittrhythmus bleibt an den zurückgelegten Weg gekoppelt.
 - `WALKER_FOOT_JOINT_LIFT = 8.0` hebt dieselben Gelenkziele in `WalkerIKBindSprites()` und `WalkerSkeletonDraw()` an. Der ursprüngliche Testwert 7 px ließ die Sohle im Screenshot etwa ein Pixel zu tief erscheinen. Eine zusätzlich beobachtete mögliche allgemeine 1-px-Visualisierungsabweichung bei Plattformen, Kisten und Sonec ist noch getrennt zu untersuchen. Die `Floor()`-Rundung in `SpriteDraw()` kann dabei eine Rolle spielen; ein allgemeiner Rundungsfehler ist damit **noch nicht bewiesen**.
-- Die Debug-Schalter `WALKER_SKELETON_DEBUG`, `WALKER_PROTO_POINTS_DEBUG` und `WALKER_ANGLE_DEBUG` stehen aktuell auf `0` (Commit `c6d47e6`), `WALKER_IK_SPRITES` weiterhin auf `1`. Skelett-, Gelenk- und Winkeldiagnose können für spätere Analysen wieder zugeschaltet werden.
+- Die früheren konstanten Anzeigen-Schalter `WALKER_SKELETON_DEBUG`, `WALKER_PROTO_POINTS_DEBUG` und `WALKER_ANGLE_DEBUG` wurden mit Commit `7b8ce8d` durch den **Laufzeit-Schalter `WalkerDebugEnabled`** ersetzt. Dieser startet deaktiviert und wird unter Windows mit `F1` (`GetKeyPressed(KEY_F1)` in `main.agc`, auch bei Pause) umgeschaltet. Der Schalter betrifft IK-Skelettlinien, Proto-Offset-/Anchor-Punkte, Winkeltext und den zusätzlichen Turm-/Mündungsmarker. `WALKER_IK_SPRITES = 1` und `WALKER_STAND_POSE_TEST = 0` bleiben unverändert; F1 verändert weder Gangmechanik noch Standpose-Diagnosebetrieb.
+- Die Debug-Sprites und Texte werden in `WalkerSkeletonInit()` einmalig angelegt (Initialisierung bei `WalkerInit()`), damit ein späteres Einschalten ohne Neuinitialisierung möglich ist. `WalkerMuzzlePositionCalculate()` liefert **denselben Float-Weltpunkt** an `WalkerFireShot()` und `WalkerMuzzleDebugDrawAll()`. Magenta markiert den tatsächlichen Tower-Pivot; Gelb den gemeinsamen Bullet-/Flash-Ursprung. Zusätzlich erscheinen Weltkoordinaten, Zielwinkel und `FireState`. Diese Marker zeichnet `GameDraw()` erst **nach** Bullet und Flash, damit sie im Vordergrund sichtbar bleiben. **Statischer Codecheck erfolgreich; lokaler Laufzeittest ausstehend.** Weitere Spiel-Debugs und HTML5-Tastenbedienung sind bislang nicht integriert.
 
 **Getestetes Ergebnis:** Mehrere kurze Videos mit und ohne Debug-Skelett zeigen nachvollziehbare Schritte, eine stabile Verbindung von Beinen, Corpus und Turm sowie einen plausiblen Richtungswechsel. Der Entwickler akzeptiert die aktuelle Gangmechanik für die erste Alpha. Die bestehende richtungsabhängige ±90°-Fußwinkelkorrektur bleibt ein dokumentierter Implementierungsdetailpunkt, soll aber **nicht ohne konkreten visuellen Fehler** erneut verändert werden.
 
@@ -195,7 +196,7 @@ Für die Beta ist ein Online-Highscore-System vorgesehen. Nach Angaben des Entwi
 | Plattformen und Minen | Funktionen vorhanden | Ausstehend |
 | Kisten und Orbs | Module vorhanden; Belohnungsmechanik ungeklärt | Ausstehend |
 | Walker-Erzeugung | Aktiv in Spielschleife | Vom Entwickler lokal bestätigt |
-| Walker-Bewegung/Animation | Zweiknochen-IK, getrennte Fußziele, Stand-/Schwungbein, sanfte Standrückkehr, `TurnPending` und 8-px-Fußhöhe; Debug standardmäßig aus | Stand, Gang, Wende und Darstellung ohne Debug vom Entwickler lokal geprüft und als alpha-tauglich bewertet; HTML5-/Randfalltests ausstehend |
+| Walker-Bewegung/Animation | Zweiknochen-IK, getrennte Fußziele, Stand-/Schwungbein, sanfte Standrückkehr, `TurnPending` und 8-px-Fußhöhe; Diagnose per F1 unter Windows umschaltbar, standardmäßig aus | Stand, Gang, Wende ohne Debug lokal als alpha-tauglich bewertet; neue F1-Diagnose und HTML5-/Randfalltests ausstehend |
 | Walker-Kampfsystem | Horizontaler Gegner-Schuss mit `TYPEENEMY`, Turm-Hitbox, Zwei-Schuss-Salve, Feuerzustand und gemeinsamem Float-Punkt für Bullet/Flash; Orb-Kollision nur durch Spieler-Bullets | Schussschaden und Salventempo lokal bestätigt; neuere Screens zeigen Seitenunterschiede am Flash und das 2-px-Rohr nach Float-Umstellung; exakte Ausrichtung, Bewegungslock und Orb-Schutz weiter zu testen |
 | HTML5-Steuerung | Index-1-Workaround auf develop umgesetzt; ungetestet | Ausstehend |
 | Kollisionen | Primitive/Box-Prüfungen; Schild-Shape-Prototyp mit Vergleichszählern | Schild-Shape-Test lokal durchgeführt; nicht für Schaden aktiv |
@@ -206,7 +207,7 @@ Für die Beta ist ein Online-Highscore-System vorgesehen. Nach Angaben des Entwi
 
 1. Zeitsystem, Pause, Bildratenabhängigkeit und Synchronisierung
 2. HTML5-Gamepad-Steuerung im Vergleich mit Columns
-3. Walker: Float-Zeichenpfad über die bisherigen Screens hinaus weiter prüfen, besonders Blink-/Pixelfehler in Bewegung; Mündungsposition links/rechts anhand von Pivot, sichtbarer Rohrkante und separatem optionalem 2-px-Rohr-Test prüfen. Salven-Bewegungslock und Orb-Schutz lokal verifizieren; danach Mündungsfeuer-Abstand/-Dauer, Tunneling, Sound-Entkopplung, Trefferregeln und Zielverhalten. Turm-/Torso-Neigung und echte Doppelkanonen nachrangig.
+3. Walker: Zunächst neue Windows-F1-Diagnose (Skelett, Proto-Punkte, Winkel, Turmpivot, Bullet-/Flash-Ursprung) lokal testen; dann Float-Zeichenpfad über die bisherigen Screens hinaus weiter prüfen und Mündungsposition links/rechts anhand von Pivot, sichtbarer Rohrkante und separatem optionalem 2-px-Rohr-Test prüfen. Salven-Bewegungslock und Orb-Schutz lokal verifizieren; danach Mündungsfeuer-Abstand/-Dauer, Tunneling, Sound-Entkopplung, Trefferregeln und Zielverhalten. Turm-/Torso-Neigung und echte Doppelkanonen nachrangig.
 4. Schild-Shape-Kollision weiter testen; allgemeine Kollisionserkennung und mögliche AGK-Alternativen
 5. Kisten, Orbs und Upgrade-Mechanik
 6. Einfache Punktevergabe für die Alpha und mögliche Wiederverwendung der Crystals-Online-Highscore-Lösung prüfen; geeigneten Release-Zeitpunkt für Online-Tabelle festlegen
@@ -215,6 +216,6 @@ Die Punkte sind Untersuchungsaufgaben, keine Änderungsfreigaben. Es werden kein
 
 ## 11. Quellen und Gültigkeit
 
-Statisch gesichtet auf `develop` (Walker-IK, Bewegung und Feuerzustand; Mündungsfeuer bis `83b6648`, Windows-VSync-Schalter `46419f0`, Float-Zeichenpfad bis `fb45a28`, 14. November 2026; ergänzt durch lokale Screenshots und lokale Tests des Entwicklers nach dem Float-Commit, vollständiger Langzeittest ausstehend): `main.agc`, `game.agc`, `def_game.agc`, `sonec.agc`, `walker.agc`, `mine.agc`, `plate.agc`, `controls.agc`, `def_joypad.agc`, `world.agc`, `collision.agc`, `sound.agc`.
+Statisch gesichtet auf `develop` (Walker-IK, Bewegung und Feuerzustand; Mündungsfeuer bis `83b6648`, Windows-VSync-Schalter `46419f0`, Float-Zeichenpfad bis `fb45a28`, Walker-F1-Diagnose `7b8ce8d`, 14. November 2026; ergänzt durch lokale Screenshots und Tests des Entwicklers; F1-Diagnose und umfassender Langzeittest noch ausstehend): `main.agc`, `game.agc`, `def_game.agc`, `sonec.agc`, `walker.agc`, `mine.agc`, `plate.agc`, `controls.agc`, `def_joypad.agc`, `world.agc`, `collision.agc`, `sound.agc`.
 
 Der Vergleich mit Crystal Columns/Crystals erfolgte anhand von `main.agc`, `def_joypad.agc`, `input.agc`, `controls.agc`, `timer.agc` und `highscore_online.agc` auf `main`. Angaben zur praktischen Tastaturbedienung und zu Upgrade-Belohnungen bleiben noch zu verifizieren. Die vorhandene PurpleToken-Online-Highscore-Integration in Crystals wurde im Quellcode bestätigt, aber nicht auf Erreichbarkeit getestet.
