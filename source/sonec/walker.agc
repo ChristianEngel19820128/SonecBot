@@ -621,8 +621,9 @@ endfunction
 // We deliberately do not track Sonec or change torso/turret rotations here.
 // One horizontal projectile from the current turret pivot and direction.
 // This exact float origin is shared by real bullets/flashes and debug visualization.
-function WalkerMuzzlePositionCalculate(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,Position ref as TPosition,Angle ref as float)
+function WalkerMuzzlePositionCalculate(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,Position ref as TPosition)
 	local Radius as float
+	local Angle as float
 	Position = Walker.WalkerObjectData.Tower.Position
 	if Walker.State.LookAlignment = LOOKLEFT
 		Angle = 270
@@ -632,12 +633,12 @@ function WalkerMuzzlePositionCalculate(Walker ref as TWalker,ProtoWalker ref as 
 		Radius = ProtoWalker.AnimRight.Tower.Offset.y
 	endif
 	CalcPosition(Position,Angle,Radius)
-endfunction
+endfunction Angle
 
 function WalkerFireShot(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,BulletList ref as TBulletList,ProtoBullet ref as TProtoBullet,FlashList ref as TFlashList,ProtoFlash ref as TProtoFlash,World ref as TWorld,Now as integer)
 	local MuzzlePosition as TPosition
 	local FireAngle as float
-	WalkerMuzzlePositionCalculate(Walker,ProtoWalker,MuzzlePosition,FireAngle)
+	FireAngle = WalkerMuzzlePositionCalculate(Walker,ProtoWalker,MuzzlePosition)
 	BulletAdd(BulletList,ProtoBullet,World,MuzzlePosition,FireAngle,0.0,TYPEENEMY,Now)
 	// Flash and bullet use the same origin and are drawn above the turret.
 	FlashAdd(FlashList,ProtoFlash,World,0,WALKER_MUZZLE_FLASH_CYCLES,MuzzlePosition,FireAngle,0.0,Now)
@@ -1323,7 +1324,7 @@ function WalkerMuzzleDebugDrawAll(WalkerList ref as TWalkerList,ProtoWalker ref 
 		for i = 0 to WalkerList.Walker.Length
 			if WalkerList.Walker[i].Enabled = TRUE
 				Pivot = WalkerList.Walker[i].WalkerObjectData.Tower.Position
-				WalkerMuzzlePositionCalculate(WalkerList.Walker[i],ProtoWalker,Muzzle,Angle)
+				Angle = WalkerMuzzlePositionCalculate(WalkerList.Walker[i],ProtoWalker,Muzzle)
 				SetSpritePositionByOffset(WalkerMuzzlePivotSprite,Pivot.x-World.Position.x,Pivot.y-World.Position.y)
 				DrawSprite(WalkerMuzzlePivotSprite)
 				SetSpritePositionByOffset(WalkerMuzzleOriginSprite,Muzzle.x-World.Position.x,Muzzle.y-World.Position.y)
