@@ -4,6 +4,7 @@
 #constant WALKER_FIRE_INTERVAL_MS 1800
 #constant WALKER_BURST_SHOT_DELAY_MS 150
 #constant WALKER_BURST_RECOVERY_MS 200
+#constant WALKER_MUZZLE_FLASH_CYCLES 10
 
 //----------------------------------------------------------------------
 // 
@@ -619,7 +620,7 @@ endfunction
 // Angle conventions match Sonec's horizontal machine-gun fire (90 / 270).
 // We deliberately do not track Sonec or change torso/turret rotations here.
 // One horizontal projectile from the current turret pivot and direction.
-function WalkerFireShot(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,BulletList ref as TBulletList,ProtoBullet ref as TProtoBullet,World ref as TWorld,Now as integer)
+function WalkerFireShot(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,BulletList ref as TBulletList,ProtoBullet ref as TProtoBullet,FlashList ref as TFlashList,ProtoFlash ref as TProtoFlash,World ref as TWorld,Now as integer)
 	local MuzzlePosition as TPosition
 	local MuzzleRadius as float
 	local FireAngle as float
@@ -635,11 +636,13 @@ function WalkerFireShot(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,Bu
 	// Calculate the float world-space muzzle once. BulletNew must not offset it again.
 	CalcPosition(MuzzlePosition,FireAngle,MuzzleRadius)
 	BulletAdd(BulletList,ProtoBullet,World,MuzzlePosition,FireAngle,0.0,TYPEENEMY,Now)
+	// Both effects share the same float muzzle position; the flash is drawn on top.
+	FlashAdd(FlashList,ProtoFlash,World,0,WALKER_MUZZLE_FLASH_CYCLES,MuzzlePosition,FireAngle,0.0,Now)
 endfunction
 
 // FireState: 0 = idle, 1 = waiting to fire second bullet, 2 = recoil/recovery.
 // A started burst always finishes before WalkerMove may resume walking.
-function WalkerFireAll(WalkerList ref as TWalkerList,ProtoWalker ref as TProtoWalker,BulletList ref as TBulletList,ProtoBullet ref as TProtoBullet,World ref as TWorld,Now as integer)
+function WalkerFireAll(WalkerList ref as TWalkerList,ProtoWalker ref as TProtoWalker,BulletList ref as TBulletList,ProtoBullet ref as TProtoBullet,FlashList ref as TFlashList,ProtoFlash ref as TProtoFlash,World ref as TWorld,Now as integer)
 	local i as integer
 	local LeftFootX as float
 	local RightFootX as float
@@ -649,7 +652,7 @@ function WalkerFireAll(WalkerList ref as TWalkerList,ProtoWalker ref as TProtoWa
 			if WalkerList.Walker[i].Enabled = TRUE
 				if WalkerList.Walker[i].FireState = 1
 					if Now >= WalkerList.Walker[i].FireStateUntilMs
-						WalkerFireShot(WalkerList.Walker[i],ProtoWalker,BulletList,ProtoBullet,World,Now)
+						WalkerFireShot(WalkerList.Walker[i],ProtoWalker,BulletList,ProtoBullet,FlashList,ProtoFlash,World,Now)
 						WalkerList.Walker[i].FireState = 2
 						WalkerList.Walker[i].FireStateUntilMs = Now + WALKER_BURST_RECOVERY_MS
 					endif
@@ -666,7 +669,7 @@ function WalkerFireAll(WalkerList ref as TWalkerList,ProtoWalker ref as TProtoWa
 							// Avoid generating shots for Walkers outside the world.
 							if WalkerList.Walker[i].WalkerObjectData.Tower.Position.x >= 0 and WalkerList.Walker[i].WalkerObjectData.Tower.Position.x <= World.Size.Width
 							if TimeGet(WalkerList.Walker[i].FireTimer,Now) > 0
-								WalkerFireShot(WalkerList.Walker[i],ProtoWalker,BulletList,ProtoBullet,World,Now)
+								WalkerFireShot(WalkerList.Walker[i],ProtoWalker,BulletList,ProtoBullet,FlashList,ProtoFlash,World,Now)
 								WalkerList.Walker[i].FireState = 1
 								WalkerList.Walker[i].FireStateUntilMs = Now + WALKER_BURST_SHOT_DELAY_MS
 								TimeReset(WalkerList.Walker[i].FireTimer,Now)

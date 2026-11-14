@@ -41,6 +41,10 @@ function FlashNew(Flash ref as TFlash,ProtoFlash ref as TProtoFlash,World ref as
 	Flash.Enabled = TRUE
 	
 	Flash.FlashAnimIndex = FlashType
+	// Initialize lifetime before computing the initial sprite scale (new pool objects start at zero).
+	if FlashCycleMax < 1 then FlashCycleMax = 1
+	Flash.EffectData.LifeCycle = 1
+	Flash.EffectData.LifeCycleMax = FlashCycleMax
 		
 	Flash.SpriteData.Angle = Angle
 	Flash.SpriteData.Center = TRUE
@@ -68,13 +72,9 @@ function FlashNew(Flash ref as TFlash,ProtoFlash ref as TProtoFlash,World ref as
 	select FlashType
 		case 0
 			ColorSet(Flash.SpriteData.Color,255,255,255,255)
-			Flash.EffectData.LifeCycle = 1
-			Flash.EffectData.LifeCycleMax = FlashCycleMax
 		endcase
 		case 1
 			ColorSet(Flash.SpriteData.Color,55,255,200,200)
-			Flash.EffectData.LifeCycle = 1
-			Flash.EffectData.LifeCycleMax = FlashCycleMax
 		endcase
 	endselect
 	
