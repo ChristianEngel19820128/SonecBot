@@ -632,7 +632,9 @@ function WalkerFireShot(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,Bu
 		FireAngle = 90
 		MuzzleRadius = ProtoWalker.AnimRight.Tower.Offset.y
 	endif
-	BulletAdd(BulletList,ProtoBullet,World,MuzzlePosition,FireAngle,MuzzleRadius,TYPEENEMY,Now)
+	// Calculate the float world-space muzzle once. BulletNew must not offset it again.
+	CalcPosition(MuzzlePosition,FireAngle,MuzzleRadius)
+	BulletAdd(BulletList,ProtoBullet,World,MuzzlePosition,FireAngle,0.0,TYPEENEMY,Now)
 endfunction
 
 // FireState: 0 = idle, 1 = waiting to fire second bullet, 2 = recoil/recovery.
