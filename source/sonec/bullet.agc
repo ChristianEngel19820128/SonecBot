@@ -191,7 +191,8 @@ function BulletCollideWalkers(BulletList ref as TBulletList,WalkerList ref as TW
 	local i as integer
 	local k as integer
 	for i = 0 to BulletList.Bullet.Length
-		if BulletList.Bullet[i].Enabled = TRUE
+		// Enemy bullets must not damage Walkers; only player bullets hit their turret.
+		if BulletList.Bullet[i].Enabled = TRUE and BulletList.Bullet[i].CollisionData.CollisionType = TYPEPLAYERONE
 			for k = 0 to WalkerList.Walker.Length
 				if WalkerList.Walker[k].Enabled = TRUE and BulletList.Bullet[i].Enabled = TRUE
 					if BoxInBox(BulletList.Bullet[i].CollisionData.Position1,BulletList.Bullet[i].CollisionData.Position2,WalkerList.Walker[k].WalkerCollisionData.Tower.Position1,WalkerList.Walker[k].WalkerCollisionData.Tower.Position2)
