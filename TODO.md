@@ -1,6 +1,6 @@
 # SonecBot – TODO und Meilensteine
 
-**Dokumentstatus:** Version 0.4  
+**Dokumentstatus:** Version 0.5  
 **Stand:** 14. November 2026  
 **Branch:** `develop`  
 **Ziel:** Kleine, überprüfbare Schritte zur spielbaren HTML5-Alpha
@@ -46,6 +46,7 @@
 - [ ] **Nächster Test:** Im Spiel prüfen, ob der Walker die Bewegung für beide Schüsse und bis zum Ende des Feuerzustands festhält, erst anschließend weiterläuft, nicht während des Wendens schießt und der Feuertimer bei längeren Standphasen sinnvoll bleibt.
 - [ ] Testen, ob die Geschosse mit Float-Weltkoordinaten tatsächlich mittig aus dem **2 px hohen Rohr** austreten; Bullet-Grafik ist laut Entwickler 6 px hoch. Den Grafikbestand nicht vorschnell umbauen. Gemessene Mündung (Proto-Anschluss) und sichtbare Spriteposition vergleichen; `Floor()` in `SpriteDraw()` keinesfalls ohne projektweiten Test entfernen.
 - [ ] Bestehendes Mündungsfeuer (`FlashAdd`) für Walker wiederverwenden, **ohne Sonecs Maschinengewehrcode zu verändern**. Ggf. gemeinsame kleine Aufruffunktion oder geeignete Parameter ergänzen; Position, Richtung, Effektlebensdauer und Scale prüfen.
+- [ ] **Späterer Waffen-Grafikpass (nicht Alpha-blockierend):** Statt einer optisch einzelnen Kanone könnten zwei separate, in der Perspektive überlappende Kanonen-Sprites verwendet werden. Bei einer Zwei-Schuss-Salve rückt abwechselnd die jeweils feuernde Kanone kurz zurück, sodass die hintere Kanone insbesondere beim ersten Schuss sichtbar wird. Die ersten 1×2 bzw. 2×2 Pixel der beiden Rohre gestalterisch differenzieren, damit die Überlagerung lesbar bleibt; zusätzlich darf der gesamte Turm einen kleinen Rückstoß erhalten. **Grafikänderungen übernimmt der Entwickler**; bestehende Turmposition und bereits geplante einfache Turm-Rückstoßanimation sind wiederverwendbar. Noch keine Entscheidung für separate Sprites oder neuen Pivot.
 - [ ] Eine vorübergehende zuschaltbare Debug-Anzeige für Walker-Waffen entwickeln: Mündungs-Pivot, tatsächlicher Bullet-Startpunkt, Blickrichtung, Salvenzustand, Schuss-Timer sowie Bullet-Typ/Geschwindigkeit; optional Zeitlupe/Marker für einzelne Geschosse.
 - [x] **Fairness-Regel Orbs:** Orbs sind keine neutralen Ziele für Geschosse: Nur `TYPEPLAYERONE` darf sie per `BulletCollideOrbs()` treffen; Walker-/Feind-Bullets werden ignoriert. Statisch eingecheckt, lokaler Test offen. Weitere Schadensquellen (Explosionen usw.) separat betrachten.
 - [ ] **Trefferregel-Matrix festlegen:** Welche Geschosse (Spieler, Walker/Feind) dürfen Sonec, Schild, Walker, Minen, Orbs, Kisten oder andere Objekte treffen? Kistenschaden durch Walker ist aktuell möglich und eventuell akzeptabel, Entscheidung offen. Bei allen Gegnerfähigkeiten auf **faire Computergegner** achten: erkennbare Angriffsmuster, realistische Reaktionszeiten und keine unbeabsichtigte Zerstörung spielerrelevanter Ressourcen.
@@ -74,6 +75,7 @@
 - [ ] **Alpha-Optionen (Minimalumfang):** Entscheiden, ob ein kleines Optionsmenü vor der Veröffentlichung nötig ist (zumindest Steuerung anzeigen, Audio/Anzeige falls relevant); alternativ Standardbelegung im Spiel/Hilfetext dokumentieren. Kein komplexes Menü als automatische Alpha-Voraussetzung.
 - [ ] **Beta:** Frei belegbare Tastatursteuerung (Key-Rebinding) mit Konfliktprüfung, Standardwerte wiederherstellen und dauerhafter Speicherung als eigene Aufgabe vorsehen.
 - [ ] **Beta:** Optionsmenü um Eingabe-/Audio-/Grafikeinstellungen entsprechend tatsächlichem Bedarf erweitern.
+- [ ] **Windows-VSync-A/B-Test (eingebaut, noch nicht lokal bestätigt):** `WINDOWS_VSYNC_TEST = 1` in `source/sonec/main.agc` aktiviert unter Windows `SetVSync(1)`; `0` stellt den vorherigen `SetSyncRate(60,1)`-Modus wieder her. Horizontale Verschiebungen/Tearing an Plattformen und Gebäudekanten bei Bewegung vergleichen (möglichst mit kurzen MP4s und ergänzenden PNGs). FPS-Anzeige und Sonecs Bewegung bei 60/120/144-Hz-Monitoren mitbeurteilen; Ursache noch nicht bestätigt. HTML5 bleibt unverändert.
 - [ ] Freien Fall, Sprung, Jetpack, Landungen, Waffen und Plattformen bei unterschiedlichen Bildraten testen.
 - [ ] Offene bildratenabhängige Bewegungsberechnungen (insbesondere Sonec) bewerten; nicht allein wegen aktiviertem VSync als gelöst einstufen.
 - [ ] Spielrunde, Pause, Tod, Neustart und minimale Alpha-Abschlussbedingungen festlegen.
