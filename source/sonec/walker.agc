@@ -21,13 +21,15 @@ function ProtoWalkerLoad(ProtoWalker ref as TProtoWalker,File as TFilePath)
 		SpriteRadiusCalc(ProtoWalker.AnimLeft.Thigh)
 		SpriteRadiusCalc(ProtoWalker.AnimLeft.Shank)
 		SpriteRadiusCalc(ProtoWalker.AnimLeft.Socket)
-		
+		SpriteRadiusCalc(ProtoWalker.AnimLeft.Barrel)
+
 		SpriteRadiusCalc(ProtoWalker.AnimRight.Tower)
 		SpriteRadiusCalc(ProtoWalker.AnimRight.Corpus)
 		SpriteRadiusCalc(ProtoWalker.AnimRight.Thigh)
 		SpriteRadiusCalc(ProtoWalker.AnimRight.Shank)
 		SpriteRadiusCalc(ProtoWalker.AnimRight.Socket)
-		
+		SpriteRadiusCalc(ProtoWalker.AnimRight.Barrel)
+
 		if ImageLoad(ProtoWalker.AnimLeft.Tower.Image) = TRUE
 			SpriteLoad(ProtoWalker.AnimLeft.Tower)
 		endif
@@ -46,6 +48,10 @@ function ProtoWalkerLoad(ProtoWalker ref as TProtoWalker,File as TFilePath)
 		
 		if ImageLoad(ProtoWalker.AnimLeft.Socket.Image) = TRUE
 			SpriteLoad(ProtoWalker.AnimLeft.Socket)
+		endif
+
+		if ImageLoad(ProtoWalker.AnimLeft.Barrel.Image) = TRUE
+			SpriteLoad(ProtoWalker.AnimLeft.Barrel)
 		endif
 
 		if ImageLoad(ProtoWalker.AnimRight.Tower.Image) = TRUE
@@ -68,6 +74,10 @@ function ProtoWalkerLoad(ProtoWalker ref as TProtoWalker,File as TFilePath)
 			SpriteLoad(ProtoWalker.AnimRight.Socket)
 		endif
 		
+		if ImageLoad(ProtoWalker.AnimRight.Barrel.Image) = TRUE
+			SpriteLoad(ProtoWalker.AnimRight.Barrel)
+		endif
+
 	endif
 	
 endfunction
@@ -188,8 +198,12 @@ function WalkerPartsCalculate(Walker ref as TWalker,ProtoWalker ref as TProtoWal
 	// Update ObjectData as well as SpriteData so the turret hitbox follows.
 	if Walker.State.LookAlignment = LOOKLEFT
 		WalkerBodyPartAttach(ProtoWalker.AnimLeft.Tower,Walker.WalkerObjectData.Tower,Walker.WalkerSpriteData.Tower,Walker.WalkerObjectData.Corpus.Position,FALSE,World)
+		WalkerBodyPartAttach(ProtoWalker.AnimLeft.Barrel,Walker.WalkerObjectData.Barrel[0],Walker.WalkerSpriteData.Barrel[0],Walker.WalkerObjectData.Tower.Position,FALSE,World)
+		WalkerBodyPartAttach(ProtoWalker.AnimLeft.Barrel,Walker.WalkerObjectData.Barrel[1],Walker.WalkerSpriteData.Barrel[1],Walker.WalkerObjectData.Tower.Position,FALSE,World)
 	else
 		WalkerBodyPartAttach(ProtoWalker.AnimRight.Tower,Walker.WalkerObjectData.Tower,Walker.WalkerSpriteData.Tower,Walker.WalkerObjectData.Corpus.Position,FALSE,World)
+		WalkerBodyPartAttach(ProtoWalker.AnimRight.Barrel,Walker.WalkerObjectData.Barrel[0],Walker.WalkerSpriteData.Barrel[0],Walker.WalkerObjectData.Tower.Position,FALSE,World)
+		WalkerBodyPartAttach(ProtoWalker.AnimRight.Barrel,Walker.WalkerObjectData.Barrel[1],Walker.WalkerSpriteData.Barrel[1],Walker.WalkerObjectData.Tower.Position,FALSE,World)
 	endif
 
 	// Both legs share the same Proto setup; no legacy joint chain.
@@ -258,13 +272,29 @@ function WalkerNew(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,World r
 		Walker.WalkerObjectData.Tower.Angle     = ProtoWalker.AnimLeft.Tower.Angle
 		Walker.WalkerObjectData.Tower.Radius    = ProtoWalker.AnimLeft.Tower.Radius
 		Walker.WalkerObjectData.Tower.Rotation  = ProtoWalker.AnimLeft.Tower.Rotation-90
+
+		Walker.WalkerObjectData.Barrel[0].Angle     = ProtoWalker.AnimLeft.Barrel.Angle
+		Walker.WalkerObjectData.Barrel[0].Radius    = ProtoWalker.AnimLeft.Barrel.Radius
+		Walker.WalkerObjectData.Barrel[0].Rotation  = ProtoWalker.AnimLeft.Barrel.Rotation-90
+
+		Walker.WalkerObjectData.Barrel[1].Angle     = ProtoWalker.AnimLeft.Barrel.Angle
+		Walker.WalkerObjectData.Barrel[1].Radius    = ProtoWalker.AnimLeft.Barrel.Radius
+		Walker.WalkerObjectData.Barrel[1].Rotation  = ProtoWalker.AnimLeft.Barrel.Rotation-90
 		
 	else
 		
 		Walker.WalkerObjectData.Tower.Angle     = ProtoWalker.AnimRight.Tower.Angle
 		Walker.WalkerObjectData.Tower.Radius    = ProtoWalker.AnimRight.Tower.Radius
 		Walker.WalkerObjectData.Tower.Rotation  = ProtoWalker.AnimRight.Tower.Rotation+90
-		
+
+		Walker.WalkerObjectData.Barrel[0].Angle     = ProtoWalker.AnimLeft.Barrel.Angle
+		Walker.WalkerObjectData.Barrel[0].Radius    = ProtoWalker.AnimLeft.Barrel.Radius
+		Walker.WalkerObjectData.Barrel[0].Rotation  = ProtoWalker.AnimLeft.Barrel.Rotation+180
+
+		Walker.WalkerObjectData.Barrel[1].Angle     = ProtoWalker.AnimLeft.Barrel.Angle
+		Walker.WalkerObjectData.Barrel[1].Radius    = ProtoWalker.AnimLeft.Barrel.Radius
+		Walker.WalkerObjectData.Barrel[1].Rotation  = ProtoWalker.AnimLeft.Barrel.Rotation+180
+
 	endif
 	
 	if Walker.State.Alignment = MOVELEFT
@@ -484,8 +514,7 @@ function WalkerHealthRegenerate(WalkerList ref as TWalkerList,Game ref as TGame,
 	for i = 0 to WalkerList.Walker.Length
 		if WalkerList.Walker[i].Enabled = TRUE
 			if TimeGet(WalkerList.Walker[i].Health.RegenerationTimer,Now) > 0
-				
-				ColorSet(WalkerList.Walker[i].WalkerSpriteData.Tower.Color,0,255,0,255)
+		
 				ColorSet(WalkerList.Walker[i].WalkerSpriteData.Corpus.Color,0,255,0,255)
 				
 				ColorSet(WalkerList.Walker[i].WalkerSpriteData.Shank[ELEMENTLEFT].Color,0,255,0,255)
@@ -495,6 +524,9 @@ function WalkerHealthRegenerate(WalkerList ref as TWalkerList,Game ref as TGame,
 				ColorSet(WalkerList.Walker[i].WalkerSpriteData.Shank[ELEMENTRIGHT].Color,0,255,0,255)
 				ColorSet(WalkerList.Walker[i].WalkerSpriteData.Thigh[ELEMENTRIGHT].Color,0,255,0,255)
 				ColorSet(WalkerList.Walker[i].WalkerSpriteData.Socket[ELEMENTRIGHT].Color,0,255,0,255)
+
+				ColorSet(WalkerList.Walker[i].WalkerSpriteData.Barrel[0].Color,0,255,0,255)
+				ColorSet(WalkerList.Walker[i].WalkerSpriteData.Barrel[1].Color,0,255,0,255)
 				
 				if WalkerList.Walker[i].Health.State + REGHEALTH <= WalkerList.Walker[i].Health.StateMax
 					WalkerList.Walker[i].Health.State = WalkerList.Walker[i].Health.State + REGHEALTH
@@ -540,22 +572,18 @@ function WalkerAnimate(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,Wor
 	// legacy part-position pass, without sine or fixed angle corrections.
 	if Walker.State.LookAlignment = LOOKLEFT
 		Walker.WalkerObjectData.Tower.Rotation  = ProtoWalker.AnimLeft.Tower.Rotation-90
+		Walker.WalkerObjectData.Barrel[0].Rotation  = ProtoWalker.AnimLeft.Barrel.Rotation-90
+		Walker.WalkerObjectData.Barrel[1].Rotation  = ProtoWalker.AnimLeft.Barrel.Rotation-90
 	else
 		Walker.WalkerObjectData.Tower.Rotation  = ProtoWalker.AnimRight.Tower.Rotation+90
+		Walker.WalkerObjectData.Barrel[0].Rotation  = ProtoWalker.AnimRight.Barrel.Rotation+90
+		Walker.WalkerObjectData.Barrel[1].Rotation  = ProtoWalker.AnimRight.Barrel.Rotation+90
 	endif
 	
 	if Walker.State.Alignment = MOVELEFT
-		
 		Walker.WalkerObjectData.Corpus.Rotation = ProtoWalker.AnimLeft.Corpus.Rotation-90
-		
-		
-		
 	else
-
 		Walker.WalkerObjectData.Corpus.Rotation = ProtoWalker.AnimRight.Corpus.Rotation+90
-
-
-		
 	endif
 
 	WalkerPartsCalculate(Walker,ProtoWalker,World)
@@ -912,7 +940,7 @@ function WalkerDraw(Walker ref as TWalker,ProtoWalker ref as TProtoWalker)
 			SpriteDraw(ProtoWalker.AnimLeft.Socket.Sprite,Walker.WalkerSpriteData.Socket[ELEMENTLEFT])
 			
 			SpriteDraw(ProtoWalker.AnimLeft.Corpus.Sprite,Walker.WalkerSpriteData.Corpus)
-			
+
 		else
 			
 			SpriteDraw(ProtoWalker.AnimRight.Thigh.Sprite,Walker.WalkerSpriteData.Thigh[ELEMENTLEFT])
@@ -926,11 +954,19 @@ function WalkerDraw(Walker ref as TWalker,ProtoWalker ref as TProtoWalker)
 			SpriteDraw(ProtoWalker.AnimRight.Socket.Sprite,Walker.WalkerSpriteData.Socket[ELEMENTRIGHT])
 			
 			SpriteDraw(ProtoWalker.AnimRight.Corpus.Sprite,Walker.WalkerSpriteData.Corpus)
-			
+
 		endif
 		
-		if Walker.State.LookAlignment = LOOKLEFT then SpriteDraw(ProtoWalker.AnimLeft.Tower.Sprite,Walker.WalkerSpriteData.Tower)
-		if Walker.State.LookAlignment = LOOKRIGHT then SpriteDraw(ProtoWalker.AnimRight.Tower.Sprite,Walker.WalkerSpriteData.Tower)
+		if Walker.State.LookAlignment = LOOKLEFT
+			SpriteDraw(ProtoWalker.AnimLeft.Barrel.Sprite,Walker.WalkerSpriteData.Barrel[0])
+			SpriteDraw(ProtoWalker.AnimLeft.Tower.Sprite,Walker.WalkerSpriteData.Tower)			
+			SpriteDraw(ProtoWalker.AnimLeft.Barrel.Sprite,Walker.WalkerSpriteData.Barrel[1])
+		endif
+		if Walker.State.LookAlignment = LOOKRIGHT
+			SpriteDraw(ProtoWalker.AnimRight.Barrel.Sprite,Walker.WalkerSpriteData.Barrel[0])
+			SpriteDraw(ProtoWalker.AnimRight.Tower.Sprite,Walker.WalkerSpriteData.Tower)
+			SpriteDraw(ProtoWalker.AnimRight.Barrel.Sprite,Walker.WalkerSpriteData.Barrel[1])
+		endif
 
 	endif
 	

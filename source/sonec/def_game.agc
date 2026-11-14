@@ -268,6 +268,7 @@ type TProtoWalkerAnimation
 	Thigh as TProtoData
 	Shank as TProtoData
 	Socket as TProtoData
+	Barrel as TProtoData
 endtype
 
 type TProtoWalker
@@ -281,6 +282,7 @@ type TWalkerObjectData
 	Thigh as TObjectData[1]
 	Shank as TObjectData[1]
 	Socket as TObjectData[1]
+	Barrel as TObjectData[1]
 endtype
 
 type TWalkerSpriteData
@@ -289,6 +291,7 @@ type TWalkerSpriteData
 	Thigh as TSpriteData[1]
 	Shank as TSpriteData[1]
 	Socket as TSpriteData[1]
+	Barrel as TSpriteData[1]
 endtype
 
 type TWalkerCollisionData
@@ -297,6 +300,7 @@ type TWalkerCollisionData
 	Thigh as TCollisionData[1]
 	Shank as TCollisionData[1]
 	Socket as TCollisionData[1]
+	Barrel as TCollisionData[1]
 endtype
 
 type TWalker
