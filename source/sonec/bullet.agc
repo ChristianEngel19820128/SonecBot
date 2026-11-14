@@ -168,7 +168,8 @@ function BulletCollideOrbs(BulletList ref as TBulletList,OrbList ref as TOrbList
 	local Radius as float
 	
 	for i = 0 to BulletList.Bullet.Length
-		if BulletList.Bullet[i].Enabled = TRUE
+		// Orbs are player-only targets: enemy bullets must never destroy rewards.
+		if BulletList.Bullet[i].Enabled = TRUE and BulletList.Bullet[i].CollisionData.CollisionType = TYPEPLAYERONE
 			for k = 0 to OrbList.Orb.Length
 				if OrbList.Orb[k].Enabled = TRUE
 					if BoxInBox(BulletList.Bullet[i].CollisionData.Position1,BulletList.Bullet[i].CollisionData.Position2,OrbList.Orb[k].CollisionData.Position1,OrbList.Orb[k].CollisionData.Position2)
