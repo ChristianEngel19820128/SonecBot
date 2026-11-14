@@ -1,6 +1,6 @@
 # SonecBot – Projektübersicht
 
-**Dokumentstatus:** Version 0.5  
+**Dokumentstatus:** Version 0.6  
 **Projektstatus:** In Entwicklung  
 **Engine:** AppGameKit Studio (AGK)  
 **Aktiver Entwicklungszweig:** `develop`  
@@ -133,15 +133,13 @@ Der Walker ist ein größerer, mehrteiliger Gegner mit gelenkbasiert animierten 
 
 Für die aktuelle AGK-Version sind schwere Maschinengewehre als Bewaffnung vorgesehen.
 
-**Aktueller Stand (13. November 2026):** Der Walker ist als plattformgebundener, zerstörbarer Gegner im lokalen Spieltest bestätigt. Er erscheint auf Plattformen; seine Spawnwahrscheinlichkeit steigt mit deren Länge. Maschinengewehr-Projektile treffen derzeit ausschließlich den Turm. Dieser blinkt nach Treffern kurz rot; bei Zerstörung entstehen Energie-Bubbles. Die ursprünglich grauen Sprite-Grafiken werden im Code grün eingefärbt.
+**Aktueller Stand (14. November 2026):** Der Walker ist als plattformgebundener, zerstörbarer Gegner lokal getestet. Seine Spawnwahrscheinlichkeit steigt mit der Plattformlänge. Maschinengewehr-Projektile von Sonec treffen derzeit die Turm-Trefferzone; ein Treffer erzeugt einen kurzen roten Blitz, bei Zerstörung entstehen Energie-Bubbles. Die ursprünglich grauen Sprite-Grafiken werden im Code grün eingefärbt.
 
-**Meilenstein: Prozedurales Skelett und stabile Standpose.** Der ursprüngliche Beinanimationsweg wurde durch eine 2-Knochen-Inverse-Kinematik (IK) mit individuell aus den Proto-Daten berechneten Segmentlängen ersetzt. Hüfte, Knie und Füße sind über die Bild-Drehpunkte und Anschlusskoordinaten miteinander verbunden. Der Corpus hängt mit seinem Anchor an der IK-Hüfte; der Turm ist am Corpus-Drehpunkt befestigt. Die neue Grundhaltung wurde am 13. November 2026 anhand lokaler Screenshots des Entwicklers bestätigt. Die zugrunde liegenden Offset- und Anchor-Daten mussten dafür nicht umgeschrieben werden. Technischer Referenzstand der Körperanbindung: Commit `deb8b74` auf `develop`.
+**Meilenstein: Alpha-taugliche Laufanimation.** Aufbauend auf der erfolgreichen 2-Knochen-IK und korrekten Corpus-/Turmanbindung (Referenz-Commit `deb8b74`, 13. November) wurden die getrennten Fußziele, der Wechsel zwischen Stand- und Schwungbein, die sanfte Rückkehr zur Standpose und das kontrollierte Umdrehen an Plattformkanten umgesetzt. Die Walker laufen jetzt mit einer einheitlichen Testgeschwindigkeit von `0.05`. Die Fußgelenke werden für eine optisch stimmige Auflage um 8 px über die Plattformoberkante gesetzt. Der Standpose-Test sowie die weißen Skelett-, Gelenk- und Winkelanzeigen sind deaktiviert, bleiben im Code aber zuschaltbar. Der Entwickler hat Stand und Gangbild mit Screenshots und kurzen Videos lokal geprüft und die Laufanimation als **für die Alpha ausreichend** bewertet. Das bedeutet nicht, dass ein HTML5-Test oder eine abschließende Prüfung aller Randfälle bereits erfolgt ist.
 
-**Wichtig zur Einordnung:** Der Walker befindet sich noch im eingeschalteten Standpose-Diagnosemodus. Die endgültige Laufbewegung nach der neuen Körperanbindung, das saubere Anhalten und Umdrehen sowie die eigene Bewaffnung sind noch nicht abschließend getestet. Die Fußwinkel werden momentan über eine vorläufige richtungsabhängige Korrektur im Code gesetzt.
+**Nächster Schritt: Walker-Bewaffnung.** Zielerfassung, kontrollierte Ausrichtung und eigene Schüsse sollen schrittweise über die vorhandene Projektilarchitektur ergänzt werden. Eine begrenzte Torso-/Turm-Neigung beim Zielen ist als spätere Erweiterung denkbar; die funktionierende Bein-IK und die Anschlüsse bleiben dabei Referenz. Kisten als eigene Umkehrpunkte und eine zusätzliche Corpus-Trefferzone sind noch zu prüfen.
 
-**Nächste Walker-Arbeiten:** Standpose-Test kontrolliert abschalten; die abwechselnde Schrittbewegung, Fußkontakte und Richtungswechsel prüfen; das Debug-Skelett später ausblenden, aber für neue Gegner wiederverwendbar halten; anschließend Schüsse über das vorhandene Bullet-System sowie eine begrenzte Torso-/Turm-Neigung zum Zielen entwickeln. Plattformkanten sind als Bewegungsgrenzen berücksichtigt; das Umkehren an Kisten ist gesondert zu prüfen.
-
-**Später zu prüfen:** Torso als zusätzliche Trefferzone, Animationsfeinschliff und das übergreifende Kollisionskonzept. Für besondere Animationen wie Knien, Aufstehen oder Zerstörung bleibt ein Keyframe-Werkzeug wie Spriter als mögliche Ergänzung zum prozeduralen Skelett vorgemerkt.
+**Grafisches Polishing – bewusst nachrangig:** Die Bein-Grafiken könnten bei Bedarf etwas schlanker werden oder feinere Gelenk-, Kontur- und Lichtdetails erhalten. Die aktuelle kräftige, eigenständige Walker-Silhouette ist für die Alpha akzeptiert; Änderungen an den Originalgrafiken sind nicht Voraussetzung für die Bewaffnung. Ein Keyframe-Werkzeug wie Spriter bleibt optional für besondere Animationen (z. B. Knien, Aufstehen oder Zerstörung).
 
 **Projektentscheidung: Ein funktionsfähiger Walker ist Pflichtbestandteil der ersten Alpha-Version.**
 
@@ -273,4 +271,4 @@ Unbestätigte Annahmen dürfen nicht als gesicherte Eigenschaften des Spiels dar
 - Mögliche Aufgaben und Missionen
 - Späteres Veröffentlichungs- und Versionsschema
 
-**Nächster Meilenstein:** Die bestätigte Walker-Standpose als Referenz sichern, den Standpose-Diagnosemodus deaktivieren und die Laufbewegung mit der neuen Körperanbindung testen. Danach Walker-Bewaffnung entwickeln sowie HTML5-Build und Gamepad-Steuerung praktisch prüfen; anschließend die offenen Alpha-Anforderungen priorisieren.
+**Nächster Meilenstein:** Walker-Bewaffnung auf Basis des vorhandenen Bullet-Systems in kleinen Schritten implementieren und lokal testen. Danach HTML5-Build und Gamepad-Steuerung praktisch prüfen sowie die verbleibenden Alpha-Anforderungen priorisieren. Die aktuelle Walker-Laufanimation gilt als alpha-tauglicher Referenzstand; grafische Verfeinerungen bleiben optional.
