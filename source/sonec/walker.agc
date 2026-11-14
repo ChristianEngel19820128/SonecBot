@@ -1130,6 +1130,8 @@ global WalkerProtoPivotSprite as integer
 global WalkerProtoAnchorSprite as integer
 global WalkerMuzzlePivotSprite as integer
 global WalkerMuzzleOriginSprite as integer
+global WalkerBarrelAnchor0Sprite as integer
+global WalkerBarrelAnchor1Sprite as integer
 global WalkerMuzzleDebugText as integer
 
 function WalkerDebugToggle()
@@ -1180,6 +1182,19 @@ function WalkerSkeletonInit()
 		SetSpriteSize(WalkerMuzzleOriginSprite,5,5)
 		SetSpriteOffset(WalkerMuzzleOriginSprite,2.5,2.5)
 		SetSpriteColor(WalkerMuzzleOriginSprite,255,240,0,255)
+	endif
+	// Two nested markers stay distinguishable even when both barrels coincide.
+	if WalkerBarrelAnchor0Sprite = 0
+		WalkerBarrelAnchor0Sprite = CreateSprite(0)
+		SetSpriteSize(WalkerBarrelAnchor0Sprite,7,7)
+		SetSpriteOffset(WalkerBarrelAnchor0Sprite,3.5,3.5)
+		SetSpriteColor(WalkerBarrelAnchor0Sprite,40,160,255,255)
+	endif
+	if WalkerBarrelAnchor1Sprite = 0
+		WalkerBarrelAnchor1Sprite = CreateSprite(0)
+		SetSpriteSize(WalkerBarrelAnchor1Sprite,3,3)
+		SetSpriteOffset(WalkerBarrelAnchor1Sprite,1.5,1.5)
+		SetSpriteColor(WalkerBarrelAnchor1Sprite,255,130,30,255)
 	endif
 	if WalkerMuzzleDebugText = 0
 		WalkerMuzzleDebugText = CreateText("")
@@ -1355,19 +1370,28 @@ function WalkerMuzzleDebugDrawAll(WalkerList ref as TWalkerList,ProtoWalker ref 
 	local i as integer
 	local Pivot as TPosition
 	local Muzzle as TPosition
+	local Barrel0 as TPosition
+	local Barrel1 as TPosition
 	local Angle as float
 	if WalkerDebugEnabled = 1
 		for i = 0 to WalkerList.Walker.Length
 			if WalkerList.Walker[i].Enabled = TRUE
 				Pivot = WalkerList.Walker[i].WalkerObjectData.Tower.Position
+				Barrel0 = WalkerList.Walker[i].WalkerObjectData.Barrel[0].AnchorPosition
+				Barrel1 = WalkerList.Walker[i].WalkerObjectData.Barrel[1].AnchorPosition
 				Angle = WalkerMuzzlePositionCalculate(WalkerList.Walker[i],ProtoWalker,Muzzle)
 				SetSpritePositionByOffset(WalkerMuzzlePivotSprite,Pivot.x-World.Position.x,Pivot.y-World.Position.y)
 				DrawSprite(WalkerMuzzlePivotSprite)
 				SetSpritePositionByOffset(WalkerMuzzleOriginSprite,Muzzle.x-World.Position.x,Muzzle.y-World.Position.y)
 				DrawSprite(WalkerMuzzleOriginSprite)
-				SetTextString(WalkerMuzzleDebugText,"Muzzle "+Str(Muzzle.x)+","+Str(Muzzle.y)+Chr(10)+"Pivot "+Str(Pivot.x)+","+Str(Pivot.y)+Chr(10)+"Angle "+Str(Angle)+" Fire "+Str(WalkerList.Walker[i].FireState))
-				// Keep the three debug text lines above the platform instead of across it.
-				SetTextPosition(WalkerMuzzleDebugText,Muzzle.x-World.Position.x+10,Muzzle.y-World.Position.y-32)
+				// Draw the 7x7 B0 anchor first, then the 3x3 B1 anchor inside it.
+				SetSpritePositionByOffset(WalkerBarrelAnchor0Sprite,Barrel0.x-World.Position.x,Barrel0.y-World.Position.y)
+				DrawSprite(WalkerBarrelAnchor0Sprite)
+				SetSpritePositionByOffset(WalkerBarrelAnchor1Sprite,Barrel1.x-World.Position.x,Barrel1.y-World.Position.y)
+				DrawSprite(WalkerBarrelAnchor1Sprite)
+				SetTextString(WalkerMuzzleDebugText,"Muzzle "+Str(Muzzle.x)+","+Str(Muzzle.y)+Chr(10)+"Pivot "+Str(Pivot.x)+","+Str(Pivot.y)+Chr(10)+"Barrel0 "+Str(Barrel0.x)+","+Str(Barrel0.y)+Chr(10)+"Barrel1 "+Str(Barrel1.x)+","+Str(Barrel1.y)+Chr(10)+"Angle "+Str(Angle)+" Fire "+Str(WalkerList.Walker[i].FireState))
+				// Show all five lines above the platform, keeping the marker positions untouched.
+				SetTextPosition(WalkerMuzzleDebugText,Muzzle.x-World.Position.x+10,Muzzle.y-World.Position.y-65)
 				DrawText(WalkerMuzzleDebugText)
 			endif
 		next i
