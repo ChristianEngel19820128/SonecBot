@@ -855,7 +855,7 @@ endfunction
 
 // Experimental IK sprite binding. Set to 0 to compare with the old sine gait.
 #constant WALKER_IK_SPRITES 1
-#constant WALKER_ANGLE_DEBUG 1
+#constant WALKER_ANGLE_DEBUG 0
 // Limb rotations now come from Proto Offset/Anchor reference directions.
 global WalkerAngleDebugText as integer
 
@@ -999,10 +999,10 @@ function WalkerIKBindSprites(Walker ref as TWalker,ProtoWalker ref as TProtoWalk
 endfunction
 
 // Debug geometry uses manually drawn sprites so it shares the Swap() render path.
-#constant WALKER_SKELETON_DEBUG 1
+#constant WALKER_SKELETON_DEBUG 0
 global WalkerDebugLineSprite as integer
 global WalkerDebugJointSprite as integer
-#constant WALKER_PROTO_POINTS_DEBUG 1
+#constant WALKER_PROTO_POINTS_DEBUG 0
 global WalkerProtoPivotSprite as integer
 global WalkerProtoAnchorSprite as integer
 
