@@ -1,6 +1,6 @@
 # SonecBot – Technische Dokumentation
 
-**Dokumentstatus:** Bestandsaufnahme 0.5 (Walker-Laufanimation alpha-tauglich, 14. November 2026)  
+**Dokumentstatus:** Bestandsaufnahme 0.6 (Walker-Waffentest und Feuerzustand, 14. November 2026)  
 **Branch:** `develop`  
 **Engine:** AppGameKit Studio (AGK)  
 **Erste Zielplattform:** HTML5  
@@ -123,7 +123,13 @@ Die alte `WalkerPartsCalculate()`-Kette setzte Oberschenkel und Corpus über `An
 
 **Nicht Alpha-blockierendes grafisches Polishing (später):** Ggf. Oberschenkel-/Unterschenkel-Silhouetten etwas schlanker gestalten und punktuelle Gelenk-, Kontur- oder Lichtdetails in den Sprites ergänzen. Die aktuelle kräftige Beinoptik bleibt zunächst erhalten. Änderungen der Grafik erfordern eine erneute Prüfung der handgesetzten Proto-Offsets und -Anchors, falls die Bildgeometrie verändert wird. Ein Werkzeug wie Spriter bleibt für komplexe Spezialanimationen optional; das prozedurale Skelett ist derzeit die Referenz.
 
-**Nächster Funktionsbereich:** Walker-Bewaffnung und Zielverhalten schrittweise über das bestehende Projektilsystem entwickeln. Zusätzliche Corpus-/Turm-Neigung (ggf. bis etwa 30°), Gegner-Projektilkollisionen gegen Sonec, Kisten als Umkehrhindernis und eine mögliche separate Corpus-Trefferzone sind gesondert zu untersuchen. Die funktionierende Bein-IK soll dabei unangetastet bleiben.
+**Waffentest, lokal bestätigt (14. November 2026):** Einfache horizontale Walker-Schüsse über `BulletAdd()` mit `TYPEENEMY` erscheinen nach Sichtprüfung an einer plausiblen Turmmündungsposition und verursachen bei Sonec Schaden. Feindliche Geschosse treffen derzeit auch Kisten; ob dies eine endgültige Spielregel wird, ist offen. Walker selbst nehmen über `BulletCollideWalkers()` nur Spieler-Geschosse (`TYPEPLAYERONE`) an; Orbs werden über `BulletCollideOrbs()` ebenfalls nur durch `TYPEPLAYERONE` getroffen, um die Fairness für Spieler und KI zu erhalten.
+
+**Neu implementiert, noch lokal zu testen:** Der Walker beginnt eine Zwei-Schuss-Salve nur in einer regulären Standpause und erst dann, wenn beide Füße wieder in ihrer neutralen Standpose sind. `TWalker.FireState` (0 = frei, 1 = zweiter Schuss ausstehend, 2 = Erholung) und `FireStateUntilMs` steuern einen Abstand von 150 ms und eine 200-ms-Abschlussphase. `WalkerMove()` blockiert das Wiederanlaufen, solange der Feuerzustand aktiv ist, auch wenn die normale Pause bereits endete. Die bestehende Plattformbewegung bleibt davon unabhängig. Der Timer `WALKER_FIRE_INTERVAL_MS = 1800` begrenzt den Beginn weiterer Salven; in längeren Standpausen können mehrere Salven auftreten. Rückstoß, Mündungsfeuer, diagonale Schüsse und Zielverfolgung sind noch nicht eingebaut.
+
+**Technische Punkte für den nächsten Test:** `TPosition` speichert Gleitkommawerte, `SpriteDraw()` rundet sichtbare Positionen jedoch aktuell mit `Floor()`. Die horizontale Bullet-Grafik ist laut Entwickler 6 px hoch, das Rohr an der Mündung 2 px. Änderungen an Grafik, Rundung oder Mündungsgeometrie erfolgen erst nach Debug-Vergleich. Bei rund 300 virtuellen px/s besteht außerdem ein mögliches Risiko übersprungener Kollisionen (Tunneling), da die bisherigen Checks vorwiegend Endpositionen betrachten. Die Schusspause soll später genug Raum für Rückstoß- oder Turmanimationen bieten.
+
+**Später:** Zielwahl, Fairness- und Schwierigkeitsbewertung, Kisten als Umkehrhindernis, zusätzliche Corpus-/Turm-Neigung, ggf. separate Corpus-Trefferzone und Einsatz vorhandener `FlashAdd()`-Mündungsfeuerfunktionen ohne Veränderung von Sonecs Maschinengewehr. Die funktionierende Bein-IK bleibt unangetastet.
 
 **Bestehendes Kampfsystem:** `BulletCollideWalkers(...)` prüft Projektile derzeit gegen die aus Bildgröße, Offset und Rotation berechnete Turm-Trefferzone. Treffer verringern die Gesundheit und lösen einen kurzen roten Hitflash aus. Zerstörung und Energie-Drops wurden vom Entwickler lokal getestet. `WalkerNew` enthält weiterhin auskommentierte Zuweisungen für Breite und Höhe; ob die Größen anderweitig zuverlässig gesetzt werden, ist noch zu prüfen, kein bestätigter Fehler.
 
@@ -177,7 +183,7 @@ Für die Beta ist ein Online-Highscore-System vorgesehen. Nach Angaben des Entwi
 | Kisten und Orbs | Module vorhanden; Belohnungsmechanik ungeklärt | Ausstehend |
 | Walker-Erzeugung | Aktiv in Spielschleife | Vom Entwickler lokal bestätigt |
 | Walker-Bewegung/Animation | Zweiknochen-IK, getrennte Fußziele, Stand-/Schwungbein, sanfte Standrückkehr, `TurnPending` und 8-px-Fußhöhe; Debug standardmäßig aus | Stand, Gang, Wende und Darstellung ohne Debug vom Entwickler lokal geprüft und als alpha-tauglich bewertet; HTML5-/Randfalltests ausstehend |
-| Walker-Kampfsystem | Turm-Hitbox, Projektilschaden, roter Trefferblitz, Zerstörung und Energie-Drops implementiert; Walker-Bewaffnung offen | Turmtreffer und Zerstörung vom Entwickler lokal bestätigt |
+| Walker-Kampfsystem | Horizontaler Gegner-Schuss mit `TYPEENEMY`, Turm-Hitbox, Zweischuss-Salve und getrenntem Feuer-/Laufzustand; Orb-Kollision auf Spieler-Bullets begrenzt | Erste Einzelschüsse gegen Sonec und Mündung lokal bestätigt; neue Salvenlogik und Orb-Schutz noch nicht praktisch getestet |
 | HTML5-Steuerung | Index-1-Workaround auf develop umgesetzt; ungetestet | Ausstehend |
 | Kollisionen | Primitive/Box-Prüfungen; Schild-Shape-Prototyp mit Vergleichszählern | Schild-Shape-Test lokal durchgeführt; nicht für Schaden aktiv |
 
@@ -187,15 +193,15 @@ Für die Beta ist ein Online-Highscore-System vorgesehen. Nach Angaben des Entwi
 
 1. Zeitsystem, Pause, Bildratenabhängigkeit und Synchronisierung
 2. HTML5-Gamepad-Steuerung im Vergleich mit Columns
-3. Walker: Bewaffnung und Zielverhalten über die vorhandene Bullet-Architektur analysieren und schrittweise implementieren; anschließend Kisten als Umkehrhindernisse, mögliche Turm-/Torso-Neigung bis etwa 30°, ungeklärte Gesamtgröße und später ggf. Torso-Hitbox prüfen. Grafische Walker-Details nachrangig.
+3. Walker: Zwei-Schuss-Salve mit Bewegungslock und neue Orb-Fairness-Regel lokal testen; danach Mündungsfeuer, Projektil-Tunneling, Trefferregeln, Zielverhalten und mögliche Turm-/Torso-Neigung bearbeiten. Kisten als Umkehrhindernisse, ungeklärte Gesamtgröße und Torso-Hitbox später prüfen. Grafische Walker-Details nachrangig.
 4. Schild-Shape-Kollision weiter testen; allgemeine Kollisionserkennung und mögliche AGK-Alternativen
 5. Kisten, Orbs und Upgrade-Mechanik
-6. Wiederverwendung der Highscore-Lösung für die Beta
+6. Einfache Punktevergabe für die Alpha und mögliche Wiederverwendung der Crystals-Online-Highscore-Lösung prüfen; geeigneten Release-Zeitpunkt für Online-Tabelle festlegen
 
 Die Punkte sind Untersuchungsaufgaben, keine Änderungsfreigaben. Es werden keine Codeänderungen ohne ausdrückliche Zustimmung vorgenommen.
 
 ## 11. Quellen und Gültigkeit
 
-Statisch gesichtet auf `develop` (Walker-IK, Gangsteuerung und Körperanbindung bis zum Debug-Ausblenden in Commit `c6d47e6` am 14. November 2026; ergänzt durch lokale Screenshots und Spieltests des Entwicklers): `main.agc`, `game.agc`, `def_game.agc`, `sonec.agc`, `walker.agc`, `mine.agc`, `plate.agc`, `controls.agc`, `def_joypad.agc`, `world.agc`, `collision.agc`, `sound.agc`.
+Statisch gesichtet auf `develop` (Walker-IK und Körperanbindung sowie Feuerzustand mit Salven bis Commit `2925a99`, Orb-Schutz bis `23e9ef1`, 14. November 2026; ergänzt durch lokale Screenshots und Spieltests des Entwicklers, wobei die letzten Salven-/Orb-Änderungen noch nicht lokal geprüft wurden): `main.agc`, `game.agc`, `def_game.agc`, `sonec.agc`, `walker.agc`, `mine.agc`, `plate.agc`, `controls.agc`, `def_joypad.agc`, `world.agc`, `collision.agc`, `sound.agc`.
 
 Der Vergleich mit Crystal Columns/Crystals erfolgte anhand von `main.agc`, `def_joypad.agc`, `input.agc`, `controls.agc`, `timer.agc` und `highscore_online.agc` auf `main`. Angaben zur praktischen Tastaturbedienung und zu Upgrade-Belohnungen bleiben noch zu verifizieren. Die vorhandene PurpleToken-Online-Highscore-Integration in Crystals wurde im Quellcode bestätigt, aber nicht auf Erreichbarkeit getestet.
