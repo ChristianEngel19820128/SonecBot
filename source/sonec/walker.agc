@@ -1,4 +1,8 @@
 
+// Walker gun trial: predictable horizontal shots without targeting or torso tilt.
+#constant WALKER_TEST_FIRE 1
+#constant WALKER_FIRE_INTERVAL_MS 1800
+
 //----------------------------------------------------------------------
 // 
 //----------------------------------------------------------------------
@@ -209,6 +213,8 @@ function WalkerNew(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,World r
 	Walker.PlateIndex = PlateIndex
 	TimeSet(Walker.ObjectData.MoveTimer,10,10)
 	TimeReset(Walker.ObjectData.MoveTimer,Now)
+	TimeSet(Walker.FireTimer,WALKER_FIRE_INTERVAL_MS,1)
+	TimeReset(Walker.FireTimer,Now)
 	
 	// Fixed slower test pace: compare foot contact and turns at a consistent speed.
 	Walker.ObjectData.MoveSpeed.x = 0.05
@@ -604,6 +610,41 @@ function WalkerAnimateAll(WalkerList ref as TWalkerList,ProtoWalker ref as TProt
 	next i
 	
 endfunction
+
+// First weapon trial: use the existing bullet pool and tower pivot.
+// Angle conventions match Sonec's horizontal machine-gun fire (90 / 270).
+// We deliberately do not track Sonec or change torso/turret rotations here.
+function WalkerFireAll(WalkerList ref as TWalkerList,ProtoWalker ref as TProtoWalker,BulletList ref as TBulletList,ProtoBullet ref as TProtoBullet,World ref as TWorld,Now as integer)
+	local i as integer
+	local MuzzlePosition as TPosition
+	local MuzzleRadius as float
+	local FireAngle as float
+
+	if WALKER_TEST_FIRE = 1
+		for i = 0 to WalkerList.Walker.Length
+			if WalkerList.Walker[i].Enabled = TRUE and WalkerList.Walker[i].TurnPending = 0
+				// Avoid filling the projectile pool with off-screen Walkers.
+				if WalkerList.Walker[i].WalkerObjectData.Tower.Position.x >= 0 and WalkerList.Walker[i].WalkerObjectData.Tower.Position.x <= World.Size.Width
+					if TimeGet(WalkerList.Walker[i].FireTimer,Now) > 0
+						MuzzlePosition = WalkerList.Walker[i].WalkerObjectData.Tower.Position
+						if WalkerList.Walker[i].State.LookAlignment = LOOKLEFT
+							FireAngle = 270
+							MuzzleRadius = ProtoWalker.AnimLeft.Tower.Offset.y
+						else
+							FireAngle = 90
+							MuzzleRadius = ProtoWalker.AnimRight.Tower.Offset.y
+						endif
+						// BulletNew offsets the origin by Radius along FireAngle.
+						BulletAdd(BulletList,ProtoBullet,World,MuzzlePosition,FireAngle,MuzzleRadius,TYPEENEMY,Now)
+						TimeReset(WalkerList.Walker[i].FireTimer,Now)
+					endif
+				endif
+			endif
+		next i
+	endif
+endfunction
+
+
 
 //----------------------------------------------------------------------
 // 
