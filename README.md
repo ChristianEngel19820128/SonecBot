@@ -3,7 +3,7 @@ Game written in App Game Kit Studio
 
 Jump, Run, Fly & Shoot anything
 
-This is a remake of a game I codet with BlitzMax in my early years.
+This is a remake of a game originally written in BlitzBasic Plus. A later attempt to recreate it in BlitzMax was never completed.
 
 The ingame control works only with Joypad.
 
