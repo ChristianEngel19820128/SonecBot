@@ -1,6 +1,6 @@
 # SonecBot – TODO und Meilensteine
 
-**Dokumentstatus:** Version 1.6  
+**Dokumentstatus:** Version 1.7  
 **Stand:** 15. November 2026  
 **Branch:** `develop`  
 **Ziel:** Kleine, überprüfbare Schritte zur spielbaren HTML5-Alpha
@@ -83,7 +83,8 @@
 - [x] **F2-Plattform-/Hochhaus-Vergleich getestet:** Die 60-Frame-Werte für eine sichtbare Plattform (`P#`) und ein Hochhaus (`T#`) wurden vom Entwickler unter Windows geprüft (`a12dad5`, `cc1a34a`, `11529af`, `8ffebcf`); bei beiden `Steps 60/60`, sichtbares gelegentliches Ruckeln trotzdem bestätigt. F2-Anzeige rechts oben ist lokal geprüft (`ea59c2a`), Ursache weiterhin offen.
 - [x] **A/B-Renderexperiment lokal geprüft:** `F4` wechselt bei aktivem F2 zwischen **A FLOAT** (bisherige Positionen) und **B PIXEL SNAP** (nur temporäre Draw-Kopien von Plattform-/Hochhaus-Sprites auf physische Fensterpixel gerundet). Der Entwickler beobachtete bei ~60 FPS in B deutlich weniger Ruckeln, bei ~120 FPS in A/B kaum noch Ruckeln, jedoch weiterhin Tearing. Bei 59,94 Hz/75 Hz mit angefordertem VSync wurde ebenfalls Ruckeln/Tearing berichtet; reproduzierbare Screenshots des Tearing fehlen. Keine Physik-/Timeränderung (`53090a6`–`9e87c88`).
 - [x] **F2-Renderer-/Sync-Diagnose lokal bestätigt (15. November):** F2 zeigt auf dem Windows-Testsystem mit AMD RX 6600 XT `Renderer: Vulkan` und `Sync call: SetVSync(1) requested` (`431a1ff`, `f79821f`). Das bestätigt den Renderer und die API-Anforderung, **nicht** eine tatsächliche Tearing-freie Präsentation. Beide 60-Frame-Statistiken zeigten `Steps 60/60`; maximale Framezeit im Screenshot 26 ms.
-- [ ] **Nächster Rendering-Test:** Bei ausdrücklicher Freigabe in einem isolierten A/B-Commit AGK `#renderer "Basic"` (OpenGL) gegen `#renderer "Advanced"` (Vulkan) bzw. automatische Auswahl vergleichen. Renderer, F2-Messwerte, Tearing und sichtbare Ruckler bei derselben Windows-/Monitor-Einstellung prüfen. Nicht gleichzeitig VSync, Spieltimer, Auflösung oder Bewegung umstellen.
+- [x] **OpenGL-Testbuild vorbereitet:** `main.agc` enthält seit `506b51f` vorübergehend `#renderer "Basic"` (OpenGL). `#renderer "Advanced"` (Vulkan) ist die zweite Testvariante; die frühere Standardauswahl entsprach `"Prefer Best"`. Keine Änderung an VSync, Timing, Bewegungslogik oder Auflösung. **Der OpenGL-Test wurde noch nicht lokal kompiliert/ausgeführt.**
+- [ ] **Heute Abend testen:** Bei einer fixen Frequenz (59,94 **oder** 75 Hz) mit unveränderten AMD-Einstellungen zuerst OpenGL frisch kompilieren/starten und F2-/F4-Modi vergleichen. `Renderer`, `Sync call`, FPS, 60-Frame-Schritte und sichtbares Tearing/Ruckeln festhalten. Dann nur `#renderer "Advanced"` einstellen, erneut kompilieren/starten und dieselben Bedingungen testen. **Anschließend `#renderer "Prefer Best"` als normale automatische Auswahl wiederherstellen** und den Teststatus dokumentieren.
 - [ ] **Timer-Float-Vergleich:** Crystals/`source/crystals/timer.agc` nutzt `1000.0/Span`, SonecBot/`source/sonec/timer.agc` noch `1000 / Span`. Der Entwickler hat ungenaue Integer-Divisionen in AGK praktisch beobachtet. Prüfen, wo nichtganzzahlige Timer-Spans auftreten und ob Float-Operationen erforderlich sind; **separater, gezielter Commit nach Diagnose**, keine ungeprüfte Übernahme von Crystals. VSync-/Geschwindigkeitsänderungen nicht vorwegnehmen.
 
 ## 2. HTML5-Alpha – hohe Priorität
@@ -138,6 +139,6 @@
 - [ ] Vor der HTML5-Alpha offene Anforderungen und tatsächlichen Teststatus der Kernsysteme erneut abgleichen.
 - [x] **Wiederlesbare Übergabe im Repository eingerichtet:** `TECHNICAL.md` enthält einen Abschnitt „Übergabe bei Chatlimit oder neuem Chat“ mit Branch-/Commit-Startpunkt, lokal getesteten Befunden, offenen Fragen, AGK-Besonderheiten, Arbeitsregeln und einer Startformulierung. Vor jedem weiteren Chatwechsel die Dateien und den HEAD **erneut** aktualisieren und vergleichen; automatische Kontextübernahme nicht voraussetzen.
 
-**Aktueller Code-Übergabestand:** F2-Renderer-/Sync-Anzeige bis `f79821f` (lokal: Vulkan, `SetVSync(1)` angefordert); Dokumentation später aktualisiert. Bitte tatsächlichen Branch-HEAD erneut prüfen. Nach jedem weiteren Commit den Branch-HEAD neu prüfen. Bitte auch `TECHNICAL.md`, Abschnitt 12, lesen.
+**Aktueller Code-Übergabestand:** `506b51f` schaltet für einen **temporären OpenGL-Test** `#renderer "Basic"` ein; lokales Kompilieren und der Vulkan-Gegenvergleich stehen aus. Dokumentationscommits folgen. Die Rückstellung auf `"Prefer Best"` ist Pflicht nach Abschluss der Diagnose. Bitte immer den tatsächlichen Branch-HEAD prüfen; weitere Hinweise in `TECHNICAL.md`, Abschnitt 12.
 
 **Walker-Referenzstände:** Corpus-/Turmanbindung `deb8b74`; getrennte Fußziele `760c8c3`; angepasste Gangphase `20eced3`; Wendeverhalten `810d342`; einheitliche Geschwindigkeit `20b2d7d`; Fußhöhe 8 px `328c5e0`; Debug-Anzeigen aus `c6d47e6` (jeweils auf `develop`). Der Entwickler hat das lokale Gangbild als alpha-tauglich bewertet; ein eigener AGK-Build des Assistenten und ein HTML5-Praxistest stehen aus.
