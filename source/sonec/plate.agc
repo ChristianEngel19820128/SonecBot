@@ -448,6 +448,11 @@ function PlateDebugDrawAll(PlateList ref as TPlateList,TowerList ref as TTowerLi
 		else
 			Data = Data+"Tower F5: B - EVERY UPDATE (dt)"+Chr(10)
 		endif
+		if PlateMotionEveryFrameEnabled = 0
+			Data = Data+"Plate F6: A - 10ms GATE"+Chr(10)
+		else
+			Data = Data+"Plate F6: B - EVERY UPDATE (dt)"+Chr(10)
+		endif
 		for i = 0 to PlateList.Plate.Length
 			if PlateList.Plate[i].Enabled = TRUE
 				if PlateList.Plate[i].SpriteData.Position.x <= GetVirtualWidth() and PlateList.Plate[i].SpriteData.Position.x + PlateList.Plate[i].ObjectData.Size.Width >= 0
