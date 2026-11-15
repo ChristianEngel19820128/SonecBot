@@ -224,7 +224,140 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function WalkerNew(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,World ref as TWorld,Plate ref as TPlate,PlateIndex as integer,Now as integer)
+// Shared candidate envelope, verified visually in F1 at 110 x 85 virtual pixels.
+// The 5 px horizontal allowance is included for both chests and spawn positions.
+#constant WALKER_HULL_HALF_WIDTH 50.0
+#constant WALKER_HULL_HORIZONTAL_CLEARANCE 5.0
+#constant WALKER_HULL_TOP 50.0
+#constant WALKER_HULL_BOTTOM 35.0
+
+// Compare platform-local offsets. WalkerMoveAll runs before ChestMoveAll, so
+// chest world positions can still reflect the previous platform movement step.
+function WalkerChestAreaFree(ChestList ref as TChestList,PlateIndex as integer,OffsetX as float,OffsetY as float)
+
+	local i as integer
+	local Free as integer
+	local HullMinX as float
+	local HullMaxX as float
+	local HullMinY as float
+	local HullMaxY as float
+	local ChestMinX as float
+	local ChestMaxX as float
+	local ChestMinY as float
+	local ChestMaxY as float
+
+	Free = TRUE
+	HullMinX = OffsetX - WALKER_HULL_HALF_WIDTH - WALKER_HULL_HORIZONTAL_CLEARANCE
+	HullMaxX = OffsetX + WALKER_HULL_HALF_WIDTH + WALKER_HULL_HORIZONTAL_CLEARANCE
+	HullMinY = OffsetY - WALKER_HULL_TOP
+	HullMaxY = OffsetY + WALKER_HULL_BOTTOM
+
+	for i = 0 to ChestList.Chest.Length
+		if ChestList.Chest[i].Enabled = TRUE and ChestList.Chest[i].CollisionData.Index = PlateIndex
+			ChestMinX = ChestList.Chest[i].CollisionData.Position.x
+			ChestMaxX = ChestMinX + ChestList.Chest[i].ObjectData.Size.Width
+			ChestMinY = ChestList.Chest[i].CollisionData.Position.y
+			ChestMaxY = ChestMinY + ChestList.Chest[i].ObjectData.Size.Height
+			if HullMinX < ChestMaxX and HullMaxX > ChestMinX
+				if HullMinY < ChestMaxY and HullMaxY > ChestMinY
+					Free = FALSE
+				endif
+			endif
+		endif
+	next i
+
+endfunction Free
+
+// Find the closest free point to the platform center. If none is available,
+// skip this Walker; never create one inside a chest or beyond the platform.
+function WalkerFindSpawnOffset(ChestList ref as TChestList,Plate ref as TPlate,PlateIndex as integer)
+
+	local SpawnOffsetX as float
+	local HullHalfWidth as float
+	local CenterOffsetX as float
+	local CandidateX as float
+	local SearchSteps as integer
+	local i as integer
+
+	SpawnOffsetX = -1
+	HullHalfWidth = WALKER_HULL_HALF_WIDTH + WALKER_HULL_HORIZONTAL_CLEARANCE
+	if Plate.ObjectData.Size.Width >= HullHalfWidth*2
+		CenterOffsetX = Plate.ObjectData.Size.Width*0.5
+		SearchSteps = Floor(CenterOffsetX-HullHalfWidth)
+		for i = 0 to SearchSteps
+			if SpawnOffsetX < 0
+				CandidateX = CenterOffsetX + i
+				if CandidateX + HullHalfWidth <= Plate.ObjectData.Size.Width
+					if WalkerChestAreaFree(ChestList,PlateIndex,CandidateX,-30.0) = TRUE
+						SpawnOffsetX = CandidateX
+					endif
+				endif
+			endif
+			if SpawnOffsetX < 0 and i > 0
+				CandidateX = CenterOffsetX - i
+				if CandidateX - HullHalfWidth >= 0
+					if WalkerChestAreaFree(ChestList,PlateIndex,CandidateX,-30.0) = TRUE
+						SpawnOffsetX = CandidateX
+					endif
+				endif
+			endif
+		next i
+	endif
+
+endfunction SpawnOffsetX
+
+// Free travel before the front edge of the same envelope reaches a chest.
+// Return zero if a chest already overlaps the envelope.
+function WalkerChestDistanceAhead(Walker ref as TWalker,ChestList ref as TChestList)
+
+	local i as integer
+	local Distance as float
+	local Gap as float
+	local HullMinX as float
+	local HullMaxX as float
+	local HullMinY as float
+	local HullMaxY as float
+	local ChestMinX as float
+	local ChestMaxX as float
+	local ChestMinY as float
+	local ChestMaxY as float
+
+	Distance = 1000000.0
+	HullMinX = Walker.PlateOffsetX - WALKER_HULL_HALF_WIDTH - WALKER_HULL_HORIZONTAL_CLEARANCE
+	HullMaxX = Walker.PlateOffsetX + WALKER_HULL_HALF_WIDTH + WALKER_HULL_HORIZONTAL_CLEARANCE
+	HullMinY = Walker.PlateOffsetY - WALKER_HULL_TOP
+	HullMaxY = Walker.PlateOffsetY + WALKER_HULL_BOTTOM
+
+	for i = 0 to ChestList.Chest.Length
+		if ChestList.Chest[i].Enabled = TRUE and ChestList.Chest[i].CollisionData.Index = Walker.PlateIndex
+			ChestMinX = ChestList.Chest[i].CollisionData.Position.x
+			ChestMaxX = ChestMinX + ChestList.Chest[i].ObjectData.Size.Width
+			ChestMinY = ChestList.Chest[i].CollisionData.Position.y
+			ChestMaxY = ChestMinY + ChestList.Chest[i].ObjectData.Size.Height
+			if HullMinY < ChestMaxY and HullMaxY > ChestMinY
+				if ChestMinX < HullMaxX and ChestMaxX > HullMinX
+					Distance = 0
+				else
+					if Walker.State.Alignment = MOVELEFT and ChestMaxX <= HullMinX
+						Gap = HullMinX - ChestMaxX
+						if Gap < Distance then Distance = Gap
+					endif
+					if Walker.State.Alignment = MOVERIGHT and ChestMinX >= HullMaxX
+						Gap = ChestMinX - HullMaxX
+						if Gap < Distance then Distance = Gap
+					endif
+				endif
+			endif
+		endif
+	next i
+
+endfunction Distance
+
+//----------------------------------------------------------------------
+// 
+//----------------------------------------------------------------------
+
+function WalkerNew(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,World ref as TWorld,Plate ref as TPlate,PlateIndex as integer,Now as integer,SpawnOffsetX as float)
 	
 	Walker.Enabled = TRUE
 	Walker.PlateIndex = PlateIndex
@@ -252,7 +385,7 @@ function WalkerNew(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,World r
 	Walker.State.Alignment = MOVELEFT
 	
 	// Place the body anchor above the platform; feet offset can be tuned after visual testing.
-	Walker.ObjectData.Position.x = Plate.ObjectData.Position.x + Plate.ObjectData.Size.Width*0.5
+	Walker.ObjectData.Position.x = Plate.ObjectData.Position.x + SpawnOffsetX
 	Walker.ObjectData.Position.y = Plate.ObjectData.Position.y - 30
 	Walker.PlateOffsetX = Walker.ObjectData.Position.x - Plate.ObjectData.Position.x
 	Walker.PlateOffsetY = Walker.ObjectData.Position.y - Plate.ObjectData.Position.y
@@ -379,13 +512,14 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function WalkerAdd(WalkerList ref as TWalkerList,ProtoWalker ref as TProtoWalker,World ref as TWorld,Plate ref as TPlate,PlateIndex as integer,Now as integer)
+function WalkerAdd(WalkerList ref as TWalkerList,ProtoWalker ref as TProtoWalker,ChestList ref as TChestList,World ref as TWorld,Plate ref as TPlate,PlateIndex as integer,Now as integer)
 	
 	local Value as integer
 	local Found as integer
 	local i as integer
 	local Walker as TWalker
 	local y as integer
+	local SpawnOffsetX as float
 
 	y = Plate.ObjectData.Position.y
 	
@@ -395,7 +529,9 @@ function WalkerAdd(WalkerList ref as TWalkerList,ProtoWalker ref as TProtoWalker
 	
 		if TimeGet(WalkerList.CreateTimer,Now) > 0
 			
-			WalkerNew(Walker,ProtoWalker,World,Plate,PlateIndex,Now)
+			SpawnOffsetX = WalkerFindSpawnOffset(ChestList,Plate,PlateIndex)
+			if SpawnOffsetX >= 0
+				WalkerNew(Walker,ProtoWalker,World,Plate,PlateIndex,Now,SpawnOffsetX)
 			
 			Found = FALSE
 			i = WalkerList.FirstFree
@@ -418,6 +554,7 @@ function WalkerAdd(WalkerList ref as TWalkerList,ProtoWalker ref as TProtoWalker
 			endif
 		
 			TimeReset(WalkerList.CreateTimer,Now)
+			endif
 			
 		endif
 	endif
@@ -808,12 +945,13 @@ function WalkerFlashFollowAll(WalkerList ref as TWalkerList,FlashList ref as TFl
 	next i
 endfunction
 
-function WalkerMove(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,PlateList ref as TPlateList,World ref as TWorld,Now as integer)
+function WalkerMove(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,PlateList ref as TPlateList,ChestList ref as TChestList,World ref as TWorld,Now as integer)
 
 	local PlateIndex as integer
 	local PlateWidth as float
 	local EdgeMargin as float
 	local StepX as float
+	local ChestDistance as float
 	local Moving as integer
 
 	StepX = 0
@@ -850,6 +988,15 @@ function WalkerMove(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,PlateL
 								Walker.PauseUntilMs = Now + random(1000,3000)
 							else
 								if WALKER_STAND_POSE_TEST = 0 then StepX = Walker.ObjectData.MoveSpeed.x*Walker.ObjectData.MoveTimer.CalcRange
+								// Stop at the 110 px envelope before the next movement step crosses a chest.
+								// The original foot-settle TurnPending path performs the reversal.
+								if StepX > 0
+									ChestDistance = WalkerChestDistanceAhead(Walker,ChestList)
+									if ChestDistance <= StepX
+										StepX = ChestDistance
+										Walker.TurnPending = 1
+									endif
+								endif
 								if Walker.State.Alignment = MOVELEFT
 									Walker.PlateOffsetX = Walker.PlateOffsetX - StepX
 								else
@@ -919,12 +1066,12 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function WalkerMoveAll(WalkerList ref as TWalkerList,ProtoWalker ref as TProtoWalker,PlateList ref as TPlateList,World ref as TWorld,Now as integer)
+function WalkerMoveAll(WalkerList ref as TWalkerList,ProtoWalker ref as TProtoWalker,PlateList ref as TPlateList,ChestList ref as TChestList,World ref as TWorld,Now as integer)
 	
 	local i as integer
 	
 	for i = 0 to WalkerList.Walker.Length
-		WalkerMove(WalkerList.Walker[i],ProtoWalker,PlateList,World,Now)
+		WalkerMove(WalkerList.Walker[i],ProtoWalker,PlateList,ChestList,World,Now)
 		if WalkerList.Walker[i].Enabled = TRUE and WalkerList.Walker[i].ObjectData.Position.x + WalkerList.Walker[i].ObjectData.Size.Width < World.Position.x
 			WalkerDelete(WalkerList,i)
 		endif
@@ -995,12 +1142,7 @@ endfunction
 #constant WALKER_IK_SPRITES 1
 // Runtime Walker diagnosis is off by default. F1 toggles overlays, not IK behavior.
 #constant WALKER_DEBUG_MAX_ENTRIES 3
-// F1-only test envelope relative to Walker's world-space hip (virtual pixels).
-#constant WALKER_DEBUG_HULL_HALF_WIDTH 50.0
-// Extra visual clearance on each side; not yet used for physical collisions.
-#constant WALKER_DEBUG_HULL_HORIZONTAL_CLEARANCE 5.0
-#constant WALKER_DEBUG_HULL_TOP 50.0
-#constant WALKER_DEBUG_HULL_BOTTOM 35.0
+// F1 visualizes the same clearance envelope used by Walker spawning and chest stops.
 global WalkerDebugEnabled as integer
 // Limb rotations now come from Proto Offset/Anchor reference directions.
 
@@ -1269,10 +1411,10 @@ function WalkerDebugHullDraw(Walker ref as TWalker,World ref as TWorld)
 	local HullBottom as float
 	x = Walker.ObjectData.Position.x - World.Position.x
 	y = Walker.ObjectData.Position.y - World.Position.y
-	HullLeft = x - WALKER_DEBUG_HULL_HALF_WIDTH - WALKER_DEBUG_HULL_HORIZONTAL_CLEARANCE
-	HullRight = x + WALKER_DEBUG_HULL_HALF_WIDTH + WALKER_DEBUG_HULL_HORIZONTAL_CLEARANCE
-	HullTop = y - WALKER_DEBUG_HULL_TOP
-	HullBottom = y + WALKER_DEBUG_HULL_BOTTOM
+	HullLeft = x - WALKER_HULL_HALF_WIDTH - WALKER_HULL_HORIZONTAL_CLEARANCE
+	HullRight = x + WALKER_HULL_HALF_WIDTH + WALKER_HULL_HORIZONTAL_CLEARANCE
+	HullTop = y - WALKER_HULL_TOP
+	HullBottom = y + WALKER_HULL_BOTTOM
 	WalkerDebugHullLine(HullLeft,HullTop,HullRight,HullTop)
 	WalkerDebugHullLine(HullRight,HullTop,HullRight,HullBottom)
 	WalkerDebugHullLine(HullRight,HullBottom,HullLeft,HullBottom)
