@@ -3,15 +3,15 @@
 #constant WALKER_TEST_FIRE 1
 // Target-acquisition trial. 0 restores the previous fixed diagonal test.
 #constant WALKER_TARGET_AIM_TEST 1
-#constant WALKER_AIM_MAX_DISTANCE 500.0
+#constant WALKER_AIM_CORPUS_LEAN_FACTOR 0.25
 #constant WALKER_AIM_MAX_TILT 30.0
 #constant WALKER_AIM_INITIAL_ERROR 14.0
 #constant WALKER_AIM_MIN_ERROR 5.0
 #constant WALKER_AIM_IMPROVEMENT 2.0
 #constant WALKER_AIM_MAX_SALVOS 5
-// Reversible legacy trajectory test when target acquisition is disabled/misses.
-// 0 gives the original 90/270 degree horizontal burst.
-#constant WALKER_DIAGONAL_TEST_FIRE 1
+// The old fixed diagonal trial is off by default; with no target lock,
+// keep the ordinary horizontal 90/270 degree burst.
+#constant WALKER_DIAGONAL_TEST_FIRE 0
 #constant WALKER_DIAGONAL_TEST_ANGLE 15.0
 #constant WALKER_FIRE_INTERVAL_MS 1800
 #constant WALKER_BURST_SHOT_DELAY_MS 150
@@ -733,8 +733,8 @@ function WalkerAnimate(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,Wor
 		Walker.WalkerObjectData.Barrel[1].Rotation  = ProtoWalker.AnimRight.Barrel.Rotation+90
 	endif
 	
-	// Only the turret and barrel rotate around their existing shared pivot.
-	// Frozen for both burst shots; leg IK and Corpus remain unchanged.
+	// Turret and barrels rotate through the full saved aim deviation.
+	// Corpus receives only a reduced lean below; legs/IK remain unchanged.
 	if Walker.AimActive = TRUE
 		if Walker.State.LookAlignment = LOOKLEFT
 			AimOffset = Walker.AimAngle - 270.0
@@ -750,6 +750,11 @@ function WalkerAnimate(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,Wor
 		Walker.WalkerObjectData.Corpus.Rotation = ProtoWalker.AnimLeft.Corpus.Rotation-90
 	else
 		Walker.WalkerObjectData.Corpus.Rotation = ProtoWalker.AnimRight.Corpus.Rotation+90
+	endif
+	// The Corpus leans gently around the fixed IK hip. The turret still aims
+	// independently at the complete stored angle; legs keep their existing IK.
+	if Walker.AimActive = TRUE
+		Walker.WalkerObjectData.Corpus.Rotation = Walker.WalkerObjectData.Corpus.Rotation + AimOffset*WALKER_AIM_CORPUS_LEAN_FACTOR
 	endif
 
 	WalkerPartsCalculate(Walker,ProtoWalker,World)
@@ -813,7 +818,7 @@ endfunction
 // Lock a single imperfect direction at the start of the burst.
 // Scan only the forward half-plane, never track Sonec during the second shot.
 // A new Walker starts at +/-14 degrees and improves to a minimum +/-5 degrees.
-function WalkerAcquireBurstAim(Walker ref as TWalker,Sonec ref as TSonec)
+function WalkerAcquireBurstAim(Walker ref as TWalker,Sonec ref as TSonec,VisionDistance as float)
 	local MuzzlePosition as TPosition
 	local TargetDeltaX as float
 	local TargetDeltaY as float
@@ -827,7 +832,7 @@ function WalkerAcquireBurstAim(Walker ref as TWalker,Sonec ref as TSonec)
 		TargetDeltaX = Sonec.ObjectData.Position.x-MuzzlePosition.x
 		TargetDeltaY = Sonec.ObjectData.Position.y-MuzzlePosition.y
 		TargetDistance = sqrt(TargetDeltaX*TargetDeltaX+TargetDeltaY*TargetDeltaY)
-		if TargetDistance <= WALKER_AIM_MAX_DISTANCE
+		if TargetDistance <= VisionDistance
 			if (Walker.State.LookAlignment = LOOKRIGHT and TargetDeltaX > 0) or (Walker.State.LookAlignment = LOOKLEFT and TargetDeltaX < 0)
 				TargetDeviation = ATan2(TargetDeltaY,abs(TargetDeltaX))
 				// Do not aim farther than the mechanical +/-30 degree test arc.
@@ -902,7 +907,7 @@ endfunction
 
 // FireState: 0 = idle, 1 = waiting to fire second bullet, 2 = recoil/recovery.
 // A started burst always finishes before WalkerMove may resume walking.
-function WalkerFireAll(WalkerList ref as TWalkerList,ProtoWalker ref as TProtoWalker,BulletList ref as TBulletList,ProtoBullet ref as TProtoBullet,FlashList ref as TFlashList,ProtoFlash ref as TProtoFlash,World ref as TWorld,Sonec ref as TSonec,Now as integer)
+function WalkerFireAll(WalkerList ref as TWalkerList,ProtoWalker ref as TProtoWalker,BulletList ref as TBulletList,ProtoBullet ref as TProtoBullet,FlashList ref as TFlashList,ProtoFlash ref as TProtoFlash,World ref as TWorld,Sonec ref as TSonec,VisionDistance as float,Now as integer)
 	local i as integer
 	local LeftFootX as float
 	local RightFootX as float
@@ -933,7 +938,7 @@ function WalkerFireAll(WalkerList ref as TWalkerList,ProtoWalker ref as TProtoWa
 							// Avoid generating shots for Walkers outside the world.
 							if WalkerList.Walker[i].WalkerObjectData.Tower.Position.x >= 0 and WalkerList.Walker[i].WalkerObjectData.Tower.Position.x <= World.Size.Width
 							if TimeGet(WalkerList.Walker[i].FireTimer,Now) > 0
-								WalkerAcquireBurstAim(WalkerList.Walker[i],Sonec)
+								WalkerAcquireBurstAim(WalkerList.Walker[i],Sonec,VisionDistance)
 								// Align the turret and both barrel anchors before the first shot.
 								if WalkerList.Walker[i].AimActive = TRUE then WalkerAnimate(WalkerList.Walker[i],ProtoWalker,World,Now)
 								WalkerFireShot(WalkerList.Walker[i],i,ProtoWalker,BulletList,ProtoBullet,FlashList,ProtoFlash,World,Now)
