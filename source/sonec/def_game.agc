@@ -614,6 +614,18 @@ type TTower
 	TowerType as integer
 	TowerPart as TTowerPart[-1]
 	ObjectData as TObjectData
+	// F2 measurements only; never used in tower movement or rendering.
+	DebugDeltaX as float
+	DebugCalcRange as float
+	DebugElapsedMs as integer
+	DebugUpdated as integer
+	DebugFrameMs as integer
+	DebugLastNow as integer
+	DebugHistoryDX as float[59]
+	DebugHistoryFrameMs as integer[59]
+	DebugHistoryStep as integer[59]
+	DebugHistoryCount as integer
+	DebugHistoryNext as integer
 endtype
 
 type TTowerList
