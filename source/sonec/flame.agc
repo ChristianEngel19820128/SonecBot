@@ -235,12 +235,22 @@ function FlameCollideChest(FlameList ref as TFlameList,ChestList ref as TChestLi
 	local i as integer
 	local k as integer
 	local Radius as float
+	local NearestPoint as TPosition
 	
 	for i = 0 to FlameList.Flame.Length
 		if FlameList.Flame[i].Enabled = TRUE
+			// ObjectData.Radius was calculated at spawn with SpriteData.Scale = 0.15.
+			// Follow the current visual growth without changing other flame collision rules.
+			Radius = FlameList.Flame[i].ObjectData.Radius * (FlameList.Flame[i].SpriteData.Scale / 0.15)
 			for k = 0 to ChestList.Chest.Length
 				if ChestList.Chest[k].Enabled = TRUE
-					if BoxInBox(FlameList.Flame[i].CollisionData.Position1,FlameList.Flame[i].CollisionData.Position2,ChestList.Chest[k].CollisionData.Position1,ChestList.Chest[k].CollisionData.Position2)
+					// Closest point on the chest AABB to the flame-circle center.
+					NearestPoint = FlameList.Flame[i].ObjectData.Position
+					if NearestPoint.x < ChestList.Chest[k].CollisionData.Position1.x then NearestPoint.x = ChestList.Chest[k].CollisionData.Position1.x
+					if NearestPoint.x > ChestList.Chest[k].CollisionData.Position2.x then NearestPoint.x = ChestList.Chest[k].CollisionData.Position2.x
+					if NearestPoint.y < ChestList.Chest[k].CollisionData.Position1.y then NearestPoint.y = ChestList.Chest[k].CollisionData.Position1.y
+					if NearestPoint.y > ChestList.Chest[k].CollisionData.Position2.y then NearestPoint.y = ChestList.Chest[k].CollisionData.Position2.y
+					if CalcRadius(FlameList.Flame[i].ObjectData.Position,NearestPoint) <= Radius
 						ChestList.Chest[k].Health.State = ChestList.Chest[k].Health.State - FlameList.Flame[i].BulletData.Damage
 						if random(0,7*FlameList.Flame[i].SpriteData.Scale) = 0 then FlameDelete(FlameList,i)
 						ColorSet(ChestList.Chest[k].SpriteData.Color,255,0,0,255)
