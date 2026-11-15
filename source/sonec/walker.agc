@@ -1261,20 +1261,20 @@ endfunction
 function WalkerDebugHullDraw(Walker ref as TWalker,World ref as TWorld)
 	local x as float
 	local y as float
-	local Left as float
-	local Right as float
-	local Top as float
-	local Bottom as float
+	local HullLeft as float
+	local HullRight as float
+	local HullTop as float
+	local HullBottom as float
 	x = Walker.ObjectData.Position.x - World.Position.x
 	y = Walker.ObjectData.Position.y - World.Position.y
-	Left = x - WALKER_DEBUG_HULL_HALF_WIDTH
-	Right = x + WALKER_DEBUG_HULL_HALF_WIDTH
-	Top = y - WALKER_DEBUG_HULL_TOP
-	Bottom = y + WALKER_DEBUG_HULL_BOTTOM
-	WalkerDebugHullLine(Left,Top,Right,Top)
-	WalkerDebugHullLine(Right,Top,Right,Bottom)
-	WalkerDebugHullLine(Right,Bottom,Left,Bottom)
-	WalkerDebugHullLine(Left,Bottom,Left,Top)
+	HullLeft = x - WALKER_DEBUG_HULL_HALF_WIDTH
+	HullRight = x + WALKER_DEBUG_HULL_HALF_WIDTH
+	HullTop = y - WALKER_DEBUG_HULL_TOP
+	HullBottom = y + WALKER_DEBUG_HULL_BOTTOM
+	WalkerDebugHullLine(HullLeft,HullTop,HullRight,HullTop)
+	WalkerDebugHullLine(HullRight,HullTop,HullRight,HullBottom)
+	WalkerDebugHullLine(HullRight,HullBottom,HullLeft,HullBottom)
+	WalkerDebugHullLine(HullLeft,HullBottom,HullLeft,HullTop)
 endfunction
 
 function WalkerSkeletonJoint(x as float,y as float)
