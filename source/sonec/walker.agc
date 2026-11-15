@@ -236,7 +236,7 @@ endfunction
 function WalkerChestAreaFree(ChestList ref as TChestList,PlateIndex as integer,OffsetX as float,OffsetY as float)
 
 	local i as integer
-	local Free as integer
+	local AreaClear as integer
 	local HullMinX as float
 	local HullMaxX as float
 	local HullMinY as float
@@ -246,7 +246,7 @@ function WalkerChestAreaFree(ChestList ref as TChestList,PlateIndex as integer,O
 	local ChestMinY as float
 	local ChestMaxY as float
 
-	Free = TRUE
+	AreaClear = TRUE
 	HullMinX = OffsetX - WALKER_HULL_HALF_WIDTH - WALKER_HULL_HORIZONTAL_CLEARANCE
 	HullMaxX = OffsetX + WALKER_HULL_HALF_WIDTH + WALKER_HULL_HORIZONTAL_CLEARANCE
 	HullMinY = OffsetY - WALKER_HULL_TOP
@@ -260,7 +260,7 @@ function WalkerChestAreaFree(ChestList ref as TChestList,PlateIndex as integer,O
 			ChestMaxY = ChestMinY + ChestList.Chest[i].ObjectData.Size.Height
 			if HullMinX < ChestMaxX and HullMaxX > ChestMinX
 				if HullMinY < ChestMaxY and HullMaxY > ChestMinY
-					Free = FALSE
+					AreaClear = FALSE
 				endif
 			endif
 		endif
