@@ -351,8 +351,8 @@ function GameDraw(Game ref as TGame)
 	CloudDrawAll(Game.CloudList,Game.ProtoCloud,1,1.75)
 
 	GuiEnergyDraw(Game.Gui,Game.Sonec,Game.Screen,GetMilliseconds())
-	// F1 platform measurements are drawn over the normal UI, without changing physics.
-	PlateDebugDrawAll(Game.PlateList)
+	// F2 compares one platform and one visible skyscraper without affecting movement.
+	PlateDebugDrawAll(Game.PlateList,Game.TowerList)
 	if SHIELD_SHAPE_TEST = 1 and Device$ = "windows"
 		local debugIndex as integer
 		for debugIndex = 0 to Game.DebugText.Length
