@@ -423,6 +423,11 @@ function PlateDebugDrawAll(PlateList ref as TPlateList,TowerList ref as TTowerLi
 			Data = Data+"Clock real/virtual "+Str(MotionDebugClockRealDeltaMs)+"/"+Str(MotionDebugClockVirtualDeltaMs)+" ms | paused"+Chr(10)
 		endif
 		Data = Data+"Clock lost "+Str(MotionDebugClockGapTotalMs)+" ms | gap frames "+Str(MotionDebugClockGapFrames)+"/"+Str(MotionDebugClockActiveFrames)+Chr(10)
+		if TowerMotionEveryFrameEnabled = 0
+			Data = Data+"Tower F5: A - 10ms GATE"+Chr(10)
+		else
+			Data = Data+"Tower F5: B - EVERY UPDATE (dt)"+Chr(10)
+		endif
 		for i = 0 to PlateList.Plate.Length
 			if PlateList.Plate[i].Enabled = TRUE
 				if PlateList.Plate[i].SpriteData.Position.x <= GetVirtualWidth() and PlateList.Plate[i].SpriteData.Position.x + PlateList.Plate[i].ObjectData.Size.Width >= 0
