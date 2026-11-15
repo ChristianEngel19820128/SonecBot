@@ -527,6 +527,12 @@ type TPlate
 	YShift as TYShift
 	SpriteData as TSpriteData
 	CollisionData as TCollisionData
+	// F1 platform diagnostics only. These fields never affect movement.
+	DebugDeltaX as float
+	DebugDeltaY as float
+	DebugCalcRange as float
+	DebugElapsedMs as integer
+	DebugUpdated as integer
 endtype
 
 type TPlateList
