@@ -225,12 +225,17 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
+// F5 mode is a tower-only experiment. No platform, Walker or event timer changes.
+global TowerMotionEveryFrameEnabled as integer
+
 function TowerMove(Tower ref as TTower,World ref as TWorld,Now as integer)
 
 	local x as float
 	local sx as float
 	local r as float
 	local i as integer
+	local MoveThisFrame as integer
+	local ElapsedMs as integer
 	
 	if Tower.Enabled = TRUE
 		// Capture the actual GameDo-frame time, even if the tower timer skips a step.
@@ -241,13 +246,27 @@ function TowerMove(Tower ref as TTower,World ref as TWorld,Now as integer)
 		Tower.DebugCalcRange = 0
 		Tower.DebugElapsedMs = 0
 		Tower.DebugUpdated = 0
-		if TimeGet(Tower.ObjectData.MoveTimer,Now) > 0
+		// A: original 10-ms gate. B: use the elapsed time on every GameDo update.
+		MoveThisFrame = 0
+		if TowerMotionEveryFrameEnabled = 1
+			ElapsedMs = Now - Tower.ObjectData.MoveTimer.Stamp
+			if ElapsedMs > 0
+				MoveThisFrame = 1
+				r = ElapsedMs*0.001*Tower.ObjectData.MoveTimer.Range*Tower.ObjectData.MoveTimer.Multiplier
+			endif
+		else
+			if TimeGet(Tower.ObjectData.MoveTimer,Now) > 0
+				MoveThisFrame = 1
+				ElapsedMs = Tower.ObjectData.MoveTimer.FullDifference
+				r = Tower.ObjectData.MoveTimer.CalcRange
+			endif
+		endif
+		if MoveThisFrame = 1
 			
 			x = Tower.ObjectData.Position.x
 			sx = Tower.ObjectData.MoveSpeed.x
-			r = Tower.ObjectData.MoveTimer.CalcRange
 			Tower.DebugCalcRange = r
-			Tower.DebugElapsedMs = Tower.ObjectData.MoveTimer.FullDifference
+			Tower.DebugElapsedMs = ElapsedMs
 			Tower.DebugUpdated = 1
 			
 			Tower.ObjectData.Position.x = x - sx*r
