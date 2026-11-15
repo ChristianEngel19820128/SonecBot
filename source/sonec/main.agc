@@ -171,11 +171,15 @@ repeat
 			WalkerDebugToggle()
 			PlateDebugEnabled = 0
 			MotionRenderSnapEnabled = 0
+			TowerMotionEveryFrameEnabled = 0
 		endif
 		if GetKeyPressed(KEY_F2) = 1
 			PlateDebugToggle()
 			WalkerDebugEnabled = 0
-			if PlateDebugEnabled = 0 then MotionRenderSnapEnabled = 0
+			if PlateDebugEnabled = 0
+				MotionRenderSnapEnabled = 0
+				TowerMotionEveryFrameEnabled = 0
+			endif
 		endif
 		// Only while F2 is visible: compare unchanged float drawing to a snapped copy.
 		if GetKeyPressed(KEY_F4) = 1 and PlateDebugEnabled = 1
@@ -183,6 +187,14 @@ repeat
 				MotionRenderSnapEnabled = 1
 			else
 				MotionRenderSnapEnabled = 0
+			endif
+		endif
+		// F5 tests per-GameDo tower movement against the original 10-ms gate.
+		if GetKeyPressed(KEY_F5) = 1 and PlateDebugEnabled = 1
+			if TowerMotionEveryFrameEnabled = 0
+				TowerMotionEveryFrameEnabled = 1
+			else
+				TowerMotionEveryFrameEnabled = 0
 			endif
 		endif
 	endif
