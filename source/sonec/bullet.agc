@@ -34,6 +34,34 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
+// World-space AABB enclosing the sprite at its current rotation.
+// For the old 90/270 degree shots this has the same bounds as before.
+// It is not a swept segment test or pixel-perfect oriented collision.
+function BulletCollisionBoundsCalculate(Bullet ref as TBullet)
+	local HalfImageWidth as float
+	local HalfImageHeight as float
+	local ExtentX as float
+	local ExtentY as float
+	local c as float
+	local sn as float
+
+	HalfImageWidth = Bullet.ObjectData.Size.Width*0.5
+	HalfImageHeight = Bullet.ObjectData.Size.Height*0.5
+	c = Cos(Bullet.SpriteData.Angle)
+	sn = Sin(Bullet.SpriteData.Angle)
+	ExtentX = abs(HalfImageWidth*c) + abs(HalfImageHeight*sn)
+	ExtentY = abs(HalfImageWidth*sn) + abs(HalfImageHeight*c)
+
+	Bullet.CollisionData.Position1.x = Bullet.ObjectData.Position.x - ExtentX
+	Bullet.CollisionData.Position1.y = Bullet.ObjectData.Position.y - ExtentY
+	Bullet.CollisionData.Position2.x = Bullet.ObjectData.Position.x + ExtentX
+	Bullet.CollisionData.Position2.y = Bullet.ObjectData.Position.y + ExtentY
+endfunction
+
+//----------------------------------------------------------------------
+// 
+//----------------------------------------------------------------------
+
 function BulletNew(Bullet ref as TBullet,ProtoBullet ref as TProtoBullet,World ref as TWorld,Position ref as TPosition,Angle as float,Radius as float,CollisionType as integer,Now as integer)
 	
 	Speed as TPosition
@@ -82,10 +110,7 @@ function BulletNew(Bullet ref as TBullet,ProtoBullet ref as TProtoBullet,World r
 	Bullet.BulletData.BulletType = 1
 	Bullet.BulletData.Damage = 25
 	
-	Bullet.CollisionData.Position1.x = Bullet.ObjectData.Position.x - Bullet.ObjectData.Size.Height * 0.5
-	Bullet.CollisionData.Position1.y = Bullet.ObjectData.Position.y - Bullet.ObjectData.Size.Width  * 0.5
-	Bullet.CollisionData.Position2.x = Bullet.ObjectData.Position.x + Bullet.ObjectData.Size.Height * 0.5
-	Bullet.CollisionData.Position2.y = Bullet.ObjectData.Position.y + Bullet.ObjectData.Size.Width  * 0.5
+	BulletCollisionBoundsCalculate(Bullet)
 	
 endfunction
 
@@ -275,10 +300,7 @@ function BulletMove(Bullet ref as TBullet,World ref as TWorld,Now as integer)
 			
 			SpritePositionCalc(Bullet.SpriteData.Position,Bullet.ObjectData.Position,World.Position)
 			
-			Bullet.CollisionData.Position1.x = Bullet.ObjectData.Position.x - Bullet.ObjectData.Size.Height * 0.5
-			Bullet.CollisionData.Position1.y = Bullet.ObjectData.Position.y - Bullet.ObjectData.Size.Width  * 0.5
-			Bullet.CollisionData.Position2.x = Bullet.ObjectData.Position.x + Bullet.ObjectData.Size.Height * 0.5
-			Bullet.CollisionData.Position2.y = Bullet.ObjectData.Position.y + Bullet.ObjectData.Size.Width  * 0.5
+			BulletCollisionBoundsCalculate(Bullet)
 			
 			TimeReset(Bullet.ObjectData.MoveTimer,Now)
 			
