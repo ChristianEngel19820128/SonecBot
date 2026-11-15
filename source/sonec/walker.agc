@@ -995,6 +995,10 @@ endfunction
 #constant WALKER_IK_SPRITES 1
 // Runtime Walker diagnosis is off by default. F1 toggles overlays, not IK behavior.
 #constant WALKER_DEBUG_MAX_ENTRIES 3
+// F1-only test envelope relative to Walker's world-space hip (virtual pixels).
+#constant WALKER_DEBUG_HULL_HALF_WIDTH 50.0
+#constant WALKER_DEBUG_HULL_TOP 50.0
+#constant WALKER_DEBUG_HULL_BOTTOM 35.0
 global WalkerDebugEnabled as integer
 // Limb rotations now come from Proto Offset/Anchor reference directions.
 
@@ -1139,6 +1143,7 @@ endfunction
 
 // Allocate debug drawing objects once; rendering is controlled by WalkerDebugEnabled.
 global WalkerDebugLineSprite as integer
+global WalkerDebugHullLineSprite as integer
 global WalkerDebugJointSprite as integer
 global WalkerProtoPivotSprite as integer
 global WalkerProtoAnchorSprite as integer
@@ -1161,6 +1166,12 @@ function WalkerSkeletonInit()
 		WalkerDebugLineSprite = CreateSprite(0)
 		SetSpriteVisible(WalkerDebugLineSprite,1)
 		SetSpriteOffset(WalkerDebugLineSprite,0,1)
+	endif
+	if WalkerDebugHullLineSprite = 0
+		WalkerDebugHullLineSprite = CreateSprite(0)
+		SetSpriteVisible(WalkerDebugHullLineSprite,1)
+		SetSpriteOffset(WalkerDebugHullLineSprite,0,1)
+		SetSpriteColor(WalkerDebugHullLineSprite,180,80,255,255)
 	endif
 	if WalkerDebugJointSprite = 0
 		WalkerDebugJointSprite = CreateSprite(0)
@@ -1228,6 +1239,42 @@ function WalkerSkeletonLine(x1 as float,y1 as float,x2 as float,y2 as float)
 		SetSpritePositionByOffset(WalkerDebugLineSprite,x1,y1)
 		DrawSprite(WalkerDebugLineSprite)
 	endif
+endfunction
+
+// Candidate collision clearance only: no effect on movement or collisions.
+function WalkerDebugHullLine(x1 as float,y1 as float,x2 as float,y2 as float)
+	local dx as float
+	local dy as float
+	local length as float
+	dx = x2-x1
+	dy = y2-y1
+	length = sqrt(dx*dx+dy*dy)
+	if length > 0
+		SetSpriteSize(WalkerDebugHullLineSprite,length,2)
+		SetSpriteOffset(WalkerDebugHullLineSprite,0,1)
+		SetSpriteAngle(WalkerDebugHullLineSprite,ATan2(dy,dx))
+		SetSpritePositionByOffset(WalkerDebugHullLineSprite,x1,y1)
+		DrawSprite(WalkerDebugHullLineSprite)
+	endif
+endfunction
+
+function WalkerDebugHullDraw(Walker ref as TWalker,World ref as TWorld)
+	local x as float
+	local y as float
+	local Left as float
+	local Right as float
+	local Top as float
+	local Bottom as float
+	x = Walker.ObjectData.Position.x - World.Position.x
+	y = Walker.ObjectData.Position.y - World.Position.y
+	Left = x - WALKER_DEBUG_HULL_HALF_WIDTH
+	Right = x + WALKER_DEBUG_HULL_HALF_WIDTH
+	Top = y - WALKER_DEBUG_HULL_TOP
+	Bottom = y + WALKER_DEBUG_HULL_BOTTOM
+	WalkerDebugHullLine(Left,Top,Right,Top)
+	WalkerDebugHullLine(Right,Top,Right,Bottom)
+	WalkerDebugHullLine(Right,Bottom,Left,Bottom)
+	WalkerDebugHullLine(Left,Bottom,Left,Top)
 endfunction
 
 function WalkerSkeletonJoint(x as float,y as float)
@@ -1350,6 +1397,7 @@ function WalkerDrawAll(WalkerList ref as TWalkerList,ProtoWalker ref as TProtoWa
 		endif
 		WalkerDraw(WalkerList.Walker[i],ProtoWalker)
 		if WalkerDebugEnabled = 1 and WalkerList.Walker[i].Enabled = TRUE
+			WalkerDebugHullDraw(WalkerList.Walker[i],World)
 			WalkerSkeletonDraw(WalkerList.Walker[i],World,ProtoWalker)
 		endif
 		if WalkerDebugEnabled = 1 and WalkerList.Walker[i].Enabled = TRUE
