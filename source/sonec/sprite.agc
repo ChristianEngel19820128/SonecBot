@@ -54,6 +54,26 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
+// Optional A/B rendering experiment. 0 = original float; 1 = window-pixel snap.
+// Used ONLY on temporary display data for platforms and skyscrapers.
+global MotionRenderSnapEnabled as integer
+
+function MotionRenderSnapPosition(Position ref as TPosition)
+	local ScaleX as float
+	local ScaleY as float
+
+	if GetVirtualWidth() > 0 and GetVirtualHeight() > 0
+		ScaleX = GetDeviceWidth()*(1.0/GetVirtualWidth())
+		ScaleY = GetDeviceHeight()*(1.0/GetVirtualHeight())
+		if ScaleX > 0
+			Position.x = Floor(Position.x*ScaleX+0.5)*(1.0/ScaleX)
+		endif
+		if ScaleY > 0
+			Position.y = Floor(Position.y*ScaleY+0.5)*(1.0/ScaleY)
+		endif
+	endif
+endfunction
+
 function SpriteDraw(Sprite ref as TSprite,Data ref as TSpriteData)
 	
 	if Sprite.ID > 0
