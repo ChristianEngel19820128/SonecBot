@@ -8,7 +8,10 @@
 #constant WALKER_AIM_PREPARE_MS 400
 // Projected half-turn: twice the existing aiming preparation (currently 800 ms).
 #constant WALKER_TURRET_SWIVEL_FACTOR 2.0
-#constant WALKER_TURRET_MIN_WIDTH 0.04
+// Visible turret silhouette: 37 px wide / 14 px high; 0.40 is a trial depth proxy.
+#constant WALKER_TURRET_MIN_WIDTH 0.40
+// Four intervals give five visible widths: 1.00, 0.85, 0.70, 0.55, 0.40.
+#constant WALKER_TURRET_WIDTH_STEPS 4
 #constant WALKER_AIM_INITIAL_ERROR 14.0
 #constant WALKER_AIM_MIN_ERROR 5.0
 #constant WALKER_AIM_IMPROVEMENT 2.0
@@ -864,8 +867,10 @@ function WalkerTurretFaceTargetAll(WalkerList ref as TWalkerList,Sonec ref as TS
 					WalkerList.Walker[i].TurretWidthScale = 1.0
 					WalkerList.Walker[i].State.LookAlignment = WalkerList.Walker[i].TurretSwivelTo
 				else
-					WalkerList.Walker[i].TurretWidthScale = abs(Cos(Progress*180.0))
-					if WalkerList.Walker[i].TurretWidthScale < WALKER_TURRET_MIN_WIDTH then WalkerList.Walker[i].TurretWidthScale = WALKER_TURRET_MIN_WIDTH
+					// Quantize the projection, then map it into the nonzero depth range.
+					// Force float arithmetic before division; a float destination is not enough.
+					WalkerList.Walker[i].TurretWidthScale = Floor(abs(Cos(Progress*180.0))*WALKER_TURRET_WIDTH_STEPS+0.5)*1.0/WALKER_TURRET_WIDTH_STEPS
+					WalkerList.Walker[i].TurretWidthScale = WALKER_TURRET_MIN_WIDTH+(1.0-WALKER_TURRET_MIN_WIDTH)*WalkerList.Walker[i].TurretWidthScale
 					if Progress < 0.5
 						WalkerList.Walker[i].State.LookAlignment = WalkerList.Walker[i].TurretSwivelFrom
 					else
