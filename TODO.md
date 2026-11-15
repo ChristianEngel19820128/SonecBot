@@ -1,6 +1,6 @@
 # SonecBot – TODO und Meilensteine
 
-**Dokumentstatus:** Version 2.4  
+**Dokumentstatus:** Version 2.5  
 **Stand:** 15. November 2026  
 **Branch:** `develop`  
 **Ziel:** Kleine, überprüfbare Schritte zur spielbaren HTML5-Alpha
@@ -77,9 +77,11 @@
 - [ ] Spriter oder ein vergleichbares Keyframe-Werkzeug optional für Spezialanimationen evaluieren.
 
 - [x] **Doppelte Skalierung der Kisten-Kollisionsbox beseitigt (`a4be9ab`):** `ChestNew()` berechnet `ObjectData.Size` bereits mit `SpriteData.Scale`; `ChestMove()` multiplizierte bei `CollisionData.Position2.x/y` bisher ein zweites Mal mit der Skalierung. Nur diese beiden Koordinaten wurden korrigiert. Statisch verifiziert, **AGK-Laufzeittest noch ausstehend**.
-- [ ] **Kisten-Kollision lokal prüfen:** Kleine, mittlere und große Kisten, Schüsse an rechten/unteren Kanten, Auflage auf Plattformen, bewegte/vertikale Plattformen und ggf. Nebenwirkungen für Trefferlogik prüfen.
+- [x] **Kisten-Kollision nach `a4be9ab` lokal angetestet:** Entwickler meldet verbesserte Treffer, aber gelegentlich noch Aussetzer bei kleinen Kisten; getestet wurden Bullet und Flammenwerfer bei 60 FPS mit VSync und 120 FPS. Die Waffen sind als mögliche Ursachen noch nicht getrennt nachgewiesen.
+- [x] **Flammenwerfer-Kollisionsbox-Fix `be6c33d` implementiert:** `FlameNew()` hatte `ObjectData.Size` schon mit `SpriteData.Scale=0.15` skaliert; `FlameMove()` wendete denselben Faktor an allen vier AABB-Kanten erneut an. Entfernt wurde ausschließlich die zweite Skalierung in `CollisionData.Position1.x/y` und `Position2.x/y`. **Statisch geprüft, neuer AGK-Laufzeittest ausstehend.**
+- [ ] **Nächster gezielter Kistentest:** Bei 60 FPS VSync und 120 FPS kleine, mittlere und große Kisten getrennt mit Flammenwerfer und Maschinengewehr treffen, besonders an rechten/unteren Kanten. Einschätzen, ob der Flammenwerfer nach der Korrektur konsistent trifft. Wenn Bullet-Aussetzer bleiben, Tunneling bzw. Endpunkt-AABB bei schnellem Bullet-Flug isoliert untersuchen. Keine Bullet-Korrektur ohne neuen Nachweis.
 - [ ] **Kistenspalt und Walker-Kisten-Überlagerung getrennt untersuchen:** In den lokalen Screens wurden kleine 1–2-Bildpixel-Zwischenräume zwischen Kisten und ein Walker in Überlappung mit der Kistengrafik beobachtet. Kistenspalt kann Platzierungs-/Pixelrasterfolge sein; Walker prüft derzeit Plattformränder, aber keine Kistenhindernisse. Verhalten (stoppen, wenden oder ignorieren) erst festlegen, dann separat ändern.
-- [ ] **Grafik-/Kontrastfix separat committen:** Entwickler beobachtete nach Abschwächung grüner Plattform-/Kistenränder bei 120 FPS eine deutlich ruhigere Darstellung; Grafiken sind noch nicht als eigener Commit dieses Tests bestätigt. Keine Assetänderung mit Kollisionsfix vermischen.
+- [x] **Grafik-/Kontrastfix separat committed und lokal geprüft (`88f5575`):** Reduzierter Kontrast von Plattform- und Kistensprites macht das Bild laut Entwickler bei 60 FPS VSync und 120 FPS deutlich ruhiger; nur noch minimales Randflackern bei genauem Hinsehen. Der zunächst diskutierte Kistenspalt hat niedrige Priorität und gilt **nicht** als bestätigter Kollisionsfehler.
 
 ### Plattformen – aktueller Diagnose-Schwerpunkt (15. November 2026)
 
