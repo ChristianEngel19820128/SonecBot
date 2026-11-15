@@ -1,6 +1,6 @@
 # SonecBot – TODO und Meilensteine
 
-**Dokumentstatus:** Version 1.1  
+**Dokumentstatus:** Version 1.2  
 **Stand:** 15. November 2026  
 **Branch:** `develop`  
 **Ziel:** Kleine, überprüfbare Schritte zur spielbaren HTML5-Alpha
@@ -53,7 +53,7 @@
 - [ ] **Späterer Waffen-Grafikpass (nicht Alpha-blockierend):** Statt einer optisch einzelnen Kanone könnten zwei separate, in der Perspektive überlappende Kanonen-Sprites verwendet werden. Bei einer Zwei-Schuss-Salve rückt abwechselnd die jeweils feuernde Kanone kurz zurück, sodass die hintere Kanone insbesondere beim ersten Schuss sichtbar wird. Die ersten 1×2 bzw. 2×2 Pixel der beiden Rohre gestalterisch differenzieren, damit die Überlagerung lesbar bleibt; zusätzlich darf der gesamte Turm einen kleinen Rückstoß erhalten. **Grafikänderungen übernimmt der Entwickler**; bestehende Turmposition und bereits geplante einfache Turm-Rückstoßanimation sind wiederverwendbar. Noch keine Entscheidung für separate Sprites oder neuen Pivot. Beim möglichen Aufteilen kann die optische Rohrhöhe in der Darstellung z. B. von 3 px auf 4 px wechseln; Mündungspunkt und Mündungsfeuer müssen dann erneut geprüft werden.
 - [x] **Walker-F1-Diagnose lokal geprüft:** IK-Linien, Proto-Punkte und Positionsmarker per F1 (Windows, auch bei Pause); fester Textblock rechts oben, bis zu drei Walker mit IK/Pivot/Bullet/Flash/Barrel/Winkel/`FireState` (`3833668`, `202a045`). Durch `48ce0dd` wurde Gelb als äußerer 11 × 11 Marker sichtbar gemacht, während Blau/Orange die überlagerten Barrel-Anchors zeigen. Entwickler-Screens bestätigen die grundsätzliche Anzeige. HTML5- und Mehrfach-Neustartfälle ausstehend.
 - [ ] **F1-Randfälle:** Neuinitialisierung/Neustart, mehrere Walker gleichzeitig, volle Bildschirmhöhe und HTML5-/Browser-Keybindung testen; die grundlegende Windows-Anzeige im lokalen Spiel ist bestätigt.
-- [ ] **Spätere Debug-Erweiterung:** Plattformmesswerte zunächst ergänzen (nächster Arbeitsschritt; Details unten). Weitere Diagnosen für Schild, Kollision, FPS oder Geschosstunneling später bei begründetem Bedarf bündeln. Bestehende `WALKER_STAND_POSE_TEST`-Betriebsart nicht mit F1-Anzeige verwechseln.
+- [x] **Thematische Debug-Trennung im Code:** `F1` (Walker/IK/Waffen) und `F2` (Plattform/Bewegung) unter Windows gegenseitig exklusiv umschaltbar, auch in Pause (`57d6044`). F1 reagiert bei Platzbedarf mit kleinerer Textgröße (`49145a1`). Der neue F2-Code ist statisch geprüft, aber noch nicht im AGK-Lauf getestet. Spätere F3-Performanceanzeige oder Logfile erst bei Bedarf; `WALKER_STAND_POSE_TEST` bleibt eine separate Testbetriebsart.
 - [x] **Fairness-Regel Orbs:** Orbs sind keine neutralen Ziele für Geschosse: Nur `TYPEPLAYERONE` darf sie per `BulletCollideOrbs()` treffen; Walker-/Feind-Bullets werden ignoriert. Statisch eingecheckt, lokaler Test offen. Weitere Schadensquellen (Explosionen usw.) separat betrachten.
 - [ ] **Trefferregel-Matrix festlegen:** Welche Geschosse (Spieler, Walker/Feind) dürfen Sonec, Schild, Walker, Minen, Orbs, Kisten oder andere Objekte treffen? Kistenschaden durch Walker ist aktuell möglich und eventuell akzeptabel, Entscheidung offen. Bei allen Gegnerfähigkeiten auf **faire Computergegner** achten: erkennbare Angriffsmuster, realistische Reaktionszeiten und keine unbeabsichtigte Zerstörung spielerrelevanter Ressourcen.
 - [ ] Sehr schnelle Bullets (derzeit ungefähr 300 virtuelle px/s) auf **Tunneling** zwischen Kollisionsprüfungen testen; ggf. Strecke zwischen alter und neuer Position statt nur Endposition prüfen. Der gelegentliche Eindruck minimal verfehlter Treffer bei Sonec ist noch kein bestätigter Fehler.
@@ -78,9 +78,9 @@
 
 ### Plattformen – aktueller Diagnose-Schwerpunkt (15. November 2026)
 
-- [x] **F1-Plattformmessung implementiert (noch nicht lokal getestet):** Bei manchen nach links fahrenden Plattformen berichtet der Entwickler gelegentliches Ruckeln. `PlateMove()` nutzt `MoveTimer.CalcRange` bei 10-ms-Timer. Auf `develop` wurden Messfelder für `dX/dY`, `CalcRange`, `dt` und `Step` ergänzt; F1 zeigt unten rechts bis zu drei sichtbare Plattformen mit X/Y und `P#`-Marker (`56df895`, `58f20d5`, `bf6ecf5`). **Die Bewegungsgleichung ist unverändert.**
-- [ ] **Nächster lokaler Test:** AGK-Kompilierung der neuen Plattform-F1-Anzeige, anschließend stotternde/flüssige Plattform und ggf. Walker/Kiste vergleichen; `P#`, X/Y, `dX/dY`, `CalcRange`, `dt`, `Step` bei F1 ein/aus sowie Pause erfassen. Weltkoordinatensprung und Pixel-/Renderwirkung voneinander unterscheiden.
-- [ ] **Nur bei bestätigtem Befund:** Timing, `TimeSet()` und Pixelraster in separaten kleinen Testcommits untersuchen; VSync- oder Geschwindigkeitsänderungen nicht vorwegnehmen.
+- [x] **Plattform-Messung erweitert:** Erster F1-Plattformscreenshot (vom Entwickler geprüft) zeigte 3 Plattformen mit 17 ms und `CalcRange=17`, aber nur einen Standbild-Moment. Aktueller F2-Code: bis zu drei sichtbare Plattformen mit `P#`, X/Y, dX, Timer-`dt`/`CalcRange`/Step und eine 60-Frame-Historie für dX sowie Game-Frame-ms mit Min/Avg/Max und Step-Zählung (`e3aa594`, `05fac96`, `57d6044`). **F2-Version noch nicht lokal getestet.** Bewegungsgleichungen unverändert.
+- [ ] **Nächster lokaler Test:** In AGK F1/F2 umschalten und Pause prüfen; mit F2 eine links ruckelnde und eine ruhig fahrende Plattform vergleichen. Die 60-Frame-Statistik (dX-Min/Avg/Max, Frame-ms-Min/Avg/Max, Steps/Frames) per Screenshot sichern und beobachten, ob Aussetzer/Zeitsprünge auffallen. Keine Bewegungskorrektur ohne klaren Befund.
+- [ ] **Timer-Float-Vergleich:** Crystals/`source/crystals/timer.agc` nutzt `1000.0/Span`, SonecBot/`source/sonec/timer.agc` noch `1000 / Span`. Der Entwickler hat ungenaue Integer-Divisionen in AGK praktisch beobachtet. Prüfen, wo nichtganzzahlige Timer-Spans auftreten und ob Float-Operationen erforderlich sind; **separater, gezielter Commit nach Diagnose**, keine ungeprüfte Übernahme von Crystals. VSync-/Geschwindigkeitsänderungen nicht vorwegnehmen.
 
 ## 2. HTML5-Alpha – hohe Priorität
 
@@ -131,6 +131,6 @@
 - [ ] Vor der HTML5-Alpha offene Anforderungen und tatsächlichen Teststatus der Kernsysteme erneut abgleichen.
 - [x] **Wiederlesbare Übergabe im Repository eingerichtet:** `TECHNICAL.md` enthält einen Abschnitt „Übergabe bei Chatlimit oder neuem Chat“ mit Branch-/Commit-Startpunkt, lokal getesteten Befunden, offenen Fragen, AGK-Besonderheiten, Arbeitsregeln und einer Startformulierung. Vor jedem weiteren Chatwechsel die Dateien und den HEAD **erneut** aktualisieren und vergleichen; automatische Kontextübernahme nicht voraussetzen.
 
-**Aktueller Code-Übergabestand:** Plattform-F1-Instrumentierung bis `bf6ecf5` (lokaler Test steht aus). Nach jedem weiteren Commit den Branch-HEAD neu prüfen. Bitte auch `TECHNICAL.md`, Abschnitt 12, lesen.
+**Aktueller Code-Übergabestand:** F1/F2-Diagnose mit 60-Frame-Historie bis `49145a1` (neue F2-Version noch nicht lokal getestet). Nach jedem weiteren Commit den Branch-HEAD neu prüfen. Bitte auch `TECHNICAL.md`, Abschnitt 12, lesen.
 
 **Walker-Referenzstände:** Corpus-/Turmanbindung `deb8b74`; getrennte Fußziele `760c8c3`; angepasste Gangphase `20eced3`; Wendeverhalten `810d342`; einheitliche Geschwindigkeit `20b2d7d`; Fußhöhe 8 px `328c5e0`; Debug-Anzeigen aus `c6d47e6` (jeweils auf `develop`). Der Entwickler hat das lokale Gangbild als alpha-tauglich bewertet; ein eigener AGK-Build des Assistenten und ein HTML5-Praxistest stehen aus.
