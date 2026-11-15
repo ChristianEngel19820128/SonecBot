@@ -32,17 +32,22 @@ SetWindowSize(wx,wy,0)
 SetWindowAllowResize(1)
 SetVirtualResolution(vx,vy)
 
-// Windows VSync A/B test: 1 = monitor-synced, 0 = previous 60 FPS limiter.
-// HTML5 keeps its existing VSync setting; other platforms remain unchanged.
+// Windows VSync A/B test: 1 = request monitor VSync, 0 = previous 60 FPS limiter.
+// This labels the API call made by the game, not the driver's actual presentation.
 #constant WINDOWS_VSYNC_TEST 1
+#constant FALLBACK_SYNC_RATE_FPS 60
+global MotionDebugSyncRequest as string
 
 if GetDeviceBaseName() = "html5"
 	SetVSync(1)
+	MotionDebugSyncRequest = "SetVSync(1) requested"
 else
 	if GetDeviceBaseName() = "windows" and WINDOWS_VSYNC_TEST = 1
 		SetVSync(1)
+		MotionDebugSyncRequest = "SetVSync(1) requested"
 	else
-		SetSyncRate(60,1)
+		SetSyncRate(FALLBACK_SYNC_RATE_FPS,1)
+		MotionDebugSyncRequest = "SetSyncRate("+Str(FALLBACK_SYNC_RATE_FPS)+",1) requested"
 	endif
 endif
 
