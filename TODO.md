@@ -1,6 +1,6 @@
 # SonecBot – TODO und Meilensteine
 
-**Dokumentstatus:** Version 2.6  
+**Dokumentstatus:** Version 2.7  
 **Stand:** 15. November 2026  
 **Branch:** `develop`  
 **Ziel:** Kleine, überprüfbare Schritte zur spielbaren HTML5-Alpha
@@ -81,7 +81,9 @@
 - [x] **Flammenwerfer-Kollisionsbox-Fix `be6c33d` implementiert:** `FlameNew()` hatte `ObjectData.Size` schon mit `SpriteData.Scale=0.15` skaliert; `FlameMove()` wendete denselben Faktor an allen vier AABB-Kanten erneut an. Entfernt wurde ausschließlich die zweite Skalierung in `CollisionData.Position1.x/y` und `Position2.x/y`. **Statisch geprüft, neuer AGK-Laufzeittest ausstehend.**
 - [x] **Nachtest Kisten/Waffen lokal durchgeführt:** Entwickler berichtet bei kleinen Kisten, dass Maschinengewehr-Bullets sichtbar **oberhalb** vorbeifliegen (kein bestätigter Bullet-Kollisions-/Tunneling-Fehler; frühere Zerstörung möglicherweise durch Explosion). Kistenkollision insgesamt nach dem Box-Fix besser, Flammenwerfer-Treffer aber noch unzuverlässig. Bullets daher derzeit nicht anpassen.
 - [x] **Kreis-gegen-Kistenbox-Test mit visuell skaliertem Flammenradius umgesetzt (`2879d7c`):** Nur `FlameCollideChest()` verwendet statt `BoxInBox()` den nächsten Punkt an der Kisten-AABB und den vorhandenen `CalcRadius()`; der initial bei Skalierung 0.15 gespeicherte Flammenradius wird mit `SpriteData.Scale/0.15` auf die aktuelle Flammengröße gebracht. Zufallswinkel der Flamme wird durch Kreisform lageunabhängig; andere Flammenkollisionen, Schaden/Löschzufall, Move und Lifecycle unverändert. **Statisch geprüft, AGK-Test dieses Commits ausstehend.**
-- [ ] **Kreis-Kistenbox-Test lokal prüfen:** `develop` aktualisieren/kompilieren; bei 60 FPS mit VSync und 120 FPS Flammen auf kleine, mittlere und große Kisten richten, inklusive Kanten-/Ecktreffer. Prüfen, ob Schaden (rotes Trefferfeedback) zur sichtbaren Flamme passt, ob Treffer eventuell zu großzügig sind und ob Reichweite oder Anzahl der Treffer unbeabsichtigt zunehmen. Änderungen erst nach Rückmeldung; AGK-Sprite-Kollision als spätere Alternative offen.
+- [x] **Kreis-gegen-Kistenbox lokal positiv getestet (`2879d7c`):** Entwickler bestätigt Flammentreffer auf kleinen Kisten sowie nachvollziehbare Kanten-/Ecktreffer; Wirkung wirkt nicht zu groß, 60 FPS mit VSync und 120 FPS visuell zunächst normal, Flammen wirken realistischer. Kleine Kisten sind selten anzutreffen. Keine gemessenen Schadens-/Randfallserien.
+- [x] **Flammenkreisradius für alle Flammen-Kollisionen vereinheitlicht (`2b2ec8c`):** `FlameCollisionRadius()` berechnet die mitwachsende Treffergröße. `FlameCollideChest()` prüft Kreis gegen bestehende Kisten-AABB; `FlameCollideOrbs()`, `FlameCollideMine()` und die aktuell nicht von `GameDo()` aufgerufene `FlameCollide()` verwenden den aktuellen Radius in ihrer Kreisprüfung. Andere Waffen/Objekte bleiben unverändert. **Statisch geprüft, AGK-Test dieses neuen Stands ausstehend.**
+- [ ] **Neuer lokaler Regressionstest nach `2b2ec8c`:** Flammenwerfer gegen Orbs und Minen bei unterschiedlichen Flammenalter/-größen prüfen; Trefferreichweite und ungeplante leichte Treffer beachten, auch bei 60 FPS VSync und 120 FPS. Kistenpfad kurz erneut kontrollieren. Keine Änderung an Schaden, Flammenlöschung oder Radius von Zielobjekten. AGK-Shape-Kollision bleibt spätere Vergleichsoption.
 - [ ] **Walker-Kisten-Überlagerung separat untersuchen:** Walker prüft derzeit Plattformränder, aber keine Kisten als Hindernisse. Gameplay-Verhalten (stoppen, wenden oder ignorieren) zuerst festlegen. Der frühere 1–2-Pixel-Kistenspalt gilt nach dem Grafik-/Kontrastfix laut Entwickler nicht mehr als eigenständiges Problem; derzeit keine gesonderte Maßnahme.
 - [x] **Grafik-/Kontrastfix separat committed und lokal geprüft (`88f5575`):** Reduzierter Kontrast von Plattform- und Kistensprites macht das Bild laut Entwickler bei 60 FPS VSync und 120 FPS deutlich ruhiger; nur noch minimales Randflackern bei genauem Hinsehen. Der zunächst diskutierte Kistenspalt hat niedrige Priorität und gilt **nicht** als bestätigter Kollisionsfehler.
 
@@ -130,6 +132,7 @@
 - [ ] Gewünschte höhere Energie- und Schildkapazitäten inklusive späterer Upgrades und HUD-Balkenproportionen konkret festlegen.
 - [ ] Transparenz für HUD, Inenergie-Animation und abhängig vom Energiewert dargestellte Sammelobjekte einführen.
 - [ ] Energieverbrauch bei Energieaufnahme als mögliche ältere Designentscheidung überprüfen.
+- [ ] **Kleinere Kisten sollen bei Zerstörung wertvollere Belohnungen bieten (Designidee):** Kleinste Kisten sind schwerer zu treffen; falls Kisten später Beute abwerfen, soll die kleinere Größe durch höhere Menge **oder** Qualität/Seltenheit belohnt werden. Vor Implementierung Drop-Regeln, Kistenzerstörung und vorhandene Belohnungswege prüfen; konkrete Mengen und Balance offen. In `PROJECT.md` als Konzept dokumentiert, **noch nicht implementiert**.
 - [ ] Belohnungen durch zerstörte Kisten und Orb-/Upgrade-Verhalten anhand des aktuellen Codes und Spieltests verifizieren.
 
 ## 4. Spätere Erweiterungen – niedrige Priorität
