@@ -155,15 +155,31 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
+// Base flame radius is stored at initial scale 0.15; the sprite grows over its lifetime.
+// Use its current visual scale for collisions without changing object movement or sizes.
+function FlameCollisionRadius(Flame ref as TFlame)
+
+	local Radius as float
+
+	Radius = Flame.ObjectData.Radius * (Flame.SpriteData.Scale / 0.15)
+
+endfunction Radius
+
+//----------------------------------------------------------------------
+// 
+//----------------------------------------------------------------------
+
 function FlameCollide(FlameList ref as TFlameList,Sonec ref as TSonec)
 	
 	local i as integer
 	local Radius as float
+	local FlameRadius as float
 	
 	for i = 0 to FlameList.Flame.Length
 		if FlameList.Flame[i].Enabled = TRUE
+			FlameRadius = FlameCollisionRadius(FlameList.Flame[i])
 			Radius = CalcRadius(FlameList.Flame[i].ObjectData.Position,Sonec.ObjectData.Position)
-			if Radius < Sonec.ObjectData.Radius
+			if Radius < FlameRadius + Sonec.ObjectData.Radius
 				Sonec.Health.State = Sonec.Health.State - FlameList.Flame[i].BulletData.Damage
 				FlameDelete(FlameList,i)
 			endif
@@ -181,13 +197,15 @@ function FlameCollideOrbs(FlameList ref as TFlameList,OrbList ref as TOrbList)
 	local i as integer
 	local k as integer
 	local Radius as float
+	local FlameRadius as float
 	
 	for i = 0 to FlameList.Flame.Length
 		if FlameList.Flame[i].Enabled = TRUE
+			FlameRadius = FlameCollisionRadius(FlameList.Flame[i])
 			for k = 0 to OrbList.Orb.Length
 				if OrbList.Orb[k].Enabled = TRUE
 					Radius = CalcRadius(FlameList.Flame[i].ObjectData.Position,OrbList.Orb[k].ObjectData.Position)
-					if Radius < FlameList.Flame[i].ObjectData.Radius + OrbList.Orb[k].ObjectData.Radius
+					if Radius < FlameRadius + OrbList.Orb[k].ObjectData.Radius
 						OrbList.Orb[k].Health.State = OrbList.Orb[k].Health.State - FlameList.Flame[i].BulletData.Damage
 						FlameDelete(FlameList,i)
 						ColorSet(OrbList.Orb[k].SpriteData.Color,255,0,0,255)
@@ -208,13 +226,15 @@ function FlameCollideMine(FlameList ref as TFlameList,MineList ref as TMineList)
 	local i as integer
 	local k as integer
 	local Radius as float
+	local FlameRadius as float
 	
 	for i = 0 to FlameList.Flame.Length
 		if FlameList.Flame[i].Enabled = TRUE
+			FlameRadius = FlameCollisionRadius(FlameList.Flame[i])
 			for k = 0 to MineList.Mine.Length
 				if MineList.Mine[k].Enabled = TRUE
 					Radius = CalcRadius(FlameList.Flame[i].ObjectData.Position,MineList.Mine[k].ObjectData.Position)
-					if Radius < FlameList.Flame[i].ObjectData.Radius + MineList.Mine[k].ObjectData.Radius
+					if Radius < FlameRadius + MineList.Mine[k].ObjectData.Radius
 						MineList.Mine[k].Health.State = MineList.Mine[k].Health.State - FlameList.Flame[i].BulletData.Damage
 						FlameDelete(FlameList,i)
 						ColorSet(MineList.Mine[k].SpriteData.Color,255,0,0,255)
@@ -241,7 +261,7 @@ function FlameCollideChest(FlameList ref as TFlameList,ChestList ref as TChestLi
 		if FlameList.Flame[i].Enabled = TRUE
 			// ObjectData.Radius was calculated at spawn with SpriteData.Scale = 0.15.
 			// Follow the current visual growth without changing other flame collision rules.
-			Radius = FlameList.Flame[i].ObjectData.Radius * (FlameList.Flame[i].SpriteData.Scale / 0.15)
+			Radius = FlameCollisionRadius(FlameList.Flame[i])
 			for k = 0 to ChestList.Chest.Length
 				if ChestList.Chest[k].Enabled = TRUE
 					// Closest point on the chest AABB to the flame-circle center.
