@@ -201,7 +201,7 @@ function GameDo(Game ref as TGame,Now as integer)
 					WalkerChance = 3500 * Game.PlateList.Plate[Index].ObjectData.Size.Width / 200
 					if WalkerChance > 8500 then WalkerChance = 8500
 					if random(0,10000) < WalkerChance
-						WalkerAdd(Game.WalkerList,Game.ProtoWalker,Game.World,Game.PlateList.Plate[Index],Index,Now)
+						WalkerAdd(Game.WalkerList,Game.ProtoWalker,Game.ChestList,Game.World,Game.PlateList.Plate[Index],Index,Now)
 					endif
 				endif
 			endif
@@ -253,7 +253,7 @@ function GameDo(Game ref as TGame,Now as integer)
 	SonecHealthRegenerate(Game.Sonec,Now)
 		
 	PlateMoveAll(Game.PlateList,Game.World,Now)
-	WalkerMoveAll(Game.WalkerList,Game.ProtoWalker,Game.PlateList,Game.World,Now)
+	WalkerMoveAll(Game.WalkerList,Game.ProtoWalker,Game.PlateList,Game.ChestList,Game.World,Now)
 	WalkerHealthRegenerate(Game.WalkerList,Game,Now)
 	WalkerAnimateAll(Game.WalkerList,Game.ProtoWalker,Game.World,Now)
 	// Turret world positions are current; enemy bullets join the normal Bullet pipeline.
