@@ -140,6 +140,10 @@ local ClockPreviousVirtualMs as integer
 IntroCreate(Intro,vx,vy,Now)
 GameCreate(Game,vx,vy)
 
+// Normal background motion: move tower parts on each GameDo with a positive dt.
+// F5 retains the original 10-ms gate only as an F2 diagnostic comparison.
+TowerMotionEveryFrameEnabled = 1
+
 repeat
 	
 	SetTextString(FPS,Str(Trunc(ScreenFPS())))
@@ -171,14 +175,14 @@ repeat
 			WalkerDebugToggle()
 			PlateDebugEnabled = 0
 			MotionRenderSnapEnabled = 0
-			TowerMotionEveryFrameEnabled = 0
+			TowerMotionEveryFrameEnabled = 1
 		endif
 		if GetKeyPressed(KEY_F2) = 1
 			PlateDebugToggle()
 			WalkerDebugEnabled = 0
 			if PlateDebugEnabled = 0
 				MotionRenderSnapEnabled = 0
-				TowerMotionEveryFrameEnabled = 0
+				TowerMotionEveryFrameEnabled = 1
 			endif
 		endif
 		// Only while F2 is visible: compare unchanged float drawing to a snapped copy.
@@ -189,7 +193,7 @@ repeat
 				MotionRenderSnapEnabled = 0
 			endif
 		endif
-		// F5 tests per-GameDo tower movement against the original 10-ms gate.
+		// F5 compares normal per-GameDo tower movement with the former 10-ms gate.
 		if GetKeyPressed(KEY_F5) = 1 and PlateDebugEnabled = 1
 			if TowerMotionEveryFrameEnabled = 0
 				TowerMotionEveryFrameEnabled = 1
