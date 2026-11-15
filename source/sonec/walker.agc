@@ -828,6 +828,38 @@ endfunction
 // Lock a single imperfect direction at the start of the burst.
 // Scan only the forward half-plane, never track Sonec during the second shot.
 // A new Walker starts at +/-14 degrees and improves to a minimum +/-5 degrees.
+// First turret-swivel step: choose an existing side view independently of walking.
+// Keep the facing fixed throughout preparation, both shots and recovery.
+function WalkerTurretFaceTargetAll(WalkerList ref as TWalkerList,Sonec ref as TSonec,VisionDistance as float)
+	local i as integer
+	local TargetDeltaX as float
+	local TargetDeltaY as float
+	local NewLookAlignment as integer
+
+	if WALKER_TARGET_AIM_TEST = 1 and Sonec.IsLost = FALSE
+		for i = 0 to WalkerList.Walker.Length
+			if WalkerList.Walker[i].Enabled = TRUE and WalkerList.Walker[i].FireState = 0
+				TargetDeltaX = Sonec.ObjectData.Position.x-WalkerList.Walker[i].WalkerObjectData.Tower.Position.x
+				TargetDeltaY = Sonec.ObjectData.Position.y-WalkerList.Walker[i].WalkerObjectData.Tower.Position.y
+				if TargetDeltaX*TargetDeltaX+TargetDeltaY*TargetDeltaY <= VisionDistance*VisionDistance
+					NewLookAlignment = WalkerList.Walker[i].State.LookAlignment
+					if TargetDeltaX < 0 then NewLookAlignment = LOOKLEFT
+					if TargetDeltaX > 0 then NewLookAlignment = LOOKRIGHT
+					if NewLookAlignment <> WalkerList.Walker[i].State.LookAlignment
+						WalkerList.Walker[i].State.LookAlignment = NewLookAlignment
+						// A target on the opposite side starts a fresh accuracy progression.
+						WalkerList.Walker[i].AimSalvos = 0
+					endif
+				endif
+			endif
+		next i
+	endif
+endfunction
+
+//----------------------------------------------------------------------
+// 
+//----------------------------------------------------------------------
+
 function WalkerAcquireBurstAim(Walker ref as TWalker,Sonec ref as TSonec,VisionDistance as float)
 	local MuzzlePosition as TPosition
 	local TargetDeltaX as float
