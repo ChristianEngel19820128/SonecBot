@@ -4,6 +4,8 @@
 // Target-acquisition trial. 0 uses the horizontal fallback unless diagonal debug is enabled.
 #constant WALKER_TARGET_AIM_TEST 1
 #constant WALKER_AIM_MAX_TILT 30.0
+// Visible preparation trial; capture the target once, then tilt before firing.
+#constant WALKER_AIM_PREPARE_MS 400
 #constant WALKER_AIM_INITIAL_ERROR 14.0
 #constant WALKER_AIM_MIN_ERROR 5.0
 #constant WALKER_AIM_IMPROVEMENT 2.0
@@ -717,6 +719,7 @@ endfunction
 
 function WalkerAnimate(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,World ref as TWorld,Now as integer)
 	local AimOffset as float
+	local AimProgress as float
 
 	// Heavy gait follows distance travelled on the platform; no leg cycling while idle.
 	
@@ -739,6 +742,14 @@ function WalkerAnimate(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,Wor
 			AimOffset = Walker.AimAngle - 270.0
 		else
 			AimOffset = Walker.AimAngle - 90.0
+		endif
+		// Time-based tilt shared by all upper-body parts. FireState 3 holds
+		// movement/turning until the saved angle is reached; never reacquire here.
+		if Walker.FireState = 3
+			AimProgress = 1.0-(Walker.FireStateUntilMs-Now)*1.0/WALKER_AIM_PREPARE_MS
+			if AimProgress < 0.0 then AimProgress = 0.0
+			if AimProgress > 1.0 then AimProgress = 1.0
+			AimOffset = AimOffset*AimProgress
 		endif
 		Walker.WalkerObjectData.Tower.Rotation = Walker.WalkerObjectData.Tower.Rotation + AimOffset
 		Walker.WalkerObjectData.Barrel[0].Rotation = Walker.WalkerObjectData.Barrel[0].Rotation + AimOffset
@@ -904,7 +915,7 @@ function WalkerFireShot(Walker ref as TWalker,WalkerIndex as integer,ProtoWalker
 	if FlashIndex >= 0 then FlashList.Flash[FlashIndex].AttachedWalkerIndex = WalkerIndex
 endfunction
 
-// FireState: 0 = idle, 1 = waiting to fire second bullet, 2 = recoil/recovery.
+// FireState: 0 = idle, 1 = waiting for second bullet, 2 = recovery, 3 = aiming.
 // A started burst always finishes before WalkerMove may resume walking.
 function WalkerFireAll(WalkerList ref as TWalkerList,ProtoWalker ref as TProtoWalker,BulletList ref as TBulletList,ProtoBullet ref as TProtoBullet,FlashList ref as TFlashList,ProtoFlash ref as TProtoFlash,World ref as TWorld,Sonec ref as TSonec,VisionDistance as float,Now as integer)
 	local i as integer
@@ -914,38 +925,53 @@ function WalkerFireAll(WalkerList ref as TWalkerList,ProtoWalker ref as TProtoWa
 	if WALKER_TEST_FIRE = 1
 		for i = 0 to WalkerList.Walker.Length
 			if WalkerList.Walker[i].Enabled = TRUE
-				if WalkerList.Walker[i].FireState = 1
+				if WalkerList.Walker[i].FireState = 3
 					if Now >= WalkerList.Walker[i].FireStateUntilMs
+						// Complete the pose before spawning the first bullet/flash.
+						WalkerAnimate(WalkerList.Walker[i],ProtoWalker,World,Now)
 						WalkerFireShot(WalkerList.Walker[i],i,ProtoWalker,BulletList,ProtoBullet,FlashList,ProtoFlash,World,Now)
-						WalkerList.Walker[i].FireState = 2
-						WalkerList.Walker[i].FireStateUntilMs = Now + WALKER_BURST_RECOVERY_MS
+						WalkerList.Walker[i].FireState = 1
+						WalkerList.Walker[i].FireStateUntilMs = Now + WALKER_BURST_SHOT_DELAY_MS
 					endif
 				else
-					if WalkerList.Walker[i].FireState = 2
+					if WalkerList.Walker[i].FireState = 1
 						if Now >= WalkerList.Walker[i].FireStateUntilMs
-							WalkerList.Walker[i].FireState = 0
-							WalkerList.Walker[i].AimActive = FALSE
-							WalkerAnimate(WalkerList.Walker[i],ProtoWalker,World,Now)
+							WalkerFireShot(WalkerList.Walker[i],i,ProtoWalker,BulletList,ProtoBullet,FlashList,ProtoFlash,World,Now)
+							WalkerList.Walker[i].FireState = 2
+							WalkerList.Walker[i].FireStateUntilMs = Now + WALKER_BURST_RECOVERY_MS
 						endif
 					else
-						// Begin a burst only in a regular stand pause, never while walking/turning.
-						if WalkerList.Walker[i].PauseUntilMs > 0 and WalkerList.Walker[i].TurnPending = 0
-							// The feet must have finished settling before the firing phase starts.
-							LeftFootX = WalkerList.Walker[i].PlateOffsetX - 10
-							RightFootX = WalkerList.Walker[i].PlateOffsetX + 10
-							if abs(WalkerList.Walker[i].SkeletonFootX[0]-LeftFootX) < 0.1 and abs(WalkerList.Walker[i].SkeletonFootX[1]-RightFootX) < 0.1 and abs(WalkerList.Walker[i].SkeletonFootY[0]) < 0.1 and abs(WalkerList.Walker[i].SkeletonFootY[1]) < 0.1
-							// Avoid generating shots for Walkers outside the world.
-							if WalkerList.Walker[i].WalkerObjectData.Tower.Position.x >= 0 and WalkerList.Walker[i].WalkerObjectData.Tower.Position.x <= World.Size.Width
-							if TimeGet(WalkerList.Walker[i].FireTimer,Now) > 0
-								WalkerAcquireBurstAim(WalkerList.Walker[i],Sonec,VisionDistance)
-								// Tilt the complete upper body and refresh both barrel anchors before firing.
-								if WalkerList.Walker[i].AimActive = TRUE then WalkerAnimate(WalkerList.Walker[i],ProtoWalker,World,Now)
-								WalkerFireShot(WalkerList.Walker[i],i,ProtoWalker,BulletList,ProtoBullet,FlashList,ProtoFlash,World,Now)
-								WalkerList.Walker[i].FireState = 1
-								WalkerList.Walker[i].FireStateUntilMs = Now + WALKER_BURST_SHOT_DELAY_MS
-								TimeReset(WalkerList.Walker[i].FireTimer,Now)
+						if WalkerList.Walker[i].FireState = 2
+							if Now >= WalkerList.Walker[i].FireStateUntilMs
+								WalkerList.Walker[i].FireState = 0
+								WalkerList.Walker[i].AimActive = FALSE
+								WalkerAnimate(WalkerList.Walker[i],ProtoWalker,World,Now)
 							endif
-							endif
+						else
+							// Begin a burst only in a regular stand pause, never while walking/turning.
+							if WalkerList.Walker[i].PauseUntilMs > 0 and WalkerList.Walker[i].TurnPending = 0
+								// The feet must have finished settling before the firing phase starts.
+								LeftFootX = WalkerList.Walker[i].PlateOffsetX - 10
+								RightFootX = WalkerList.Walker[i].PlateOffsetX + 10
+								if abs(WalkerList.Walker[i].SkeletonFootX[0]-LeftFootX) < 0.1 and abs(WalkerList.Walker[i].SkeletonFootX[1]-RightFootX) < 0.1 and abs(WalkerList.Walker[i].SkeletonFootY[0]) < 0.1 and abs(WalkerList.Walker[i].SkeletonFootY[1]) < 0.1
+								// Avoid generating shots for Walkers outside the world.
+								if WalkerList.Walker[i].WalkerObjectData.Tower.Position.x >= 0 and WalkerList.Walker[i].WalkerObjectData.Tower.Position.x <= World.Size.Width
+								if TimeGet(WalkerList.Walker[i].FireTimer,Now) > 0
+									WalkerAcquireBurstAim(WalkerList.Walker[i],Sonec,VisionDistance)
+									if WalkerList.Walker[i].AimActive = TRUE
+										WalkerList.Walker[i].FireState = 3
+										WalkerList.Walker[i].FireStateUntilMs = Now + WALKER_AIM_PREPARE_MS
+										WalkerAnimate(WalkerList.Walker[i],ProtoWalker,World,Now)
+									else
+										// No target: keep the ordinary horizontal burst immediate.
+										WalkerFireShot(WalkerList.Walker[i],i,ProtoWalker,BulletList,ProtoBullet,FlashList,ProtoFlash,World,Now)
+										WalkerList.Walker[i].FireState = 1
+										WalkerList.Walker[i].FireStateUntilMs = Now + WALKER_BURST_SHOT_DELAY_MS
+									endif
+									TimeReset(WalkerList.Walker[i].FireTimer,Now)
+								endif
+								endif
+								endif
 							endif
 						endif
 					endif
