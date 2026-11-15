@@ -7,7 +7,7 @@
 // Visible preparation trial; capture the target once, then tilt before firing.
 #constant WALKER_AIM_PREPARE_MS 400
 // Projected half-turn: twice the existing aiming preparation (currently 800 ms).
-#constant WALKER_TURRET_SWIVEL_MS (WALKER_AIM_PREPARE_MS*2)
+#constant WALKER_TURRET_SWIVEL_FACTOR 2.0
 #constant WALKER_TURRET_MIN_WIDTH 0.04
 #constant WALKER_AIM_INITIAL_ERROR 14.0
 #constant WALKER_AIM_MIN_ERROR 5.0
@@ -857,7 +857,7 @@ function WalkerTurretFaceTargetAll(WalkerList ref as TWalkerList,Sonec ref as TS
 		if WalkerList.Walker[i].Enabled = TRUE
 			if WalkerList.Walker[i].TurretSwivelActive = TRUE
 				// Finish a started turn without chasing side changes mid-transition.
-				Progress = (Now-WalkerList.Walker[i].TurretSwivelStartMs)*1.0/WALKER_TURRET_SWIVEL_MS
+				Progress = (Now-WalkerList.Walker[i].TurretSwivelStartMs)*1.0/(WALKER_AIM_PREPARE_MS*WALKER_TURRET_SWIVEL_FACTOR)
 				if Progress < 0.0 then Progress = 0.0
 				if Progress >= 1.0
 					WalkerList.Walker[i].TurretSwivelActive = FALSE

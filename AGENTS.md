@@ -148,6 +148,8 @@ Some documents may not exist yet. Their absence does not authorize an agent to c
 
 **Keep relevant documentation current with every commit.** Update the important documents affected by the change in the same commit; do not touch every document routinely. Record implemented behavior, developer-reported tests, remaining uncertainties, provisional test/balancing values and the current next step. For a documentation-only commit, update only the relevant instructions or status entries. Chat handoffs depend on these files; do not defer necessary documentation to a later chat.
 
+**Review reusable findings for the AGK Knowledge Base.** During implementation, debugging and test review, check whether the result could become a useful general lesson, reproducible experiment or reference in `ChristianEngel19820128/agk-knowledge-base`. Check existing topics before proposing an addition. Record promising candidates and their evidence/test status in the project documentation; do not present an uncompiled or visually untested experiment as a proven solution. The Knowledge Base should grow with the projects and serve as a reusable implementation reference. Contributions require sources/revisions, conditions, limitations and a reproducible explanation, with source-project code distinguished from AGK engine behavior. Respect each repository's existing write scope.
+
 Do not silently overwrite existing documentation or contradict established project decisions.
 
 When new findings conflict with documentation, report the discrepancy instead of independently deciding which source is correct.
