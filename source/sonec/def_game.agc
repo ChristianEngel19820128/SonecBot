@@ -324,6 +324,10 @@ type TWalker
 	FireTimer as TTime
 	FireState as integer
 	FireStateUntilMs as integer
+	// One fixed aim angle per burst; improve slowly while the target stays in view.
+	AimAngle as float
+	AimActive as integer
+	AimSalvos as integer
 	Enabled as integer
 	ObjectData as TObjectData
 	CollisionData as TCollisionData
