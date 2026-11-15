@@ -204,6 +204,10 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
+// F6 diagnostic only: A = original 10-ms timer gate, B = each GameDo update.
+// Normal mode remains A until a platform/Kiste/Walker regression test is complete.
+global PlateMotionEveryFrameEnabled as integer
+
 function PlateMove(Plate ref as TPlate,World ref as TWorld,Now as integer)
 
 	local x as float
@@ -211,6 +215,8 @@ function PlateMove(Plate ref as TPlate,World ref as TWorld,Now as integer)
 	local sx as float
 	local sy as float
 	local r as float
+	local MoveThisFrame as integer
+	local ElapsedMs as integer
 	
 	if Plate.Enabled = TRUE
 		// GameDo-frame duration and timer advances are measured separately.
@@ -223,15 +229,29 @@ function PlateMove(Plate ref as TPlate,World ref as TWorld,Now as integer)
 		Plate.DebugDeltaY = 0
 		Plate.DebugCalcRange = 0
 		Plate.DebugElapsedMs = 0
-		if TimeGet(Plate.ObjectData.MoveTimer,Now) > 0
+		// A: keep the 10-ms timer gate. B: move once for every positive virtual dt.
+		MoveThisFrame = 0
+		if PlateMotionEveryFrameEnabled = 1
+			ElapsedMs = Now - Plate.ObjectData.MoveTimer.Stamp
+			if ElapsedMs > 0
+				MoveThisFrame = 1
+				r = ElapsedMs*0.001*Plate.ObjectData.MoveTimer.Range*Plate.ObjectData.MoveTimer.Multiplier
+			endif
+		else
+			if TimeGet(Plate.ObjectData.MoveTimer,Now) > 0
+				MoveThisFrame = 1
+				ElapsedMs = Plate.ObjectData.MoveTimer.FullDifference
+				r = Plate.ObjectData.MoveTimer.CalcRange
+			endif
+		endif
+		if MoveThisFrame = 1
 			
 			x = Plate.ObjectData.Position.x
 			y = Plate.ObjectData.Position.y
 			sx = Plate.ObjectData.MoveSpeed.x
 			sy = Plate.ObjectData.MoveSpeed.y
-			r = Plate.ObjectData.MoveTimer.CalcRange
 			Plate.DebugCalcRange = r
-			Plate.DebugElapsedMs = Plate.ObjectData.MoveTimer.FullDifference
+			Plate.DebugElapsedMs = ElapsedMs
 			Plate.DebugUpdated = 1
 			
 			Plate.ObjectData.Position.x = x - sx*r
