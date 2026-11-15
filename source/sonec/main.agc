@@ -176,6 +176,7 @@ repeat
 			PlateDebugEnabled = 0
 			MotionRenderSnapEnabled = 0
 			TowerMotionEveryFrameEnabled = 1
+			PlateMotionEveryFrameEnabled = 0
 		endif
 		if GetKeyPressed(KEY_F2) = 1
 			PlateDebugToggle()
@@ -183,6 +184,7 @@ repeat
 			if PlateDebugEnabled = 0
 				MotionRenderSnapEnabled = 0
 				TowerMotionEveryFrameEnabled = 1
+				PlateMotionEveryFrameEnabled = 0
 			endif
 		endif
 		// Only while F2 is visible: compare unchanged float drawing to a snapped copy.
@@ -199,6 +201,14 @@ repeat
 				TowerMotionEveryFrameEnabled = 1
 			else
 				TowerMotionEveryFrameEnabled = 0
+			endif
+		endif
+		// F6: platform/chest/Walker regression test only; default stays gated.
+		if GetKeyPressed(KEY_F6) = 1 and PlateDebugEnabled = 1
+			if PlateMotionEveryFrameEnabled = 0
+				PlateMotionEveryFrameEnabled = 1
+			else
+				PlateMotionEveryFrameEnabled = 0
 			endif
 		endif
 	endif
