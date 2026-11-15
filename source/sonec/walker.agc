@@ -663,16 +663,18 @@ function WalkerMuzzlePositionCalculate(Walker ref as TWalker,ProtoWalker ref as 
 	CalcPosition(Position,Angle,Radius)
 endfunction Angle
 
-function WalkerFireShot(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,BulletList ref as TBulletList,ProtoBullet ref as TProtoBullet,FlashList ref as TFlashList,ProtoFlash ref as TProtoFlash,World ref as TWorld,Now as integer)
+function WalkerFireShot(Walker ref as TWalker,WalkerIndex as integer,ProtoWalker ref as TProtoWalker,BulletList ref as TBulletList,ProtoBullet ref as TProtoBullet,FlashList ref as TFlashList,ProtoFlash ref as TProtoFlash,World ref as TWorld,Now as integer)
 	local MuzzlePosition as TPosition
 	local FlashPosition as TPosition
 	local FireAngle as float
+	local FlashIndex as integer
 	FireAngle = WalkerMuzzlePositionCalculate(Walker,ProtoWalker,MuzzlePosition)
 	BulletAdd(BulletList,ProtoBullet,World,MuzzlePosition,FireAngle,0.0,TYPEENEMY,Now)
 	// Use the first barrel's actual Anchor for the flash; the bullet stays at its old origin.
 	// Both barrel instances currently overlap, so the second muzzle can be used later.
 	FlashPosition = Walker.WalkerObjectData.Barrel[0].AnchorPosition
-	FlashAdd(FlashList,ProtoFlash,World,0,WALKER_MUZZLE_FLASH_CYCLES,FlashPosition,FireAngle,0.0,Now)
+	FlashIndex = FlashAdd(FlashList,ProtoFlash,World,0,WALKER_MUZZLE_FLASH_CYCLES,FlashPosition,FireAngle,0.0,Now)
+	if FlashIndex >= 0 then FlashList.Flash[FlashIndex].AttachedWalkerIndex = WalkerIndex
 endfunction
 
 // FireState: 0 = idle, 1 = waiting to fire second bullet, 2 = recoil/recovery.
@@ -687,7 +689,7 @@ function WalkerFireAll(WalkerList ref as TWalkerList,ProtoWalker ref as TProtoWa
 			if WalkerList.Walker[i].Enabled = TRUE
 				if WalkerList.Walker[i].FireState = 1
 					if Now >= WalkerList.Walker[i].FireStateUntilMs
-						WalkerFireShot(WalkerList.Walker[i],ProtoWalker,BulletList,ProtoBullet,FlashList,ProtoFlash,World,Now)
+						WalkerFireShot(WalkerList.Walker[i],i,ProtoWalker,BulletList,ProtoBullet,FlashList,ProtoFlash,World,Now)
 						WalkerList.Walker[i].FireState = 2
 						WalkerList.Walker[i].FireStateUntilMs = Now + WALKER_BURST_RECOVERY_MS
 					endif
@@ -704,7 +706,7 @@ function WalkerFireAll(WalkerList ref as TWalkerList,ProtoWalker ref as TProtoWa
 							// Avoid generating shots for Walkers outside the world.
 							if WalkerList.Walker[i].WalkerObjectData.Tower.Position.x >= 0 and WalkerList.Walker[i].WalkerObjectData.Tower.Position.x <= World.Size.Width
 							if TimeGet(WalkerList.Walker[i].FireTimer,Now) > 0
-								WalkerFireShot(WalkerList.Walker[i],ProtoWalker,BulletList,ProtoBullet,FlashList,ProtoFlash,World,Now)
+								WalkerFireShot(WalkerList.Walker[i],i,ProtoWalker,BulletList,ProtoBullet,FlashList,ProtoFlash,World,Now)
 								WalkerList.Walker[i].FireState = 1
 								WalkerList.Walker[i].FireStateUntilMs = Now + WALKER_BURST_SHOT_DELAY_MS
 								TimeReset(WalkerList.Walker[i].FireTimer,Now)
@@ -793,6 +795,24 @@ function WalkerSkeletonUpdate(Walker ref as TWalker,Moving as integer)
 			Walker.SkeletonFootY[i] = 0
 		endif
 		endif
+		endif
+	next i
+endfunction
+
+// Follow each active Walker-owned muzzle flash after the platform and barrel moved.
+// Only sprite and object positions are refreshed, not flash size, lifetime or bullets.
+function WalkerFlashFollowAll(WalkerList ref as TWalkerList,FlashList ref as TFlashList,World ref as TWorld)
+	local i as integer
+	local WalkerIndex as integer
+	for i = 0 to FlashList.Flash.Length
+		if FlashList.Flash[i].Enabled = TRUE
+			WalkerIndex = FlashList.Flash[i].AttachedWalkerIndex
+			if WalkerIndex >= 0 and WalkerIndex <= WalkerList.Walker.Length
+				if WalkerList.Walker[WalkerIndex].Enabled = TRUE
+					FlashList.Flash[i].ObjectData.Position = WalkerList.Walker[WalkerIndex].WalkerObjectData.Barrel[0].AnchorPosition
+					SpritePositionCalc(FlashList.Flash[i].SpriteData.Position,FlashList.Flash[i].ObjectData.Position,World.Position)
+				endif
+			endif
 		endif
 	next i
 endfunction
