@@ -256,7 +256,7 @@ function GameDo(Game ref as TGame,Now as integer)
 	WalkerMoveAll(Game.WalkerList,Game.ProtoWalker,Game.PlateList,Game.ChestList,Game.World,Now)
 	WalkerHealthRegenerate(Game.WalkerList,Game,Now)
 	// Select the turret side after walking/turning, before rebuilding its pose.
-	WalkerTurretFaceTargetAll(Game.WalkerList,Game.Sonec,Game.Screen.Width)
+	WalkerTurretFaceTargetAll(Game.WalkerList,Game.Sonec,Game.Screen.Width,Now)
 	WalkerAnimateAll(Game.WalkerList,Game.ProtoWalker,Game.World,Now)
 	// Turret world positions are current; enemy bullets join the normal Bullet pipeline.
 	WalkerFireAll(Game.WalkerList,Game.ProtoWalker,Game.BulletList,Game.ProtoBullet,Game.FlashList,Game.ProtoFlash,Game.World,Game.Sonec,Game.Screen.Width,Now)

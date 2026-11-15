@@ -6,6 +6,9 @@
 #constant WALKER_AIM_MAX_TILT 30.0
 // Visible preparation trial; capture the target once, then tilt before firing.
 #constant WALKER_AIM_PREPARE_MS 400
+// Projected half-turn: twice the existing aiming preparation (currently 800 ms).
+#constant WALKER_TURRET_SWIVEL_MS (WALKER_AIM_PREPARE_MS*2)
+#constant WALKER_TURRET_MIN_WIDTH 0.04
 #constant WALKER_AIM_INITIAL_ERROR 14.0
 #constant WALKER_AIM_MIN_ERROR 5.0
 #constant WALKER_AIM_IMPROVEMENT 2.0
@@ -383,6 +386,11 @@ function WalkerNew(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,World r
 	Walker.AimAngle = 0
 	Walker.AimActive = FALSE
 	Walker.AimSalvos = 0
+	Walker.TurretSwivelActive = FALSE
+	Walker.TurretSwivelFrom = LOOKLEFT
+	Walker.TurretSwivelTo = LOOKLEFT
+	Walker.TurretSwivelStartMs = 0
+	Walker.TurretWidthScale = 1.0
 	
 	// Fixed slower test pace: compare foot contact and turns at a consistent speed.
 	Walker.ObjectData.MoveSpeed.x = 0.05
@@ -769,6 +777,14 @@ function WalkerAnimate(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,Wor
 
 	WalkerPartsCalculate(Walker,ProtoWalker,World)
 	WalkerTowerCollisionCalculate(Walker,ProtoWalker)
+	// Only the turret projection changes width; the Corpus and lower IK do not.
+	if Walker.TurretSwivelActive = TRUE
+		Walker.WalkerCollisionData.Tower.Position.x = Walker.WalkerObjectData.Corpus.Position.x + (Walker.WalkerCollisionData.Tower.Position.x-Walker.WalkerObjectData.Corpus.Position.x)*Walker.TurretWidthScale
+		Walker.WalkerCollisionData.Tower.Position1.x = Walker.WalkerObjectData.Corpus.Position.x + (Walker.WalkerCollisionData.Tower.Position1.x-Walker.WalkerObjectData.Corpus.Position.x)*Walker.TurretWidthScale
+		Walker.WalkerCollisionData.Tower.Position2.x = Walker.WalkerObjectData.Corpus.Position.x + (Walker.WalkerCollisionData.Tower.Position2.x-Walker.WalkerObjectData.Corpus.Position.x)*Walker.TurretWidthScale
+		Walker.WalkerObjectData.Barrel[0].AnchorPosition.x = Walker.WalkerObjectData.Corpus.Position.x + (Walker.WalkerObjectData.Barrel[0].AnchorPosition.x-Walker.WalkerObjectData.Corpus.Position.x)*Walker.TurretWidthScale
+		Walker.WalkerObjectData.Barrel[1].AnchorPosition.x = Walker.WalkerObjectData.Corpus.Position.x + (Walker.WalkerObjectData.Barrel[1].AnchorPosition.x-Walker.WalkerObjectData.Corpus.Position.x)*Walker.TurretWidthScale
+	endif
 	if Walker.HitFlashUntil > Now
 		ColorSet(Walker.WalkerSpriteData.Tower.Color,255,0,0,255)
 	endif
@@ -830,30 +846,53 @@ endfunction
 // A new Walker starts at +/-14 degrees and improves to a minimum +/-5 degrees.
 // First turret-swivel step: choose an existing side view independently of walking.
 // Keep the facing fixed throughout preparation, both shots and recovery.
-function WalkerTurretFaceTargetAll(WalkerList ref as TWalkerList,Sonec ref as TSonec,VisionDistance as float)
+function WalkerTurretFaceTargetAll(WalkerList ref as TWalkerList,Sonec ref as TSonec,VisionDistance as float,Now as integer)
 	local i as integer
 	local TargetDeltaX as float
 	local TargetDeltaY as float
 	local NewLookAlignment as integer
+	local Progress as float
 
-	if WALKER_TARGET_AIM_TEST = 1 and Sonec.IsLost = FALSE
-		for i = 0 to WalkerList.Walker.Length
-			if WalkerList.Walker[i].Enabled = TRUE and WalkerList.Walker[i].FireState = 0
-				TargetDeltaX = Sonec.ObjectData.Position.x-WalkerList.Walker[i].WalkerObjectData.Tower.Position.x
-				TargetDeltaY = Sonec.ObjectData.Position.y-WalkerList.Walker[i].WalkerObjectData.Tower.Position.y
-				if TargetDeltaX*TargetDeltaX+TargetDeltaY*TargetDeltaY <= VisionDistance*VisionDistance
-					NewLookAlignment = WalkerList.Walker[i].State.LookAlignment
-					if TargetDeltaX < 0 then NewLookAlignment = LOOKLEFT
-					if TargetDeltaX > 0 then NewLookAlignment = LOOKRIGHT
-					if NewLookAlignment <> WalkerList.Walker[i].State.LookAlignment
-						WalkerList.Walker[i].State.LookAlignment = NewLookAlignment
-						// A target on the opposite side starts a fresh accuracy progression.
-						WalkerList.Walker[i].AimSalvos = 0
+	for i = 0 to WalkerList.Walker.Length
+		if WalkerList.Walker[i].Enabled = TRUE
+			if WalkerList.Walker[i].TurretSwivelActive = TRUE
+				// Finish a started turn without chasing side changes mid-transition.
+				Progress = (Now-WalkerList.Walker[i].TurretSwivelStartMs)*1.0/WALKER_TURRET_SWIVEL_MS
+				if Progress < 0.0 then Progress = 0.0
+				if Progress >= 1.0
+					WalkerList.Walker[i].TurretSwivelActive = FALSE
+					WalkerList.Walker[i].TurretWidthScale = 1.0
+					WalkerList.Walker[i].State.LookAlignment = WalkerList.Walker[i].TurretSwivelTo
+				else
+					WalkerList.Walker[i].TurretWidthScale = abs(Cos(Progress*180.0))
+					if WalkerList.Walker[i].TurretWidthScale < WALKER_TURRET_MIN_WIDTH then WalkerList.Walker[i].TurretWidthScale = WALKER_TURRET_MIN_WIDTH
+					if Progress < 0.5
+						WalkerList.Walker[i].State.LookAlignment = WalkerList.Walker[i].TurretSwivelFrom
+					else
+						WalkerList.Walker[i].State.LookAlignment = WalkerList.Walker[i].TurretSwivelTo
+					endif
+				endif
+			else
+				WalkerList.Walker[i].TurretWidthScale = 1.0
+				if WALKER_TARGET_AIM_TEST = 1 and Sonec.IsLost = FALSE and WalkerList.Walker[i].FireState = 0
+					TargetDeltaX = Sonec.ObjectData.Position.x-WalkerList.Walker[i].WalkerObjectData.Tower.Position.x
+					TargetDeltaY = Sonec.ObjectData.Position.y-WalkerList.Walker[i].WalkerObjectData.Tower.Position.y
+					if TargetDeltaX*TargetDeltaX+TargetDeltaY*TargetDeltaY <= VisionDistance*VisionDistance
+						NewLookAlignment = WalkerList.Walker[i].State.LookAlignment
+						if TargetDeltaX < 0 then NewLookAlignment = LOOKLEFT
+						if TargetDeltaX > 0 then NewLookAlignment = LOOKRIGHT
+						if NewLookAlignment <> WalkerList.Walker[i].State.LookAlignment
+							WalkerList.Walker[i].TurretSwivelActive = TRUE
+							WalkerList.Walker[i].TurretSwivelFrom = WalkerList.Walker[i].State.LookAlignment
+							WalkerList.Walker[i].TurretSwivelTo = NewLookAlignment
+							WalkerList.Walker[i].TurretSwivelStartMs = Now
+							WalkerList.Walker[i].AimSalvos = 0
+						endif
 					endif
 				endif
 			endif
-		next i
-	endif
+		endif
+	next i
 endfunction
 
 //----------------------------------------------------------------------
@@ -981,7 +1020,7 @@ function WalkerFireAll(WalkerList ref as TWalkerList,ProtoWalker ref as TProtoWa
 							endif
 						else
 							// Begin a burst only in a regular stand pause, never while walking/turning.
-							if WalkerList.Walker[i].PauseUntilMs > 0 and WalkerList.Walker[i].TurnPending = 0
+							if WalkerList.Walker[i].PauseUntilMs > 0 and WalkerList.Walker[i].TurnPending = 0 and WalkerList.Walker[i].TurretSwivelActive = FALSE
 								// The feet must have finished settling before the firing phase starts.
 								LeftFootX = WalkerList.Walker[i].PlateOffsetX - 10
 								RightFootX = WalkerList.Walker[i].PlateOffsetX + 10
@@ -1198,12 +1237,12 @@ function WalkerMove(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,PlateL
 					if abs(Walker.SkeletonFootX[0]-(Walker.PlateOffsetX-10)) < 0.1 and abs(Walker.SkeletonFootX[1]-(Walker.PlateOffsetX+10)) < 0.1 and abs(Walker.SkeletonFootY[0]) < 0.1 and abs(Walker.SkeletonFootY[1]) < 0.1
 						if Walker.State.Alignment = MOVELEFT
 							Walker.State.Alignment = MOVERIGHT
-							Walker.State.LookAlignment = LOOKRIGHT
+							// Turret facing is independent; its swivel owns LookAlignment.
 							// Rightmost foot initiates the first step after turning right.
 							Walker.WalkPhase = 180
 						else
 							Walker.State.Alignment = MOVELEFT
-							Walker.State.LookAlignment = LOOKLEFT
+							// Turret facing is independent; its swivel owns LookAlignment.
 							// Leftmost foot initiates the first step after turning left.
 							Walker.WalkPhase = 0
 						endif
@@ -1248,6 +1287,27 @@ endfunction
 //----------------------------------------------------------------------
 
 // Diagnostic: force the current leg angle onto the shared AGK sprite on every draw.
+// Walker turret art is vertical in the source image and drawn at +/-90 degrees.
+// Scaling local Y therefore compresses screen X around its existing offset.
+function WalkerTurretPartDraw(Sprite ref as TSprite,Data ref as TSpriteData,WidthScale as float)
+	if WidthScale >= 1.0
+		SpriteDraw(Sprite,Data)
+	else
+		if Sprite.ID > 0
+			SetSpriteScaleByOffset(Sprite.ID,Data.Scale,Data.Scale*WidthScale)
+			SetSpriteOffset(Sprite.ID,Data.Offset.x*Data.Scale,Data.Offset.y*Data.Scale*WidthScale)
+			SetSpriteAngle(Sprite.ID,Data.Angle)
+			SetSpritePositionByOffset(Sprite.ID,Data.Position.x,Data.Position.y)
+			SetSpriteColor(Sprite.ID,Data.Color.Red,Data.Color.Green,Data.Color.Blue,Data.Color.Alpha)
+			DrawSprite(Sprite.ID)
+			// Restore shared Proto sprite state before another Walker draws it.
+			SetSpriteScaleByOffset(Sprite.ID,Data.Scale,Data.Scale)
+			SetSpriteOffset(Sprite.ID,Data.Offset.x*Data.Scale,Data.Offset.y*Data.Scale)
+			Sprite.Data = Data
+		endif
+	endif
+endfunction
+
 function WalkerDraw(Walker ref as TWalker,ProtoWalker ref as TProtoWalker)
 	
 	if Walker.Enabled = TRUE
@@ -1283,14 +1343,14 @@ function WalkerDraw(Walker ref as TWalker,ProtoWalker ref as TProtoWalker)
 		endif
 		
 		if Walker.State.LookAlignment = LOOKLEFT
-			SpriteDraw(ProtoWalker.AnimLeft.Barrel.Sprite,Walker.WalkerSpriteData.Barrel[0])
-			SpriteDraw(ProtoWalker.AnimLeft.Tower.Sprite,Walker.WalkerSpriteData.Tower)			
-			SpriteDraw(ProtoWalker.AnimLeft.Barrel.Sprite,Walker.WalkerSpriteData.Barrel[1])
+			WalkerTurretPartDraw(ProtoWalker.AnimLeft.Barrel.Sprite,Walker.WalkerSpriteData.Barrel[0],Walker.TurretWidthScale)
+			WalkerTurretPartDraw(ProtoWalker.AnimLeft.Tower.Sprite,Walker.WalkerSpriteData.Tower,Walker.TurretWidthScale)			
+			WalkerTurretPartDraw(ProtoWalker.AnimLeft.Barrel.Sprite,Walker.WalkerSpriteData.Barrel[1],Walker.TurretWidthScale)
 		endif
 		if Walker.State.LookAlignment = LOOKRIGHT
-			SpriteDraw(ProtoWalker.AnimRight.Barrel.Sprite,Walker.WalkerSpriteData.Barrel[0])
-			SpriteDraw(ProtoWalker.AnimRight.Tower.Sprite,Walker.WalkerSpriteData.Tower)
-			SpriteDraw(ProtoWalker.AnimRight.Barrel.Sprite,Walker.WalkerSpriteData.Barrel[1])
+			WalkerTurretPartDraw(ProtoWalker.AnimRight.Barrel.Sprite,Walker.WalkerSpriteData.Barrel[0],Walker.TurretWidthScale)
+			WalkerTurretPartDraw(ProtoWalker.AnimRight.Tower.Sprite,Walker.WalkerSpriteData.Tower,Walker.TurretWidthScale)
+			WalkerTurretPartDraw(ProtoWalker.AnimRight.Barrel.Sprite,Walker.WalkerSpriteData.Barrel[1],Walker.TurretWidthScale)
 		endif
 
 	endif

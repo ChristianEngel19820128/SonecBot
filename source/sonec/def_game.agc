@@ -328,6 +328,12 @@ type TWalker
 	AimAngle as float
 	AimActive as integer
 	AimSalvos as integer
+	// Independent projected turret swivel around the Corpus offset.
+	TurretSwivelActive as integer
+	TurretSwivelFrom as integer
+	TurretSwivelTo as integer
+	TurretSwivelStartMs as integer
+	TurretWidthScale as float
 	Enabled as integer
 	ObjectData as TObjectData
 	CollisionData as TCollisionData
