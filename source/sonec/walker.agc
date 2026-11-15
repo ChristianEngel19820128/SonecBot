@@ -911,6 +911,10 @@ function WalkerAcquireBurstAim(Walker ref as TWalker,Sonec ref as TSonec,VisionD
 	local TargetDistance as float
 	local TargetDeviation as float
 	local AimErrorMax as float
+	local HipDeltaX as float
+	local HipDeltaY as float
+	local HipDistance as float
+	local MuzzleSideRatio as float
 
 	Walker.AimActive = FALSE
 	if WALKER_TARGET_AIM_TEST = 1 and Sonec.IsLost = FALSE
@@ -921,6 +925,17 @@ function WalkerAcquireBurstAim(Walker ref as TWalker,Sonec ref as TSonec,VisionD
 		if TargetDistance <= VisionDistance
 			if (Walker.State.LookAlignment = LOOKRIGHT and TargetDeltaX > 0) or (Walker.State.LookAlignment = LOOKLEFT and TargetDeltaX < 0)
 				TargetDeviation = ATan2(TargetDeltaY,abs(TargetDeltaX))
+				// The upper body rotates around the hip after target acquisition.
+				// Solve for that final muzzle ray, not the old neutral muzzle origin.
+				HipDeltaX = Sonec.ObjectData.Position.x-Walker.ObjectData.Position.x
+				HipDeltaY = Sonec.ObjectData.Position.y-Walker.ObjectData.Position.y
+				HipDistance = sqrt(HipDeltaX*HipDeltaX+HipDeltaY*HipDeltaY)
+				if HipDistance > 0.001
+					MuzzleSideRatio = (MuzzlePosition.y-Walker.ObjectData.Position.y)*1.0/HipDistance
+					if MuzzleSideRatio > 1.0 then MuzzleSideRatio = 1.0
+					if MuzzleSideRatio < -1.0 then MuzzleSideRatio = -1.0
+					TargetDeviation = ATan2(HipDeltaY,abs(HipDeltaX))-ATan2(MuzzleSideRatio,sqrt(1.0-MuzzleSideRatio*MuzzleSideRatio))
+				endif
 				// Do not aim farther than the mechanical +/-30 degree test arc.
 				if TargetDeviation > WALKER_AIM_MAX_TILT then TargetDeviation = WALKER_AIM_MAX_TILT
 				if TargetDeviation < -WALKER_AIM_MAX_TILT then TargetDeviation = -WALKER_AIM_MAX_TILT
