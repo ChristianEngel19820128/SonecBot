@@ -344,7 +344,7 @@ endfunction
 global PlateDebugEnabled as integer
 global PlateDebugHudText as integer
 global PlateDebugIndexText as integer
-#constant PLATE_DEBUG_MAX_ENTRIES 3
+#constant PLATE_DEBUG_MAX_ENTRIES 1
 
 function PlateDebugToggle()
 	if PlateDebugEnabled = 0
@@ -356,11 +356,15 @@ endfunction
 
 // The history has one sample per GameDo frame, including zero-step frames.
 // Min/average/max dX use those per-frame samples, and dt uses elapsed game-frame ms.
-function PlateDebugDrawAll(PlateList ref as TPlateList)
+function PlateDebugDrawAll(PlateList ref as TPlateList,TowerList ref as TTowerList)
 	local i as integer
 	local j as integer
 	local Visible as integer
 	local Shown as integer
+	local TowerIndex as integer
+	local TowerMarkerX as float
+	local TowerMarkerY as float
+	local k as integer
 	local Count as integer
 	local Steps as integer
 	local MinDX as float
@@ -399,7 +403,7 @@ function PlateDebugDrawAll(PlateList ref as TPlateList)
 		next i
 
 		Shown = 0
-		Data = "PLATFORM DEBUG (F2) | visible: "+Str(Visible)+" | history: 60 frames"+Chr(10)
+		Data = "MOTION DEBUG (F2) | Platform: "+Str(Visible)+" | last 60 frames"+Chr(10)
 		for i = 0 to PlateList.Plate.Length
 			if PlateList.Plate[i].Enabled = TRUE
 				if PlateList.Plate[i].SpriteData.Position.x <= GetVirtualWidth() and PlateList.Plate[i].SpriteData.Position.x + PlateList.Plate[i].ObjectData.Size.Width >= 0
@@ -445,7 +449,71 @@ function PlateDebugDrawAll(PlateList ref as TPlateList)
 				endif
 			endif
 		next i
-		if Visible > Shown then Data = Data+"Further visible: "+Str(Visible-Shown)
+		if Visible > Shown then Data = Data+"Other platforms: "+Str(Visible-Shown)+Chr(10)
+
+		// Select the first actually visible skyscraper segment, not an offscreen Tower.
+		// TowerPart coordinates are centered SpriteDraw positions after camera translation.
+		TowerIndex = -1
+		for i = 0 to TowerList.Tower.Length
+			if TowerList.Tower[i].Enabled = TRUE and TowerIndex = -1
+				for k = 0 to TowerList.Tower[i].TowerPart.Length
+					if TowerIndex = -1
+						if TowerList.Tower[i].TowerPart[k].SpriteData.Position.x + TowerList.Tower[i].TowerPart[k].ObjectData.Size.Width*0.5 >= 0 and TowerList.Tower[i].TowerPart[k].SpriteData.Position.x - TowerList.Tower[i].TowerPart[k].ObjectData.Size.Width*0.5 <= GetVirtualWidth()
+							if TowerList.Tower[i].TowerPart[k].SpriteData.Position.y + TowerList.Tower[i].TowerPart[k].ObjectData.Size.Height*0.5 >= 0 and TowerList.Tower[i].TowerPart[k].SpriteData.Position.y - TowerList.Tower[i].TowerPart[k].ObjectData.Size.Height*0.5 <= GetVirtualHeight()
+								TowerIndex = i
+								TowerMarkerX = TowerList.Tower[i].TowerPart[k].SpriteData.Position.x-TowerList.Tower[i].TowerPart[k].ObjectData.Size.Width*0.5+4
+								TowerMarkerY = TowerList.Tower[i].TowerPart[k].SpriteData.Position.y-TowerList.Tower[i].TowerPart[k].ObjectData.Size.Height*0.5+4
+							endif
+						endif
+					endif
+				next k
+			endif
+		next i
+
+		if TowerIndex >= 0
+			if TowerMarkerX < 4 then TowerMarkerX = 4
+			if TowerMarkerX > GetVirtualWidth()-28 then TowerMarkerX = GetVirtualWidth()-28
+			if TowerMarkerY < 4 then TowerMarkerY = 4
+			if TowerMarkerY > GetVirtualHeight()-20 then TowerMarkerY = GetVirtualHeight()-20
+			SetTextString(PlateDebugIndexText,"T"+Str(TowerIndex))
+			SetTextPosition(PlateDebugIndexText,TowerMarkerX,TowerMarkerY)
+			DrawText(PlateDebugIndexText)
+
+			Count = TowerList.Tower[TowerIndex].DebugHistoryCount
+			Steps = 0
+			MinDX = 0
+			MaxDX = 0
+			AvgDX = 0
+			SumDX = 0
+			MinDT = 0
+			MaxDT = 0
+			AvgDT = 0
+			SumDT = 0
+			if Count > 0
+				MinDX = TowerList.Tower[TowerIndex].DebugHistoryDX[0]
+				MaxDX = MinDX
+				MinDT = TowerList.Tower[TowerIndex].DebugHistoryFrameMs[0]
+				MaxDT = MinDT
+				for j = 0 to Count-1
+					if TowerList.Tower[TowerIndex].DebugHistoryDX[j] < MinDX then MinDX = TowerList.Tower[TowerIndex].DebugHistoryDX[j]
+					if TowerList.Tower[TowerIndex].DebugHistoryDX[j] > MaxDX then MaxDX = TowerList.Tower[TowerIndex].DebugHistoryDX[j]
+					if TowerList.Tower[TowerIndex].DebugHistoryFrameMs[j] < MinDT then MinDT = TowerList.Tower[TowerIndex].DebugHistoryFrameMs[j]
+					if TowerList.Tower[TowerIndex].DebugHistoryFrameMs[j] > MaxDT then MaxDT = TowerList.Tower[TowerIndex].DebugHistoryFrameMs[j]
+					SumDX = SumDX + TowerList.Tower[TowerIndex].DebugHistoryDX[j]
+					SumDT = SumDT + TowerList.Tower[TowerIndex].DebugHistoryFrameMs[j]
+					Steps = Steps + TowerList.Tower[TowerIndex].DebugHistoryStep[j]
+				next j
+				AvgDX = SumDX*(1.0/Count)
+				AvgDT = SumDT*(1.0/Count)
+			endif
+			Data = Data+Chr(10)+"T"+Str(TowerIndex)+" X "+Str(TowerList.Tower[TowerIndex].ObjectData.Position.x,1)+" dX "+Str(TowerList.Tower[TowerIndex].DebugDeltaX,3)+Chr(10)
+			Data = Data+"  Move dt "+Str(TowerList.Tower[TowerIndex].DebugElapsedMs)+"ms R "+Str(TowerList.Tower[TowerIndex].DebugCalcRange,1)+" Step "+Str(TowerList.Tower[TowerIndex].DebugUpdated)+Chr(10)
+			Data = Data+"  dX min/avg/max "+Str(MinDX,3)+" / "+Str(AvgDX,3)+" / "+Str(MaxDX,3)+Chr(10)
+			Data = Data+"  Frame ms min/avg/max "+Str(MinDT)+" / "+Str(AvgDT,1)+" / "+Str(MaxDT)+" | Steps "+Str(Steps)+"/"+Str(Count)+Chr(10)
+		else
+			Data = Data+Chr(10)+"Tower: no visible skyscraper"+Chr(10)
+		endif
+
 		SetTextString(PlateDebugHudText,Data)
 		SetTextSize(PlateDebugHudText,10)
 		if GetTextTotalWidth(PlateDebugHudText) > GetVirtualWidth()-24 or GetTextTotalHeight(PlateDebugHudText) > GetVirtualHeight()-24
