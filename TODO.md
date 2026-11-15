@@ -1,6 +1,6 @@
 # SonecBot – TODO und Meilensteine
 
-**Dokumentstatus:** Version 1.3  
+**Dokumentstatus:** Version 1.4  
 **Stand:** 15. November 2026  
 **Branch:** `develop`  
 **Ziel:** Kleine, überprüfbare Schritte zur spielbaren HTML5-Alpha
@@ -80,8 +80,9 @@
 
 - [x] **Plattform-Messung erweitert:** Erster F1-Plattformscreenshot (vom Entwickler geprüft) zeigte 3 Plattformen mit 17 ms und `CalcRange=17`, aber nur einen Standbild-Moment. Aktueller F2-Code: bis zu drei sichtbare Plattformen mit `P#`, X/Y, dX, Timer-`dt`/`CalcRange`/Step und eine 60-Frame-Historie für dX sowie Game-Frame-ms mit Min/Avg/Max und Step-Zählung (`e3aa594`, `05fac96`, `57d6044`). **F2-Version noch nicht lokal getestet.** Bewegungsgleichungen unverändert.
 - [x] **F2-Plattform-Erstprobe durchgeführt:** Entwickler-Screenshot mit 60/60 Schritten, Framezeit 15–19 ms und dX −1,653 bis −1,305 bei links fahrender Plattform; trotz mathematisch plausibler Schritte gelegentliches Ruckeln beobachtet. Ein vergleichbarer Effekt tritt auch bei Hochhäusern auf. Die Ursache bleibt offen; Tearing ist nicht nachgewiesen.
-- [x] **F2-Plattform-/Hochhaus-Vergleich im Code ergänzt:** Hochhäuser erhalten ebenfalls 60-Frame-dX-/Framezeit-/Step-Historie; F2 zeigt jetzt jeweils **eine sichtbare Plattform (P#)** und **ein sichtbares Hochhaus (T#)** mit vergleichbaren Werten (`a12dad5`, `cc1a34a`, `11529af`, `8ffebcf`). Keine Änderung an Bewegung, Timer, VSync oder Auflösung. **Neuer Vergleichsbildschirm noch nicht lokal getestet.**
-- [ ] **Nächster lokaler Test:** AGK kompilieren, F2 bei gleichzeitig sichtbarer Plattform und Hochhaus aufrufen, beide Messreihen bei Bewegung und Pause fotografieren. Entscheidend: Zeigen beide Aussetzer oder ausschließlich sichtbare Raster-/Darstellungsstufen? Darauf aufbauend isolierten A/B-Test planen.
+- [x] **F2-Plattform-/Hochhaus-Vergleich getestet:** Die 60-Frame-Werte für eine sichtbare Plattform (`P#`) und ein Hochhaus (`T#`) wurden vom Entwickler unter Windows geprüft (`a12dad5`, `cc1a34a`, `11529af`, `8ffebcf`); bei beiden `Steps 60/60`, sichtbares gelegentliches Ruckeln trotzdem bestätigt. F2-Anzeige rechts oben ist lokal geprüft (`ea59c2a`), Ursache weiterhin offen.
+- [x] **A/B-Renderexperiment eingecheckt:** `F4` wechselt bei aktivem F2 zwischen **A FLOAT** (bisherige Positionen) und **B PIXEL SNAP** (nur temporäre Draw-Kopien von Plattform-/Hochhaus-Sprites auf physische Fensterpixel gerundet). Beim Ausschalten von F2 oder Wechsel zu F1 automatisch zurück auf A; Fenster/virtuelle Auflösung, Timer, Bewegung, Weltpositionen und Kollisionen unverändert (`53090a6`, `275677c`, `ae2ef95`, `bc71740`, `9e87c88`). **AGK-Laufzeittest ausstehend.**
+- [ ] **Nächster lokaler Test:** Windows-App in unveränderter Fenster-/virtueller Auflösung starten; F2 aufrufen, A und B per F4 bei ähnlich bewegter Plattform und Hochhaus vergleichen, sichtbares Ruckeln/Übergänge beurteilen. Auf Bildunterschiede von Kisten oder aufgesetzten Walkern achten (nur Plattform-/Tower-Grafik ist gerundet). Keine Physikänderung ohne Testauswertung.
 - [ ] **Timer-Float-Vergleich:** Crystals/`source/crystals/timer.agc` nutzt `1000.0/Span`, SonecBot/`source/sonec/timer.agc` noch `1000 / Span`. Der Entwickler hat ungenaue Integer-Divisionen in AGK praktisch beobachtet. Prüfen, wo nichtganzzahlige Timer-Spans auftreten und ob Float-Operationen erforderlich sind; **separater, gezielter Commit nach Diagnose**, keine ungeprüfte Übernahme von Crystals. VSync-/Geschwindigkeitsänderungen nicht vorwegnehmen.
 
 ## 2. HTML5-Alpha – hohe Priorität
@@ -133,6 +134,6 @@
 - [ ] Vor der HTML5-Alpha offene Anforderungen und tatsächlichen Teststatus der Kernsysteme erneut abgleichen.
 - [x] **Wiederlesbare Übergabe im Repository eingerichtet:** `TECHNICAL.md` enthält einen Abschnitt „Übergabe bei Chatlimit oder neuem Chat“ mit Branch-/Commit-Startpunkt, lokal getesteten Befunden, offenen Fragen, AGK-Besonderheiten, Arbeitsregeln und einer Startformulierung. Vor jedem weiteren Chatwechsel die Dateien und den HEAD **erneut** aktualisieren und vergleichen; automatische Kontextübernahme nicht voraussetzen.
 
-**Aktueller Code-Übergabestand:** F2-Plattform-/Hochhaus-Vergleich bis `8ffebcf` (neuer Hochhausvergleich noch nicht lokal getestet; Plattformprobe mit 60/60 Schritten dokumentiert). Nach jedem weiteren Commit den Branch-HEAD neu prüfen. Bitte auch `TECHNICAL.md`, Abschnitt 12, lesen.
+**Aktueller Code-Übergabestand:** A/B-Renderexperiment bis `9e87c88` (F2-Plattform-/Hochhaus-Vergleich und Top-Right-HUD vom Entwickler geprüft, A/B-Modus noch ungetestet). Nach jedem weiteren Commit den Branch-HEAD neu prüfen. Bitte auch `TECHNICAL.md`, Abschnitt 12, lesen.
 
 **Walker-Referenzstände:** Corpus-/Turmanbindung `deb8b74`; getrennte Fußziele `760c8c3`; angepasste Gangphase `20eced3`; Wendeverhalten `810d342`; einheitliche Geschwindigkeit `20b2d7d`; Fußhöhe 8 px `328c5e0`; Debug-Anzeigen aus `c6d47e6` (jeweils auf `develop`). Der Entwickler hat das lokale Gangbild als alpha-tauglich bewertet; ein eigener AGK-Build des Assistenten und ein HTML5-Praxistest stehen aus.
