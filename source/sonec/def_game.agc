@@ -418,6 +418,7 @@ type TFlash
 	SpriteData as TSpriteData
 	EffectData as TEffectData
 	FlashAnimIndex as integer
+	AttachedWalkerIndex as integer
 endtype
 
 type TFlashList
