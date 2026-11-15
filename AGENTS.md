@@ -150,6 +150,8 @@ Do not silently overwrite existing documentation or contradict established proje
 
 When new findings conflict with documentation, report the discrepancy instead of independently deciding which source is correct.
 
+**Chatwechsel / Kontextgrenzen:** Verlasse dich nicht auf eine automatische Übernahme des vorherigen Chatverlaufs. Lies bei einem neuen Chat zuerst die vorhandenen vier Projektdokumente, insbesondere `TECHNICAL.md` Abschnitt „Übergabe bei Chatlimit oder neuem Chat“ und die aktuellen Aufgaben in `TODO.md`. Frage anschließend den wirklichen `develop`-HEAD und betroffene Dateien erneut ab, bevor du einen dokumentierten Stand als aktuell darstellst. Kennzeichne lokale Tests des Entwicklers anders als statische Prüfungen und vermeide Aussagen über nicht durchgeführte AGK- oder HTML5-Builds.
+
 ## 10. Working principles
 
 - **Understand first.**
