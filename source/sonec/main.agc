@@ -137,6 +137,14 @@ repeat
 			PlateDebugToggle()
 			WalkerDebugEnabled = 0
 		endif
+		// Only while F2 is visible: compare unchanged float drawing to a snapped copy.
+		if GetKeyPressed(KEY_F4) = 1 and PlateDebugEnabled = 1
+			if MotionRenderSnapEnabled = 0
+				MotionRenderSnapEnabled = 1
+			else
+				MotionRenderSnapEnabled = 0
+			endif
+		endif
 	endif
 
 	if Game.IsLost = TRUE
