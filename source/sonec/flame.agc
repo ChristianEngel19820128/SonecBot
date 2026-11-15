@@ -298,10 +298,10 @@ function FlameMove(Flame ref as TFlame,World ref as TWorld,Now as integer)
 			
 			SpritePositionCalc(Flame.SpriteData.Position,Flame.ObjectData.Position,World.Position)
 			
-			Flame.CollisionData.Position1.x = Flame.ObjectData.Position.x - (Flame.ObjectData.Size.Width  * Flame.SpriteData.Scale * 0.5)
-			Flame.CollisionData.Position1.y = Flame.ObjectData.Position.y - (Flame.ObjectData.Size.Height * Flame.SpriteData.Scale * 0.5)
-			Flame.CollisionData.Position2.x = Flame.ObjectData.Position.x + (Flame.ObjectData.Size.Width  * Flame.SpriteData.Scale * 0.5)
-			Flame.CollisionData.Position2.y = Flame.ObjectData.Position.y + (Flame.ObjectData.Size.Height * Flame.SpriteData.Scale * 0.5)
+			Flame.CollisionData.Position1.x = Flame.ObjectData.Position.x - Flame.ObjectData.Size.Width  * 0.5
+			Flame.CollisionData.Position1.y = Flame.ObjectData.Position.y - Flame.ObjectData.Size.Height * 0.5
+			Flame.CollisionData.Position2.x = Flame.ObjectData.Position.x + Flame.ObjectData.Size.Width  * 0.5
+			Flame.CollisionData.Position2.y = Flame.ObjectData.Position.y + Flame.ObjectData.Size.Height * 0.5
 			
 			TimeReset(Flame.ObjectData.MoveTimer,Now)
 			
