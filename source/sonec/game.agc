@@ -258,6 +258,8 @@ function GameDo(Game ref as TGame,Now as integer)
 	WalkerAnimateAll(Game.WalkerList,Game.ProtoWalker,Game.World,Now)
 	// Turret world positions are current; enemy bullets join the normal Bullet pipeline.
 	WalkerFireAll(Game.WalkerList,Game.ProtoWalker,Game.BulletList,Game.ProtoBullet,Game.FlashList,Game.ProtoFlash,Game.World,Now)
+	// Keep live Walker flashes on their barrels while platforms move vertically.
+	WalkerFlashFollowAll(Game.WalkerList,Game.FlashList,Game.World)
 	ChestMoveAll(Game.ChestList,Game.PlateList,Game.World)
 	ChestCheckAll(Game.ChestList,Game.ProtoChest)
 	PlateCheckAll(Game.PlateList,Game.ProtoPlate)
