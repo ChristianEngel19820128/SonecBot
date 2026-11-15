@@ -414,6 +414,8 @@ function PlateDebugDrawAll(PlateList ref as TPlateList,TowerList ref as TTowerLi
 		else
 			Data = "MOTION F2 | B: PIXEL SNAP | F4 switches | P: "+Str(Visible)+" | 60 frames"+Chr(10)
 		endif
+		// Renderer is queried live; sync text reports the startup command, NOT actual scanout.
+		Data = Data+"Renderer: "+GetRendererName()+" | Sync call: "+MotionDebugSyncRequest+Chr(10)
 		for i = 0 to PlateList.Plate.Length
 			if PlateList.Plate[i].Enabled = TRUE
 				if PlateList.Plate[i].SpriteData.Position.x <= GetVirtualWidth() and PlateList.Plate[i].SpriteData.Position.x + PlateList.Plate[i].ObjectData.Size.Width >= 0
