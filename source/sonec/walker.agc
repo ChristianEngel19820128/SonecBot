@@ -644,36 +644,27 @@ function WalkerAnimateAll(WalkerList ref as TWalkerList,ProtoWalker ref as TProt
 	
 endfunction
 
-// First weapon trial: use the existing bullet pool and tower pivot.
-// Angle conventions match Sonec's horizontal machine-gun fire (90 / 270).
-// We deliberately do not track Sonec or change torso/turret rotations here.
-// One horizontal projectile from the current turret pivot and direction.
-// This float origin is used for bullets and debug; flashes use Barrel[0].AnchorPosition.
+// Bullets and flashes both start at the first barrel's world-space Anchor.
+// The two barrels currently overlap. Keep horizontal fire angles (90 / 270)
+// and do not change Walker targeting, movement or turret rotations.
 function WalkerMuzzlePositionCalculate(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,Position ref as TPosition)
-	local Radius as float
 	local Angle as float
-	Position = Walker.WalkerObjectData.Tower.Position
+	Position = Walker.WalkerObjectData.Barrel[0].AnchorPosition
 	if Walker.State.LookAlignment = LOOKLEFT
 		Angle = 270
-		Radius = ProtoWalker.AnimLeft.Tower.Offset.y
 	else
 		Angle = 90
-		Radius = ProtoWalker.AnimRight.Tower.Offset.y
 	endif
-	CalcPosition(Position,Angle,Radius)
 endfunction Angle
 
 function WalkerFireShot(Walker ref as TWalker,WalkerIndex as integer,ProtoWalker ref as TProtoWalker,BulletList ref as TBulletList,ProtoBullet ref as TProtoBullet,FlashList ref as TFlashList,ProtoFlash ref as TProtoFlash,World ref as TWorld,Now as integer)
 	local MuzzlePosition as TPosition
-	local FlashPosition as TPosition
 	local FireAngle as float
 	local FlashIndex as integer
 	FireAngle = WalkerMuzzlePositionCalculate(Walker,ProtoWalker,MuzzlePosition)
 	BulletAdd(BulletList,ProtoBullet,World,MuzzlePosition,FireAngle,0.0,TYPEENEMY,Now)
-	// Use the first barrel's actual Anchor for the flash; the bullet stays at its old origin.
-	// Both barrel instances currently overlap, so the second muzzle can be used later.
-	FlashPosition = Walker.WalkerObjectData.Barrel[0].AnchorPosition
-	FlashIndex = FlashAdd(FlashList,ProtoFlash,World,0,WALKER_MUZZLE_FLASH_CYCLES,FlashPosition,FireAngle,0.0,Now)
+	// Both effects use the same origin; the flash stays attached to the moving barrel.
+	FlashIndex = FlashAdd(FlashList,ProtoFlash,World,0,WALKER_MUZZLE_FLASH_CYCLES,MuzzlePosition,FireAngle,0.0,Now)
 	if FlashIndex >= 0 then FlashList.Flash[FlashIndex].AttachedWalkerIndex = WalkerIndex
 endfunction
 
@@ -1197,8 +1188,9 @@ function WalkerSkeletonInit()
 	endif
 	if WalkerMuzzleOriginSprite = 0
 		WalkerMuzzleOriginSprite = CreateSprite(0)
-		SetSpriteSize(WalkerMuzzleOriginSprite,5,5)
-		SetSpriteOffset(WalkerMuzzleOriginSprite,2.5,2.5)
+		// Yellow outer marker remains visible behind nested blue/orange barrel markers.
+		SetSpriteSize(WalkerMuzzleOriginSprite,11,11)
+		SetSpriteOffset(WalkerMuzzleOriginSprite,5.5,5.5)
 		SetSpriteColor(WalkerMuzzleOriginSprite,255,240,0,255)
 	endif
 	// Two nested markers stay distinguishable even when both barrels coincide.
