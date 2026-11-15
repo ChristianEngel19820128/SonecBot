@@ -132,10 +132,12 @@ repeat
 		if GetKeyPressed(KEY_F1) = 1
 			WalkerDebugToggle()
 			PlateDebugEnabled = 0
+			MotionRenderSnapEnabled = 0
 		endif
 		if GetKeyPressed(KEY_F2) = 1
 			PlateDebugToggle()
 			WalkerDebugEnabled = 0
+			if PlateDebugEnabled = 0 then MotionRenderSnapEnabled = 0
 		endif
 		// Only while F2 is visible: compare unchanged float drawing to a snapped copy.
 		if GetKeyPressed(KEY_F4) = 1 and PlateDebugEnabled = 1
