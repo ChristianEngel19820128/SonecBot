@@ -105,8 +105,9 @@ function SonecInit(Sonec ref as TSonec,ProtoSonec ref as TProtoSonec,World ref a
 	Sonec.EnergyShield.DamageTrailEndMs = 0
 	Sonec.EnergyShield.StateChange = 1
 	
-	Sonec.Energy.StateMax = 3500
-	Sonec.Energy.State = 4500
+	Sonec.Energy.StateMax = 5250
+	// Start with the larger usable reserve, without immediate overload.
+	Sonec.Energy.State = Sonec.Energy.StateMax
 	Sonec.Energy.RegRate = 500
 	
 	TimeSet(Sonec.Energy.AttractTimer,15,1)

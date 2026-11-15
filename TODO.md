@@ -1,6 +1,6 @@
 # SonecBot – TODO und Meilensteine
 
-**Dokumentstatus:** Version 3.2  
+**Dokumentstatus:** Version 3.3  
 **Stand:** 15. November 2026  
 **Branch:** `develop`  
 **Ziel:** Kleine, überprüfbare Schritte zur spielbaren HTML5-Alpha
@@ -15,6 +15,8 @@
 - Neue technische Befunde gehören in `TECHNICAL.md`, grundlegende Projektentscheidungen in `PROJECT.md`.
 
 ## 1. Walker – aktueller Schwerpunkt
+
+- [x] **Sonec-Energiereserve für Tests erhöht (15. November 2026):** `SonecNew()`: `Energy.StateMax` von 3500 auf **5250 (+50 %)**; Startenergie von 4500 auf **5250 (= Maximum)**. Der alte Start lag bereits 1000 über dem damaligen Maximum und damit im Overload. Jetzt startet Sonec mit mehr nutzbarer Energie ohne anfänglichen Overload; die bestehende Overload-Prüfung greift oberhalb 5250. Kosten, Regeneration und Schadensformel unverändert. Statisch geprüft, AGK-Neustart-/HUD-/Overload-Test offen.
 
 ### Abgeschlossener IK-Meilenstein (13. November 2026)
 

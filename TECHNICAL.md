@@ -1,6 +1,6 @@
 # SonecBot – Technische Dokumentation
 
-**Dokumentstatus:** Bestandsaufnahme 3.2 (Walker-Zielvorbereitung mit 400 ms als Test, 15. November 2026)  
+**Dokumentstatus:** Bestandsaufnahme 3.3 (400-ms-Walker-Zielvorbereitung und größere Sonec-Energiereserve, 15. November 2026)  
 **Branch:** `develop`  
 **Engine:** AppGameKit Studio (AGK)  
 **Erste Zielplattform:** HTML5  
@@ -277,6 +277,8 @@ AGK bietet eigene Kollisionsfunktionen. Vor einem möglichen Einsatz muss unters
 
 ## 7a. Energieschild, Explosionen und HUD (November 2026)
 
+**Sonec-Energiereserve für Entwicklungstests (15. November 2026):** In `SonecNew()` steigt `Energy.StateMax` von 3500 auf 5250 (+50 %), `Energy.State` startet nun bei `Energy.StateMax` (5250 statt 4500). Der alte Startwert lag bereits über dem alten Maximum; der neue Start bietet mehr nutzbare Energie ohne anfängliche Überladung. `SonecHealthRegenerate()` erkennt Overload unverändert bei `State > StateMax`; die ganzzahlige Schadensberechnung `(State-StateMax)/100` und alle Kosten/Regenerationsraten bleiben unverändert. Das HUD verwendet weiterhin seine vorhandenen State-/StateMax-Werte. Kein neues Energiesystem oder Schild-Upgrade. **Statisch geprüft; neuen Spielstart, HUD, Energieverbrauch/-aufnahme und Overload oberhalb der neuen Schwelle lokal testen.**
+
 **Implementiert und vom Entwickler lokal geprüft:** Der Schild absorbiert bei voller Ladung bis zu 80 % des eintreffenden Explosionsschadens. Die Absorption sinkt proportional zur verbleibenden Ladung und verbraucht Schildenergie. Der Restschaden trifft Sonecs Gesundheit. Nach dem letzten registrierten Schaden pausiert die Schildregeneration 500 ms; der Entwickler hat bestätigt, dass der Schild während einer vollständig laufenden Explosion nicht vorzeitig regeneriert. Schildgröße und HUD-Ladung folgen der Animation. Das erneute Aktivieren während des Abbaus funktioniert im lokalen Test.
 
 **Rote HUD-Schadensspur:** Der blaue Schildbalken sinkt sofort; die rote Spur zeigt den verlorenen Ladungswert, nimmt über die Zeit bis null ab und berücksichtigt weitere Treffer. Die Grunddauer beträgt 1000 ms; jeder weitere Treffer addiert 1000 ms zur verbleibenden Dauer. Die Funktionsweise wurde vom Entwickler grundsätzlich getestet.
@@ -329,7 +331,7 @@ Der Vergleich mit Crystal Columns/Crystals erfolgte anhand von `main.agc`, `def_
 
 ## 12. Übergabe bei Chatlimit oder neuem Chat
 
-**Neuester Arbeitsschritt (15. November 2026, Dokumentstand 3.2; hat Vorrang vor älteren Prioritätsnotizen):** Gemeinsame Oberkörperneigung wurde vom Entwickler lokal bestätigt. Jetzt sichtbare Zielvorbereitung mit vorläufig 400 ms implementiert: Ziel einmal erfassen, gemeinsam neigen, erst dann Zwei-Schuss-Salve. Neuer FireState 3, bestehende 150-ms-/200-ms-Fristen und Zielparameter erhalten. Statisch/simuliert geprüft; AGK-Spieltest dieser Vorbereitung offen. Rückstellung weiterhin unmittelbar. Seitliches Turmschwenken bleibt separat.
+**Neuester Arbeitsschritt (15. November 2026, Dokumentstand 3.3; hat Vorrang vor älteren Prioritätsnotizen):** Gemeinsame Oberkörperneigung wurde vom Entwickler lokal bestätigt. Jetzt sichtbare Zielvorbereitung mit vorläufig 400 ms implementiert: Ziel einmal erfassen, gemeinsam neigen, erst dann Zwei-Schuss-Salve. Neuer FireState 3, bestehende 150-ms-/200-ms-Fristen und Zielparameter erhalten. Statisch/simuliert geprüft; AGK-Spieltest dieser Vorbereitung offen. Rückstellung weiterhin unmittelbar. Zusätzlich Sonec-Maximal-/Startenergie jetzt 5250; AGK-Test offen. Seitliches Turmschwenken bleibt separat.
 
 **Verlässlicher Startpunkt:** GitHub-Repository `ChristianEngel19820128/SonecBot`, Branch `develop`. Zuerst `AGENTS.md`, `PROJECT.md`, `TECHNICAL.md` und `TODO.md` lesen, anschließend den tatsächlichen Branch-HEAD und die betroffenen AGK-/JSON-Dateien **neu abfragen**. Dokumente können gegenüber neueren Commits veralten; immer Code und dokumentierten Teststatus abgleichen. Der dokumentierte Renderer-Code-Stand bleibt **`506b51f`** (`#renderer "Basic"`), Timer-Änderung **`d536043`** (`1000.0 / Span`, lokal unauffällig getestet), F2-Uhrendiagnose **`61840dc`** (lokal bestätigt), F5-Hochhaus-A/B bis **`1b95bb6`** (vom Entwickler visuell verglichen), Hochhaus-Standard B ab **`ae6f2d4`** (erneuter AGK-Test ausstehend); die tatsächlichen Dokumentationscommits und den Branch-HEAD immer neu prüfen; bitte stets den echten aktuellen Branch-HEAD prüfen.
 
