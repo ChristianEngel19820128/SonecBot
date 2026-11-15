@@ -74,6 +74,15 @@ function TowerNew(Tower ref as TTower,ProtoTower ref as TProtoTower,World ref as
 	local i as integer
 	
 	Tower.Enabled = TRUE
+	// Reset diagnostic fields when a pooled tower entry is created or reused.
+	Tower.DebugDeltaX = 0
+	Tower.DebugCalcRange = 0
+	Tower.DebugElapsedMs = 0
+	Tower.DebugUpdated = 0
+	Tower.DebugFrameMs = 0
+	Tower.DebugLastNow = Now
+	Tower.DebugHistoryCount = 0
+	Tower.DebugHistoryNext = 0
 	
 	TimeSet(Tower.ObjectData.MoveTimer,10,10)
 	TimeReset(Tower.ObjectData.MoveTimer,Now)
@@ -224,13 +233,25 @@ function TowerMove(Tower ref as TTower,World ref as TWorld,Now as integer)
 	local i as integer
 	
 	if Tower.Enabled = TRUE
+		// Capture the actual GameDo-frame time, even if the tower timer skips a step.
+		Tower.DebugFrameMs = Now - Tower.DebugLastNow
+		if Tower.DebugFrameMs < 0 then Tower.DebugFrameMs = 0
+		Tower.DebugLastNow = Now
+		Tower.DebugDeltaX = 0
+		Tower.DebugCalcRange = 0
+		Tower.DebugElapsedMs = 0
+		Tower.DebugUpdated = 0
 		if TimeGet(Tower.ObjectData.MoveTimer,Now) > 0
 			
 			x = Tower.ObjectData.Position.x
 			sx = Tower.ObjectData.MoveSpeed.x
 			r = Tower.ObjectData.MoveTimer.CalcRange
+			Tower.DebugCalcRange = r
+			Tower.DebugElapsedMs = Tower.ObjectData.MoveTimer.FullDifference
+			Tower.DebugUpdated = 1
 			
 			Tower.ObjectData.Position.x = x - sx*r
+			Tower.DebugDeltaX = Tower.ObjectData.Position.x - x
 			
 			for i = 0 to Tower.TowerPart.Length
 				Tower.TowerPart[i].ObjectData.Position.x = Tower.ObjectData.Position.x
@@ -240,6 +261,13 @@ function TowerMove(Tower ref as TTower,World ref as TWorld,Now as integer)
 			TimeReset(Tower.ObjectData.MoveTimer,Now)
 			
 		endif
+		// Store the last 60 GameDo frames, including frames without timer movement.
+		Tower.DebugHistoryDX[Tower.DebugHistoryNext] = Tower.DebugDeltaX
+		Tower.DebugHistoryFrameMs[Tower.DebugHistoryNext] = Tower.DebugFrameMs
+		Tower.DebugHistoryStep[Tower.DebugHistoryNext] = Tower.DebugUpdated
+		Tower.DebugHistoryNext = Tower.DebugHistoryNext + 1
+		if Tower.DebugHistoryNext >= 60 then Tower.DebugHistoryNext = 0
+		if Tower.DebugHistoryCount < 60 then Tower.DebugHistoryCount = Tower.DebugHistoryCount + 1
 	endif
 		
 endfunction
