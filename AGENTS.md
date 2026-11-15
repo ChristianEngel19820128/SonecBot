@@ -146,6 +146,8 @@ The following Markdown files form the intended shared project documentation:
 
 Some documents may not exist yet. Their absence does not authorize an agent to create them.
 
+**Keep relevant documentation current with every commit.** Update the important documents affected by the change in the same commit; do not touch every document routinely. Record implemented behavior, developer-reported tests, remaining uncertainties, provisional test/balancing values and the current next step. For a documentation-only commit, update only the relevant instructions or status entries. Chat handoffs depend on these files; do not defer necessary documentation to a later chat.
+
 Do not silently overwrite existing documentation or contradict established project decisions.
 
 When new findings conflict with documentation, report the discrepancy instead of independently deciding which source is correct.
