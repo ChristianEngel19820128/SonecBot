@@ -291,13 +291,19 @@ endfunction
 //----------------------------------------------------------------------
 
 function TowerPartDraw(TowerPart ref as TTowerPart,ProtoTower ref as TProtoTower)
+	local DrawData as TSpriteData
 	
+	// Keep every tower part's world and collision positions untouched.
+	DrawData = TowerPart.SpriteData
+	if MotionRenderSnapEnabled = 1
+		MotionRenderSnapPosition(DrawData.Position)
+	endif
 	select TowerPart.TowerType
 		case 0
-			SpriteDraw(ProtoTower.AnimSmallTower[TowerPart.TowerIndex].Sprite,TowerPart.SpriteData)
+			SpriteDraw(ProtoTower.AnimSmallTower[TowerPart.TowerIndex].Sprite,DrawData)
 		endcase
 		case 1
-			SpriteDraw(ProtoTower.AnimTower[TowerPart.TowerIndex].Sprite,TowerPart.SpriteData)
+			SpriteDraw(ProtoTower.AnimTower[TowerPart.TowerIndex].Sprite,DrawData)
 		endcase
 	endselect
 	
