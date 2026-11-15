@@ -57,18 +57,16 @@ endfunction
 function SpriteDraw(Sprite ref as TSprite,Data ref as TSpriteData)
 	
 	if Sprite.ID > 0
-		if Data.OffsetOn = TRUE
-			SetSpriteOffset(Sprite.ID,Data.Offset.x,Data.Offset.y)
-		else
-			SetSpriteOffset(Sprite.ID,GetSpriteWidth(Sprite.ID)/2,GetSpriteHeight(Sprite.ID)/2)
-		endif
 		if Sprite.Data.Scale <> Data.Scale
 			SetSpriteScaleByOffset(Sprite.ID,Data.Scale,Data.Scale)
-			if Data.OffsetOn = TRUE
-				SetSpriteOffset(Sprite.ID,Data.Offset.x*Data.Scale,Data.Offset.y*Data.Scale)
-			else
-				SetSpriteOffset(Sprite.ID,GetSpriteWidth(Sprite.ID)/2,GetSpriteHeight(Sprite.ID)/2)
-			endif
+		endif
+		// Always apply the final pivot after scaling. Otherwise an unchanged scale
+		// resets OffsetOn sprites to their unscaled pivot on the next draw.
+		if Data.OffsetOn = TRUE
+			SetSpriteOffset(Sprite.ID,Data.Offset.x*Data.Scale,Data.Offset.y*Data.Scale)
+		else
+			// Use float multiplication: AGK integer division may lose half pixels.
+			SetSpriteOffset(Sprite.ID,GetSpriteWidth(Sprite.ID)*0.5,GetSpriteHeight(Sprite.ID)*0.5)
 		endif
 		if Sprite.Data.Angle <> Data.Angle
 			SetSpriteAngle(Sprite.ID,Data.Angle)
