@@ -295,9 +295,15 @@ endfunction
 //----------------------------------------------------------------------
 
 function PlateDraw(Plate ref as TPlate,ProtoPlate ref as TProtoPlate)
+	local DrawData as TSpriteData
 	
 	if Plate.Enabled = TRUE
-		SpriteDraw(ProtoPlate.AnimPlate[Plate.ProtoIndex].Sprite,Plate.SpriteData)
+		// Never quantize the actual platform, only the data passed to SpriteDraw.
+		DrawData = Plate.SpriteData
+		if MotionRenderSnapEnabled = 1
+			MotionRenderSnapPosition(DrawData.Position)
+		endif
+		SpriteDraw(ProtoPlate.AnimPlate[Plate.ProtoIndex].Sprite,DrawData)
 	endif
 	
 endfunction
@@ -403,7 +409,11 @@ function PlateDebugDrawAll(PlateList ref as TPlateList,TowerList ref as TTowerLi
 		next i
 
 		Shown = 0
-		Data = "MOTION DEBUG (F2) | Platform: "+Str(Visible)+" | last 60 frames"+Chr(10)
+		if MotionRenderSnapEnabled = 0
+			Data = "MOTION F2 | A: FLOAT | F4 switches | P: "+Str(Visible)+" | 60 frames"+Chr(10)
+		else
+			Data = "MOTION F2 | B: PIXEL SNAP | F4 switches | P: "+Str(Visible)+" | 60 frames"+Chr(10)
+		endif
 		for i = 0 to PlateList.Plate.Length
 			if PlateList.Plate[i].Enabled = TRUE
 				if PlateList.Plate[i].SpriteData.Position.x <= GetVirtualWidth() and PlateList.Plate[i].SpriteData.Position.x + PlateList.Plate[i].ObjectData.Size.Width >= 0
