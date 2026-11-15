@@ -520,7 +520,8 @@ function PlateDebugDrawAll(PlateList ref as TPlateList,TowerList ref as TTowerLi
 			SetTextSize(PlateDebugHudText,8)
 		endif
 		PosX = GetVirtualWidth()-GetTextTotalWidth(PlateDebugHudText)-12
-		PosY = GetVirtualHeight()-GetTextTotalHeight(PlateDebugHudText)-12
+		// F1 and F2 are exclusive: share the upper-right screen area.
+		PosY = 12
 		if PosX < 4 then PosX = 4
 		if PosY < 4 then PosY = 4
 		SetTextPosition(PlateDebugHudText,PosX,PosY)
