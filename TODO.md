@@ -1,6 +1,6 @@
 # SonecBot – TODO und Meilensteine
 
-**Dokumentstatus:** Version 1.0  
+**Dokumentstatus:** Version 1.1  
 **Stand:** 15. November 2026  
 **Branch:** `develop`  
 **Ziel:** Kleine, überprüfbare Schritte zur spielbaren HTML5-Alpha
@@ -78,8 +78,8 @@
 
 ### Plattformen – aktueller Diagnose-Schwerpunkt (15. November 2026)
 
-- [ ] **Gelegentliches Links-Ruckeln reproduzierbar messen:** Der Entwickler beobachtet unregelmäßige Sprünge an einigen nach links fahrenden Plattformen. Ursache bislang unbekannt; `PlateMove()` nutzt `MoveTimer.CalcRange` bei 10-ms-Timer und Float-Positionen. F1-Diagnose für aktive Plattformen um X/Y-Weltposition, tatsächliches X/Y-Bewegungsdelta und `CalcRange` erweitern – zuerst nur **beobachten**, keine Bewegungs-/Timeränderung.
-- [ ] **Anschließend lokal vergleichen:** Stotternde und flüssige Plattform, ggf. mit Walker/Kiste, bei aktivem und deaktiviertem F1 sowie im Pause-Zustand prüfen. Trennung zwischen sprunghaften Weltkoordinaten und reiner Pixel-/Renderwirkung herstellen.
+- [x] **F1-Plattformmessung implementiert (noch nicht lokal getestet):** Bei manchen nach links fahrenden Plattformen berichtet der Entwickler gelegentliches Ruckeln. `PlateMove()` nutzt `MoveTimer.CalcRange` bei 10-ms-Timer. Auf `develop` wurden Messfelder für `dX/dY`, `CalcRange`, `dt` und `Step` ergänzt; F1 zeigt unten rechts bis zu drei sichtbare Plattformen mit X/Y und `P#`-Marker (`56df895`, `58f20d5`, `bf6ecf5`). **Die Bewegungsgleichung ist unverändert.**
+- [ ] **Nächster lokaler Test:** AGK-Kompilierung der neuen Plattform-F1-Anzeige, anschließend stotternde/flüssige Plattform und ggf. Walker/Kiste vergleichen; `P#`, X/Y, `dX/dY`, `CalcRange`, `dt`, `Step` bei F1 ein/aus sowie Pause erfassen. Weltkoordinatensprung und Pixel-/Renderwirkung voneinander unterscheiden.
 - [ ] **Nur bei bestätigtem Befund:** Timing, `TimeSet()` und Pixelraster in separaten kleinen Testcommits untersuchen; VSync- oder Geschwindigkeitsänderungen nicht vorwegnehmen.
 
 ## 2. HTML5-Alpha – hohe Priorität
@@ -131,6 +131,6 @@
 - [ ] Vor der HTML5-Alpha offene Anforderungen und tatsächlichen Teststatus der Kernsysteme erneut abgleichen.
 - [x] **Wiederlesbare Übergabe im Repository eingerichtet:** `TECHNICAL.md` enthält einen Abschnitt „Übergabe bei Chatlimit oder neuem Chat“ mit Branch-/Commit-Startpunkt, lokal getesteten Befunden, offenen Fragen, AGK-Besonderheiten, Arbeitsregeln und einer Startformulierung. Vor jedem weiteren Chatwechsel die Dateien und den HEAD **erneut** aktualisieren und vergleichen; automatische Kontextübernahme nicht voraussetzen.
 
-**Aktueller Übergabestand (vor Plattform-Diagnose):** `develop` / `48ce0dd`. Nach jedem weiteren Commit den Branch-HEAD neu prüfen. Bitte auch `TECHNICAL.md`, Abschnitt 12, lesen.
+**Aktueller Code-Übergabestand:** Plattform-F1-Instrumentierung bis `bf6ecf5` (lokaler Test steht aus). Nach jedem weiteren Commit den Branch-HEAD neu prüfen. Bitte auch `TECHNICAL.md`, Abschnitt 12, lesen.
 
 **Walker-Referenzstände:** Corpus-/Turmanbindung `deb8b74`; getrennte Fußziele `760c8c3`; angepasste Gangphase `20eced3`; Wendeverhalten `810d342`; einheitliche Geschwindigkeit `20b2d7d`; Fußhöhe 8 px `328c5e0`; Debug-Anzeigen aus `c6d47e6` (jeweils auf `develop`). Der Entwickler hat das lokale Gangbild als alpha-tauglich bewertet; ein eigener AGK-Build des Assistenten und ein HTML5-Praxistest stehen aus.
