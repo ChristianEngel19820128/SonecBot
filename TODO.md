@@ -1,6 +1,6 @@
 # SonecBot – TODO und Meilensteine
 
-**Dokumentstatus:** Version 1.8  
+**Dokumentstatus:** Version 1.9  
 **Stand:** 15. November 2026  
 **Branch:** `develop`  
 **Ziel:** Kleine, überprüfbare Schritte zur spielbaren HTML5-Alpha
@@ -85,7 +85,9 @@
 - [x] **F2-Renderer-/Sync-Diagnose lokal bestätigt (15. November):** F2 zeigt auf dem Windows-Testsystem mit AMD RX 6600 XT `Renderer: Vulkan` und `Sync call: SetVSync(1) requested` (`431a1ff`, `f79821f`). Das bestätigt den Renderer und die API-Anforderung, **nicht** eine tatsächliche Tearing-freie Präsentation. Beide 60-Frame-Statistiken zeigten `Steps 60/60`; maximale Framezeit im Screenshot 26 ms.
 - [x] **OpenGL/Vulkan-Test lokal durchgeführt:** Der Entwickler hat bei 59,94/60 Hz und 75 Hz jeweils OpenGL (`#renderer "Basic"`) und Vulkan (`"Advanced"`) mit `SetVSync(1)` verglichen; `"Prefer Best"` meldet Vulkan. **OpenGL war auf dem RX-6600-XT/Lenovo-T24t-20-Testsystem ruhiger:** 75 Hz fast kein Ruckeln/Tearing, 60 Hz kein Tearing und nur wenig Plattformruckeln; Vulkan mit sichtbaren Auffälligkeiten, besonders bei 60 Hz, trotz meist 60/60 Bewegungsschritten. Das ist ein lokaler Testbefund, keine universelle Renderer-Empfehlung.
 - [x] **Windows-Renderer vorläufig ausgewählt:** `Basic` (OpenGL) wird als Windows-Entwicklungsreferenz beibehalten; `main.agc` enthält bereits `#renderer "Basic"` (`506b51f`). Die zuvor geforderte Rückstellung auf `"Prefer Best"` ist nach dem Vergleich nicht mehr unsere vorläufige Entscheidung. **Finale Freigabe** erst nach Tests anderer GPU-/Windows-Konfigurationen und HTML5; `F4`-Pixel-Snap bleibt ein gesondertes, optionales Diagnosetool.
-- [ ] **Int-/Float-Divisionen gezielt prüfen:** Statische Prüfung der 36 aktiven `.agc`-Module: `sprite.agc`-Halbierungen sind bereits `*0.5`; `timer.agc` nutzt noch `1000 / Span` (Crystals `1000.0/Span`); `main.agc`/`intro.agc` halbieren gerade virtuelle Maße, derzeit unkritisch; `plasmablitz.agc` nutzt `LifeCycleMax/2` möglicherweise absichtlich ganzzahlig. Weitere Divisionen in `sonec.agc`, `shield.agc`, `energie.agc`, `tower.agc` und `gui.agc` auf tatsächlich erforderliche Float-Präzision prüfen. **Keine globale Suchen/Ersetzen-Aktion:** Absichtlich diskrete Zustände beibehalten; nach Einzelprüfung und Freigabe kleine Commits. VSync- und Bewegungsphysik nicht gleichzeitig ändern.
+- [x] **Timer-Multiplikator auf Float geändert (`d536043`):** In `source/sonec/timer.agc` ausschließlich `1000 / Span` → `1000.0 / Span` geändert, analog Crystals. Keine Timer-Auslöse-, Reset- oder Bewegungsformel verändert. **Noch nicht in AGK kompiliert/getestet.**
+- [ ] **Nächster lokaler Timer-Test:** Mit `Basic` (OpenGL) und bisherigem VSync die 10-ms-Plattformen/Hochhäuser, Sonecs Animationen sowie 60-/75-ms-ähnliche Effektintervalle visuell prüfen; F2 bei Bewegung aufrufen. Bei ungewöhnlichem Verhalten den einzelnen Timer-Commit isoliert vergleichen. Änderung von `TimeReset()`/Frame-Pacing erst nach gesonderter Untersuchung.
+- [ ] **Weitere Int-/Float-Divisionen gezielt prüfen:** `sprite.agc`-Halbierungen bereits `*0.5`; `main.agc`/`intro.agc` halbieren gerade virtuelle Maße, derzeit unkritisch; `plasmablitz.agc` nutzt `LifeCycleMax/2` möglicherweise absichtlich ganzzahlig. Weitere Divisionen in `sonec.agc`, `shield.agc`, `energie.agc`, `tower.agc` und `gui.agc` auf wirklich benötigte Nachkommagenauigkeit prüfen. Keine globale Suchen/Ersetzen-Aktion, absichtlich diskrete Zustände beibehalten.
 
 ## 2. HTML5-Alpha – hohe Priorität
 
@@ -125,6 +127,9 @@
 
 - [ ] **Crystal Columns / Crystals 1.1 – Renderer prüfen (projektübergreifende Erinnerung):** Bei Entwicklung und Erstellung der 1.1-Builds den tatsächlichen AGK-Renderer im Windows-Build prüfen, statt OpenGL pauschal anzunehmen. AGK Studio kann bei automatischer Auswahl Vulkan verwenden; bei Bedarf isoliertes `#renderer "Basic"` (OpenGL) / `"Advanced"` (Vulkan) / `"Prefer Best"` (automatisch) vergleichen. Aktuelle und frühere Columns-Renderer **nicht** ohne Test behaupten. `Crystals/AGENTS.md` verlangt für jede Repository-Änderung eine separate Freigabe; daher hier nur Vermerk, **keine Änderung im Crystals-Repository**.
 
+- [ ] **Eigenständige AGK Knowledge Base später planen:** Erfahrungen aus SonecBot und Crystal Columns sowie nach gesonderter Sichtung Subspace/Blizz/Clone projektübergreifend mit Plattform, AGK-Version, Quellreferenz, Testmethode und Erkenntnisstatus festhalten. Die an BlitzBasic angelehnte Eigenarchitektur (eigene Sprite-/Physiklogik) als Gültigkeitsgrenze dokumentieren. Noch kein Name/Repository beschlossen, keine Änderungen in anderen Projekten.
+- [ ] **HTML5-Optionsspeicherung plattformübergreifend konzipieren:** Als Referenz dient `Crystals/source/crystals/highscore_html.agc` mit `SaveSharedVariable()`/`LoadSharedVariable()` für HTML5 und `highscore_windows.agc` für Dateispeicherung. Separate Optionsschlüssel, Defaults, Versionierung, Speicherfehler, Browser-/itch.io-Einbettung und Cookies/Browser-Löschung prüfen, bevor Optionen implementiert werden.
+
 ## 5. Dokumentation und Nachvollziehbarkeit
 
 - [x] `PROJECT.md` auf Version 0.6 mit dem alpha-tauglichen Walker-Gangbild aktualisieren.
@@ -139,6 +144,6 @@
 - [ ] Vor der HTML5-Alpha offene Anforderungen und tatsächlichen Teststatus der Kernsysteme erneut abgleichen.
 - [x] **Wiederlesbare Übergabe im Repository eingerichtet:** `TECHNICAL.md` enthält einen Abschnitt „Übergabe bei Chatlimit oder neuem Chat“ mit Branch-/Commit-Startpunkt, lokal getesteten Befunden, offenen Fragen, AGK-Besonderheiten, Arbeitsregeln und einer Startformulierung. Vor jedem weiteren Chatwechsel die Dateien und den HEAD **erneut** aktualisieren und vergleichen; automatische Kontextübernahme nicht voraussetzen.
 
-**Aktueller Renderer-Code-Stand:** `506b51f` setzt `#renderer "Basic"`, lokal gegen Vulkan/Prefer Best geprüft und für Windows vorläufig bevorzugt. Eine Rückstellung auf `"Prefer Best"` ist **nicht** mehr automatisch vorgesehen. Der nächste Arbeitsblock ist die gezielte Int-/Float-Divisionsprüfung; immer den tatsächlichen Branch-HEAD erneut abfragen. Details in `TECHNICAL.md`, Abschnitt 12.
+**Aktueller Renderer-Code-Stand:** `506b51f` setzt `#renderer "Basic"`, lokal gegen Vulkan/Prefer Best geprüft und für Windows vorläufig bevorzugt. Eine Rückstellung auf `"Prefer Best"` ist **nicht** mehr automatisch vorgesehen. Die isolierte Timer-Änderung `d536043` ist eingecheckt, aber noch nicht lokal geprüft; danach weitere Divisionen semantisch bewerten. Immer den tatsächlichen Branch-HEAD erneut abfragen. Details in `TECHNICAL.md`, Abschnitt 12.
 
 **Walker-Referenzstände:** Corpus-/Turmanbindung `deb8b74`; getrennte Fußziele `760c8c3`; angepasste Gangphase `20eced3`; Wendeverhalten `810d342`; einheitliche Geschwindigkeit `20b2d7d`; Fußhöhe 8 px `328c5e0`; Debug-Anzeigen aus `c6d47e6` (jeweils auf `develop`). Der Entwickler hat das lokale Gangbild als alpha-tauglich bewertet; ein eigener AGK-Build des Assistenten und ein HTML5-Praxistest stehen aus.
