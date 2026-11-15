@@ -39,6 +39,8 @@ endfunction
 function FlashNew(Flash ref as TFlash,ProtoFlash ref as TProtoFlash,World ref as TWorld,FlashType as integer,FlashCycleMax as integer,Position as TPosition,Angle as float,Radius as float,Now)
 
 	Flash.Enabled = TRUE
+	// Pool entries may be reused; only Walker shots claim a Walker index.
+	Flash.AttachedWalkerIndex = -1
 	
 	Flash.FlashAnimIndex = FlashType
 	// Initialize lifetime before computing the initial sprite scale (new pool objects start at zero).
@@ -143,7 +145,8 @@ endfunction
 function FlashRefresh(FlashList ref as TFlashList,World ref as TWorld,FlashIndex as integer,Position as TPosition,Angle as float)
 	
 	if FlashIndex >= 0 and FlashIndex <= FlashList.Flash.Length
-		if FlashList.Flash[FlashIndex].Enabled = TRUE
+		// Sonec calls FlashRefresh; do not redirect a Walker-owned pooled flash.
+		if FlashList.Flash[FlashIndex].Enabled = TRUE and FlashList.Flash[FlashIndex].AttachedWalkerIndex < 0
 			FlashList.Flash[FlashIndex].ObjectData.Position = Position
 			FlashList.Flash[FlashIndex].ObjectData.Angle = Angle			
 			CalcPosition(FlashList.Flash[FlashIndex].ObjectData.Position,Angle,FlashList.Flash[FlashIndex].ObjectData.Radius)
