@@ -1,6 +1,6 @@
 # SonecBot – TODO und Meilensteine
 
-**Dokumentstatus:** Version 1.2  
+**Dokumentstatus:** Version 1.3  
 **Stand:** 15. November 2026  
 **Branch:** `develop`  
 **Ziel:** Kleine, überprüfbare Schritte zur spielbaren HTML5-Alpha
@@ -79,7 +79,9 @@
 ### Plattformen – aktueller Diagnose-Schwerpunkt (15. November 2026)
 
 - [x] **Plattform-Messung erweitert:** Erster F1-Plattformscreenshot (vom Entwickler geprüft) zeigte 3 Plattformen mit 17 ms und `CalcRange=17`, aber nur einen Standbild-Moment. Aktueller F2-Code: bis zu drei sichtbare Plattformen mit `P#`, X/Y, dX, Timer-`dt`/`CalcRange`/Step und eine 60-Frame-Historie für dX sowie Game-Frame-ms mit Min/Avg/Max und Step-Zählung (`e3aa594`, `05fac96`, `57d6044`). **F2-Version noch nicht lokal getestet.** Bewegungsgleichungen unverändert.
-- [ ] **Nächster lokaler Test:** In AGK F1/F2 umschalten und Pause prüfen; mit F2 eine links ruckelnde und eine ruhig fahrende Plattform vergleichen. Die 60-Frame-Statistik (dX-Min/Avg/Max, Frame-ms-Min/Avg/Max, Steps/Frames) per Screenshot sichern und beobachten, ob Aussetzer/Zeitsprünge auffallen. Keine Bewegungskorrektur ohne klaren Befund.
+- [x] **F2-Plattform-Erstprobe durchgeführt:** Entwickler-Screenshot mit 60/60 Schritten, Framezeit 15–19 ms und dX −1,653 bis −1,305 bei links fahrender Plattform; trotz mathematisch plausibler Schritte gelegentliches Ruckeln beobachtet. Ein vergleichbarer Effekt tritt auch bei Hochhäusern auf. Die Ursache bleibt offen; Tearing ist nicht nachgewiesen.
+- [x] **F2-Plattform-/Hochhaus-Vergleich im Code ergänzt:** Hochhäuser erhalten ebenfalls 60-Frame-dX-/Framezeit-/Step-Historie; F2 zeigt jetzt jeweils **eine sichtbare Plattform (P#)** und **ein sichtbares Hochhaus (T#)** mit vergleichbaren Werten (`a12dad5`, `cc1a34a`, `11529af`, `8ffebcf`). Keine Änderung an Bewegung, Timer, VSync oder Auflösung. **Neuer Vergleichsbildschirm noch nicht lokal getestet.**
+- [ ] **Nächster lokaler Test:** AGK kompilieren, F2 bei gleichzeitig sichtbarer Plattform und Hochhaus aufrufen, beide Messreihen bei Bewegung und Pause fotografieren. Entscheidend: Zeigen beide Aussetzer oder ausschließlich sichtbare Raster-/Darstellungsstufen? Darauf aufbauend isolierten A/B-Test planen.
 - [ ] **Timer-Float-Vergleich:** Crystals/`source/crystals/timer.agc` nutzt `1000.0/Span`, SonecBot/`source/sonec/timer.agc` noch `1000 / Span`. Der Entwickler hat ungenaue Integer-Divisionen in AGK praktisch beobachtet. Prüfen, wo nichtganzzahlige Timer-Spans auftreten und ob Float-Operationen erforderlich sind; **separater, gezielter Commit nach Diagnose**, keine ungeprüfte Übernahme von Crystals. VSync-/Geschwindigkeitsänderungen nicht vorwegnehmen.
 
 ## 2. HTML5-Alpha – hohe Priorität
@@ -131,6 +133,6 @@
 - [ ] Vor der HTML5-Alpha offene Anforderungen und tatsächlichen Teststatus der Kernsysteme erneut abgleichen.
 - [x] **Wiederlesbare Übergabe im Repository eingerichtet:** `TECHNICAL.md` enthält einen Abschnitt „Übergabe bei Chatlimit oder neuem Chat“ mit Branch-/Commit-Startpunkt, lokal getesteten Befunden, offenen Fragen, AGK-Besonderheiten, Arbeitsregeln und einer Startformulierung. Vor jedem weiteren Chatwechsel die Dateien und den HEAD **erneut** aktualisieren und vergleichen; automatische Kontextübernahme nicht voraussetzen.
 
-**Aktueller Code-Übergabestand:** F1/F2-Diagnose mit 60-Frame-Historie bis `49145a1` (neue F2-Version noch nicht lokal getestet). Nach jedem weiteren Commit den Branch-HEAD neu prüfen. Bitte auch `TECHNICAL.md`, Abschnitt 12, lesen.
+**Aktueller Code-Übergabestand:** F2-Plattform-/Hochhaus-Vergleich bis `8ffebcf` (neuer Hochhausvergleich noch nicht lokal getestet; Plattformprobe mit 60/60 Schritten dokumentiert). Nach jedem weiteren Commit den Branch-HEAD neu prüfen. Bitte auch `TECHNICAL.md`, Abschnitt 12, lesen.
 
 **Walker-Referenzstände:** Corpus-/Turmanbindung `deb8b74`; getrennte Fußziele `760c8c3`; angepasste Gangphase `20eced3`; Wendeverhalten `810d342`; einheitliche Geschwindigkeit `20b2d7d`; Fußhöhe 8 px `328c5e0`; Debug-Anzeigen aus `c6d47e6` (jeweils auf `develop`). Der Entwickler hat das lokale Gangbild als alpha-tauglich bewertet; ein eigener AGK-Build des Assistenten und ein HTML5-Praxistest stehen aus.
