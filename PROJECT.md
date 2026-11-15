@@ -1,6 +1,6 @@
 # SonecBot – Projektübersicht
 
-**Dokumentstatus:** Version 0.6  
+**Dokumentstatus:** Version 0.7  
 **Projektstatus:** In Entwicklung  
 **Engine:** AppGameKit Studio (AGK)  
 **Aktiver Entwicklungszweig:** `develop`  
@@ -137,7 +137,7 @@ Für die aktuelle AGK-Version sind schwere Maschinengewehre als Bewaffnung vorge
 
 **Meilenstein: Alpha-taugliche Laufanimation.** Aufbauend auf der erfolgreichen 2-Knochen-IK und korrekten Corpus-/Turmanbindung (Referenz-Commit `deb8b74`, 13. November) wurden die getrennten Fußziele, der Wechsel zwischen Stand- und Schwungbein, die sanfte Rückkehr zur Standpose und das kontrollierte Umdrehen an Plattformkanten umgesetzt. Die Walker laufen jetzt mit einer einheitlichen Testgeschwindigkeit von `0.05`. Die Fußgelenke werden für eine optisch stimmige Auflage um 8 px über die Plattformoberkante gesetzt. Der Standpose-Test sowie die weißen Skelett-, Gelenk- und Winkelanzeigen sind deaktiviert, bleiben im Code aber zuschaltbar. Der Entwickler hat Stand und Gangbild mit Screenshots und kurzen Videos lokal geprüft und die Laufanimation als **für die Alpha ausreichend** bewertet. Das bedeutet nicht, dass ein HTML5-Test oder eine abschließende Prüfung aller Randfälle bereits erfolgt ist.
 
-**Nächster Schritt: Walker-Bewaffnung.** Zielerfassung, kontrollierte Ausrichtung und eigene Schüsse sollen schrittweise über die vorhandene Projektilarchitektur ergänzt werden. Eine begrenzte Torso-/Turm-Neigung beim Zielen ist als spätere Erweiterung denkbar; die funktionierende Bein-IK und die Anschlüsse bleiben dabei Referenz. Kisten als eigene Umkehrpunkte und eine zusätzliche Corpus-Trefferzone sind noch zu prüfen.
+**Walker-Bewaffnung (lokaler Stand 15. November 2026):** Die horizontale Zwei-Schuss-Salve ist integriert. Bullet und Mündungsfeuer starten seit `48ce0dd` am gemeinsamen Barrel-Anchor; die linke/rechte Rohrgrafik und die beiden Flash-Positionen wurden schrittweise justiert und in lokalen Screenshots vom Entwickler als passend bewertet. Das Mündungsfeuer folgt auch bei Plattformbewegung dem Walker. Die F1-Diagnose zeigt die relevanten IK-/Waffenpositionen in einer rechts oben verankerten Anzeige. **Die Spielmechanik gilt damit nicht als vollständig abgenommen:** Feuerzustände, alle Kollisionsregeln und HTML5-Randfälle sind weiter zu testen. Zielerfassung, diagonale Schüsse und begrenzte Torso-/Turm-Neigung bleiben spätere Erweiterungen; die funktionierende Bein-IK und die Anschlüsse sind dabei Referenz. Kisten als eigene Umkehrpunkte und eine zusätzliche Corpus-Trefferzone sind noch zu prüfen.
 
 **Grafisches Polishing – bewusst nachrangig:** Die Bein-Grafiken könnten bei Bedarf etwas schlanker werden oder feinere Gelenk-, Kontur- und Lichtdetails erhalten. Die aktuelle kräftige, eigenständige Walker-Silhouette ist für die Alpha akzeptiert; Änderungen an den Originalgrafiken sind nicht Voraussetzung für die Bewaffnung. Ein Keyframe-Werkzeug wie Spriter bleibt optional für besondere Animationen (z. B. Knien, Aufstehen oder Zerstörung).
 
@@ -245,7 +245,7 @@ Das Projekt wird in kleinen, überschaubaren Schritten entwickelt.
 4. Änderungen einzeln planen und freigeben.
 5. Keine ungefragten Refaktorierungen.
 6. Nachvollziehbare Commits verwenden.
-7. Erkenntnisse dokumentieren.
+7. Erkenntnisse dokumentieren; bei Chatwechsel `AGENTS.md`, `PROJECT.md`, `TECHNICAL.md` und `TODO.md` sowie den GitHub-HEAD als wiederlesbare Übergabe verwenden.
 
 Die Entwicklung erfolgt im Branch `develop`.
 
@@ -271,4 +271,4 @@ Unbestätigte Annahmen dürfen nicht als gesicherte Eigenschaften des Spiels dar
 - Mögliche Aufgaben und Missionen
 - Späteres Veröffentlichungs- und Versionsschema
 
-**Nächster Meilenstein:** Walker-Bewaffnung auf Basis des vorhandenen Bullet-Systems in kleinen Schritten implementieren und lokal testen. Danach HTML5-Build und Gamepad-Steuerung praktisch prüfen sowie die verbleibenden Alpha-Anforderungen priorisieren. Die aktuelle Walker-Laufanimation gilt als alpha-tauglicher Referenzstand; grafische Verfeinerungen bleiben optional.
+**Nächster Meilenstein:** Gelegentliches Ruckeln horizontal nach links fahrender Plattformen mit F1-Messdaten eingrenzen; anschließend die Walker-Schüsse und Plattformbindung in Randfällen weiter testen. Danach HTML5-Build und Gamepad-Steuerung praktisch prüfen sowie die verbleibenden Alpha-Anforderungen priorisieren. Die aktuelle Walker-Laufanimation gilt als alpha-tauglicher Referenzstand; grafische Verfeinerungen bleiben optional.
