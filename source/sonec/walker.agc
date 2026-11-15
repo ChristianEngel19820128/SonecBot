@@ -1,9 +1,8 @@
 
 // Walker gun: acquire an imperfect aim once per burst; no continuous tracking.
 #constant WALKER_TEST_FIRE 1
-// Target-acquisition trial. 0 restores the previous fixed diagonal test.
+// Target-acquisition trial. 0 uses the horizontal fallback unless diagonal debug is enabled.
 #constant WALKER_TARGET_AIM_TEST 1
-#constant WALKER_AIM_CORPUS_LEAN_FACTOR 0.25
 #constant WALKER_AIM_MAX_TILT 30.0
 #constant WALKER_AIM_INITIAL_ERROR 14.0
 #constant WALKER_AIM_MIN_ERROR 5.0
@@ -733,8 +732,8 @@ function WalkerAnimate(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,Wor
 		Walker.WalkerObjectData.Barrel[1].Rotation  = ProtoWalker.AnimRight.Barrel.Rotation+90
 	endif
 	
-	// Turret and barrels rotate through the full saved aim deviation.
-	// Corpus receives only a reduced lean below; legs/IK remain unchanged.
+	// Corpus, turret and barrels share the saved aim deviation as one rigid
+	// assembly. Their existing attachment points carry the tilt around the hip.
 	if Walker.AimActive = TRUE
 		if Walker.State.LookAlignment = LOOKLEFT
 			AimOffset = Walker.AimAngle - 270.0
@@ -751,10 +750,10 @@ function WalkerAnimate(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,Wor
 	else
 		Walker.WalkerObjectData.Corpus.Rotation = ProtoWalker.AnimRight.Corpus.Rotation+90
 	endif
-	// The Corpus leans gently around the fixed IK hip. The turret still aims
-	// independently at the complete stored angle; legs keep their existing IK.
+	// Apply the same full tilt to the Corpus so the turret cannot hinge open.
+	// WalkerPartsCalculate carries the turret/muzzle with it; legs/IK stay fixed.
 	if Walker.AimActive = TRUE
-		Walker.WalkerObjectData.Corpus.Rotation = Walker.WalkerObjectData.Corpus.Rotation + AimOffset*WALKER_AIM_CORPUS_LEAN_FACTOR
+		Walker.WalkerObjectData.Corpus.Rotation = Walker.WalkerObjectData.Corpus.Rotation + AimOffset
 	endif
 
 	WalkerPartsCalculate(Walker,ProtoWalker,World)
@@ -939,7 +938,7 @@ function WalkerFireAll(WalkerList ref as TWalkerList,ProtoWalker ref as TProtoWa
 							if WalkerList.Walker[i].WalkerObjectData.Tower.Position.x >= 0 and WalkerList.Walker[i].WalkerObjectData.Tower.Position.x <= World.Size.Width
 							if TimeGet(WalkerList.Walker[i].FireTimer,Now) > 0
 								WalkerAcquireBurstAim(WalkerList.Walker[i],Sonec,VisionDistance)
-								// Align the turret and both barrel anchors before the first shot.
+								// Tilt the complete upper body and refresh both barrel anchors before firing.
 								if WalkerList.Walker[i].AimActive = TRUE then WalkerAnimate(WalkerList.Walker[i],ProtoWalker,World,Now)
 								WalkerFireShot(WalkerList.Walker[i],i,ProtoWalker,BulletList,ProtoBullet,FlashList,ProtoFlash,World,Now)
 								WalkerList.Walker[i].FireState = 1
