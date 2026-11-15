@@ -1,8 +1,16 @@
 
-// Walker gun trial: predictable horizontal shots without targeting or torso tilt.
+// Walker gun: acquire an imperfect aim once per burst; no continuous tracking.
 #constant WALKER_TEST_FIRE 1
-// Reversible trajectory experiment: 0 keeps the former horizontal burst.
-// 1 fires first 15 degrees up, then 15 degrees down, relative to facing.
+// Target-acquisition trial. 0 restores the previous fixed diagonal test.
+#constant WALKER_TARGET_AIM_TEST 1
+#constant WALKER_AIM_MAX_DISTANCE 500.0
+#constant WALKER_AIM_MAX_TILT 30.0
+#constant WALKER_AIM_INITIAL_ERROR 14.0
+#constant WALKER_AIM_MIN_ERROR 5.0
+#constant WALKER_AIM_IMPROVEMENT 2.0
+#constant WALKER_AIM_MAX_SALVOS 5
+// Reversible legacy trajectory test when target acquisition is disabled/misses.
+// 0 gives the original 90/270 degree horizontal burst.
 #constant WALKER_DIAGONAL_TEST_FIRE 1
 #constant WALKER_DIAGONAL_TEST_ANGLE 15.0
 #constant WALKER_FIRE_INTERVAL_MS 1800
@@ -371,6 +379,9 @@ function WalkerNew(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,World r
 	TimeReset(Walker.FireTimer,Now)
 	Walker.FireState = 0
 	Walker.FireStateUntilMs = 0
+	Walker.AimAngle = 0
+	Walker.AimActive = FALSE
+	Walker.AimSalvos = 0
 	
 	// Fixed slower test pace: compare foot contact and turns at a consistent speed.
 	Walker.ObjectData.MoveSpeed.x = 0.05
@@ -721,6 +732,20 @@ function WalkerAnimate(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,Wor
 		Walker.WalkerObjectData.Barrel[1].Rotation  = ProtoWalker.AnimRight.Barrel.Rotation+90
 	endif
 	
+	// Only the turret and barrel rotate around their existing shared pivot.
+	// Frozen for both burst shots; leg IK and Corpus remain unchanged.
+	if Walker.AimActive = TRUE
+		local AimOffset as float
+		if Walker.State.LookAlignment = LOOKLEFT
+			AimOffset = Walker.AimAngle - 270.0
+		else
+			AimOffset = Walker.AimAngle - 90.0
+		endif
+		Walker.WalkerObjectData.Tower.Rotation = Walker.WalkerObjectData.Tower.Rotation + AimOffset
+		Walker.WalkerObjectData.Barrel[0].Rotation = Walker.WalkerObjectData.Barrel[0].Rotation + AimOffset
+		Walker.WalkerObjectData.Barrel[1].Rotation = Walker.WalkerObjectData.Barrel[1].Rotation + AimOffset
+	endif
+
 	if Walker.State.Alignment = MOVELEFT
 		Walker.WalkerObjectData.Corpus.Rotation = ProtoWalker.AnimLeft.Corpus.Rotation-90
 	else
@@ -785,12 +810,63 @@ function WalkerAnimateAll(WalkerList ref as TWalkerList,ProtoWalker ref as TProt
 	
 endfunction
 
+// Lock a single imperfect direction at the start of the burst.
+// Scan only the forward half-plane, never track Sonec during the second shot.
+// A new Walker starts at +/-14 degrees and improves to a minimum +/-5 degrees.
+function WalkerAcquireBurstAim(Walker ref as TWalker,Sonec ref as TSonec)
+	local MuzzlePosition as TPosition
+	local TargetDeltaX as float
+	local TargetDeltaY as float
+	local TargetDistance as float
+	local TargetDeviation as float
+	local AimErrorMax as float
+
+	Walker.AimActive = FALSE
+	if WALKER_TARGET_AIM_TEST = 1 and Sonec.IsLost = FALSE
+		MuzzlePosition = Walker.WalkerObjectData.Barrel[0].AnchorPosition
+		TargetDeltaX = Sonec.ObjectData.Position.x-MuzzlePosition.x
+		TargetDeltaY = Sonec.ObjectData.Position.y-MuzzlePosition.y
+		TargetDistance = sqrt(TargetDeltaX*TargetDeltaX+TargetDeltaY*TargetDeltaY)
+		if TargetDistance <= WALKER_AIM_MAX_DISTANCE
+			if (Walker.State.LookAlignment = LOOKRIGHT and TargetDeltaX > 0) or (Walker.State.LookAlignment = LOOKLEFT and TargetDeltaX < 0)
+				TargetDeviation = ATan2(TargetDeltaY,abs(TargetDeltaX))
+				// Do not aim farther than the mechanical +/-30 degree test arc.
+				if TargetDeviation > WALKER_AIM_MAX_TILT then TargetDeviation = WALKER_AIM_MAX_TILT
+				if TargetDeviation < -WALKER_AIM_MAX_TILT then TargetDeviation = -WALKER_AIM_MAX_TILT
+				AimErrorMax = WALKER_AIM_INITIAL_ERROR-Walker.AimSalvos*WALKER_AIM_IMPROVEMENT
+				if AimErrorMax < WALKER_AIM_MIN_ERROR then AimErrorMax = WALKER_AIM_MIN_ERROR
+				// One persistent error per two-shot burst; never perfectly accurate by design.
+				TargetDeviation = TargetDeviation + random(-100,100)*AimErrorMax/100.0
+				if TargetDeviation > WALKER_AIM_MAX_TILT then TargetDeviation = WALKER_AIM_MAX_TILT
+				if TargetDeviation < -WALKER_AIM_MAX_TILT then TargetDeviation = -WALKER_AIM_MAX_TILT
+				if Walker.State.LookAlignment = LOOKLEFT
+					Walker.AimAngle = 270.0 - TargetDeviation
+				else
+					Walker.AimAngle = 90.0 + TargetDeviation
+				endif
+				Walker.AimActive = TRUE
+				if Walker.AimSalvos < WALKER_AIM_MAX_SALVOS then Walker.AimSalvos = Walker.AimSalvos+1
+			endif
+		endif
+	endif
+
+	// If the target moved behind/out of sight, future bursts start inaccurate.
+	if Walker.AimActive = FALSE then Walker.AimSalvos = 0
+endfunction
+
+//----------------------------------------------------------------------
+// 
+//----------------------------------------------------------------------
+
 // Bullets and flashes still originate at the first barrel Anchor.
 // Test-only trajectory spread; the barrel, body and target AI are not rotated.
 // In FireState 0 this is the first (upward) shot, in FireState 1 the second (downward).
 function WalkerMuzzlePositionCalculate(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,Position ref as TPosition)
 	local Angle as float
 	Position = Walker.WalkerObjectData.Barrel[0].AnchorPosition
+	if Walker.AimActive = TRUE
+		Angle = Walker.AimAngle
+	else
 	if Walker.State.LookAlignment = LOOKLEFT
 		Angle = 270
 		if WALKER_DIAGONAL_TEST_FIRE = 1
@@ -810,6 +886,7 @@ function WalkerMuzzlePositionCalculate(Walker ref as TWalker,ProtoWalker ref as 
 			endif
 		endif
 	endif
+	endif
 endfunction Angle
 
 function WalkerFireShot(Walker ref as TWalker,WalkerIndex as integer,ProtoWalker ref as TProtoWalker,BulletList ref as TBulletList,ProtoBullet ref as TProtoBullet,FlashList ref as TFlashList,ProtoFlash ref as TProtoFlash,World ref as TWorld,Now as integer)
@@ -825,7 +902,7 @@ endfunction
 
 // FireState: 0 = idle, 1 = waiting to fire second bullet, 2 = recoil/recovery.
 // A started burst always finishes before WalkerMove may resume walking.
-function WalkerFireAll(WalkerList ref as TWalkerList,ProtoWalker ref as TProtoWalker,BulletList ref as TBulletList,ProtoBullet ref as TProtoBullet,FlashList ref as TFlashList,ProtoFlash ref as TProtoFlash,World ref as TWorld,Now as integer)
+function WalkerFireAll(WalkerList ref as TWalkerList,ProtoWalker ref as TProtoWalker,BulletList ref as TBulletList,ProtoBullet ref as TProtoBullet,FlashList ref as TFlashList,ProtoFlash ref as TProtoFlash,World ref as TWorld,Sonec ref as TSonec,Now as integer)
 	local i as integer
 	local LeftFootX as float
 	local RightFootX as float
@@ -841,7 +918,11 @@ function WalkerFireAll(WalkerList ref as TWalkerList,ProtoWalker ref as TProtoWa
 					endif
 				else
 					if WalkerList.Walker[i].FireState = 2
-						if Now >= WalkerList.Walker[i].FireStateUntilMs then WalkerList.Walker[i].FireState = 0
+						if Now >= WalkerList.Walker[i].FireStateUntilMs
+							WalkerList.Walker[i].FireState = 0
+							WalkerList.Walker[i].AimActive = FALSE
+							WalkerAnimate(WalkerList.Walker[i],ProtoWalker,World,Now)
+						endif
 					else
 						// Begin a burst only in a regular stand pause, never while walking/turning.
 						if WalkerList.Walker[i].PauseUntilMs > 0 and WalkerList.Walker[i].TurnPending = 0
@@ -852,6 +933,9 @@ function WalkerFireAll(WalkerList ref as TWalkerList,ProtoWalker ref as TProtoWa
 							// Avoid generating shots for Walkers outside the world.
 							if WalkerList.Walker[i].WalkerObjectData.Tower.Position.x >= 0 and WalkerList.Walker[i].WalkerObjectData.Tower.Position.x <= World.Size.Width
 							if TimeGet(WalkerList.Walker[i].FireTimer,Now) > 0
+								WalkerAcquireBurstAim(WalkerList.Walker[i],Sonec)
+								// Align the turret and both barrel anchors before the first shot.
+								if WalkerList.Walker[i].AimActive = TRUE then WalkerAnimate(WalkerList.Walker[i],ProtoWalker,World,Now)
 								WalkerFireShot(WalkerList.Walker[i],i,ProtoWalker,BulletList,ProtoBullet,FlashList,ProtoFlash,World,Now)
 								WalkerList.Walker[i].FireState = 1
 								WalkerList.Walker[i].FireStateUntilMs = Now + WALKER_BURST_SHOT_DELAY_MS
@@ -1619,7 +1703,7 @@ function WalkerMuzzleDebugDrawAll(WalkerList ref as TWalkerList,ProtoWalker ref 
 				DrawSprite(WalkerBarrelAnchor1Sprite)
 
 				if Shown < WALKER_DEBUG_MAX_ENTRIES
-					HudText = HudText + Chr(10) + "Walker #"+Str(i)+" | NextAngle "+Str(Angle,1)+" | Fire "+Str(WalkerList.Walker[i].FireState)+Chr(10)
+					HudText = HudText + Chr(10) + "Walker #"+Str(i)+" | NextAngle "+Str(Angle,1)+" | Aim "+Str(WalkerList.Walker[i].AimActive)+" | Learnt "+Str(WalkerList.Walker[i].AimSalvos)+" | Fire "+Str(WalkerList.Walker[i].FireState)+Chr(10)
 					if WALKER_IK_SPRITES = 1
 						Delta = NormalizeAngle(WalkerList.Walker[i].SkeletonDebugSprite-WalkerList.Walker[i].SkeletonDebugIK)
 						if Delta > 180 then Delta = Delta-360
