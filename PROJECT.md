@@ -1,6 +1,6 @@
 # SonecBot – Projektübersicht
 
-**Dokumentstatus:** Version 0.7  
+**Dokumentstatus:** Version 0.8  
 **Projektstatus:** In Entwicklung  
 **Engine:** AppGameKit Studio (AGK)  
 **Aktiver Entwicklungszweig:** `develop`  
@@ -88,6 +88,10 @@ Der Anzug ist ein wichtiger Bestandteil des Charakterkonzepts. Welche Funktionen
 - Aufsammelbare Energieobjekte
 
 Sonec kann Energie aus seiner Umgebung aufnehmen. Zusätzliche Energie kann durch entsprechende Sammelobjekte gewonnen werden.
+
+### Kisten und Belohnungen – Designidee (noch nicht implementiert)
+
+Kisten verschiedener Größen sollen beim Zerstören nicht zwangsläufig dieselbe Belohnung liefern. **Kleine Kisten sind schwerer gezielt zu treffen** (zum Beispiel fliegen horizontale Maschinengewehrgeschosse bei der kleinsten Kistengröße darüber hinweg). Falls zerstörte Kisten Belohnungen ausgeben, sollen **kleine Kisten tendenziell mehr oder qualitativ bessere Belohnungen** anbieten, damit sich der höhere Aufwand lohnt. Denkbare Stellgrößen sind Menge, Seltenheit oder Qualität der Ressourcen/Upgrades. Die konkrete Gewichtung, Drop-Regel und das Verhältnis zur Kistengesundheit werden erst beim späteren Balancing festgelegt. Dieser Absatz ist ein **Spielkonzept**, keine Aussage über bereits implementierte Drops und keine Freigabe für Balancingänderungen.
 
 ### Waffen und Verteidigung
 
