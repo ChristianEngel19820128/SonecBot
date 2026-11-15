@@ -1,6 +1,10 @@
 
 // Walker gun trial: predictable horizontal shots without targeting or torso tilt.
 #constant WALKER_TEST_FIRE 1
+// Reversible trajectory experiment: 0 keeps the former horizontal burst.
+// 1 fires first 15 degrees up, then 15 degrees down, relative to facing.
+#constant WALKER_DIAGONAL_TEST_FIRE 1
+#constant WALKER_DIAGONAL_TEST_ANGLE 15.0
 #constant WALKER_FIRE_INTERVAL_MS 1800
 #constant WALKER_BURST_SHOT_DELAY_MS 150
 #constant WALKER_BURST_RECOVERY_MS 200
@@ -781,16 +785,30 @@ function WalkerAnimateAll(WalkerList ref as TWalkerList,ProtoWalker ref as TProt
 	
 endfunction
 
-// Bullets and flashes both start at the first barrel's world-space Anchor.
-// The two barrels currently overlap. Keep horizontal fire angles (90 / 270)
-// and do not change Walker targeting, movement or turret rotations.
+// Bullets and flashes still originate at the first barrel Anchor.
+// Test-only trajectory spread; the barrel, body and target AI are not rotated.
+// In FireState 0 this is the first (upward) shot, in FireState 1 the second (downward).
 function WalkerMuzzlePositionCalculate(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,Position ref as TPosition)
 	local Angle as float
 	Position = Walker.WalkerObjectData.Barrel[0].AnchorPosition
 	if Walker.State.LookAlignment = LOOKLEFT
 		Angle = 270
+		if WALKER_DIAGONAL_TEST_FIRE = 1
+			if Walker.FireState = 1
+				Angle = 270 - WALKER_DIAGONAL_TEST_ANGLE
+			else
+				Angle = 270 + WALKER_DIAGONAL_TEST_ANGLE
+			endif
+		endif
 	else
 		Angle = 90
+		if WALKER_DIAGONAL_TEST_FIRE = 1
+			if Walker.FireState = 1
+				Angle = 90 + WALKER_DIAGONAL_TEST_ANGLE
+			else
+				Angle = 90 - WALKER_DIAGONAL_TEST_ANGLE
+			endif
+		endif
 	endif
 endfunction Angle
 
@@ -1601,7 +1619,7 @@ function WalkerMuzzleDebugDrawAll(WalkerList ref as TWalkerList,ProtoWalker ref 
 				DrawSprite(WalkerBarrelAnchor1Sprite)
 
 				if Shown < WALKER_DEBUG_MAX_ENTRIES
-					HudText = HudText + Chr(10) + "Walker #"+Str(i)+" | Angle "+Str(Angle,1)+" | Fire "+Str(WalkerList.Walker[i].FireState)+Chr(10)
+					HudText = HudText + Chr(10) + "Walker #"+Str(i)+" | NextAngle "+Str(Angle,1)+" | Fire "+Str(WalkerList.Walker[i].FireState)+Chr(10)
 					if WALKER_IK_SPRITES = 1
 						Delta = NormalizeAngle(WalkerList.Walker[i].SkeletonDebugSprite-WalkerList.Walker[i].SkeletonDebugIK)
 						if Delta > 180 then Delta = Delta-360
