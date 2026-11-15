@@ -266,7 +266,7 @@ function WalkerChestAreaFree(ChestList ref as TChestList,PlateIndex as integer,O
 		endif
 	next i
 
-endfunction Free
+endfunction AreaClear
 
 // Find the closest free point to the platform center. If none is available,
 // skip this Walker; never create one inside a chest or beyond the platform.
