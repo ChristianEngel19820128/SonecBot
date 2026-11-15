@@ -1,6 +1,6 @@
 # SonecBot – TODO und Meilensteine
 
-**Dokumentstatus:** Version 2.3  
+**Dokumentstatus:** Version 2.4  
 **Stand:** 15. November 2026  
 **Branch:** `develop`  
 **Ziel:** Kleine, überprüfbare Schritte zur spielbaren HTML5-Alpha
@@ -75,6 +75,11 @@
 - [ ] Allgemeine, beobachtete 1-px-Darstellungsabweichung bei Plattformen/Kisten/Sonec gesondert untersuchen; Ursache durch `Floor()` ist noch nicht bestätigt.
 - [ ] Langfristig IK-Grundfunktionen und Debug-Skelett vereinheitlichen und bei Bedarf für weitere Gegnertypen auslagern; aktuelle Walker-Implementierung nicht vor der Alpha destabilisieren.
 - [ ] Spriter oder ein vergleichbares Keyframe-Werkzeug optional für Spezialanimationen evaluieren.
+
+- [x] **Doppelte Skalierung der Kisten-Kollisionsbox beseitigt (`a4be9ab`):** `ChestNew()` berechnet `ObjectData.Size` bereits mit `SpriteData.Scale`; `ChestMove()` multiplizierte bei `CollisionData.Position2.x/y` bisher ein zweites Mal mit der Skalierung. Nur diese beiden Koordinaten wurden korrigiert. Statisch verifiziert, **AGK-Laufzeittest noch ausstehend**.
+- [ ] **Kisten-Kollision lokal prüfen:** Kleine, mittlere und große Kisten, Schüsse an rechten/unteren Kanten, Auflage auf Plattformen, bewegte/vertikale Plattformen und ggf. Nebenwirkungen für Trefferlogik prüfen.
+- [ ] **Kistenspalt und Walker-Kisten-Überlagerung getrennt untersuchen:** In den lokalen Screens wurden kleine 1–2-Bildpixel-Zwischenräume zwischen Kisten und ein Walker in Überlappung mit der Kistengrafik beobachtet. Kistenspalt kann Platzierungs-/Pixelrasterfolge sein; Walker prüft derzeit Plattformränder, aber keine Kistenhindernisse. Verhalten (stoppen, wenden oder ignorieren) erst festlegen, dann separat ändern.
+- [ ] **Grafik-/Kontrastfix separat committen:** Entwickler beobachtete nach Abschwächung grüner Plattform-/Kistenränder bei 120 FPS eine deutlich ruhigere Darstellung; Grafiken sind noch nicht als eigener Commit dieses Tests bestätigt. Keine Assetänderung mit Kollisionsfix vermischen.
 
 ### Plattformen – aktueller Diagnose-Schwerpunkt (15. November 2026)
 
