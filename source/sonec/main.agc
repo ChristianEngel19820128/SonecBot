@@ -43,6 +43,13 @@ SetVirtualResolution(vx,vy)
 #constant WINDOWS_VSYNC_TEST 1
 #constant FALLBACK_SYNC_RATE_FPS 60
 global MotionDebugSyncRequest as string
+// F2 clock diagnostics: never used by gameplay calculations.
+global MotionDebugClockRealDeltaMs as integer
+global MotionDebugClockVirtualDeltaMs as integer
+global MotionDebugClockReadGapMs as integer
+global MotionDebugClockGapTotalMs as integer
+global MotionDebugClockGapFrames as integer
+global MotionDebugClockActiveFrames as integer
 
 if GetDeviceBaseName() = "html5"
 	SetVSync(1)
@@ -125,6 +132,11 @@ Now = GetMilliseconds()
 local CurrentNow as integer
 CurrentNow = GetMilliseconds()
 
+// Keep both existing clock reads untouched in order and purpose.
+local ClockFirstReadMs as integer
+local ClockPreviousNowMs as integer
+local ClockPreviousVirtualMs as integer
+
 IntroCreate(Intro,vx,vy,Now)
 GameCreate(Game,vx,vy)
 
@@ -132,11 +144,26 @@ repeat
 	
 	SetTextString(FPS,Str(Trunc(ScreenFPS())))
 	
+	// Capture the existing two time samples without changing their call order.
+	ClockPreviousNowMs = Now
+	ClockPreviousVirtualMs = CurrentNow
 	if Game.IsPause = FALSE
-		CurrentNow = CurrentNow + GetMilliseconds() - Now
+		ClockFirstReadMs = GetMilliseconds()
+		CurrentNow = CurrentNow + ClockFirstReadMs - Now
 	endif
-	
+
 	Now = GetMilliseconds()
+	MotionDebugClockRealDeltaMs = Now - ClockPreviousNowMs
+	MotionDebugClockVirtualDeltaMs = CurrentNow - ClockPreviousVirtualMs
+	if Game.IsPause = FALSE
+		MotionDebugClockReadGapMs = Now - ClockFirstReadMs
+		MotionDebugClockGapTotalMs = MotionDebugClockGapTotalMs + MotionDebugClockReadGapMs
+		MotionDebugClockActiveFrames = MotionDebugClockActiveFrames + 1
+		if MotionDebugClockReadGapMs > 0 then MotionDebugClockGapFrames = MotionDebugClockGapFrames + 1
+	else
+		// There is only one sample while paused; -1 means no paired read.
+		MotionDebugClockReadGapMs = -1
+	endif
 	// Windows diagnostics (also during pause): F1 Walker, F2 platforms.
 	// Only one topic is shown at a time to keep the virtual screen readable.
 	if Device$ = "windows" and Game.IsLost = FALSE
