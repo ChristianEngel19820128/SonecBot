@@ -45,6 +45,10 @@ function PlateNew(Plate ref as TPlate,ProtoPlate ref as TProtoPlate,World ref as
 	Plate.DebugCalcRange = 0
 	Plate.DebugElapsedMs = 0
 	Plate.DebugUpdated = 0
+	Plate.DebugFrameMs = 0
+	Plate.DebugLastNow = Now
+	Plate.DebugHistoryCount = 0
+	Plate.DebugHistoryNext = 0
 	TimeSet(Plate.ObjectData.MoveTimer,10,10)
 	TimeReset(Plate.ObjectData.MoveTimer,Now)
 	Plate.ProtoIndex = random(0,ProtoPlate.AnimPlate.Length)
@@ -209,6 +213,10 @@ function PlateMove(Plate ref as TPlate,World ref as TWorld,Now as integer)
 	local r as float
 	
 	if Plate.Enabled = TRUE
+		// GameDo-frame duration and timer advances are measured separately.
+		Plate.DebugFrameMs = Now - Plate.DebugLastNow
+		if Plate.DebugFrameMs < 0 then Plate.DebugFrameMs = 0
+		Plate.DebugLastNow = Now
 		// Per-frame sample: a zero step means the 10 ms timer did not advance this frame.
 		Plate.DebugUpdated = 0
 		Plate.DebugDeltaX = 0
@@ -257,6 +265,13 @@ function PlateMove(Plate ref as TPlate,World ref as TWorld,Now as integer)
 			TimeReset(Plate.ObjectData.MoveTimer,Now)
 			
 		endif
+		// Capture the last 60 game-update frames, including skipped movement steps.
+		Plate.DebugHistoryDX[Plate.DebugHistoryNext] = Plate.DebugDeltaX
+		Plate.DebugHistoryFrameMs[Plate.DebugHistoryNext] = Plate.DebugFrameMs
+		Plate.DebugHistoryStep[Plate.DebugHistoryNext] = Plate.DebugUpdated
+		Plate.DebugHistoryNext = Plate.DebugHistoryNext + 1
+		if Plate.DebugHistoryNext >= 60 then Plate.DebugHistoryNext = 0
+		if Plate.DebugHistoryCount < 60 then Plate.DebugHistoryCount = Plate.DebugHistoryCount + 1
 	endif
 		
 endfunction
@@ -325,18 +340,42 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-// F1-only overlay: identify and measure visible platforms without changing movement.
+// F2-only overlay. Keep instrumentation separate from Walker/IK F1 diagnostics.
+global PlateDebugEnabled as integer
 global PlateDebugHudText as integer
 global PlateDebugIndexText as integer
 #constant PLATE_DEBUG_MAX_ENTRIES 3
 
+function PlateDebugToggle()
+	if PlateDebugEnabled = 0
+		PlateDebugEnabled = 1
+	else
+		PlateDebugEnabled = 0
+	endif
+endfunction
+
+// The history has one sample per GameDo frame, including zero-step frames.
+// Min/average/max dX use those per-frame samples, and dt uses elapsed game-frame ms.
 function PlateDebugDrawAll(PlateList ref as TPlateList)
 	local i as integer
+	local j as integer
 	local Visible as integer
 	local Shown as integer
+	local Count as integer
+	local Steps as integer
+	local MinDX as float
+	local MaxDX as float
+	local AvgDX as float
+	local SumDX as float
+	local MinDT as integer
+	local MaxDT as integer
+	local AvgDT as float
+	local SumDT as float
+	local PosX as float
+	local PosY as float
 	local Data as string
 
-	if WalkerDebugEnabled = 1
+	if PlateDebugEnabled = 1
 		if PlateDebugHudText = 0
 			PlateDebugHudText = CreateText("")
 			SetTextSize(PlateDebugHudText,10)
@@ -360,7 +399,7 @@ function PlateDebugDrawAll(PlateList ref as TPlateList)
 		next i
 
 		Shown = 0
-		Data = "PLATFORM DEBUG (F1) - visible: "+Str(Visible)+Chr(10)
+		Data = "PLATFORM DEBUG (F2) | visible: "+Str(Visible)+" | history: 60 frames"+Chr(10)
 		for i = 0 to PlateList.Plate.Length
 			if PlateList.Plate[i].Enabled = TRUE
 				if PlateList.Plate[i].SpriteData.Position.x <= GetVirtualWidth() and PlateList.Plate[i].SpriteData.Position.x + PlateList.Plate[i].ObjectData.Size.Width >= 0
@@ -369,19 +408,54 @@ function PlateDebugDrawAll(PlateList ref as TPlateList)
 							SetTextString(PlateDebugIndexText,"P"+Str(i))
 							SetTextPosition(PlateDebugIndexText,PlateList.Plate[i].SpriteData.Position.x+3,PlateList.Plate[i].SpriteData.Position.y-15)
 							DrawText(PlateDebugIndexText)
-							Data = Data+"P"+Str(i)+" X "+Str(PlateList.Plate[i].ObjectData.Position.x,1)+" Y "+Str(PlateList.Plate[i].ObjectData.Position.y,1)+Chr(10)
-							Data = Data+"  dX "+Str(PlateList.Plate[i].DebugDeltaX,3)+" dY "+Str(PlateList.Plate[i].DebugDeltaY,3)+" R "+Str(PlateList.Plate[i].DebugCalcRange,2)+" dt "+Str(PlateList.Plate[i].DebugElapsedMs)+"ms Step "+Str(PlateList.Plate[i].DebugUpdated)+Chr(10)
+							Count = PlateList.Plate[i].DebugHistoryCount
+							Steps = 0
+							MinDX = 0
+							MaxDX = 0
+							AvgDX = 0
+							SumDX = 0
+							MinDT = 0
+							MaxDT = 0
+							AvgDT = 0
+							SumDT = 0
+							if Count > 0
+								MinDX = PlateList.Plate[i].DebugHistoryDX[0]
+								MaxDX = MinDX
+								MinDT = PlateList.Plate[i].DebugHistoryFrameMs[0]
+								MaxDT = MinDT
+								for j = 0 to Count-1
+									if PlateList.Plate[i].DebugHistoryDX[j] < MinDX then MinDX = PlateList.Plate[i].DebugHistoryDX[j]
+									if PlateList.Plate[i].DebugHistoryDX[j] > MaxDX then MaxDX = PlateList.Plate[i].DebugHistoryDX[j]
+									if PlateList.Plate[i].DebugHistoryFrameMs[j] < MinDT then MinDT = PlateList.Plate[i].DebugHistoryFrameMs[j]
+									if PlateList.Plate[i].DebugHistoryFrameMs[j] > MaxDT then MaxDT = PlateList.Plate[i].DebugHistoryFrameMs[j]
+									SumDX = SumDX + PlateList.Plate[i].DebugHistoryDX[j]
+									SumDT = SumDT + PlateList.Plate[i].DebugHistoryFrameMs[j]
+									Steps = Steps + PlateList.Plate[i].DebugHistoryStep[j]
+								next j
+								AvgDX = SumDX*(1.0/Count)
+								AvgDT = SumDT*(1.0/Count)
+							endif
+							Data = Data+"P"+Str(i)+" X "+Str(PlateList.Plate[i].ObjectData.Position.x,1)+" Y "+Str(PlateList.Plate[i].ObjectData.Position.y,1)+" dX "+Str(PlateList.Plate[i].DebugDeltaX,3)+Chr(10)
+							Data = Data+"  Move dt "+Str(PlateList.Plate[i].DebugElapsedMs)+"ms R "+Str(PlateList.Plate[i].DebugCalcRange,1)+" Step "+Str(PlateList.Plate[i].DebugUpdated)+Chr(10)
+							Data = Data+"  dX min/avg/max "+Str(MinDX,3)+" / "+Str(AvgDX,3)+" / "+Str(MaxDX,3)+Chr(10)
+							Data = Data+"  Frame ms min/avg/max "+Str(MinDT)+" / "+Str(AvgDT,1)+" / "+Str(MaxDT)+" | Steps "+Str(Steps)+"/"+Str(Count)+Chr(10)
 							Shown = Shown+1
 						endif
 					endif
 				endif
 			endif
 		next i
-		if Visible > Shown
-			Data = Data+"Further visible: "+Str(Visible-Shown)
-		endif
+		if Visible > Shown then Data = Data+"Further visible: "+Str(Visible-Shown)
 		SetTextString(PlateDebugHudText,Data)
-		SetTextPosition(PlateDebugHudText,GetVirtualWidth()-GetTextTotalWidth(PlateDebugHudText)-12,GetVirtualHeight()-112)
+		SetTextSize(PlateDebugHudText,10)
+		if GetTextTotalWidth(PlateDebugHudText) > GetVirtualWidth()-24 or GetTextTotalHeight(PlateDebugHudText) > GetVirtualHeight()-24
+			SetTextSize(PlateDebugHudText,8)
+		endif
+		PosX = GetVirtualWidth()-GetTextTotalWidth(PlateDebugHudText)-12
+		PosY = GetVirtualHeight()-GetTextTotalHeight(PlateDebugHudText)-12
+		if PosX < 4 then PosX = 4
+		if PosY < 4 then PosY = 4
+		SetTextPosition(PlateDebugHudText,PosX,PosY)
 		DrawText(PlateDebugHudText)
 	endif
 endfunction
