@@ -533,6 +533,14 @@ type TPlate
 	DebugCalcRange as float
 	DebugElapsedMs as integer
 	DebugUpdated as integer
+	// Rolling history of the last 60 GameDo frames (including frames with no timer step).
+	DebugFrameMs as integer
+	DebugLastNow as integer
+	DebugHistoryDX as float[59]
+	DebugHistoryFrameMs as integer[59]
+	DebugHistoryStep as integer[59]
+	DebugHistoryCount as integer
+	DebugHistoryNext as integer
 endtype
 
 type TPlateList
