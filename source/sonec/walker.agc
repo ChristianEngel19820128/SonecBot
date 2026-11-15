@@ -997,6 +997,8 @@ endfunction
 #constant WALKER_DEBUG_MAX_ENTRIES 3
 // F1-only test envelope relative to Walker's world-space hip (virtual pixels).
 #constant WALKER_DEBUG_HULL_HALF_WIDTH 50.0
+// Extra visual clearance on each side; not yet used for physical collisions.
+#constant WALKER_DEBUG_HULL_HORIZONTAL_CLEARANCE 5.0
 #constant WALKER_DEBUG_HULL_TOP 50.0
 #constant WALKER_DEBUG_HULL_BOTTOM 35.0
 global WalkerDebugEnabled as integer
@@ -1267,8 +1269,8 @@ function WalkerDebugHullDraw(Walker ref as TWalker,World ref as TWorld)
 	local HullBottom as float
 	x = Walker.ObjectData.Position.x - World.Position.x
 	y = Walker.ObjectData.Position.y - World.Position.y
-	HullLeft = x - WALKER_DEBUG_HULL_HALF_WIDTH
-	HullRight = x + WALKER_DEBUG_HULL_HALF_WIDTH
+	HullLeft = x - WALKER_DEBUG_HULL_HALF_WIDTH - WALKER_DEBUG_HULL_HORIZONTAL_CLEARANCE
+	HullRight = x + WALKER_DEBUG_HULL_HALF_WIDTH + WALKER_DEBUG_HULL_HORIZONTAL_CLEARANCE
 	HullTop = y - WALKER_DEBUG_HULL_TOP
 	HullBottom = y + WALKER_DEBUG_HULL_BOTTOM
 	WalkerDebugHullLine(HullLeft,HullTop,HullRight,HullTop)
