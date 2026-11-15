@@ -2,6 +2,12 @@
 // Project: sonec 
 // Created: 25-10-25
 
+// TEMPORARY renderer A/B test (Windows): this directive takes effect at app startup.
+// Basic = OpenGL; Advanced = Vulkan; Prefer Best = automatic (previous behavior).
+// Change ONLY this line, then recompile/restart; restore Prefer Best after diagnosis.
+// IMPORTANT: do not ship the temporary Basic setting without a release decision.
+#renderer "Basic"
+
 // show all errors
 
 SetErrorMode(2)
