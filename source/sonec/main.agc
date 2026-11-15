@@ -126,9 +126,17 @@ repeat
 	endif
 	
 	Now = GetMilliseconds()
-	// Windows F1 toggles the Walker debug overlay even while paused.
+	// Windows diagnostics (also during pause): F1 Walker, F2 platforms.
+	// Only one topic is shown at a time to keep the virtual screen readable.
 	if Device$ = "windows" and Game.IsLost = FALSE
-		if GetKeyPressed(KEY_F1) = 1 then WalkerDebugToggle()
+		if GetKeyPressed(KEY_F1) = 1
+			WalkerDebugToggle()
+			PlateDebugEnabled = 0
+		endif
+		if GetKeyPressed(KEY_F2) = 1
+			PlateDebugToggle()
+			WalkerDebugEnabled = 0
+		endif
 	endif
 
 	if Game.IsLost = TRUE
