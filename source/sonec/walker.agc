@@ -717,6 +717,7 @@ endfunction
 //----------------------------------------------------------------------
 
 function WalkerAnimate(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,World ref as TWorld,Now as integer)
+	local AimOffset as float
 
 	// Heavy gait follows distance travelled on the platform; no leg cycling while idle.
 	
@@ -735,7 +736,6 @@ function WalkerAnimate(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,Wor
 	// Only the turret and barrel rotate around their existing shared pivot.
 	// Frozen for both burst shots; leg IK and Corpus remain unchanged.
 	if Walker.AimActive = TRUE
-		local AimOffset as float
 		if Walker.State.LookAlignment = LOOKLEFT
 			AimOffset = Walker.AimAngle - 270.0
 		else
