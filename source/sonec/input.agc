@@ -49,7 +49,7 @@ function InputSetDefaultBindings(Keys ref as TKeys)
 
     // Hover keeps the existing pad button 9 assignment. Its physical identity
     // (L3 or another control) remains to be verified on the target gamepad.
-    Keys.Binding[ACTION_HOVER].Key = KEY_CONTROL
+    Keys.Binding[ACTION_HOVER].Key = KEY_SPACE
     Keys.Binding[ACTION_HOVER].PadButton = JoystickButtonPadLeft
     Keys.Binding[ACTION_START].Key = KEY_ENTER
     Keys.Binding[ACTION_START].PadButton = JoystickButtonStart
