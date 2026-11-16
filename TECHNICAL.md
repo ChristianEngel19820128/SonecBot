@@ -201,6 +201,16 @@ Vorher wurden nur Orb-Kollisionen implementiert, wobei `PlasmaBlitzCollideOrbs()
 
 **Hash-Klarstellung:** `18f92a9` in der Kopfzeile bezeichnet ausdrücklich den historischen Abschluss des Alpha-Walkers. Vorliegende Kollisionsänderungen wurden danach auf `develop` committet und anschließend lokal getestet; der SHA des konkret exportierten und getesteten Binär-Builds ist nicht separat protokolliert. Tatsächlichen HEAD jeweils frisch lesen.
 
+### Explosion → Walker: letzter Kollisionspfad der ersten Matrix (16. November 2026; Test offen)
+
+**Eingriff bewusst auf vorhandene Geometrie begrenzt:** `TExplosion.LastWalkerHitMs` als dynamisches integer-Array pro Explosion/Walker; Initialisierung auf `Length = -1` in `ExplosionNew()`. `ExplosionCollideWalkers()` prüft die Distanz vom Explosionszentrum zum nächsten Punkt der bereits vorhandenen `WalkerCollisionData.Tower.Position1/Position2`-AABB. Nur bei Distanz kleiner als `Explosion.ObjectData.Radius` gilt der Turm als getroffen. Damit zählen nahe Explosionen am Rand der Turmgeometrie; andere Walker-Kollisionen sowie IK/Pivots bleiben unberührt.
+
+**Schaden:** Pro getroffener Kombination Explosion/Walker derselbe Mechanismus wie bei Chest/Orb/Mine: `EXPLOSION_TIMED_DAMAGE = 1`, `EXPLOSION_TIMED_DAMAGE_AMOUNT = 30`, `EXPLOSION_DAMAGE_INTERVAL_MS = 100`; `LastWalkerHitMs[k]` begrenzt den zeitlichen Abstand, `Health.State` sinkt und vorhandener 150-ms-Turmtrefferflash wird ausgelöst. Keine geänderten Schadenswerte, Radius-, Lebensdauer- oder Explosionstyp-Parameter. `GameDo()` ruft die Funktion direkt nach `ExplosionCollideMine()` auf, vor Walker-Bewegung/-Animation und Granaten-Update.
+
+**Wichtige Konsequenzen:** Ein direkter Treffer einer Granate fügt kinetischen Schaden zu und löst die gewohnte Explosion aus, deren Radius im nachfolgenden Spielupdate zusätzlich Schaden am Walker verursachen kann. Auch Plattform-Bodenexplosionen und andere Explosionstypen sind dadurch potentiell gegen Walker wirksam; mögliche Kettenreaktion bei Walker-Zerstörung. Die Zahl der Treffer während einer Animation hängt von Überlappungsdauer und dem bestehenden Mindestintervall ab; das ist bewusst als bestehendes Schadensmodell übernommen, **noch nicht anhand eines aktuellen AGK-Builds gemessen**.
+
+**Testauftrag:** Windows-Compile und lokaler HTML5-Test durch Entwickler; Walker-Turmtreffer durch Direktaufprall vs. Explosion in der Nähe vergleichen; rote Reaktion, Zerstörung, doppelte Wirkung und weitere Explosionen gegen Sonec/Kisten/Orbs/Minen auf Regression prüfen. Der Entwickler bewertet das Spielgefühl; keine vorschnelle Schadensbalance oder Panzerungsänderung. Kein eigener AGK-Compile des Assistenten.
+
 ## 7. Übergabe und Historie
 
 [HANDOFF.md](HANDOFF.md) enthält getesteten Referenzcommit, exakte Parameter, Release-Gates, offene Entscheidungen und einen direkten Starttext. Tatsächlichen develop-HEAD neu abfragen, lokale Nutzerdateien/alte Anhänge nicht voraussetzen.
