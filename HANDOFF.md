@@ -111,6 +111,20 @@
 
 **Nächster gemeinsamer Fokus:** Wieder die separaten HTML5-Pre-Alpha-Release-Gates priorisieren (insbesondere Tod und mindestens zwei Neustarts; anschließend itch.io **Draft**/Secret-URL, nicht Published), ohne neue Systeme zu beginnen. Erst Umfang und Teststatus zusammen klären.
 
+## Neuer Spieltest: drei Auffälligkeiten beim HTML5-Release-Smoke-Test (16. November 2026)
+
+**Entwickler meldet während wiederholter Tode (Tod-/Neustartprüfung noch NICHT als beendet gemeldet):**
+1. Walker läuft durch Sonec hindurch, statt vor ihm stehen zu bleiben und zu schießen.
+2. HUD-Energiebalken (grün) soll mit angemessenem roten Overload-Anteil **ungefähr so hoch wie HP plus Schild** angezeigt werden; Entwickler liefert Screenshot. Keine Änderung an Energie-/Gesundheitswerten angefordert.
+3. Schild muss auf seine **tatsächliche Schutzwirkung** geprüft werden; Gamepad-Aktivierung allein war zuvor positiv.
+
+**Quellprüfung am `develop`-HEAD `a313b080` (keine Codeänderungen):**
+- `game.agc` ruft `WalkerMoveAll(...PlateList,ChestList,...)` auf und `SonecCollidePlate(...PlateList,ChestList,...)`, aber keine Walker/Sonec-Körperkollision. `walker.agc:WalkerMove()` prüft vorwärts Kisten und Kanten, jedoch keine Sonec-Hinderniszone. Problem am Spielverhalten lokal beobachtet, Ursache auf Codeebene plausibel.
+- `gui.agc:GuiEnergyDraw()`: HP proportional zu **150 kleinen Segmenten**, Schild max. **25**, Energie normal max. **20 große Segmente** plus Overload mit `ceil(EnergyOverload*10.0/Energy.StateMax)`; grafische Abstände unterschiedlich. Screenshot ist Referenz für spätere Layoutänderung; Ziel optische Gesamthöhe nahe HP+Schild, einschließlich Reserve für Overload, ohne Ressourcen-Balancing.
+- `shield.agc:ShieldAbsorbDamage()` ist für Explosionen eingebunden (`explosion.agc:ExplosionCollideSonec`). `bullet.agc:BulletCollide()` zieht bei feindlichen Kugeln Sonec.Health direkt ab und ruft **kein** `ShieldAbsorbDamage()` auf. Damit schützt der Schild im aktuellen Code nicht gegen Walker-Kugeln, obwohl er aktivierbar ist. Dieser technische Befund ist noch nicht durch separaten A/B-Laufzeittest quantifiziert.
+
+**Arbeitsregel:** Befunde dokumentieren, keine ungeprüften KI-, Kollisions-, HUD- oder Schildänderungen auf einmal. Jeden Punkt einzeln gemeinsam auswählen, kleinste Änderung und Entwicklernachtest. Offene HTML5-Release-Gates Tod + mindestens zwei Neustarts und itch.io-Draft weiterhin separat; itch niemals Published schalten. Screenshot im Chat, nicht als dauerhaftes Repo-Artefakt behaupten.
+
 ## 1. Sofortiger Einstieg im neuen Chat
 
 1. `AGENTS.md`, diese Datei, `PROJECT.md`, die aktuelle `TODO.md` und den aktuellen Status/Übergabeabschnitt in `TECHNICAL.md` lesen. Alte datierte Technikabschnitte sind Historie, keine neue Aufgabenfreigabe.
