@@ -779,6 +779,10 @@ type TIntro
 	TextOption as integer
 	TextEnd as integer
 	TextHelp as integer
+	TextOptionsTitle as integer
+	TextOptionsHover as integer
+	TextOptionsBindings as integer
+	TextOptionsBack as integer
 	SelctionPos as integer
 	AnalogMenuHeld as integer
 	IsOption as integer
