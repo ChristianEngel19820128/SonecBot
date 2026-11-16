@@ -292,8 +292,9 @@ function GameDo(Game ref as TGame,Now as integer)
 	
 	PlasmaBlitzLifeCycle(Game.PlasmaBlitzList,Now)
 	PlasmaBlitzCollideOrbs(Game.PlasmaBlitzList,Game.OrbList,Now)
-	PlasmaBlitzCollideMine(Game.PlasmaBlitzList,Game.MineList)
-	PlasmaBlitzCollideChest(Game.PlasmaBlitzList,Game.ChestList)
+	PlasmaBlitzCollideMine(Game.PlasmaBlitzList,Game.MineList,Now)
+	PlasmaBlitzCollideChest(Game.PlasmaBlitzList,Game.ChestList,Now)
+	PlasmaBlitzCollisionTimerReset(Game.PlasmaBlitzList,Now)
 	
 	SonecRefreshAnimations(Game.Sonec,Game.PlasmaBlitzList,Game.FlashList,Game.World)
 	Game.IsLost = Game.Sonec.IsLost
