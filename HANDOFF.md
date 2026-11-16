@@ -15,6 +15,14 @@
 > **Arbeitsweise:** In kleinen gemeinsam freigegebenen Schritten vorgehen. Nutzer exportiert/kompiliert in lokalem AGK Studio, testet mit lokalem Apache im Browser/Gamepad und pflegt itch.io; Assistent prüft GitHub-Quellen und dokumentiert präzise, ohne lokale Tests zu behaupten. Besonderheiten mit Nachweisstatus festhalten, aktuellen Schritt beenden, erst danach über Folgearbeit bzw. Knowledge-Base-Eintrag entscheiden. Crystals 1.0 ist die bewährte Prozesserfahrung. GitHub-HEAD bei jedem Einstieg neu lesen; Snapshot vor dieser Dokumentationsänderung: `3840bfa545aeec6df6902180415d22efdd58f3ba`.
 > **Prüfkandidat, noch kein bestätigter Bug:** Spawn-Zufallsentscheidungen liegen in `GameDo()` und könnten pro Frame statt pro Zeit erfolgen. Vor jeder Änderung tatsächliche Frequenzen/Spielwirkung bewerten; keine pauschale Balancingmaßnahme.
 
+## Post-Pre-Alpha: Schritt 7a.1 Analogstick-Navigation im Intro (17.11.2026)
+
+**7a Testbericht des Entwicklers:** AGK-Compile, W/S, Pfeiltasten, Menü-Wrap und Enter→Spiel erfolgreich; Gamepad-Steuerkreuz funktioniert. Die zunächst unscharfe Rückmeldung „Pad geht nicht“ wurde geklärt: Gamepad Start/A funktionieren, **nur linker Analogstick** navigiert nicht. Dies war vor 7a.1 im Intro nicht implementiert; damit ist kein Rückschritt bei Start/A belegt. 7a bleibt bis zum Analog-Ergänzungstest offen.
+
+**7a.1 explizit freigegeben und auf `develop` implementiert, AGK-Compile/Gamepad-Test ausstehend:** `TIntro.AnalogMenuHeld as integer` in `source/sonec/def_game.agc`; `IntroCreate()` initialisiert den Zustand mit FALSE. `IntroDo()` liest pro Aufruf `GetJoyY(JoystickIndex)`: bei Y kleiner -0.5 genau einmal nach oben, bei Y größer +0.5 einmal nach unten, dann wird bis zur neutralen Stick-Position zwischen -0.3 und +0.3 gesperrt. Für den Schritt wird die bestehende Hoch-/Runter-Menülogik mit Wrap, Sound und Markierung wiederverwendet. W/S, Pfeile, Gamepad-D-Pad und Enter/Start/A unverändert; keine Modifikation von `main.agc`, OPTIONS oder Hover.
+
+**Nächster einzelner Test:** Entwickler AGK-Compile, Stick nach oben/unten jeweils genau ein Schritt, Halten bewirkt keine Wiederholung, Rückkehr neutral und erneute Auslenkung bewirkt nächsten Schritt; D-Pad, Tastatur, Enter/Start/A weiter funktionsfähig. Den freien Beobachtungstext und bewussten „Testergebnis senden“-Knopf anbieten. Erst nach bestandenem Test mit Planung des Optionsmenüs beginnen. Keine HTML5-/Browserprüfung durch Assistenten, keine Änderung an itch.io oder separater Knowledge Base.
+
 ## Post-Pre-Alpha: Schritt 7a Tastaturnavigation im Intro (17.11.2026)
 
 **6e vom Entwickler vollständig bestanden:** AGK-Compile und 8/8 Checks: Space-Hover halten/loslassen, WASD/QE+Space, W+Space mit Jetpack-Vorrang, Ctrl ohne Hover, Button 9 intakt, Space-Release während Pause korrekt; keine Auffälligkeiten. Somit Space als Hover-Default im Windows/AGK-Test akzeptiert. Keine neue HTML5-Prüfung.
