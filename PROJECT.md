@@ -151,6 +151,14 @@ Für die aktuelle AGK-Version sind schwere Maschinengewehre als Bewaffnung vorge
 
 **Projektentscheidung: Ein funktionsfähiger Walker ist Pflichtbestandteil der ersten Alpha-Version.**
 
+### Kollisions- und Schadensmodell: abgestimmte Entwicklungsrichtung (16. November 2026)
+
+Für den aktuellen Pre-Alpha-Schritt gilt: **Sonec soll grundsätzlich allen beschädigbaren Spielobjekten mit allen vier Waffen Schaden zufügen können.** Keine Waffe wird pauschal von einer Zielklasse ausgeschlossen. Die bereits vorgesehenen Fraktionskategorien sind Player/Sonec (historisch mit zweitem Spieler für möglichen Multiplayer), Enemy und Neutral. Welche später benötigten Interaktionen daraus entstehen, bleibt offen; Fraktionen sind nicht mit Schadensarten gleichzusetzen.
+
+Als **spätere Designbasis**, noch nicht implementierte Schadens-/Rüstungsrechnung, sind Plasmaexplosion, Plasmaflammen, kinetischer Schaden (einschließlich Granatenaufprall) und Plasma-Blitz vorgesehen. Passende Panzerungs- und Schild-Gegenwerte werden später entwickelt. Das gewünschte Konterprinzip ähnelt Stein/Schere/Papier/Brunnen; Flammen sollen etwa gegen kleine schnelle Minen besonders nützlich sein. Noch **keine** konkreten Multiplikatoren oder Widerstandsparameter festlegen.
+
+**Jetzt pragmatisch:** Fehlende Kollisionspfade nacheinander mit vorhandenen Health-/Damage-Mechanismen ergänzen; jede Änderung separat lokal unter AGK/HTML5 testen. Kein pauschales Balancing und keine zusätzliche Walker-Politur.
+
 ### Weitere Gegner und Gefahren
 
 Aus dem bisherigen Spielkonzept und der historischen Version sind weitere Ideen bekannt:
