@@ -45,7 +45,7 @@
 
 **Controller-Bezeichnung geklärt:** Der zuvor genannte Schild auf „R2“ war ein Schreibfehler. R1/RB (obere rechte Schultertaste) = Schild; LT/L2 und RT/R2 (untere Trigger) = rückwärts links/rechts. Im HTML5-Browsertest funktionieren Schild und Rückwärtsbewegung wie erwartet.
 
-## Aktueller Einzeltest: Plasma-Blitz gegen Minen und Kisten (16. November 2026)
+## Vorheriger Einzeltest: Plasma-Blitz gegen Minen und Kisten (16. November 2026; anschließend lokal bestanden)
 
 **Gemeinsam als nächster Schritt festgelegt:** Nur die zuvor leeren `PlasmaBlitzCollideMine()` und `PlasmaBlitzCollideChest()` ergänzen. Implementiert in `source/sonec/plasmablitz.agc` und in `GameDo()` verdrahtet. Die vorhandene 50-ms-Kollisions-Taktung wird **für Orbs, Minen und Kisten gemeinsam** geprüft und erst danach in `PlasmaBlitzCollisionTimerReset()` zurückgesetzt. Andernfalls hätte die Orb-Prüfung den Timer bereits verbraucht und die neuen Zielklassen könnten nicht reagieren. Alle drei verwenden bestehende Boxkollision, Gesundheitsabzug über `BulletData.Damage` und Rotfärbung. **Nur statisch geprüft; AGK-Compile/HTML5-Lauf beim Entwickler offen.**
 
@@ -54,6 +54,16 @@
 **Spielbeobachtung:** Plasma-Blitz muss aufladen und entlädt sich dann, ist stark und vermutlich energieintensiv; der Flammenwerfer verbraucht bei längerem Einsatz ebenfalls viel Energie, die für das Fliegen gebraucht wird. **Noch keine Werte gemessen; weder Energieverbrauch noch Schadenswerte/Balance in diesem Schritt ändern.** Die 50-ms-Kollisionsperiode ist vorhandene Mechanik, keine neu eingeführte Schadensart.
 
 **Nach bestandenem Test:** Schritt als abgeschlossen dokumentieren und erst dann die nächste Kollisionskombination gemeinsam wählen. Walker-Politur ausgeschlossen. Der Browser-Tod-/Mehrfachneustarttest und die spätere itch.io-Draft-Prüfung sind separate Release-Gates.
+
+## Abschluss Plasma-Blitz Mine/Kiste – Entwicklermeldung 16. November 2026
+
+**Testergebnis:** Entwickler meldet den neuen Plasma-Blitz-Pfad zunächst unter Windows lokal und anschließend unter HTML5 erfolgreich geprüft („html5 geht auch“). Große Kisten reagieren nur schwach auf eine Entladung; der Blitz ist sehr teuer (Energie) und schwierig zu handhaben. **Das ist eine qualitative Balancebeobachtung, kein bestätigter Kollisionsdefekt.** Der genaue Zerstörungsnachweis für jede einzelne Minen-/Kisten-/Orb-Kombination sowie exakte Energiewerte und Trefferintervalle wurde nicht separat aufgeschlüsselt; keine unabhängigen Compile- oder Laufzeittests durch den Assistenten. Der gemeinsame 50-ms-Treffertimer ist im aktuellen Code eingebunden.
+
+**HTML5-Debugtasten:** Entwickler meldet, dass Debug-Funktionstasten im Browser Browserereignisse auslösen und für das Spiel nicht brauchbar sind. Windows-Diagnose genügt für die aktuelle Pre-Alpha; browserfreundliche Debugbelegung als späteren UX-/Knowledge-Base-Kandidaten notieren, nicht im Releasefluss pauschal umbauen.
+
+**Bestätigter Bestand:** Walker reagiert aktuell auf Bullets und Flammen; fehlende aktive Trefferpfade Walker←Plasma-Blitz, Walker←direkter Granatenaufprall und Walker←Explosion. Andere Zielklassen verfügen für alle vier Waffen und Explosionen über Kollisionspfade, allerdings mit unterschiedlichen Wirkungen/Testtiefen.
+
+**Nächster Vorschlag, noch nicht implementiert:** Plasma-Blitz → Walker als isolierter dritter Kollisionsschritt. Danach Granatenaufprall/Explosion getrennt bewerten, um ungewollten Doppelschaden zu vermeiden. Kein Balancing, keine IK-/Walker-Politur; vor Codeänderung gemeinsam nächsten Schritt festlegen.
 
 ## 1. Sofortiger Einstieg im neuen Chat
 
