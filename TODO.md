@@ -1,6 +1,6 @@
 # SonecBot – Aktuelle Aufgaben und Meilensteine
 
-**Dokumentstatus:** Version 4.6 – digitale Action-Abfragen ergänzt, noch ohne aktive Anbindung  
+**Dokumentstatus:** Version 4.7 – sechs Kampf-/Energieaktionen an Action-Mapping angeschlossen  
 **Stand:** 16. November 2026  
 **Branch:** `develop`  
 **Aktuelles Ziel:** Funktionierende HTML5-Pre-Alpha auf itch.io im **Draft per Secret URL** für eingeladene Community-Tester bereitstellen, Feedback sammeln. **Nicht auf Published umstellen**; den einmaligen öffentlichen Index-Push für einen späteren, noch nicht beschlossenen Release bewahren. Keine Deadline.
@@ -44,6 +44,10 @@
 **Schritt 1 lokal bestätigt:** Der Entwickler hat `def_input.agc` erfolgreich in AGK Studio kompiliert (Parse Time 61,70 ms, 11.920 Zeilen, 76.514 Tokens); dies bestätigt Syntax/Include, kein neuer Eingabe-Laufzeittest.
 
 **Schritt 2 vom Entwickler bestätigt:** AGK Studio meldet `Compilation finished successfully.` für die Standardbelegung / `InputSetDefaultBindings()`. Kein vollständiger Gameplay-Regressionstest behauptet.
+
+**Schritt 3 lokal bestätigt:** Entwickler meldet `Compilation finished successfully.` nach Hinzufügen der digitalen Action-Abfragen.
+
+**Schritt 4 implementiert, AGK-Compile und Gameplay-Test offen:** Sechs vorhandene Sonec-Eingabefunktionen (MG, Granatwerfer, Flamme, Plasma, Energieanziehung, Schild) lesen `TKeys` über `InputActionState()` (vier Waffen, weiterhin Dauerfeuer und MG-Burst-Logik) bzw. `InputActionPressed()` (zwei Umschaltaktionen). `GameActionInput()` erhält `Keys` vom in `main.agc` initialisierten lokalen Datensatz und reicht ihn an die sechs Sonec-Funktionen weiter. Standardtasten: J MG, K Granate, L Flamme, I Plasma, U Energieanziehung, O Schild. Bestehende A/B/X/Y/LB/RB-Gamepad-Belegung soll unverändert arbeiten. Bewegung, Start, Back, Menüs, Pause, Hover und Trigger/Achsen blieben unangetastet. **Nächster Test:** AGK-Compile, dann sechs Aktionen mit Tastatur sowie Gamepad-Regression; dies wurde vom Assistenten nicht ausgeführt. Cookie/Optionsmenü bleiben spätere Schritte.
 
 **Schritt 3 implementiert, Compile offen:** `input.agc` erweitert um `InputActionState(Keys,JoystickIndex,Action)` und `InputActionPressed(Keys,JoystickIndex,Action)`: sichere Prüfung der Aktionsindizes, keine Abfrage unzugewiesener 0-Codes, Verknüpfung der vorhandenen Tastatur- und digitalen Gamepad-Wrapper. Hover übernimmt in den Defaultdaten den **bereits von SonecBot verwendeten** `JoystickButtonPadLeft = 9`; physische Identifikation (L3?) und Button 11 bleiben offen. Gamepad-Analogachsen und Trigger weiter im alten Eingabecode; keine Gameplay-Abfrage wurde umgestellt. **Nächster Schritt:** AGK-Compile durch Entwickler, dann Testmigration nur nach Freigabe.
 
