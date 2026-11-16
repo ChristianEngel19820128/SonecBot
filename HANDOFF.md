@@ -15,6 +15,18 @@
 > **Arbeitsweise:** In kleinen gemeinsam freigegebenen Schritten vorgehen. Nutzer exportiert/kompiliert in lokalem AGK Studio, testet mit lokalem Apache im Browser/Gamepad und pflegt itch.io; Assistent prüft GitHub-Quellen und dokumentiert präzise, ohne lokale Tests zu behaupten. Besonderheiten mit Nachweisstatus festhalten, aktuellen Schritt beenden, erst danach über Folgearbeit bzw. Knowledge-Base-Eintrag entscheiden. Crystals 1.0 ist die bewährte Prozesserfahrung. GitHub-HEAD bei jedem Einstieg neu lesen; Snapshot vor dieser Dokumentationsänderung: `3840bfa545aeec6df6902180415d22efdd58f3ba`.
 > **Prüfkandidat, noch kein bestätigter Bug:** Spawn-Zufallsentscheidungen liegen in `GameDo()` und könnten pro Frame statt pro Zeit erfolgen. Vor jeder Änderung tatsächliche Frequenzen/Spielwirkung bewerten; keine pauschale Balancingmaßnahme.
 
+## Post-Pre-Alpha: Schritt 6a Start/Pause (16.11.2026, spät)
+
+**Schritt 5 bestätigt:** Entwickler meldet erfolgreichen AGK-Compile und sechs Bewegungstests inklusive Stick, D-Pad und Trigger. Neues HTML5-Ergebnis bisher nicht berichtet.
+
+**6a auf `develop` umgesetzt, AGK-Compile offen:** `IntroDo(Intro,Sound,Keys,JoystickIndex,Now)` nutzt `InputActionPressed(Keys,JoystickIndex,ACTION_START)` für Enter/Gamepad-Start; A bleibt alternative Gamepad-Menübestätigung. In `main.agc` wird `Keys` an `IntroDo` gegeben; bestehende Pause-Umschaltlogik verwendet `InputActionPressed(...ACTION_START)` statt unmittelbarem Joystick-Start. Intro und aktive Game-Logik bleiben als getrennte if/else-Zweige. Keine Bewegung, Waffen oder Gamepad-A-Menüfunktion geändert. **Back bleibt alt** (Select während Gameplay springt noch zum Intro); Pausenhinweis folgt ausschließlich in 6b nach eigenem Test. Hover folgt 6c.
+
+**Neuer Beobachtungsbefund (noch nicht isoliert bestätigt):** Entwickler berichtete während des Bewegungstests, dass Ctrl/Hover manchmal auf einer Höhe „einrastet“ und Sonec erst nach Down wieder sinkt. Kein automatischer Fix, keine Ursachenzuschreibung. Für separaten reproduzierbaren Test vor Hover-Änderung merken, auch eventuelle Tastendruckfolge/Hover-Status beim Loslassen notieren. `JoystickButtonPadLeft=9` ist im bisherigen Code Hover, physische Taste noch unbestätigt; Button 11 weiter unbenannt.
+
+**Testkommunikation:** Checklisten künftig mit frei beschreibbaren Beobachtungen und einem bewussten „Testergebnis senden“-Knopf, kein sofortiges Abschicken beim bloßen Abhaken.
+
+**Nächster einzelner Schritt:** Nutzer kompiliert aktuellen `develop`-Stand und prüft Enter/Start im Intro und für Pause/Fortsetzen, zusätzlich A als Menübestätigung; Testergebnis mit Freitextbefunden. Danach erst 6b.
+
 ## Post-Pre-Alpha: Schritt 5 Bewegung auf Actions umgestellt (16.11.2026, Abend)
 
 **Schritt 4 und 4b vom Entwickler bestätigt:** AGK-Compile erfolgreich; sechs Tastaturaktionen J/K/L/I/U/O sowie Gamepad A/B/X/Y/LB/RB erfolgreich im Spiel getestet. Dies bestätigt die erste produktive `TKeys`-Verwendung für die sechs Waffen-/Energieaktionen.
