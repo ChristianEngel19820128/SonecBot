@@ -3,7 +3,7 @@
 **Dokumentstatus:** Version 3.22  
 **Stand:** 16. November 2026  
 **Branch:** `develop`  
-**Aktueller Auftrag:** HTML5-Pre-Alpha-Deployment  
+**Aktueller Auftrag:** HTML5-Pre-Alpha für ausgewählte Tester kontrolliert vorbereiten; itch.io bleibt Draft  
 **Alpha-Walker:** **abgeschlossen und lokal akzeptiert**, inklusive abschließendem 3-px-Turmrückstoßtest
 
 > Start im neuen Chat: [HANDOFF.md](HANDOFF.md). Aktuellen HEAD neu prüfen.
@@ -26,16 +26,19 @@
 
 Der lokal getestete Code-Referenzcommit ist [`18f92a965810763b552bd96649607c112f966238`](https://github.com/ChristianEngel19820128/SonecBot/commit/18f92a965810763b552bd96649607c112f966238). Diese Dokumentationsaktualisierung folgt danach. Kein neuer HTML5-Nachweis und keine pauschale Behauptung, alle möglichen Randfälle seien getestet.
 
-## 2. Jetzt: heutige HTML5-Pre-Alpha
+## 2. Jetzt: HTML5-Pre-Alpha im itch.io-Draft (ohne Zeitdruck)
 
 - [ ] **Aktuellen HTML5-Export erstellen/bereitstellen.** Noch kein Exportpaket oder Browserlauf im Chat vorliegend.
 - [ ] **Browserstart testen:** Laden/Assets, Intro, Start und Audio nach Interaktion.
 - [ ] **Eine vollständige Eingabemethode nachweisen:** HTML5-Gamepad-Index 1 prüfen; Intro/Pause derzeit Gamepad, Tastaturpfad unvollständig. Minimalvorschlag Gamepad-only mit klarer Kennzeichnung, noch nicht abschließend entschieden.
 - [ ] **Spielrunde testen:** Bewegung/Jetpack/Waffen/Schild/Energieaktionen, Walker-Kampf, Pause/Fortsetzen, Tod und mindestens zwei Neustarts.
 - [ ] **Nur konkrete Releaseblocker korrigieren:** kleinster nachvollziehbarer Eingriff mit tatsächlichem Nachtest, kein weiterer Walker-/IK-Umbau.
-- [ ] **Bekannte Mechanikgrenzen bewerten/benennen:** feindliche Bullets gegen Schild, Explosionen gegen Walker, vorläufige Ressourcenbalance. Keine große Schadens-/Physik-Neuentwicklung heute.
+- [ ] **Bekannte Mechanikgrenzen bewerten/benennen:** feindliche Bullets gegen Schild, Explosionen gegen Walker, vorläufige Ressourcenbalance. Keine große Schadens-/Physik-Neuentwicklung ohne bestätigten Bedarf.
 - [ ] **README/itch.io-Text final abgleichen:** tatsächliche getestete Controls, Pre-Alpha-Status, Browser-/Gamepad-Hinweise, bekannte Grenzen; passende Screenshots/Cover.
-- [ ] **Export auf itch.io bereitstellen und eingebettet nachtesten.** Projekt-URL und Zugang im neuen Chat klären; Upload/Veröffentlichung noch nicht erfolgt.
+- [ ] **Im itch.io-Draft bereitstellen und über Secret URL eingebettet nachtesten.** Nutzer verwaltet Upload und Seite manuell; Secret URL im neuen Chat klären. **Kein Published-Wechsel.** Die öffentliche Index-Veröffentlichung bleibt bewusst für Beta 0.9 oder 1.0 offen.
+
+- [ ] **Spawn-Zeitbasis untersuchen (Hypothese):** Zufallsentscheidungen innerhalb `GameDo()` wirken möglicherweise frameabhängig. Tatsächlichen Codepfad, Zeit-/FPS-Abhängigkeit und Release-Relevanz prüfen, Alternativen gemeinsam abwägen; erst nach Entscheidung ändern und lokal nachtesten. Keine pauschale Balancekorrektur.
+- [ ] **Englische itch.io-Texte als Markdown** zusammenstellen; 💚 als vereinbarte Kennzeichnung in README/itch.io verwenden.
 
 ## 3. Für später: reguläre Alpha / Fehler nur bei konkreter Reproduktion
 
@@ -44,7 +47,7 @@ Der lokal getestete Code-Referenzcommit ist [`18f92a965810763b552bd96649607c112f
 - [ ] Vollständige Tastaturbelegung; derzeit u. a. KEY_2 für Maschinengewehr und Granatwerfer sowie Gamepad-only-Intro/Pause.
 - [ ] Kleines Options-/Hilfemenü nur nach Bedarf; frei belegbare Tasten, Defaults und Speicherung später.
 - [ ] Rundenziel, minimaler Score und Game-over-/Neustartdarstellung nach öffentlichem Pre-Alpha-Feedback bestimmen.
-- [ ] Online-Highscore-Anbindung aus Crystals prüfen, keine Voraussetzung für heutigen Release.
+- [ ] Online-Highscore-Anbindung aus Crystals prüfen, keine Voraussetzung für die Draft-Pre-Alpha.
 - [ ] HTML5-Optionsspeicherung später anhand Crystals mit Defaults, Versionen und Speicherfehlern konzipieren.
 
 ### Kampf, Ressourcen und Kollisionen
@@ -70,7 +73,7 @@ Der lokal getestete Code-Referenzcommit ist [`18f92a965810763b552bd96649607c112f
 - [ ] Float-/Sprite-/Renderer-/VSync-Langzeitverhalten, übrige Divisionen und F2/F4/F5/F6-Vergleiche gezielt statt global ändern.
 - [ ] Bestehenden OpenGL-Arbeitsstandard unter Windows behalten; keine allgemeingültigen GPU-/Browserempfehlungen aus Einzeltests ableiten.
 
-## 4. Knowledge Base nach dem dringenden Deployment
+## 4. Knowledge Base: nur nach abgeschlossenem aktuellem Arbeitsschritt
 
 [agk-knowledge-base](https://github.com/ChristianEngel19820128/agk-knowledge-base) soll als Referenz mit den Projekten wachsen; entsprechende Regel steht in beiden AGENTS.md-Dateien.
 
@@ -84,3 +87,5 @@ Der lokal getestete Code-Referenzcommit ist [`18f92a965810763b552bd96649607c112f
 ## 5. Dokumentationsregel
 
 Relevante Dokumente bei jedem Commit aktuell halten. [HANDOFF.md](HANDOFF.md) ist der direkte neue Chat-Einstieg; PROJECT.md beschreibt Konzept/Entscheidungen, TECHNICAL.md den aktuellen technischen Stand. Historische Unsicherheiten nicht als neue Blocker ausgeben, lokale Tests nicht als eigene AGK-/HTML5-Prüfungen behaupten.
+
+**Prozessentscheidung (16. November 2026):** GitHub ist gemeinsame Referenz; Besitzer testet AGK Studio und lokalen Apache selbst, Assistent analysiert Quellcode. Kleine freigegebene Schritte, Besonderheiten zunächst mit Evidenzstand dokumentieren, Schritt abschließen und dann nächste Arbeit/Knowledge Base bestimmen. Crystals 1.0 dient als Erfahrung. Frühere Deadline ist kein Zwang; itch.io-Draft und einmaligen Index-Push schützen. Die Seite wird vom Besitzer manuell gepflegt, Release-Texte in englischem Markdown.
