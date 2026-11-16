@@ -52,6 +52,9 @@ endfunction
 //
 //----------------------------------------------------------------------
 
+// Shared opacity for the in-game HUD bars; adjust after visual tests.
+#constant HUD_BAR_ALPHA 100
+
 function GuiEnergyDraw(Gui ref as TGui,Sonec ref as TSonec,Screen as TSize,Now as integer)
 	
 	local Data as TSpriteData
@@ -71,9 +74,9 @@ function GuiEnergyDraw(Gui ref as TGui,Sonec ref as TSonec,Screen as TSize,Now a
 	maxOverload = ceil(Sonec.EnergyShield.State*25.0/Sonec.EnergyShield.StateMax)
 	
 	if max < 6
-		ColorSet(Data.Color,255,0,0,170)
+		ColorSet(Data.Color,255,0,0,HUD_BAR_ALPHA)
 	else
-		ColorSet(Data.Color,0,255,0,170)
+		ColorSet(Data.Color,0,255,0,HUD_BAR_ALPHA)
 	endif
 	
 	for i = 1 to max
@@ -81,7 +84,7 @@ function GuiEnergyDraw(Gui ref as TGui,Sonec ref as TSonec,Screen as TSize,Now a
 		SpriteDraw(Gui.bar_horizontal_small.Sprite,Data)
 	next i
 	
-	ColorSet(Data.Color,0,127,255,170)
+	ColorSet(Data.Color,0,127,255,HUD_BAR_ALPHA)
 	
 	for i = max+1 to max+maxOverload
 		Data.Position.y = Screen.Height -37 - i*(GetSpriteHeight(Gui.bar_horizontal_small.Sprite.ID))
@@ -97,7 +100,7 @@ function GuiEnergyDraw(Gui ref as TGui,Sonec ref as TSonec,Screen as TSize,Now a
 	if trailBars > 25-maxOverload then trailBars = 25-maxOverload
 	if trailBars < 0 then trailBars = 0
 	shieldTop = max+maxOverload
-	ColorSet(Data.Color,255,40,40,170)
+	ColorSet(Data.Color,255,40,40,HUD_BAR_ALPHA)
 	for i = shieldTop+1 to shieldTop+trailBars
 		Data.Position.y = Screen.Height -37 - i*(GetSpriteHeight(Gui.bar_horizontal_small.Sprite.ID))
 		SpriteDraw(Gui.bar_horizontal_small.Sprite,Data)
@@ -124,14 +127,14 @@ function GuiEnergyDraw(Gui ref as TGui,Sonec ref as TSonec,Screen as TSize,Now a
 	maxOverload = ceil(EnergyOverload*OverloadBarsMax*1.0/1500.0)
 	if maxOverload > OverloadBarsMax then maxOverload = OverloadBarsMax
 	
-	ColorSet(Data.Color,0,255,0,170)
+	ColorSet(Data.Color,0,255,0,HUD_BAR_ALPHA)
 	for i = 1 to max
 		Data.Position.y = Screen.Height -35 - i*(GetSpriteHeight(Gui.bar_horizontal.Sprite.ID)+2)
 		SpriteDraw(Gui.bar_horizontal.Sprite,Data)
 	next i
 	
 	if EnergyOverload > 0
-		ColorSet(Data.Color,255,0,0,170)
+		ColorSet(Data.Color,255,0,0,HUD_BAR_ALPHA)
 		for i = max+1 to max+maxOverload
 			Data.Position.y = Screen.Height -35 - i*(GetSpriteHeight(Gui.bar_horizontal.Sprite.ID)+2)
 			SpriteDraw(Gui.bar_horizontal.Sprite,Data)
@@ -142,9 +145,9 @@ function GuiEnergyDraw(Gui ref as TGui,Sonec ref as TSonec,Screen as TSize,Now a
 	max = ceil(Sonec.MGun.Ammo*100.0/Sonec.MGun.AmmoMax)
 	
 	if max < 6
-		ColorSet(Data.Color,255,0,0,170)
+		ColorSet(Data.Color,255,0,0,HUD_BAR_ALPHA)
 	else
-		ColorSet(Data.Color,0,255,0,170)
+		ColorSet(Data.Color,0,255,0,HUD_BAR_ALPHA)
 	endif
 	
 	for i = 1 to max
@@ -156,9 +159,9 @@ function GuiEnergyDraw(Gui ref as TGui,Sonec ref as TSonec,Screen as TSize,Now a
 	max = Sonec.GrenadeLauncher.Ammo
 	
 	if max < 6
-		ColorSet(Data.Color,255,0,0,170)
+		ColorSet(Data.Color,255,0,0,HUD_BAR_ALPHA)
 	else
-		ColorSet(Data.Color,0,255,0,170)
+		ColorSet(Data.Color,0,255,0,HUD_BAR_ALPHA)
 	endif
 	
 	for i = 1 to max
