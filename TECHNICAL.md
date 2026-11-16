@@ -253,13 +253,23 @@ Entwickler bestätigt mehrfachen Tod **innerhalb derselben HTML5-Browsersitzung*
 
 **Nächster Einzelpunkt:** Walker kann momentan durch Sonec hindurchlaufen; die gewünschte Stop-/Feuerreaktion ist von Kistenstopp und bestehender Feuerzustandslogik abzugrenzen. Erst eng untersuchen, anschließend minimal implementieren und testen. Energie-HUD danach getrennt.
 
-### Walker/Sonec: eng begrenzter Bewegungsstopp und Radiusprüfung (16.11.2026; Test offen)
+### Walker/Sonec: eng begrenzter Bewegungsstopp und Radiusprüfung (16.11.2026; anschließend lokal positiv)
 
 **Radiusprüfung auf ausdrücklichen Hinweis des Entwicklers:** `SonecInit()` weist `Sonec.ObjectData.Size.Width = GetSpriteWidth(ProtoSonec.AnimRight.Stand.Sprite.ID)`, `Sonec.ObjectData.Radius = Sonec.ObjectData.Size.Width * 0.5`, `Sonec.SpriteData.Scale = 1` zu. Kein zweites Multiplizieren mit `SpriteData.Scale` in `sonec.agc` gefunden. Daher im erkennbaren Initialisierungspfad **keine doppelte Scale-Schrumpfung**, tatsächliche optische Sprite-/Hitbox-Passung im Spiel kontrollieren. Radius- oder Spritewerte wurden nicht geändert.
 
 **Neuer Walker-Movement-Pfad:** `WalkerSonecDistanceAhead(Walker,Sonec)` in `walker.agc` ermittelt in Weltkoordinaten die freie Distanz vor der bestehenden Walker-Hülle (`WALKER_HULL_HALF_WIDTH=50`, `WALKER_HULL_HORIZONTAL_CLEARANCE=5`, `WALKER_HULL_TOP=50`, `WALKER_HULL_BOTTOM=35`) und Sonecs Kreis-/AABB-Hilfsregion (`Sonec.ObjectData.Position ± Sonec.ObjectData.Radius`). Nur bei vertikaler Überlappung blockiert der Spieler, beim Ausweichen nach oben nicht. `WalkerMove()` fordert `Sonec ref as TSonec`, begrenzt `StepX` innerhalb des bisherigen `if StepX>0`-Zweigs nach `WalkerChestDistanceAhead()`, und setzt bei erreichten/überlappenden Hindernisabständen `Walker.PauseUntilMs=Now+1200`. Anders als eine Kiste löst Sonec **keine Umdrehung** aus, sondern die unveränderte `WalkerFireAll()`-Logik darf in der normalen Pause feuern. `WalkerMoveAll()` und der Aufruf in `game.agc` sind entsprechend angepasst.
 
 **Nachweisstatus:** GitHub-Signatur-/Aufrufprüfung bestanden; **kein eigener AGK-Compiler-/Laufzeittest**. Entwickler testet Windows/HTML5, Stop vor Sonec aus beiden Richtungen, reguläres Zielen/Schießen, Weiterlaufen bei freiem Weg, Flug über Walker hinweg und unveränderte Kisten-, Kanten-, Stand-/IK- und Turmregeln. Bei schlechter Distanz bitte erst Screenshot/Beobachtung, dann gezieltes Feintuning; keinen allgemeinen Collider-Umbau. HUD erst nach Testabschluss angehen.
+
+### Walker-Sonec-Stopp: Developertest positiv, Sprungkontakt und Sound getrennt (16.11.2026)
+
+**Bild-/Spielbefund:** Zwei Screenshots und Entwicklerbericht bestätigen den passenden horizontalen Abstand bei beidseitiger Annäherung. Walker bleibt stehen, zielt/feuert und kann Sonec Schaden zufügen. Sonec kann wegfliegen und über den Walker hinwegfliegen; Walker verhält sich danach wie erwartet. Damit ist die eng gefasste Walker-Bewegungsbremse **lokal bestanden**. Kein unabhängiger AGK-Lauf durch Assistenten, keine ausdrücklichen Einzelangaben zum Kisten-/Kantenregressionstest.
+
+**Separater Kontaktfall:** Sonec kann springend in die Walkergeometrie eindringen. `WalkerSonecDistanceAhead()` begrenzt nur die Walker-Laufbewegung vor Sonec; es greift nicht in Sonecs Flug-/Sprungphysik ein und ist keine komplette wechselseitige Collider-Implementierung. Als späteren Beobachtungs-/Prüfpunkt notieren, nicht den bestandenen Schritt wegen anderer Kollisionsrichtung wieder öffnen.
+
+**Sound-Architekturidee:** Auslösung gemeinsamer Ereignis-/Schuss-Sounds soll in den jeweils zuständigen Funktionen liegen und auch für andere Akteure als Sonec gelten. Die Implementierung ist noch nicht untersucht oder freigegeben. Vorher Bestandsaufnahme der tatsächlichen Sound-Trigger; Mehrfachabspielen vermeiden.
+
+**Nächster Schritt:** ausschließlich optische Skalierung des grünen Energiebalkens und roten Overload-Bereichs auf ungefähr die Gesamthöhe von HP+Schild; kein Energie-/HP-/Schild-Balancing und kein Walker-/Sound-Code gleichzeitig.
 
 ## 7. Übergabe und Historie
 
