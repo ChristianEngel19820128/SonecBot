@@ -248,6 +248,7 @@ function GameDo(Game ref as TGame,Now as integer)
 	ExplosionCollideChest(Game.ExplosionList,Game.ChestList)
 	ExplosionCollideOrb(Game.ExplosionList,Game.OrbList)
 	ExplosionCollideMine(Game.ExplosionList,Game.MineList)
+	ExplosionCollideWalkers(Game.ExplosionList,Game.WalkerList,Now)
 	
 	SonecEnergyRegenerate(Game.Sonec,Now)
 	SonecHealthRegenerate(Game.Sonec,Now)
