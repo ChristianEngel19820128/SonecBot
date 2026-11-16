@@ -1,6 +1,6 @@
 # SonecBot – Aktuelle Aufgaben und Meilensteine
 
-**Dokumentstatus:** Version 4.1 – itch.io-Draft-Test bestätigt  
+**Dokumentstatus:** Version 4.2 – itch.io-Embed-Neustart und Links bestätigt  
 **Stand:** 16. November 2026  
 **Branch:** `develop`  
 **Aktuelles Ziel:** Funktionierende HTML5-Pre-Alpha auf itch.io im **Draft per Secret URL** für eingeladene Community-Tester bereitstellen, Feedback sammeln. **Nicht auf Published umstellen**; den einmaligen öffentlichen Index-Push für einen späteren, noch nicht beschlossenen Release bewahren. Keine Deadline.
@@ -26,8 +26,8 @@
 - [x] **itch.io-Draft-Embed lädt das Spiel:** Screenshot zeigt das Menü und FPS-Anzeige 60; anschließend Entwickler-Smoke-Test direkt im eingebetteten Spiel. Controller erkannt, Pause funktioniert, alle Waffen, Schild, Energieanziehung und alle Lauf-/Bewegungsfunktionen funktionieren; Tod durch erschöpfte Energie und Absturz getestet. ESC/QUIT sind bewusst im HTML5-Build deaktiviert. **Entwicklerbericht**, kein vom Assistenten ausgeführter Browserlauf.
 - [x] **README und englische itch.io-Seitenbeschreibung aktualisiert.** Promo-Cover/-Banner ergänzt; AI-Disclosure auf Text/Dialog, Code und aufgrund KI-generierter Promografiken auch Graphics ausgelegt (tatsächlich gesetzte Formularhäkchen nicht unabhängig geprüft). 💚 bleibt Projektkennzeichen.
 - [x] **Secret-URL-Seite im Draft bereitgestellt:** Entwickler bestätigt Upload und gespeicherte Beschreibung; vorliegender Screenshot zeigt Seite in Draft. Die Secret URL darf an ausgewählte Community-Tester weitergereicht werden. **Keine öffentliche Published-Freigabe und kein öffentlicher Release.**
-- [ ] **Falls noch nicht geschehen: Neustart nach Game-over direkt im itch.io-Embed einmal kurz bestätigen.** Mehrere Neustarts im lokalen HTML5-Browser waren bereits erfolgreich; nicht automatisch als itch.io-Embed-Test ausgeben.
-- [ ] **GitHub-Link zur Branch `develop` auf der itch.io-Seite ergänzen:** übernimmt der Entwickler selbst; noch nicht als erledigt behaupten.
+- [x] **Neustart im itch.io-Embed laut Entwickler erfolgreich:** Im Anschluss an die bisher dokumentierten eingebetteten Funktionen wurde der Neustart als „soweit ok“ bestätigt. Keine Aussage über mehrere Neustartzyklen oder Langzeitstabilität speziell im Embed; die mehrmaligen Neustarts im lokalen HTML5-Browser waren bereits bestanden.
+- [x] **GitHub-Links auf itch.io ergänzt (Entwicklerbericht):** zwei separate Links zu `main` und `develop`; `main` bleibt bis zum ausdrücklich beschlossenen Merge unverändert.
 - [ ] **Feedback der ersten externen Spieler abwarten und sammeln:** tatsächliche Browser-/Controller-Unterstützung, Start/Pause/Neustart, Balance, Minen, Verständlichkeit. Nur reproduzierbare und relevante Probleme einzeln korrigieren; **kein Minenspawn-Umbau vor Testerfeedback.**
 - [ ] **Später gesondert über `develop` → `main` entscheiden:** nach akzeptiertem Draft-Meilenstein, eventuell am Abend. Merge **nicht ausgeführt**; vorher Änderungen/Branch-Differenz gemeinsam prüfen. GitHub-Merge und itch.io-Status sind unabhängig; itch.io bleibt Draft bis ausdrücklicher späterer Publish-Entscheidung.
 
