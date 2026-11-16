@@ -2,7 +2,7 @@
 
 **Stand:** 16. November 2026  
 **Ziel:** HTML5-Pre-Alpha kontrolliert testen und ausgewählten Personen über itch.io-Draft/Secret-URL zugänglich machen; öffentliche Veröffentlichung später entscheiden  
-**Status:** Alpha-Walker abgeschlossen; **HTML5-Export und erster lokaler Browserstart laut Entwickler bestanden**; Gamepad-Aktions- und Pause-Test laut Entwickler bestanden; Tod/Mehrfachneustart und Draft-Upload noch offen, kein öffentlicher Publish geplant  
+**Status:** Alpha-Walker abgeschlossen; **HTML5-Export und erster lokaler Browserstart laut Entwickler bestanden**; Gamepad-Aktions- und Pause-Test laut Entwickler bestanden; Tod und mehrfacher Neustart im laufenden HTML5-Browsertest bestanden; Draft-Upload noch offen, kein öffentlicher Publish geplant  
 **Repository:** ChristianEngel19820128/SonecBot  
 **Arbeitsbranch:** `develop`  
 **Historischer, lokal akzeptierter Walker-Abschluss-Codecommit:** [`18f92a965810763b552bd96649607c112f966238`](https://github.com/ChristianEngel19820128/SonecBot/commit/18f92a965810763b552bd96649607c112f966238)
@@ -124,6 +124,16 @@
 - `shield.agc:ShieldAbsorbDamage()` ist für Explosionen eingebunden (`explosion.agc:ExplosionCollideSonec`). `bullet.agc:BulletCollide()` zieht bei feindlichen Kugeln Sonec.Health direkt ab und ruft **kein** `ShieldAbsorbDamage()` auf. Damit schützt der Schild im aktuellen Code nicht gegen Walker-Kugeln, obwohl er aktivierbar ist. Dieser technische Befund ist noch nicht durch separaten A/B-Laufzeittest quantifiziert.
 
 **Arbeitsregel:** Befunde dokumentieren, keine ungeprüften KI-, Kollisions-, HUD- oder Schildänderungen auf einmal. Jeden Punkt einzeln gemeinsam auswählen, kleinste Änderung und Entwicklernachtest. Offene HTML5-Release-Gates Tod + mindestens zwei Neustarts und itch.io-Draft weiterhin separat; itch niemals Published schalten. Screenshot im Chat, nicht als dauerhaftes Repo-Artefakt behaupten.
+
+## HTML5-Tod-/Mehrfachneustart-Gate bestanden; neue Idee (16. November 2026)
+
+**Bestanden laut Entwickler in derselben noch laufenden Browsersitzung:** Mehrfach durch Minen und Walkerbeschuss gestorben, danach mehrfach neu gestartet und weitergespielt. Pause verfügbar; Sitzung zum Zeitpunkt der Meldung weiterhin offen, Screenshots bei Bedarf möglich. **Damit Tod und mindestens zwei Neustarts im laufenden HTML5-Test praktisch bestätigt.** Keine frische Browserladung, anderer Browser oder vollständige Reinitialisierungs-/Memory-Leak-Analyse daraus ableiten. Der konkrete exportierte Code-SHA bleibt unbekannt. Bitte nicht weitere Tode für diesen Test verlangen.
+
+**Offene aktuelle Befunde:** Walker/Sonec-Überlappung, HUD-Energie/Overload-Proportion und fehlende Schildabsorption für Walker-Kugeln bleiben einzelne Aufgaben; nur die Schildlücke wurde durch Quellprüfung bereits direkt bestätigt. **Nächster vorgeschlagener enger Code-Schritt:** bestehende `ShieldAbsorbDamage()` in `BulletCollide()` für feindliche Walker-Kugeln integrieren, danach mit/ohne aktiven Schild im laufenden Spiel testen. Noch **nicht** implementiert, Entscheidung gemeinsam.
+
+**Neue Designidee für später:** Bestehender geplante Informationsavatar (`PROJECT.md`) könnte zunächst nur **auffällige rote Warnmeldungen in Großbuchstaben oben im HUD** zeigen, z. B. „MINEFIELD DETECTED“, sobald Minen spawnen; Avatarbild und spätere Sprachausgabe sind Optionen, derzeit nicht implementiert. Vor Warnlogik Bedingungen und Spam/mehrfaches Auftauchen prüfen. Entwickler beobachtet Minen oft in Rudeln. **Separater Prüfpunkt:** `game.agc`-Minenspawnwahrscheinlichkeit, Anzahl pro Ereignis und mögliche Frameabhängigkeit analysieren, aber keine ungefragte Spawn-Korrektur. Kein unmittelbarer Pre-Alpha-Releaseblocker.
+
+**Weitere Release-Gate:** itch.io **Draft**-Upload und Secret-URL-Browser-Einbettung weiterhin offen; niemals Published aktivieren.
 
 ## 1. Sofortiger Einstieg im neuen Chat
 
