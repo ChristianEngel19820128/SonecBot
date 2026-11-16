@@ -23,12 +23,12 @@
 #constant WALKER_DIAGONAL_TEST_ANGLE 15.0
 #constant WALKER_FIRE_INTERVAL_MS 1800
 #constant WALKER_BURST_SHOT_DELAY_MS 150
-#constant WALKER_BURST_RECOVERY_MS 200
-// Three recoil positions (0/5/10 px), fully home before the second shot.
+#constant WALKER_BURST_RECOVERY_MS 300
+// Independent 0/5/10 px recoil; both barrels return before recovery ends.
 #constant WALKER_BARREL_RECOIL_PX 10.0
-#constant WALKER_BARREL_RECOIL_RISE_MS 30
-#constant WALKER_BARREL_RECOIL_HOLD_MS 90
-#constant WALKER_BARREL_RECOIL_END_MS 150
+#constant WALKER_BARREL_RECOIL_RISE_MS 60
+#constant WALKER_BARREL_RECOIL_HOLD_MS 180
+#constant WALKER_BARREL_RECOIL_END_MS 300
 #constant WALKER_MUZZLE_FLASH_CYCLES 10
 
 //----------------------------------------------------------------------
