@@ -135,6 +135,14 @@ Hochhausbewegung standardmäßig positiver dt-Pfad (B); Plattformbewegung im Nor
 
 Zieltermin des Nutzers: **16. November 2026**. Keine Veröffentlichung, erfolgreiche Browserprüfung oder verfügbaren Zugriff erfinden. Der Assistent hat bisher keinen AGK-/HTML5-Build ausgeführt.
 
+### Lokaler HTML5-Smoke-Test – Entwicklermeldung vom 16. November 2026
+
+- HTML5-Export in lokalem AppGameKit Studio erfolgreich; Spiel startet über Apache/XAMPP im gemeinsam erstellten Run-Frame. Der Frame entspricht im Prinzip der späteren itch.io-Einbettung, ist aber **kein dortiger Test**.
+- Mit VSync bei Windows 60 Hz wird das Gameplay als flüssig beschrieben; kurze Umstellung auf 75 Hz ergibt laut Entwickler ebenfalls flüssiges Gameplay. Für weitere Prüfung wird 60 Hz bevorzugt. Keine eigenen Messdaten, keine unabhängige Browserkontrolle und keine Bestätigung aller Eingaben.
+- Der aktuelle HTML5-Export wurde hier nicht als Datei bereitgestellt; sein exakter Codecommit wurde nicht eigens verifiziert. Vorheriger lokal getesteter **Walker-Codecommit** im Dokumentkopf bleibt als solcher gültig.
+- Browsercache/XAMPP: Nach Dateiaustausch alte Assets/Skripte möglich; Entwickler empfiehlt in geöffneten DevTools die Cache-Deaktivierung während lokaler Tests. Noch Kandidat für reproduzierbare Knowledge-Base-Notiz, keine pauschale Aussage über AGK-Enginefehler.
+- Weitere Browser-Release-Gates: Gamepad/Actions, Pause, Tod, mindestens zwei Neustarts und itch.io-Draft/Secret-URL-Test. Geplante Untersuchung fehlender Kollisionsabfragen ist zunächst **Analyse**; nur bestätigte relevante Fehler mit gemeinsamer Freigabe beheben. Die Spawnwahrscheinlichkeiten sind separat auf Frame-/Zeitbasis zu prüfen.
+
 ## 7. Übergabe und Historie
 
 [HANDOFF.md](HANDOFF.md) enthält getesteten Referenzcommit, exakte Parameter, Release-Gates, offene Entscheidungen und einen direkten Starttext. Tatsächlichen develop-HEAD neu abfragen, lokale Nutzerdateien/alte Anhänge nicht voraussetzen.
