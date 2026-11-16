@@ -596,6 +596,7 @@ type TExplosion
 	LastChestHitMs as integer[-1]
 	LastOrbHitMs as integer[-1]
 	LastMineHitMs as integer[-1]
+	LastWalkerHitMs as integer[-1]
 	MeasureStartMs as integer
 	MeasureChecks as integer
 	MeasureHits as integer
