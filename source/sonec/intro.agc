@@ -57,6 +57,7 @@ function IntroCreate(Intro ref as TIntro,vx as integer,vy as integer,Now as inte
 	SetTextColor(Intro.TextHelp,255,255,255,222)
 	
 	Intro.SelctionPos = 1
+	Intro.AnalogMenuHeld = FALSE
 	Intro.IsQuit = FALSE
 	
 	TimeSet(Intro.TimerHelp,11000,1)
@@ -131,13 +132,32 @@ endfunction
 function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,JoystickIndex as integer,Now as integer)
 	
 	local Value as integer
+	local AnalogStep as integer
+	local AnalogY as float
+	
+	// Analog menu navigation: one step per stick deflection, rearmed at neutral.
+	AnalogY = GetJoyY(JoystickIndex)
+	if AnalogY > -0.3 and AnalogY < 0.3
+		Intro.AnalogMenuHeld = FALSE
+	else
+		if Intro.AnalogMenuHeld = FALSE
+			if AnalogY < -0.5
+				AnalogStep = -1
+				Intro.AnalogMenuHeld = TRUE
+			endif
+			if AnalogY > 0.5
+				AnalogStep = 1
+				Intro.AnalogMenuHeld = TRUE
+			endif
+		endif
+	endif
 	
 	if TimeGet(Intro.TimerHelp,Now) > 0
 		IntroGambleHelp(Intro)
 		TimeReset(Intro.TimerHelp,Now)
 	endif
 	
-	if InputActionPressed(Keys,JoystickIndex,ACTION_MOVE_UP) = 1 or GetKeyPressed(KEY_UP) = 1
+	if InputActionPressed(Keys,JoystickIndex,ACTION_MOVE_UP) = 1 or GetKeyPressed(KEY_UP) = 1 or AnalogStep = -1
 		if Intro.SelctionPos <= 1
 			Intro.SelctionPos = 3
 		else
@@ -146,7 +166,7 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Joyst
 		PlaySound(Sound.MenuSound)
 	endif
 	
-		if InputActionPressed(Keys,JoystickIndex,ACTION_MOVE_DOWN) = 1 or GetKeyPressed(KEY_DOWN) = 1
+		if InputActionPressed(Keys,JoystickIndex,ACTION_MOVE_DOWN) = 1 or GetKeyPressed(KEY_DOWN) = 1 or AnalogStep = 1
 		if Intro.SelctionPos >= 3
 			Intro.SelctionPos = 1
 		else
