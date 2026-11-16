@@ -86,19 +86,21 @@ Der lokal getestete Code-Referenzcommit ist [`18f92a965810763b552bd96649607c112f
 
 - [ ] **Walker/Sonec-Körperkontakt:** Entwickler beobachtet, dass Walker durch Sonec läuft, statt anzuhalten und zu schießen. `WalkerMove()` berücksichtigt Kisten/Plattformkanten, nicht Sonec als Hindernis; `GameDo()` hat keinen direkten Walker↔Sonec-Körperkollisionspfad. Gewünschtes Verhalten vor Codeänderung genau festlegen, danach isoliert testen; bestehende KI, Fuß-/Turm-IK schützen.
 - [ ] **Energie-HUD-Proportion:** Screenshot/Entwicklerwunsch: grüne Energie plus angemessener roter Overload-Bereich ungefähr so hoch wie HP plus Schild. Ist: in `GuiEnergyDraw()` HP=150 kleine Segmente, Schild bis 25, Energie=20 große Segmente, Overload proportional `EnergyOverload*10/Energy.StateMax`. Nur Darstellung anpassen, keine Ressourcenwerte/Balanceänderung; später eigene Sichtprüfung.
-- [ ] **Schild gegen Walker-Geschosse – Codefix implementiert, Test offen:** `BulletCollide()` nutzt nun den vorhandenen Absorptionspfad für `TYPEENEMY`. Entwicklertest mit/ohne Schild und Explosionsregression steht aus; keine neue Schild-/Rüstungslogik.
+- [x] **Schild gegen Walker-Geschosse – lokal bestanden:** `BulletCollide()` nutzt vorhandenen Absorptionspfad für `TYPEENEMY`; Entwickler bestätigt Schaden ohne Schild, Abbau der Schildladung mit roter Schadensspur bei aktiviertem Schild bis zum Verbrauch und bezeichnet **alle vereinbarten Tests als bestanden**. Keine neuen Balancewerte.
 - [x] **HTML5-Release-Gate bestanden:** Entwickler bestätigt mehrfachen Tod durch Minen/Walker, mehrfachen Neustart in derselben aktiven Browser-Sitzung, Spiel weiterhin lauffähig. Kein Beleg für Langzeit-Memory-Verhalten oder andere Browser.
 
 ### Spätere Helferwarnungen und Minenspawn-Prüfung
 
 - [ ] **Informationsavatar (bereits im Projekt vorgesehen):** zuerst optional nur eine gut sichtbare rote Warnmeldung in Großbuchstaben oben, z. B. „MINEFIELD DETECTED“ bei neu auftauchender Minengruppe. Eventuell Bild/animiertes Porträt, später Sprachausgabe. Warnkriterium, Dauer, Priorität und Spam-Vermeidung vor Implementierung gemeinsam festlegen. Kein aktueller Codeauftrag.
 - [ ] **Minen-Spawns gesondert prüfen:** Entwickler sieht meist gruppenartige Minenvorkommen. In `GameDo()` ist eine Zufallsprüfung pro Update mit anschließend zufälliger Anzahl vorhanden; Frameabhängigkeit ist plausibel, aber noch kein gemessener Defekt. Verteilung, Anzahl, Fairness und mögliche Warn-Signale erst analysieren; keine spontane Änderung.
-- [ ] **Nächsten schmalen Funktionsschritt gemeinsam wählen:** favorisiert vorhandene Schildabsorption für feindliche Walker-Kugeln; anschließend Walker-Sonec-Körperkontakt und Energie-/Overload-HUD. Änderungen getrennt testen.
+- [ ] **Nächster einzelner Funktionsschritt:** Walker/Sonec-Körperkontakt; danach Energie-/Overload-HUD. Schildschritt abgeschlossen. Änderungen getrennt testen.
 
-### Aktueller Einzelschritt: Schild gegen Feindkugeln – Nachtest offen
+### Abgeschlossener Einzelschritt: Schild gegen Feindkugeln – Entwicklertest bestanden
 
-- [ ] **AGK-/HTML5-Test des neuen Builds:** `BulletCollide()` verwendet für `TYPEENEMY` jetzt `ShieldAbsorbDamage()` mit `Game.Shield,Now`. Ohne Schild normaler HP-Verlust; mit geladenem aktivem Schild geringerer HP-Verlust plus Ladungsverbrauch und rote Spur; Schild aus/leer kein Schutz. Explosionsschild unverändert prüfen. **Nur GitHub-Code geprüft, noch kein realer Compiler-/Laufzeittest.**
+- [x] **Schildtest laut Entwickler komplett bestanden:** Walker-Schaden ohne Schild; mit Schild sichtbarer Verbrauch der Schildladung und rote Schadensspur bis zum Aufbrauchen. Alle vereinbarten Tests einschließlich Restprüfungen vom Entwickler als bestanden markiert; keine Detailmesswerte und keine eigenen AGK-Läufe des Assistenten.
 - [ ] **Danach getrennt:** Walker/Sonec-Überlappung (Walker soll halten und schießen), anschließend Energie-/Overload-HUD optisch anpassen. Keine parallele Spielcodeänderung.
+
+- [ ] **Beobachtete Kettenreaktion nicht ungeprüft als Fehler behandeln:** Walker schoss auf Mine und wurde von der Explosion selbst zerstört; kann als gewünschtes emergentes Gameplay gelten. Erst bei reproduzierbarem Balance-/Logikproblem ändern.
 
 ## 3. Für später: reguläre Alpha / Fehler nur bei konkreter Reproduktion
 
