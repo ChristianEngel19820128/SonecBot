@@ -128,7 +128,7 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function IntroDo(Intro ref as TIntro,Sound ref as TSound,JoystickIndex as integer,Now as integer)
+function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,JoystickIndex as integer,Now as integer)
 	
 	local Value as integer
 	
@@ -183,7 +183,7 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,JoystickIndex as intege
 		endcase
 	endselect
 	
-	if GetJoyPressed(JoystickIndex,joystickButtonStart) = 1 or GetJoyPressed(JoystickIndex,joystickButtonA) = 1
+	if InputActionPressed(Keys,JoystickIndex,ACTION_START) = 1 or GetJoyPressed(JoystickIndex,joystickButtonA) = 1
 		select Intro.SelctionPos
 			case 1
 				Value = TRUE
