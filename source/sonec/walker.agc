@@ -386,6 +386,54 @@ endfunction Distance
 // 
 //----------------------------------------------------------------------
 
+// Free horizontal travel before the existing Walker hull reaches Sonec.
+// Respect vertical separation so Sonec flying overhead does not block walking.
+function WalkerSonecDistanceAhead(Walker ref as TWalker,Sonec ref as TSonec)
+
+	local Distance as float
+	local HullHalfWidth as float
+	local HullMinX as float
+	local HullMaxX as float
+	local HullMinY as float
+	local HullMaxY as float
+	local SonecMinX as float
+	local SonecMaxX as float
+	local SonecMinY as float
+	local SonecMaxY as float
+
+	Distance = 1000000.0
+	if Sonec.IsLost = FALSE
+		HullHalfWidth = WALKER_HULL_HALF_WIDTH + WALKER_HULL_HORIZONTAL_CLEARANCE
+		HullMinX = Walker.ObjectData.Position.x - HullHalfWidth
+		HullMaxX = Walker.ObjectData.Position.x + HullHalfWidth
+		HullMinY = Walker.ObjectData.Position.y - WALKER_HULL_TOP
+		HullMaxY = Walker.ObjectData.Position.y + WALKER_HULL_BOTTOM
+
+		SonecMinX = Sonec.ObjectData.Position.x - Sonec.ObjectData.Radius
+		SonecMaxX = Sonec.ObjectData.Position.x + Sonec.ObjectData.Radius
+		SonecMinY = Sonec.ObjectData.Position.y - Sonec.ObjectData.Radius
+		SonecMaxY = Sonec.ObjectData.Position.y + Sonec.ObjectData.Radius
+
+		if HullMinY < SonecMaxY and HullMaxY > SonecMinY
+			if SonecMinX < HullMaxX and SonecMaxX > HullMinX
+				Distance = 0
+			else
+				if Walker.State.Alignment = MOVELEFT and SonecMaxX <= HullMinX
+					Distance = HullMinX - SonecMaxX
+				endif
+				if Walker.State.Alignment = MOVERIGHT and SonecMinX >= HullMaxX
+					Distance = SonecMinX - HullMaxX
+				endif
+			endif
+		endif
+	endif
+
+endfunction Distance
+
+//----------------------------------------------------------------------
+// 
+//----------------------------------------------------------------------
+
 function WalkerNew(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,World ref as TWorld,Plate ref as TPlate,PlateIndex as integer,Now as integer,SpawnOffsetX as float)
 	
 	Walker.Enabled = TRUE
@@ -1305,13 +1353,14 @@ function WalkerFlashFollowAll(WalkerList ref as TWalkerList,FlashList ref as TFl
 	next i
 endfunction
 
-function WalkerMove(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,PlateList ref as TPlateList,ChestList ref as TChestList,World ref as TWorld,Now as integer)
+function WalkerMove(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,PlateList ref as TPlateList,ChestList ref as TChestList,Sonec ref as TSonec,World ref as TWorld,Now as integer)
 
 	local PlateIndex as integer
 	local PlateWidth as float
 	local EdgeMargin as float
 	local StepX as float
 	local ChestDistance as float
+	local SonecDistance as float
 	local Moving as integer
 
 	StepX = 0
@@ -1355,6 +1404,13 @@ function WalkerMove(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,PlateL
 									if ChestDistance <= StepX
 										StepX = ChestDistance
 										Walker.TurnPending = 1
+									endif
+									// Sonec is a temporary stop, not a chest or turn trigger.
+									SonecDistance = WalkerSonecDistanceAhead(Walker,Sonec)
+									if Walker.TurnPending = 0 and SonecDistance <= StepX
+										StepX = SonecDistance
+										// Regular stand pause allows the existing firing state machine.
+										Walker.PauseUntilMs = Now + 1200
 									endif
 								endif
 								if Walker.State.Alignment = MOVELEFT
@@ -1426,12 +1482,12 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function WalkerMoveAll(WalkerList ref as TWalkerList,ProtoWalker ref as TProtoWalker,PlateList ref as TPlateList,ChestList ref as TChestList,World ref as TWorld,Now as integer)
+function WalkerMoveAll(WalkerList ref as TWalkerList,ProtoWalker ref as TProtoWalker,PlateList ref as TPlateList,ChestList ref as TChestList,Sonec ref as TSonec,World ref as TWorld,Now as integer)
 	
 	local i as integer
 	
 	for i = 0 to WalkerList.Walker.Length
-		WalkerMove(WalkerList.Walker[i],ProtoWalker,PlateList,ChestList,World,Now)
+		WalkerMove(WalkerList.Walker[i],ProtoWalker,PlateList,ChestList,Sonec,World,Now)
 		if WalkerList.Walker[i].Enabled = TRUE and WalkerList.Walker[i].ObjectData.Position.x + WalkerList.Walker[i].ObjectData.Size.Width < World.Position.x
 			WalkerDelete(WalkerList,i)
 		endif
