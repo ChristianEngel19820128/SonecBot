@@ -91,6 +91,16 @@
 
 **Referenzpflege:** Der im Dokumentkopf verlinkte Hash `18f92a9` ist der historische **Walker-Abschlussstand**, nicht der aktuelle Branch-HEAD und nicht der neueste Kollisions-Build. Den tatsächlichen `develop`-HEAD bei jedem Einstieg erneut abfragen; aktueller getesteter lokaler Export-Commit für den Granatentest wurde nicht separat festgehalten.
 
+## Aktueller Einzeltest: Explosion → Alpha-Walker (16. November 2026)
+
+**Gemeinsam freigegeben und auf `develop` implementiert, AGK-/HTML5-Nachtest offen.** Eine Explosion soll alle getroffenen Walker über die **bestehende Turm-AABB** beschädigen; der Explosionsradius wird als Kreis gegen den nächstgelegenen Punkt dieser Box geprüft. Ergänzt: `LastWalkerHitMs[-1]` in `TExplosion` (`def_game.agc`), Initialisierung in `ExplosionNew()`, neue `ExplosionCollideWalkers()` in `explosion.agc` und Aufruf in `GameDo()` nach den bisherigen Explosion-Mine-Kollisionen. Jeder Walker hat pro Explosion einen eigenen Trefferzeitstempel, entsprechend den bestehenden Kisten/Orb/Minen-Pfaden. Die aktuellen Konfigurationen **30 Schaden je mindestens 100 ms** sowie die vorhandenen Radien und Animationen bleiben unverändert. Vorhandenen roten Turm-Trefferflash wiederverwenden; keine neue Schadensklasse und keine Walker-IK-/KI-Änderung.
+
+**Zu testen:** AGK unter Windows und HTML5; eine Granate kann den Turm direkt treffen, ihre Explosion verursacht danach ggf. **zusätzlichen Schaden**; eine auf dem Plattformboden neben dem Walker explodierende Granate kann ihn ohne Direkttreffer durch Radiuswirkung beschädigen; Explosionsschaden soll Walker bei mehreren/ausreichenden Treffern zerstören. Bestehende Explosionen gegen Sonec, Kisten, Orbs, Minen und der direkte Granatenaufprall dürfen nicht regressieren. **Besonderheit:** Auch andere Explosionsquellen (z. B. Walker-Zerstörung) benutzen denselben globalen Explosionspfad; mögliche Kettenreaktionen prüfen statt unbeabsichtigt als Bug zu klassifizieren. Die Explosion wird in `GameDo()` vor Granaten- und Walker-Bewegung verarbeitet; frisch erzeugte Granatenexplosionen erreichen den Walker-Kollisionspfad erst beim nächsten Update.
+
+**Spielgefühl bewahren:** Entwickler berichtet, dass SonecBot nun als Spiel mit Gegnern und Gegenwehr bereits Spaß macht und nicht mehr nur eine technische Demo ist. In diesem Test die bestehende Spielmechanik erhalten; erst nach lokalem Nachtest gemeinsam entscheiden, ob Explosionen zu stark oder zu schwach wirken. Das itch.io-Projekt bleibt Draft.
+
+**Nächster Schritt:** Besitzer testet diesen einen Explosionspfad und meldet sichtbare Wirkung/Regressionsstatus. Keine weiteren Änderungen bis zur Auswertung.
+
 ## 1. Sofortiger Einstieg im neuen Chat
 
 1. `AGENTS.md`, diese Datei, `PROJECT.md`, die aktuelle `TODO.md` und den aktuellen Status/Übergabeabschnitt in `TECHNICAL.md` lesen. Alte datierte Technikabschnitte sind Historie, keine neue Aufgabenfreigabe.
