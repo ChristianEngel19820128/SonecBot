@@ -1,6 +1,6 @@
 # SonecBot – Aktuelle Aufgaben und Meilensteine
 
-**Dokumentstatus:** Version 4.3 – erster Keyboard-Feedbackblocker und Merge-PR #1  
+**Dokumentstatus:** Version 4.4 – Eingabestrukturen angelegt, Laufzeit-Anbindung offen  
 **Stand:** 16. November 2026  
 **Branch:** `develop`  
 **Aktuelles Ziel:** Funktionierende HTML5-Pre-Alpha auf itch.io im **Draft per Secret URL** für eingeladene Community-Tester bereitstellen, Feedback sammeln. **Nicht auf Published umstellen**; den einmaligen öffentlichen Index-Push für einen späteren, noch nicht beschlossenen Release bewahren. Keine Deadline.
@@ -41,12 +41,18 @@
 
 ## 3. Erstes Community-Feedback und Post-Pre-Alpha-Patchplanung (16.11.2026, Abend)
 
+**Neuer Implementierungsschritt (16.11.2026):** Auf `develop` wurde `source/sonec/def_input.agc` angelegt und unmittelbar nach `def_keys.agc` in `main.agc` eingebunden. Enthalten: 15 Aktionskonstanten (6 Bewegung, 6 Aktionen, Hover, Start, Back), `TActionBinding` mit `Key`/`PadButton`, `TKeys` mit Versionsnummer und festem Bindings-Array `[14]`. **Nur Strukturen; noch keine Standardbelegung, keine Umstellung der Abfragen, kein Optionsmenü, kein Cookie und kein Test durch AGK Studio.** Die sechs plus sechs Hauptaktionen, zusätzlich Hover (Gamepad-L3 als unbestätigter Kandidat), Enter/Start, Backspace/Select und Back zum Menü nur aus der Pause sind die vereinbarten Designziele. Gamepad-Remapping und Maus später. **Nächster kleiner Schritt:** die Datenstruktur lokal kompilieren, bevor wir Standardbelegungen initialisieren. Das aktuelle Gamepad-Verhalten wurde nicht absichtlich geändert.
+
+
+
 **Beobachtung, keine Vermutung:** Der Entwickler berichtet, dass **drei Personen SonecBot wegen der fehlenden vollständigen Tastatursteuerung nicht spielen können**. Das ist eine bestätigte **Zugangshürde** für Tester ohne Gamepad, noch kein getesteter Implementierungsfehler. Gamepad-only war als Grenze im Pre-Alpha-Text offengelegt, aber die Rückmeldung macht Tastaturunterstützung zum ersten konkreten Kandidaten der Post-Pre-Alpha-Patches. Bestehende funktionierende Gamepad-Belegung unangetastet lassen.
 
-- [ ] **Nach Abschluss des Main-Merge-Meilensteins read-only Inventur** der vorhandenen Tastaturabfragen in `sonec.agc`, `intro.agc`, `controls.agc`, `main.agc` und Eingabekonstanten: Bewegung/Jetpack, MG, Granaten, Flamme, Plasma, Schild, Energieanziehung, Menü, Bestätigung, Pause, Neustart. Insbesondere historische Doppelbelegung `KEY_2` für MG/Granate beachten.
+- [x] **Bestandsaufnahme SonecBot ↔ Crystals/Columns abgeschlossen; gemeinsame Actions festgelegt.**
+- [x] **Reine Eingabestrukturen angelegt:** 15 Aktionskonstanten und `TKeys`/`TActionBinding` in `def_input.agc`; Include in `main.agc`. Kompilierung noch offen.
+- [x] **Nach Abschluss des Main-Merge-Meilensteins read-only Inventur** der vorhandenen Tastaturabfragen in `sonec.agc`, `intro.agc`, `controls.agc`, `main.agc` und Eingabekonstanten: Bewegung/Jetpack, MG, Granaten, Flamme, Plasma, Schild, Energieanziehung, Menü, Bestätigung, Pause, Neustart. Insbesondere historische Doppelbelegung `KEY_2` für MG/Granate beachten.
 - [ ] **Dann gemeinsam minimalistisches Keyboard-Layout definieren**, das im Browser nutzbar ist und nicht mit browserreservierten Tasten kollidiert. Keine automatische Implementierung und noch kein vollständiges Options-/Remapping-System.
 - [ ] **Kleine Post-Pre-Alpha-Patches einzeln freigeben und unter Windows, Apache-HTML5 und itch.io-Embed testen.** Testkriterium: ohne Gamepad Start → Spiel → Bewegung/Kampf/Schild → Pause → Tod/Neustart; Gamepad-Regression prüfen.
-- [ ] **Späterer Merge `develop`→`main`:** Beim ersten Vergleich vom 16.11.2026 hat `main` zwei eigene Commits (README-Anpassungen), `develop` 413 zusätzliche Commits. [PR #1](https://github.com/ChristianEngel19820128/SonecBot/pull/1) wurde zur Mergeprüfung eröffnet, **GitHub meldet mergeable=false**. Nicht blind überschreiben oder Force-Push. Vor der eigentlichen Freigabe README-Divergenz/Konflikt gezielt auflösen, Merge prüfen und erst dann `main` aktualisieren. **Merge derzeit offen.**
+- [x] **Meilenstein-Merge `develop`→`main` abgeschlossen über PR #1** (Merge-Commit `0ee6710`); initialer README-Konflikt durch Übernahme der BlitzBasic-/BlitzMax-Historie und Branch-Erklärung aufgelöst. Historischer Ausgangsvergleich: vom 16.11.2026 hat `main` zwei eigene Commits (README-Anpassungen), `develop` 413 zusätzliche Commits. [PR #1](https://github.com/ChristianEngel19820128/SonecBot/pull/1) wurde zur Mergeprüfung eröffnet, **GitHub meldete ursprünglich mergeable=false**; Konflikt inzwischen gelöst, Merge durchgeführt; kein Force-Push. Die neue Input-Definitionsarbeit erfolgt wieder nur auf `develop`.
 
 ## 4. Später – gesammelt, nicht als Pre-Alpha-Blocker
 
