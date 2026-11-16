@@ -612,7 +612,7 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function SonecInput(Sonec ref as TSonec,JetfireList ref as TJetfireList,ProtoJetfire ref as TProtoJetfire,World ref as TWorld,JoystickIndex as integer,Now as integer)
+function SonecInput(Sonec ref as TSonec,JetfireList ref as TJetfireList,ProtoJetfire ref as TProtoJetfire,World ref as TWorld,Keys ref as TKeys,JoystickIndex as integer,Now as integer)
 	
 	local Position as TPosition
 	
@@ -625,7 +625,7 @@ function SonecInput(Sonec ref as TSonec,JetfireList ref as TJetfireList,ProtoJet
 			Position.x = Sonec.ObjectData.Position.x -12
 		endif
 		
-		if (GetKeyState(Key_W) = 1 or GetJoyY(JoystickIndex) < -0.5 or GetJoyState(JoystickIndex,joystickButtonCrossUp) = 1) and ((Sonec.State.Fly = FALSE and Sonec.Energy.State > COSTJETFIRE*10) or (Sonec.State.Fly = TRUE and Sonec.Energy.State >= COSTJETFIRE))
+		if (InputActionState(Keys,JoystickIndex,ACTION_MOVE_UP) = 1 or GetJoyY(JoystickIndex) < -0.5) and ((Sonec.State.Fly = FALSE and Sonec.Energy.State > COSTJETFIRE*10) or (Sonec.State.Fly = TRUE and Sonec.Energy.State >= COSTJETFIRE))
 			if Sonec.State.Fly = FALSE
 				Sonec.Energy.State = Sonec.Energy.State - COSTJETFIRE*10
 			endif
@@ -635,7 +635,7 @@ function SonecInput(Sonec ref as TSonec,JetfireList ref as TJetfireList,ProtoJet
 			Sonec.AnimationData.Frame = 0
 			SonecJetfireAdd(Sonec,JetfireList,ProtoJetfire,World,Position,Now)
 		else
-			if (GetKeyState(Key_W) = 1 or GetJoyY(JoystickIndex) < -0.5 or GetJoyState(JoystickIndex,joystickButtonCrossUp) = 1) and Sonec.State.Stand = TRUE
+			if (InputActionState(Keys,JoystickIndex,ACTION_MOVE_UP) = 1 or GetJoyY(JoystickIndex) < -0.5) and Sonec.State.Stand = TRUE
 				Sonec.State.Jump = TRUE
 				Sonec.State.Stand = FALSE
 				Sonec.State.Fly = FALSE
@@ -649,7 +649,7 @@ function SonecInput(Sonec ref as TSonec,JetfireList ref as TJetfireList,ProtoJet
 			endif
 		endif
 		
-		if GetKeyState(Key_S) = 1 or GetJoyY(JoystickIndex) > 0.5 or GetJoyState(JoystickIndex,joystickButtonCrossDown) = 1
+		if InputActionState(Keys,JoystickIndex,ACTION_MOVE_DOWN) = 1 or GetJoyY(JoystickIndex) > 0.5
 			Sonec.State.Duck = TRUE
 			Sonec.AnimationData.Frame = 0
 		else
@@ -658,13 +658,13 @@ function SonecInput(Sonec ref as TSonec,JetfireList ref as TJetfireList,ProtoJet
 		
 		Sonec.State.Move = FALSE
 		
-		if GetKeyState(Key_A) = 1 or GetKeyState(Key_Q) = 1 or GetJoyX(JoystickIndex) < -0.5 or GetJoyZ(JoystickIndex) > 0.5 or GetJoyState(JoystickIndex,joystickButtonCrossLeft) = 1
-			if GetKeyState(Key_A) = 1 or GetJoyX(JoystickIndex) < -0.5 or GetJoyState(JoystickIndex,joystickButtonCrossLeft) = 1
+		if InputActionState(Keys,JoystickIndex,ACTION_MOVE_LEFT) = 1 or InputActionState(Keys,JoystickIndex,ACTION_MOVE_BACK_LEFT) = 1 or GetJoyX(JoystickIndex) < -0.5 or GetJoyZ(JoystickIndex) > 0.5
+			if InputActionState(Keys,JoystickIndex,ACTION_MOVE_LEFT) = 1 or GetJoyX(JoystickIndex) < -0.5
 				if GetJoyZ(JoystickIndex) = 0
 					Sonec.State.LookAlignment = LOOKLEFT
 				endif
 			endif
-			if GetKeyState(Key_Q) = 1 or GetJoyZ(1) > 0.5
+			if InputActionState(Keys,JoystickIndex,ACTION_MOVE_BACK_LEFT) = 1 or GetJoyZ(1) > 0.5
 				Sonec.State.LookAlignment = LOOKRIGHT
 			endif
 			if (Sonec.State.Fly = TRUE or Sonec.State.Fall = TRUE) and Sonec.Energy.State >= COSTJETFIRE
@@ -684,13 +684,13 @@ function SonecInput(Sonec ref as TSonec,JetfireList ref as TJetfireList,ProtoJet
 			endif
 		endif
 		
-		if GetKeyState(Key_D) = 1 or GetKeyState(Key_E) = 1 or GetJoyX(JoystickIndex) > 0.5 or GetJoyRZ(JoystickIndex) > 0.5 or GetJoyState(JoystickIndex,joystickButtonCrossRight) = 1
-			if GetKeyState(Key_D) = 1 or GetJoyX(JoystickIndex) > 0.5 or GetJoyState(JoystickIndex,joystickButtonCrossRight) = 1
+		if InputActionState(Keys,JoystickIndex,ACTION_MOVE_RIGHT) = 1 or InputActionState(Keys,JoystickIndex,ACTION_MOVE_BACK_RIGHT) = 1 or GetJoyX(JoystickIndex) > 0.5 or GetJoyRZ(JoystickIndex) > 0.5
+			if InputActionState(Keys,JoystickIndex,ACTION_MOVE_RIGHT) = 1 or GetJoyX(JoystickIndex) > 0.5
 				if GetJoyRZ(1) = 0
 					Sonec.State.LookAlignment = LOOKRIGHT
 				endif
 			endif
-			if GetKeyState(Key_E) = 1 or GetJoyRZ(JoystickIndex) > 0.5
+			if InputActionState(Keys,JoystickIndex,ACTION_MOVE_BACK_RIGHT) = 1 or GetJoyRZ(JoystickIndex) > 0.5
 				Sonec.State.LookAlignment = LOOKLEFT
 			endif
 			if (Sonec.State.Fly = TRUE or Sonec.State.Fall = TRUE) and Sonec.Energy.State >= COSTJETFIRE
