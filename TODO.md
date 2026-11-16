@@ -1,6 +1,6 @@
 # SonecBot – Aktuelle Aufgaben und Meilensteine
 
-**Dokumentstatus:** Version 5.5 – Analogstick-Menünavigation ergänzt, Test ausstehend  
+**Dokumentstatus:** Version 5.6 – Menü-Navigation 7a/7a.1 vom Entwickler bestätigt; Optionsmenü als Nächstes besprechen  
 **Stand:** 16. November 2026  
 **Branch:** `develop`  
 **Aktuelles Ziel:** Funktionierende HTML5-Pre-Alpha auf itch.io im **Draft per Secret URL** für eingeladene Community-Tester bereitstellen, Feedback sammeln. **Nicht auf Published umstellen**; den einmaligen öffentlichen Index-Push für einen späteren, noch nicht beschlossenen Release bewahren. Keine Deadline.
@@ -62,6 +62,10 @@
 **Schritt 6d vom Entwickler vollständig bestanden:** AGK-Compile und alle 8 Tests: W allein Aufstieg, Ctrl allein Luftbremse, W+Ctrl normaler Jetpack-Aufstieg, Übergang W loslassen bei gehaltenem Ctrl zu Hover, beide loslassen normales Fallen, Gamepad-Stick hoch + Button 9 und Bewegung/Waffen ohne Regression. Entwickler beobachtet zusätzlich: Während Pause losgelassenes Ctrl ist nach Fortsetzen korrekt nicht mehr aktiv.
 
 **Schritt 6e vom Entwickler vollständig bestätigt:** AGK-Compile und 8/8 Funktionstests bestanden: Space halten/loslassen, WASD/QE+Space gleichzeitig, W+Space normaler Aufstieg, Ctrl kein Hover mehr, Gamepad-Button 9 weiter aktiv, Loslassen in Pause nach Fortsetzen korrekt. Keine Auffälligkeiten.
+
+**Schritte 7a und 7a.1 vollständig vom Entwickler bestanden:** 7a-Tastaturprüfung (AGK-Compile, W/S, Pfeiltasten, Umlauf, Enter-Start) bestanden; Gamepad-Steuerkreuz und Start/A vom Entwickler ausdrücklich funktionsfähig bestätigt. Der fehlende Analogstick wurde anschließend in 7a.1 nachgerüstet; **alle 10/10 Checks** erfolgreich: Compile, einzelne Schritte hoch/runter, Halten ohne Wiederholung, Neutralstellung und erneute Auslenkung, Menüumlauf, D-Pad, Tastatur, Enter/Start/A und normaler Spielstart. Keine Auffälligkeiten. **Schritt abgeschlossen.** Kein neuer HTML5-Export oder itch.io-Test damit behauptet.
+
+**Nächster möglicher Schritt (nur Besprechung, nicht freigegeben):** Das bisherige Hauptmenü-OPTIONS setzt `Intro.IsOption = TRUE`, zeigt jedoch noch keinen echten Optionsbildschirm. Zunächst minimalen Options-Unterbildschirm mit Navigation und Zurück festlegen; danach als gesonderten Schritt Hover-Umschaltmodus als bevorzugten Standard, Halten als Option, später Einstellungen speichern. Bis zur Zustimmung keine Implementierung.
 
 **Schritt 7a Entwickler-Testbericht:** AGK-Compile und Tastatur W/S, Pfeile, Menü-Wrap, Enter erfolgreich; auch Gamepad-D-Pad sowie Gamepad Start/A funktionieren nach Klarstellung. Einzig fehlend war die **linke Analogstick-Navigation im Intro**; dies war bisher nicht implementiert, kein nachgewiesener Rückschritt. Schritt 7a noch nicht endgültig geschlossen, bis der Ergänzungstest 7a.1 erfolgreich ist.
 
