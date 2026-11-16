@@ -1,6 +1,7 @@
 //----------------------------------------------------------------------
 // SonecBot input binding defaults.
-// This step only initializes data; gameplay still uses its existing input.
+// Initializes defaults and provides digital action queries.
+// Gameplay still uses its existing input until a separate migration step.
 //----------------------------------------------------------------------
 
 function InputSetDefaultBindings(Keys ref as TKeys)
@@ -46,11 +47,73 @@ function InputSetDefaultBindings(Keys ref as TKeys)
     Keys.Binding[ACTION_ATTRACT_ENERGY].PadButton = JoystickButtonLR
     Keys.Binding[ACTION_SHIELD].PadButton = JoystickButtonRR
 
-    // Additional actions; hover L3 is deliberately not assigned until tested.
+    // Hover keeps the existing pad button 9 assignment. Its physical identity
+    // (L3 or another control) remains to be verified on the target gamepad.
     Keys.Binding[ACTION_HOVER].Key = KEY_CONTROL
+    Keys.Binding[ACTION_HOVER].PadButton = JoystickButtonPadLeft
     Keys.Binding[ACTION_START].Key = KEY_ENTER
     Keys.Binding[ACTION_START].PadButton = JoystickButtonStart
     Keys.Binding[ACTION_BACK].Key = KEY_BACK
     Keys.Binding[ACTION_BACK].PadButton = JoystickButtonBack
 
 endfunction
+
+//----------------------------------------------------------------------
+// Digital action queries. Return 1 if either assigned device is active.
+// No axis/trigger mapping yet: existing movement code still owns those.
+// Invalid action indices and unassigned (0) buttons never generate input.
+//----------------------------------------------------------------------
+
+function InputActionState(Keys ref as TKeys,JoystickIndex as integer,Action as integer)
+
+    local Value as integer
+    local KeyCode as integer
+    local PadCode as integer
+
+    Value = 0
+
+    if Action < 0 or Action > ACTION_LAST
+        exitfunction Value
+    endif
+
+    KeyCode = Keys.Binding[Action].Key
+    PadCode = Keys.Binding[Action].PadButton
+
+    if KeyCode > 0
+        if GetKeyState(KeyCode) = 1 then Value = 1
+    endif
+
+    if PadCode > 0
+        if GetJoyState(JoystickIndex,PadCode) = 1 then Value = 1
+    endif
+
+endfunction Value
+
+//----------------------------------------------------------------------
+// Edge-triggered version for toggle/menu actions.
+//----------------------------------------------------------------------
+
+function InputActionPressed(Keys ref as TKeys,JoystickIndex as integer,Action as integer)
+
+    local Value as integer
+    local KeyCode as integer
+    local PadCode as integer
+
+    Value = 0
+
+    if Action < 0 or Action > ACTION_LAST
+        exitfunction Value
+    endif
+
+    KeyCode = Keys.Binding[Action].Key
+    PadCode = Keys.Binding[Action].PadButton
+
+    if KeyCode > 0
+        if GetKeyPressed(KeyCode) = 1 then Value = 1
+    endif
+
+    if PadCode > 0
+        if GetJoyPressed(JoystickIndex,PadCode) = 1 then Value = 1
+    endif
+
+endfunction Value
