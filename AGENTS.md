@@ -8,6 +8,8 @@
 - **Active development branch:** `develop`
 - **Reference branch:** `main`
 - **Historical source:** `source/legacy/`
+- **Current handoff:** `HANDOFF.md`
+- **Current milestone:** Alpha-Walker complete and locally accepted; HTML5 pre-alpha deployment next.
 
 SonecBot is an independently developed side-scrolling action game featuring platforming, weapons, energy management and enemy encounters.
 
@@ -137,7 +139,10 @@ If the approved scope needs to expand, request approval again.
 
 ## 9. Project documentation
 
-The following Markdown files form the intended shared project documentation:
+The following Markdown files form the shared project documentation:
+
+- `HANDOFF.md` – Current new-chat entry point, tested baseline, release gates and exact next steps
+- `README.md` – Public project status and verified usage limits
 
 - `AGENTS.md` – Agent instructions and safety rules
 - `PROJECT.md` – Game concept, mechanics and development goals
@@ -154,7 +159,7 @@ Do not silently overwrite existing documentation or contradict established proje
 
 When new findings conflict with documentation, report the discrepancy instead of independently deciding which source is correct.
 
-**Chatwechsel / Kontextgrenzen:** Verlasse dich nicht auf eine automatische Übernahme des vorherigen Chatverlaufs. Lies bei einem neuen Chat zuerst die vorhandenen vier Projektdokumente, insbesondere `TECHNICAL.md` Abschnitt „Übergabe bei Chatlimit oder neuem Chat“ und die aktuellen Aufgaben in `TODO.md`. Frage anschließend den wirklichen `develop`-HEAD und betroffene Dateien erneut ab, bevor du einen dokumentierten Stand als aktuell darstellst. Kennzeichne lokale Tests des Entwicklers anders als statische Prüfungen und vermeide Aussagen über nicht durchgeführte AGK- oder HTML5-Builds.
+**Chatwechsel / Kontextgrenzen:** Do not assume automatic chat/history/attachment transfer. Start by reading AGENTS.md and HANDOFF.md, then current PROJECT.md, TODO.md and TECHNICAL.md. Query the real develop HEAD and relevant source files again. HANDOFF.md is the canonical current transition; pinned older documents are history, not instructions to repeat completed work. The owner has explicitly closed the Alpha-Walker task after the final turret-recoil test. Preserve the accepted IK, pivots, artwork/prototypes, aim and recoil; the next task is HTML5 export/browser verification/deployment. Do not reopen Walker polishing without a specific owner request or demonstrated release blocker. Local developer tests, translated simulations, actual AGK compiles and actual browser tests must remain distinct.
 
 ## 10. Working principles
 
