@@ -46,8 +46,13 @@ Der lokal getestete Code-Referenzcommit ist [`18f92a965810763b552bd96649607c112f
 ### Erster Kollisionsschritt – lokal bestanden
 
 - [x] **Flammenwerfer → Walker-Turm, lokaler Entwicklertest bestanden (16.11.2026):** `FlameCollideWalkers()` ist eingebunden; Entwickler bestätigt erwartete Trefferwirkung und Zerstörung aller geprüften Objektarten einschließlich Walker. Flammenwerfer wirkt dabei **sehr stark** (qualitative Beobachtung, kein Balancingtest). Einzelne Flash-/Drop-Details wurden nicht separat bestätigt. **Schritt abgeschlossen; erst gemeinsam nächste Kombination wählen.**
-- [ ] Anschließend Treffermatrix gemeinsam schrittweise erweitern: derzeit unter anderem Plasma-Blitz→Mine/Kiste (leere Funktionen), Plasma-Blitz→Walker, Granate/Explosion→Walker und Flamme→weitere vorgesehene Ziele. Sonec-Waffen sollen grundsätzlich alle beschädigbaren Ziele erreichen. Weitere Schadensarten/Panzerungsmodelle bleiben Zukunftsentwurf.
+- [ ] Anschließend Treffermatrix gemeinsam schrittweise erweitern: derzeit unter anderem Plasma-Blitz→Mine/Kiste (implementiert, Test offen), Plasma-Blitz→Walker, Granate/Explosion→Walker und Flamme→weitere vorgesehene Ziele. Sonec-Waffen sollen grundsätzlich alle beschädigbaren Ziele erreichen. Weitere Schadensarten/Panzerungsmodelle bleiben Zukunftsentwurf.
 - [ ] Für das Fraktionskonzept Player (ggf. Player 2), Enemy, Neutral zunächst Verhalten klären; keine automatische Fraktions- oder Balancing-Umstellung.
+
+### Laufender Einzeltest: Plasma-Blitz → Minen und Kisten
+
+- [ ] **AGK-/HTML5-Nachtest nach Codeänderung:** `PlasmaBlitzCollideMine()` und `PlasmaBlitzCollideChest()` wurden implementiert. Gemeinsamen 50-ms-Timer erst nach Orb-/Minen-/Kistenprüfung zurücksetzen. Minen und Kisten treffen/zerstören, Orb-Regression, Mehrfachtrefferverhalten und Compile prüfen. **Code vorbereitet, echter Test offen.**
+- [ ] **Energie- und Wirkungsgefühl später beurteilen:** Blitz muss aufladen und entlädt sich, wirkt stark und verbraucht vermutlich viel Energie; längere Flammenwerfernutzung konkurriert mit Flugenergie. Qualitative Entwicklerbeobachtung, kein Messwert oder sofortiger Balanceauftrag. Keine Schadensarten-/Rüstungserweiterung in diesem Schritt.
 
 ## 3. Für später: reguläre Alpha / Fehler nur bei konkreter Reproduktion
 
