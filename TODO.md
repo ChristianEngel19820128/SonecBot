@@ -28,10 +28,12 @@ Der lokal getestete Code-Referenzcommit ist [`18f92a965810763b552bd96649607c112f
 
 ## 2. Jetzt: HTML5-Pre-Alpha im itch.io-Draft (ohne Zeitdruck)
 
-- [ ] **Aktuellen HTML5-Export erstellen/bereitstellen.** Noch kein Exportpaket oder Browserlauf im Chat vorliegend.
-- [ ] **Browserstart testen:** Laden/Assets, Intro, Start und Audio nach Interaktion.
+- [x] **HTML5-Export lokal erstellt (Entwicklermeldung, 16.11.2026).** Export gelang; genaue exportierte Code-Revision/ZIP hier nicht separat geprüft.
+- [x] **Erster lokaler Browserstart:** Über lokalen Apache/XAMPP und vorhandenen Run-Frame startet das Spiel laut Entwickler. Audio, alle Assets und Eingaben damit **noch nicht einzeln bestätigt**.
 - [ ] **Eine vollständige Eingabemethode nachweisen:** HTML5-Gamepad-Index 1 prüfen; Intro/Pause derzeit Gamepad, Tastaturpfad unvollständig. Minimalvorschlag Gamepad-only mit klarer Kennzeichnung, noch nicht abschließend entschieden.
 - [ ] **Spielrunde testen:** Bewegung/Jetpack/Waffen/Schild/Energieaktionen, Walker-Kampf, Pause/Fortsetzen, Tod und mindestens zwei Neustarts.
+- [ ] **Gameplay-Smoketest vervollständigen:** Entwickler beobachtet bei 60 Hz/VSync flüssiges Spiel und auch bei kurz getesteten 75 Hz vergleichbar flüssiges Gameplay; weitere Tests bewusst wieder bei 60 Hz. Gamepad-/Pause-/Tod-/Mehrfachneustart noch separat nachweisen.
+- [ ] **Fehlende Kollisionsabfragen gezielt untersuchen:** Prüfen, welche vorgesehenen Treffer ohne Reaktion bleiben und ob das die Pre-Alpha spielerisch stört; konkrete Codepfade/Absicht vor Fix prüfen. Noch kein bestätigter einzelner Fehler oder Freigabe für Änderungen.
 - [ ] **Nur konkrete Releaseblocker korrigieren:** kleinster nachvollziehbarer Eingriff mit tatsächlichem Nachtest, kein weiterer Walker-/IK-Umbau.
 - [ ] **Bekannte Mechanikgrenzen bewerten/benennen:** feindliche Bullets gegen Schild, Explosionen gegen Walker, vorläufige Ressourcenbalance. Keine große Schadens-/Physik-Neuentwicklung ohne bestätigten Bedarf.
 - [ ] **README/itch.io-Text final abgleichen:** tatsächliche getestete Controls, Pre-Alpha-Status, Browser-/Gamepad-Hinweise, bekannte Grenzen; passende Screenshots/Cover.
@@ -77,6 +79,7 @@ Der lokal getestete Code-Referenzcommit ist [`18f92a965810763b552bd96649607c112f
 
 [agk-knowledge-base](https://github.com/ChristianEngel19820128/agk-knowledge-base) soll als Referenz mit den Projekten wachsen; entsprechende Regel steht in beiden AGENTS.md-Dateien.
 
+- [ ] **HTML5/XAMPP-Cache-Kandidat:** Nach Ersetzen von HTML5-Dateien kann der Browser alte Dateien weiter ausliefern; beim lokalen Entwickeln in geöffneten DevTools „Disable cache“ aktivieren und hart neu laden, sonst drohen Scheindefekte. Aktuell Entwicklerbeobachtung, KB-Eintrag und genaue Bedingungen später prüfen.
 - [ ] Sammlung gemeinsam sichten; kompaktes Register mit Symptom/Fallstrick, robustem Muster/Workaround, **Status**, Quelle/Revision und offenem Nachweis erwägen.
 - [ ] Positiv bewertete Turm-Schwenkprojektion ohne Zusatzsprite auf allgemeine Erklärung prüfen.
 - [ ] Integer-/Float-Division: Float-Zielvariable allein genügt nach Entwicklererfahrung nicht; Operand vor Division explizit Float, kleiner reproduzierbarer AGK-Test fehlt für eine neue präzise Ergänzung.
