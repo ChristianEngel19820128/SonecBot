@@ -15,6 +15,14 @@
 > **Arbeitsweise:** In kleinen gemeinsam freigegebenen Schritten vorgehen. Nutzer exportiert/kompiliert in lokalem AGK Studio, testet mit lokalem Apache im Browser/Gamepad und pflegt itch.io; Assistent prüft GitHub-Quellen und dokumentiert präzise, ohne lokale Tests zu behaupten. Besonderheiten mit Nachweisstatus festhalten, aktuellen Schritt beenden, erst danach über Folgearbeit bzw. Knowledge-Base-Eintrag entscheiden. Crystals 1.0 ist die bewährte Prozesserfahrung. GitHub-HEAD bei jedem Einstieg neu lesen; Snapshot vor dieser Dokumentationsänderung: `3840bfa545aeec6df6902180415d22efdd58f3ba`.
 > **Prüfkandidat, noch kein bestätigter Bug:** Spawn-Zufallsentscheidungen liegen in `GameDo()` und könnten pro Frame statt pro Zeit erfolgen. Vor jeder Änderung tatsächliche Frequenzen/Spielwirkung bewerten; keine pauschale Balancingmaßnahme.
 
+## Post-Pre-Alpha: Schritt 7a Tastaturnavigation im Intro (17.11.2026)
+
+**6e vom Entwickler vollständig bestanden:** AGK-Compile und 8/8 Checks: Space-Hover halten/loslassen, WASD/QE+Space, W+Space mit Jetpack-Vorrang, Ctrl ohne Hover, Button 9 intakt, Space-Release während Pause korrekt; keine Auffälligkeiten. Somit Space als Hover-Default im Windows/AGK-Test akzeptiert. Keine neue HTML5-Prüfung.
+
+**7a auf `develop` umgesetzt, AGK-Compile und Menü-Gameplay-Test noch ausstehend:** In `source/sonec/intro.agc` wurden ausschließlich zwei Menü-Abfragen ersetzt: hoch über `InputActionPressed(Keys,JoystickIndex,ACTION_MOVE_UP) = 1 or GetKeyPressed(KEY_UP) = 1`, runter entsprechend `ACTION_MOVE_DOWN` bzw. `KEY_DOWN`. Da die vorhandenen Action-Defaults W/S und D-Pad-Up/Down enthalten, bleiben Gamepad-D-Pad und bestehende Wrap-Navigation erhalten. Enter/Start/Gamepad-A-Confirm unverändert; die `OPTIONS`-Auswahl setzt weiterhin nur `Intro.IsOption = TRUE`, tatsächlich bedienbare Optionen noch nicht gebaut. Es gibt keine Änderung an Hover-Modus, Space/Pad-Bindings, Gameplay, Dateien/Speicherung oder itch.io.
+
+**Nächster einzelner Test:** Entwickler kompiliert neuesten `develop`-HEAD und prüft W/S, Pfeil hoch/runter, Menü-Wrap START→OPTIONS→QUIT, Enter als Startbestätigung, D-Pad hoch/runter und Gamepad A/Start. Testbericht mit Freitext und ausdrücklichem Senden. Danach erst den schmalen Beginn eines Optionsmenüs gemeinsam festlegen. Keine Änderungen anderer Repositories.
+
 ## Post-Pre-Alpha: Schritt 6e Space als Hover-Default (17.11.2026)
 
 **Schritt 6d vom Entwickler vollständig bestanden:** AGK-Compile und sämtliche acht Jetpack/Hover-Prüfpunkte: W allein, Ctrl allein, W+Ctrl mit normalem Jetpack-Aufstieg, W loslassen bei gehaltenem Ctrl zu Hover, beide loslassen normal fallen, Gamepad-Stick hoch + Button 9 sowie Bewegung/Waffen weiterhin funktionsfähig. Zusätzlicher positiver Befund: Ctrl loslassen während Pause bewirkt bei Fortsetzen normalen Fall.
