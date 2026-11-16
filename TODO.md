@@ -36,7 +36,7 @@ Der lokal getestete Code-Referenzcommit ist [`18f92a965810763b552bd96649607c112f
 - [ ] **HTML5-Beenden einordnen:** ESC/QUIT beenden den Browserbuild nicht; Code schließt HTML5-QUIT bewusst aus, ESC-Helfer ist Windows-spezifisch. UX/Einbettung bewerten, nicht als Enginebug behaupten.
 - [ ] **Fehlende Kollisionsabfragen gezielt untersuchen:** Prüfen, welche vorgesehenen Treffer ohne Reaktion bleiben und ob das die Pre-Alpha spielerisch stört; konkrete Codepfade/Absicht vor Fix prüfen. Noch kein bestätigter einzelner Fehler oder Freigabe für Änderungen.
 - [ ] **Nur konkrete Releaseblocker korrigieren:** kleinster nachvollziehbarer Eingriff mit tatsächlichem Nachtest, kein weiterer Walker-/IK-Umbau.
-- [ ] **Bekannte Mechanikgrenzen bewerten/benennen:** feindliche Bullets gegen Schild, Explosionen gegen Walker, vorläufige Ressourcenbalance. Keine große Schadens-/Physik-Neuentwicklung ohne bestätigten Bedarf.
+- [ ] **Bekannte Mechanikgrenzen bewerten/benennen:** feindliche Bullets gegen Schild, vorläufige Ressourcenbalance. Keine große Schadens-/Physik-Neuentwicklung ohne bestätigten Bedarf.
 - [ ] **README/itch.io-Text final abgleichen:** tatsächliche getestete Controls, Pre-Alpha-Status, Browser-/Gamepad-Hinweise, bekannte Grenzen; passende Screenshots/Cover.
 - [ ] **Im itch.io-Draft bereitstellen und über Secret URL eingebettet nachtesten.** Nutzer verwaltet Upload und Seite manuell; Secret URL im neuen Chat klären. **Kein Published-Wechsel.** Die öffentliche Index-Veröffentlichung bleibt bewusst für Beta 0.9 oder 1.0 offen.
 
@@ -46,7 +46,7 @@ Der lokal getestete Code-Referenzcommit ist [`18f92a965810763b552bd96649607c112f
 ### Erster Kollisionsschritt – lokal bestanden
 
 - [x] **Flammenwerfer → Walker-Turm, lokaler Entwicklertest bestanden (16.11.2026):** `FlameCollideWalkers()` ist eingebunden; Entwickler bestätigt erwartete Trefferwirkung und Zerstörung aller geprüften Objektarten einschließlich Walker. Flammenwerfer wirkt dabei **sehr stark** (qualitative Beobachtung, kein Balancingtest). Einzelne Flash-/Drop-Details wurden nicht separat bestätigt. **Schritt abgeschlossen; erst gemeinsam nächste Kombination wählen.**
-- [ ] Anschließend Treffermatrix gemeinsam schrittweise erweitern: derzeit unter anderem Plasma-Blitz→Mine/Kiste (implementiert, Test offen), Plasma-Blitz→Walker (lokal positiv), Granate→Walker (lokal positiv), Explosion→Walker offen und Flamme→weitere vorgesehene Ziele. Sonec-Waffen sollen grundsätzlich alle beschädigbaren Ziele erreichen. Weitere Schadensarten/Panzerungsmodelle bleiben Zukunftsentwurf.
+- [ ] Anschließend Treffermatrix gemeinsam schrittweise erweitern: derzeit unter anderem Plasma-Blitz→Mine/Kiste (implementiert, Test offen), Plasma-Blitz→Walker (lokal positiv), Granate→Walker (lokal positiv), Explosion→Walker (lokal positiv) und Flamme→weitere vorgesehene Ziele. Sonec-Waffen sollen grundsätzlich alle beschädigbaren Ziele erreichen. Weitere Schadensarten/Panzerungsmodelle bleiben Zukunftsentwurf.
 - [ ] Für das Fraktionskonzept Player (ggf. Player 2), Enemy, Neutral zunächst Verhalten klären; keine automatische Fraktions- oder Balancing-Umstellung.
 
 ### Abgeschlossener Einzeltest: Plasma-Blitz → Minen und Kisten
@@ -68,12 +68,19 @@ Der lokal getestete Code-Referenzcommit ist [`18f92a965810763b552bd96649607c112f
 - [ ] **Separat implementiert:** Explosion → Walker nutzt bestehenden Radius/100-ms-Rhythmus; kein weiterer Granatenaufprall-Umbau. Test und Bewertung der kombinierten Wirkung offen.
 
 - [ ] **Beobachtete Granatenmechanik erhalten:** Rückstoß kann Sonec zurückversetzen, gekrümmte Flugbahn fällt nach unten, Granaten explodieren ggf. vorher am Plattformboden; Munition („Plasmagranaten“) wird verbraucht. Keine ungefragte Änderung an Flugphysik oder Ressourcen.
-- [ ] **Aktueller Testschritt:** Explosion → Walker ist als letzter Pfad der ersten Kollisionsmatrix implementiert; lokaler Test offen. Explosions-Timing/Radius und mögliche Doppelwirkung beim Test beobachten.
+- [x] **Erste Kollisionsmatrix abgeschlossen:** Explosion → Walker nach Implementierung im Entwicklertest positiv; direkter Aufprall und nahe Explosion können Walker zerstören. Kein Balancing-/Schadensmodellauftrag daraus ableiten.
 
-### Aktueller Einzeltest: Explosionswirkung → Walker
+### Abgeschlossener Einzeltest: Explosionswirkung → Walker
 
-- [ ] **Windows-/HTML5-Nachtest:** `ExplosionCollideWalkers()` mit bestehender Turm-AABB als Kreis-gegen-Box, `LastWalkerHitMs` pro Explosion/Walker und unverändert 30 Schaden je mindestens 100 ms implementiert. Direkter Granatentreffer + nachfolgende Explosion und Granate auf Plattform nahe Walker getrennt prüfen; Trefferflash und möglicher Walker-Tod, andere Explosionsziele und normale Granatenkollisionen als Regression testen.
+- [x] **Direkttreffer und nahe/passive Explosion → Walker lokal bestanden:** Entwickler meldet „sprengtest erfolgreich“; beide Situationen können Walker zerstören. Turm-AABB als Kreis-gegen-Box, `LastWalkerHitMs` pro Explosion/Walker und unveränderte 30 Schaden je mindestens 100 ms implementiert. Plattform-/Browserkontext des jüngsten Tests nicht einzeln bestätigt; keine eigenständige Komplett-Regression aller Ziele ableiten.
 - [ ] **Nach Testentscheidung:** Doppelschaden aus Aufprall und Druckwelle sowie mögliche Walker-Zerstörungsketten anhand des Spielgefühls bewerten. Keine automatische Balance-/Panzerungsänderung.
+
+### Kollisionsmatrix abgeschlossen – spätere Ideen, keine aktuelle Umsetzung
+
+- [ ] Optionale separate Trefferzonen/Schadensreaktionen für Walker-Körperteile später gemeinsam gestalten. Der aktuelle gezielte Turmtreffer ist eine spielerische Besonderheit und soll jetzt erhalten bleiben.
+- [ ] Nach den Release-Gates ein längeres Gameplayvideo aufnehmen; GifCam kann laut Entwickler unter hoher Speicherlast instabil wirken (RAM-Ursache Vermutung). Eine passende alternative Aufnahme-Lösung erst bei Gelegenheit vergleichen.
+- [ ] Achievements als spätere Spielidee sammeln; derzeit keine implementiert. „Waffenschein für alle“ ist ein Scherz, kein Feature.
+- [ ] Für Pre-Alpha vorrangig HTML5-Tod + mindestens zwei Neustarts prüfen und danach itch.io-Seite im **Draft** per Secret-URL testen; **nicht öffentlich publishen**.
 
 ## 3. Für später: reguläre Alpha / Fehler nur bei konkreter Reproduktion
 
