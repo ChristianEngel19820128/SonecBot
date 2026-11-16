@@ -4,7 +4,7 @@
 **Stand:** 16. November 2026  
 **Branch:** `develop`  
 **Historische lokal akzeptierte Walker-Code-Referenz:** [`18f92a965810763b552bd96649607c112f966238`](https://github.com/ChristianEngel19820128/SonecBot/commit/18f92a965810763b552bd96649607c112f966238)  
-**Status:** **Alpha-Walker abgeschlossen. Nächster Auftrag: HTML5-Pre-Alpha-Deployment.**
+**Status:** **Alpha-Walker abgeschlossen; HTML5-Pre-Alpha im itch.io-Draft eingebettet und laut Entwickler erfolgreich smoke-getestet.**
 
 > [HANDOFF.md](HANDOFF.md) ist der direkte Chat-Einstieg. Dieses Dokument konsolidiert den aktuellen Stand; die vollständige datierte Entwicklungshistorie ist [im vorherigen TECHNICAL-Stand](https://github.com/ChristianEngel19820128/SonecBot/blob/18f92a965810763b552bd96649607c112f966238/TECHNICAL.md) und in Git erhalten. Historische „Test offen“-Abschnitte beschreiben frühere Stände, nicht automatisch neue Entwicklungsaufträge.
 
@@ -298,6 +298,14 @@ Entwickler akzeptiert den proportionalen HUD-Screenshot als funktional und bitte
 Nach dem visuellen Test von `Alpha=170` mit zwei Entwickler-Screenshots wurde der HUD-Anteil des Bildes als noch zu dominant bewertet. Die freigegebene isolierte Änderung steht in `gui.agc`: `#constant HUD_BAR_ALPHA 100` vor `GuiEnergyDraw()`, sämtliche **zehn** bisherigen `ColorSet(Data.Color,R,G,B,170)` dieser Funktion sind nun `ColorSet(...,HUD_BAR_ALPHA)`. HP-Warnfarben, blaue Schildladung, rote Schild-Schadensspur, Energie-Grün, Overload-Rot und beide Munitionsanzeigen behalten ihre jeweiligen RGB-Werte; nur die Deckkraft ändert sich. Kein Eingriff in Bilddateien, Renderer, Farbwahl oder HUD-Geometrie.
 
 Der vorherige Anzeigemaßstab +1500 für sieben rote Segmente sowie Energie `StateMax=4000` / `State=4500` bleiben unverändert. **Nachweisstatus:** Codekontrolle auf GitHub, neuer AGK-/HTML5-Lauf offen. Lesbarkeit über hellem Sternenhintergrund und dunkleren Spielabschnitten prüfen; bei Bedarf später die zentrale Konstante feinjustieren.
+
+### HTML5-Draft-Deployment und itch.io-Embed-Smoke-Test (16.11.2026; Entwicklerbericht)
+
+**Testumgebung:** AGK Studio Compile/Export HTML5 durch Entwickler, Apache/XAMPP als lokaler Nachtest, anschließend ZIP-Upload in die bestehende itch.io-Seite im **Draft-Modus**. `index.html` generiert, Beschreibung eingetragen, Promo-Cover-/Banner auf der Seite; Screenshot zeigt den eingebetteten Spiel-Intro-Screen und FPS-Wert 60. Entwickler meldet **kein sichtbares Tearing** im Apache-Test; keine eigene Bildraten- oder Browsermessung, keine Aussage zur Performance fremder Geräte. `main.agc` fordert HTML5-`SetVSync(1)` an; das ist keine technische Garantie für jedes Browser-Display. Der exakte SHA des hochgeladenen Binär-Builds ist nicht separat protokolliert; Code- und Dokumentations-HEAD nicht mit Export-SHA gleichsetzen.
+
+**Im eingebetteten itch.io-Spiel laut Entwickler positiv getestet:** Gamepad wird erkannt; Lauf- und Bewegungsfunktionen, alle vier Waffen (MG/Granate/Flamme/Plasma-Blitz), Schild, Energieanziehung und Pause funktionieren; Sonec kann durch Energieverlust/Absturz sterben. ESC/QUIT sind im HTML5-Pfad erwartungsgemäß deaktiviert. **Nicht als Embedded-Test belegt:** Neustart nach diesem Tod (mehrfache Neustarts waren zuvor nur im lokalen HTML5-Browser bestätigt), andere Browser-/Gamepadmodelle, lange Browserläufe. Der Assistent hat weder AGK kompiliert noch itch.io selbst interaktiv gespielt.
+
+**Veröffentlichung/Branch:** Die Seite ist über Secret URL im Draft erreichbar und wird von Besitzer an ausgewählte Community-Tester geteilt; **nicht Published**. `develop` bleibt aktiv; ein späterer Merge nach `main` ist **nicht ausgeführt** und vorab gesondert zu beschließen. Der Entwickler ergänzt einen `develop`-GitHub-Link selbst auf itch.io. Die URL mit Secret-Token nicht in öffentliche Dokumente aufnehmen. KI-generierte Werbegrafik ist als Promo-Interpretation zu kennzeichnen; AI-Disclosure-Text zu Graphics, Text/Dialog und Code wurde vorbereitet.
 
 ## 7. Übergabe und Historie
 
