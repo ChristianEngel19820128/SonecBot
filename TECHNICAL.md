@@ -161,13 +161,21 @@ Lokaler Apache/XAMPP-Browsertest mit Xbox-/kompatiblem Controller, 60 Hz/VSync a
 
 **Bestand der übrigen aktiven Pfade (Codeprüfung am vorherigen HEAD `ff37a326`):** Maschinengewehr gegen Orb/Mine/Kiste/Walkerturm; Flamme gegen Orb/Mine/Kiste; direkte Granate gegen Orb/Mine/Kiste/Plattform (Explosion bei Einschlag); Explosion gegen Sonec/Orb/Mine/Kiste; Plasma-Blitz gegen Orbs. `PlasmaBlitzCollideMine` und `PlasmaBlitzCollideChest` waren leere Funktionskörper. Noch nicht umgesetzte Walker-Pfade für Granate/Explosion/Plasma-Blitz sowie weitere Ziele bleiben Folgeaufgaben. Jede vorhandene Funktion gegen ihren tatsächlichen Aufrufpfad prüfen; bloße Existenz ist kein aktiver Treffermechanismus.
 
-### Plasma-Blitz → Mine/Kiste: kleiner Folgepatch, Browser-Test offen (16. November 2026)
+### Plasma-Blitz → Mine/Kiste: kleiner Folgepatch, Windows-/HTML5-Test danach positiv (16. November 2026)
 
 Vorher wurden nur Orb-Kollisionen implementiert, wobei `PlasmaBlitzCollideOrbs()` den bestehenden 50-ms-`CollisionTimer` am Ende bereits zurücksetzte. Nun prüfen drei einzelne Funktionen jeweils dieselbe `TimeGet(...,Now)>0`-Bedingung: `PlasmaBlitzCollideOrbs`, `PlasmaBlitzCollideMine`, `PlasmaBlitzCollideChest`. Der Reset wird **einmal nach diesen drei Aufrufen** in `PlasmaBlitzCollisionTimerReset()` ausgeführt. Die Reihenfolge ist bewusst und Teil dieses kleinen Patches; bei späteren zusätzlichen Zielklassen auch die Reset-Reihenfolge berücksichtigen. Minen und Kisten nutzen ihre bereits aktualisierten `CollisionData.Position1/Position2`, `BoxInBox`, vorhandenen `BulletData.Damage` und Rotfärbung; Blitz wird wie beim Orb-Treffer nicht gelöscht.
 
 **Status:** Nur anhand der GitHub-Quelle auf `develop` geprüft; kein eigener AGK-Compile/Browser-Test. Zu prüfen: Kompilierung, Mine/Kiste tatsächlich treffbar und zerstörbar, Orb-Verhalten unverändert, korrekter 50-ms-Schadensrhythmus und keine neuen Timing-/Mehrfachtrefferprobleme.
 
 **Keine Balanceänderung:** Entwickler beschreibt Plasma-Blitz als aufzuladende, anschließend entladene starke Waffe mit vermutlich hohen Energiekosten; Flammenwerfer zehrt ebenfalls stark an Energie, die zum Fliegen benötigt wird. Qualitative Meldung, noch keine quantitativ geprüfte Balance; getrennt von Kollisionsimplementierung behandeln.
+
+### Plasma-Blitz-Folgepatch – lokaler Windows- und HTML5-Nachtest erfolgt
+
+**Entwicklerbericht, 16. November 2026:** Neuer Trefferpfad für Plasma-Blitz gegen Minen/Kisten zunächst lokal unter Windows und anschließend HTML5 getestet; „html5 geht auch“. Große Kisten reagieren auf eine Entladung nur schwach, der Blitz ist schwer zu handhaben und kostet gefühlt viel Energie. **Kein quantifizierter Schadens-/Energienachweis**, keine separate Aufstellung jedes zerstörten Ziels, kein eigener Assistenten-AGK-Test; nicht als vollständige automatisierte Kollisionstestsuite ausgeben. Gemeinsamer 50-ms-Kollisionstimer für Orb, Mine, Kiste ist im Code eingebunden.
+
+**Verbleibende Matrix-Lücken am Walker:** Plasma-Blitz, direkter kinetischer Granatenaufprall, Explosion. Granatenaufprall und Explosion sind getrennte Schadensereignisse; bei Integration auf unbeabsichtigten Doppelschaden achten. Bereits laufende Trefferpfade: Bullet und Flamme gegen Walker. Weitere Codeänderung erst nach gemeinsamer Entscheidung.
+
+**Browser-Debugging:** F-/Debugtasten aktivieren laut Entwickler im HTML5-Browser Browseraktionen; Windows-Diagnose ist für den Pre-Alpha-Test ausreichend. Spätere Eingabeüberarbeitung möglich, kein aktueller Releaseblocker. Für Knowledge Base ggf. als platformspezifische Eingabe-/Browser-Shortcuts-Besonderheit prüfen.
 
 ## 7. Übergabe und Historie
 
