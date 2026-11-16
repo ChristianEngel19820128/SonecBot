@@ -60,6 +60,8 @@ function GuiEnergyDraw(Gui ref as TGui,Sonec ref as TSonec,Screen as TSize,Now a
 	local maxOverload as integer
 	local EnergyLoad as integer
 	local EnergyOverload as integer
+	local EnergyBarsMax as integer
+	local OverloadBarsMax as integer
 	local shieldTrail as float
 	local trailBars as integer
 	local shieldTop as integer
@@ -110,9 +112,16 @@ function GuiEnergyDraw(Gui ref as TGui,Sonec ref as TSonec,Screen as TSize,Now a
 		EnergyOverload = 0
 	endif
 	
+	// Match the displayed energy + overload capacity to HP (150) + shield (25).
+	// Small HP segments are 2 px high; energy segments are 5 px + 2 px spacing.
+	// This gives 43 green + 7 red slots, about 350 px in total.
+	EnergyBarsMax = floor(150.0*GetSpriteHeight(Gui.bar_horizontal_small.Sprite.ID)/(GetSpriteHeight(Gui.bar_horizontal.Sprite.ID)+2)+0.5)
+	OverloadBarsMax = floor(25.0*GetSpriteHeight(Gui.bar_horizontal_small.Sprite.ID)/(GetSpriteHeight(Gui.bar_horizontal.Sprite.ID)+2)+0.5)
+
 	Data.Position.x = 30
-	max = ceil(EnergyLoad*20.0/Sonec.Energy.StateMax)
-	maxOverload = ceil(EnergyOverload*10.0/Sonec.Energy.StateMax)
+	max = ceil(EnergyLoad*EnergyBarsMax*1.0/Sonec.Energy.StateMax)
+	maxOverload = ceil(EnergyOverload*OverloadBarsMax*1.0/Sonec.Energy.StateMax)
+	if maxOverload > OverloadBarsMax then maxOverload = OverloadBarsMax
 	
 	ColorSet(Data.Color,0,255,0,255)
 	for i = 1 to max
