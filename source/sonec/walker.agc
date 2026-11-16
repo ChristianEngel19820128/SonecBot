@@ -12,8 +12,9 @@
 #constant WALKER_TURRET_MIN_WIDTH 0.40
 // Four intervals give five visible widths: 1.00, 0.85, 0.70, 0.55, 0.40.
 #constant WALKER_TURRET_WIDTH_STEPS 4
-#constant WALKER_AIM_INITIAL_ERROR 14.0
-#constant WALKER_AIM_MIN_ERROR 5.0
+// Temporary zero-spread diagnosis. Previous balancing values: 14.0 / 5.0 degrees.
+#constant WALKER_AIM_INITIAL_ERROR 0.0
+#constant WALKER_AIM_MIN_ERROR 0.0
 #constant WALKER_AIM_IMPROVEMENT 2.0
 #constant WALKER_AIM_MAX_SALVOS 5
 // The old fixed diagonal trial is off by default; with no target lock,
@@ -942,7 +943,8 @@ function WalkerAcquireBurstAim(Walker ref as TWalker,Sonec ref as TSonec,VisionD
 				AimErrorMax = WALKER_AIM_INITIAL_ERROR-Walker.AimSalvos*WALKER_AIM_IMPROVEMENT
 				if AimErrorMax < WALKER_AIM_MIN_ERROR then AimErrorMax = WALKER_AIM_MIN_ERROR
 				// One persistent error per two-shot burst; never perfectly accurate by design.
-				TargetDeviation = TargetDeviation + random(-100,100)*AimErrorMax/100.0
+				// Use nonnegative Random bounds, then explicitly center the sample on zero.
+				TargetDeviation = TargetDeviation + (random(0,200)-100)*AimErrorMax/100.0
 				if TargetDeviation > WALKER_AIM_MAX_TILT then TargetDeviation = WALKER_AIM_MAX_TILT
 				if TargetDeviation < -WALKER_AIM_MAX_TILT then TargetDeviation = -WALKER_AIM_MAX_TILT
 				if Walker.State.LookAlignment = LOOKLEFT
