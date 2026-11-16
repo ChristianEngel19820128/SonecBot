@@ -45,6 +45,16 @@
 
 **Controller-Bezeichnung geklärt:** Der zuvor genannte Schild auf „R2“ war ein Schreibfehler. R1/RB (obere rechte Schultertaste) = Schild; LT/L2 und RT/R2 (untere Trigger) = rückwärts links/rechts. Im HTML5-Browsertest funktionieren Schild und Rückwärtsbewegung wie erwartet.
 
+## Aktueller Einzeltest: Plasma-Blitz gegen Minen und Kisten (16. November 2026)
+
+**Gemeinsam als nächster Schritt festgelegt:** Nur die zuvor leeren `PlasmaBlitzCollideMine()` und `PlasmaBlitzCollideChest()` ergänzen. Implementiert in `source/sonec/plasmablitz.agc` und in `GameDo()` verdrahtet. Die vorhandene 50-ms-Kollisions-Taktung wird **für Orbs, Minen und Kisten gemeinsam** geprüft und erst danach in `PlasmaBlitzCollisionTimerReset()` zurückgesetzt. Andernfalls hätte die Orb-Prüfung den Timer bereits verbraucht und die neuen Zielklassen könnten nicht reagieren. Alle drei verwenden bestehende Boxkollision, Gesundheitsabzug über `BulletData.Damage` und Rotfärbung. **Nur statisch geprüft; AGK-Compile/HTML5-Lauf beim Entwickler offen.**
+
+**Testanweisung:** Aktuellen `develop` in AGK Studio kompilieren/exportieren und im lokalen HTML5-Browser prüfen: Plasma-Blitz trifft/beschädigt/zerstört Minen und Kisten; Orb-Treffer funktionieren weiterhin; dieselbe Blitzentladung kann passende Ziele innerhalb desselben Zeitfensters treffen; keine auffälligen mehrfachen Treffer pro Renderframe oder Abstürze. Den genauen Testumfang zurückmelden, nicht aus der Quellprüfung ableiten.
+
+**Spielbeobachtung:** Plasma-Blitz muss aufladen und entlädt sich dann, ist stark und vermutlich energieintensiv; der Flammenwerfer verbraucht bei längerem Einsatz ebenfalls viel Energie, die für das Fliegen gebraucht wird. **Noch keine Werte gemessen; weder Energieverbrauch noch Schadenswerte/Balance in diesem Schritt ändern.** Die 50-ms-Kollisionsperiode ist vorhandene Mechanik, keine neu eingeführte Schadensart.
+
+**Nach bestandenem Test:** Schritt als abgeschlossen dokumentieren und erst dann die nächste Kollisionskombination gemeinsam wählen. Walker-Politur ausgeschlossen. Der Browser-Tod-/Mehrfachneustarttest und die spätere itch.io-Draft-Prüfung sind separate Release-Gates.
+
 ## 1. Sofortiger Einstieg im neuen Chat
 
 1. `AGENTS.md`, diese Datei, `PROJECT.md`, die aktuelle `TODO.md` und den aktuellen Status/Übergabeabschnitt in `TECHNICAL.md` lesen. Alte datierte Technikabschnitte sind Historie, keine neue Aufgabenfreigabe.
