@@ -313,7 +313,31 @@ function PlasmaBlitzCollideChest(PlasmaBlitzList ref as TPlasmaBlitzList,ChestLi
 
 endfunction
 
-// One collision interval for Orbs, Mines and Chests, then reset once.
+// Plasma discharge damages the existing Walker turret hit zone.
+function PlasmaBlitzCollideWalkers(PlasmaBlitzList ref as TPlasmaBlitzList,WalkerList ref as TWalkerList,Now as integer)
+
+	local i as integer
+	local k as integer
+
+	for i = 0 to PlasmaBlitzList.PlasmaBlitz.Length
+		if PlasmaBlitzList.PlasmaBlitz[i].Enabled = TRUE
+			if TimeGet(PlasmaBlitzList.PlasmaBlitz[i].CollisionData.CollisionTimer,Now) > 0
+				for k = 0 to WalkerList.Walker.Length
+					if WalkerList.Walker[k].Enabled = TRUE
+						if BoxInBox(PlasmaBlitzList.PlasmaBlitz[i].CollisionData.Position1,PlasmaBlitzList.PlasmaBlitz[i].CollisionData.Position2,WalkerList.Walker[k].WalkerCollisionData.Tower.Position1,WalkerList.Walker[k].WalkerCollisionData.Tower.Position2)
+							WalkerList.Walker[k].Health.State = WalkerList.Walker[k].Health.State - PlasmaBlitzList.PlasmaBlitz[i].BulletData.Damage
+							WalkerList.Walker[k].HitFlashUntil = Now + 150
+							ColorSet(WalkerList.Walker[k].WalkerSpriteData.Tower.Color,255,0,0,255)
+						endif
+					endif
+				next k
+			endif
+		endif
+	next i
+
+endfunction
+
+// One collision interval for Orbs, Mines, Chests and Walkers, then reset once.
 function PlasmaBlitzCollisionTimerReset(PlasmaBlitzList ref as TPlasmaBlitzList,Now as integer)
 
 	local i as integer
