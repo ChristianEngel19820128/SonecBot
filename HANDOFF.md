@@ -65,6 +65,14 @@
 
 **Nächster Vorschlag, noch nicht implementiert:** Plasma-Blitz → Walker als isolierter dritter Kollisionsschritt. Danach Granatenaufprall/Explosion getrennt bewerten, um ungewollten Doppelschaden zu vermeiden. Kein Balancing, keine IK-/Walker-Politur; vor Codeänderung gemeinsam nächsten Schritt festlegen.
 
+## Laufender Einzeltest: Plasma-Blitz als Walker-Blitzableiter (16. November 2026)
+
+**Gemeinsam freigegebener nächster Schritt:** `PlasmaBlitzCollideWalkers()` in `source/sonec/plasmablitz.agc` ergänzt und nach Orb/Mine/Kiste, **vor** dem gemeinsamen `PlasmaBlitzCollisionTimerReset()` in `game.agc` aufgerufen. Trefferzone ist dieselbe Walker-Turm-AABB wie beim Maschinengewehr; BoxInBox, vorhandener `BulletData.Damage`, `HitFlashUntil=Now+150` und roter Turmflash werden verwendet. Der Blitz bleibt wie bei den bisherigen anderen Zieltypen während der Entladung aktiv. Keine Änderungen an Aufladung, Energiekosten, Schäden, Walker-IK/AI oder Fraktionen.
+
+**Status: nur statisch geprüft, KEIN AGK-/HTML5-Test.** Besitzer soll lokal Windows/HTML5 prüfen: Walker-Turm wird bei Blitzentladung rot und nimmt Schaden; kann bei genügenden Treffern zerstört werden; Orb/Mine/Kiste funktionieren weiter; keine übermäßig schnelle Schadensfolge oder sonstige Regression. Erst nach Ergebnis dokumentieren und nächsten Schritt vereinbaren.
+
+**Noch fehlend aus der Grundmatrix:** direkter Granatenaufprall → Walker und Explosion → Walker; bei späterer Umsetzung Doppelschaden getrennt entscheiden. Plasmaenergie und hohe Wirkung sind weiterhin qualitative Balancebeobachtungen, kein aktueller Balanceauftrag.
+
 ## 1. Sofortiger Einstieg im neuen Chat
 
 1. `AGENTS.md`, diese Datei, `PROJECT.md`, die aktuelle `TODO.md` und den aktuellen Status/Übergabeabschnitt in `TECHNICAL.md` lesen. Alte datierte Technikabschnitte sind Historie, keine neue Aufgabenfreigabe.
