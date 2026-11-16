@@ -293,6 +293,12 @@ Entwickler akzeptiert den proportionalen HUD-Screenshot als funktional und bitte
 
 **Status:** GitHub-Quellprüfung, kein eigener AGK-Compile. Nutzer soll frischen Build und Screenshot liefern; Test erst danach als bestanden markieren. Keine Balancing-/Spielphysikänderung.
 
+### Zentralisierte HUD-Balken-Deckkraft: HUD_BAR_ALPHA=100 (16.11.2026; Test offen)
+
+Nach dem visuellen Test von `Alpha=170` mit zwei Entwickler-Screenshots wurde der HUD-Anteil des Bildes als noch zu dominant bewertet. Die freigegebene isolierte Änderung steht in `gui.agc`: `#constant HUD_BAR_ALPHA 100` vor `GuiEnergyDraw()`, sämtliche **zehn** bisherigen `ColorSet(Data.Color,R,G,B,170)` dieser Funktion sind nun `ColorSet(...,HUD_BAR_ALPHA)`. HP-Warnfarben, blaue Schildladung, rote Schild-Schadensspur, Energie-Grün, Overload-Rot und beide Munitionsanzeigen behalten ihre jeweiligen RGB-Werte; nur die Deckkraft ändert sich. Kein Eingriff in Bilddateien, Renderer, Farbwahl oder HUD-Geometrie.
+
+Der vorherige Anzeigemaßstab +1500 für sieben rote Segmente sowie Energie `StateMax=4000` / `State=4500` bleiben unverändert. **Nachweisstatus:** Codekontrolle auf GitHub, neuer AGK-/HTML5-Lauf offen. Lesbarkeit über hellem Sternenhintergrund und dunkleren Spielabschnitten prüfen; bei Bedarf später die zentrale Konstante feinjustieren.
+
 ## 7. Übergabe und Historie
 
 [HANDOFF.md](HANDOFF.md) enthält getesteten Referenzcommit, exakte Parameter, Release-Gates, offene Entscheidungen und einen direkten Starttext. Tatsächlichen develop-HEAD neu abfragen, lokale Nutzerdateien/alte Anhänge nicht voraussetzen.
