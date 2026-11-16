@@ -34,6 +34,34 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
+// World-space AABB enclosing the sprite at its current rotation.
+// For the old 90/270 degree shots this has the same bounds as before.
+// It is not a swept segment test or pixel-perfect oriented collision.
+function BulletCollisionBoundsCalculate(Bullet ref as TBullet)
+	local HalfImageWidth as float
+	local HalfImageHeight as float
+	local ExtentX as float
+	local ExtentY as float
+	local c as float
+	local sn as float
+
+	HalfImageWidth = Bullet.ObjectData.Size.Width*0.5
+	HalfImageHeight = Bullet.ObjectData.Size.Height*0.5
+	c = Cos(Bullet.SpriteData.Angle)
+	sn = Sin(Bullet.SpriteData.Angle)
+	ExtentX = abs(HalfImageWidth*c) + abs(HalfImageHeight*sn)
+	ExtentY = abs(HalfImageWidth*sn) + abs(HalfImageHeight*c)
+
+	Bullet.CollisionData.Position1.x = Bullet.ObjectData.Position.x - ExtentX
+	Bullet.CollisionData.Position1.y = Bullet.ObjectData.Position.y - ExtentY
+	Bullet.CollisionData.Position2.x = Bullet.ObjectData.Position.x + ExtentX
+	Bullet.CollisionData.Position2.y = Bullet.ObjectData.Position.y + ExtentY
+endfunction
+
+//----------------------------------------------------------------------
+// 
+//----------------------------------------------------------------------
+
 function BulletNew(Bullet ref as TBullet,ProtoBullet ref as TProtoBullet,World ref as TWorld,Position ref as TPosition,Angle as float,Radius as float,CollisionType as integer,Now as integer)
 	
 	Speed as TPosition
@@ -82,10 +110,7 @@ function BulletNew(Bullet ref as TBullet,ProtoBullet ref as TProtoBullet,World r
 	Bullet.BulletData.BulletType = 1
 	Bullet.BulletData.Damage = 25
 	
-	Bullet.CollisionData.Position1.x = Bullet.ObjectData.Position.x - Bullet.ObjectData.Size.Height * 0.5
-	Bullet.CollisionData.Position1.y = Bullet.ObjectData.Position.y - Bullet.ObjectData.Size.Width  * 0.5
-	Bullet.CollisionData.Position2.x = Bullet.ObjectData.Position.x + Bullet.ObjectData.Size.Height * 0.5
-	Bullet.CollisionData.Position2.y = Bullet.ObjectData.Position.y + Bullet.ObjectData.Size.Width  * 0.5
+	BulletCollisionBoundsCalculate(Bullet)
 	
 endfunction
 
@@ -138,7 +163,7 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function BulletCollide(BulletList ref as TBulletList,Sonec ref as TSonec)
+function BulletCollide(BulletList ref as TBulletList,Sonec ref as TSonec,Shield ref as TShield,Now as integer)
 	
 	local i as integer
 	local Radius as float
@@ -148,7 +173,8 @@ function BulletCollide(BulletList ref as TBulletList,Sonec ref as TSonec)
 			if BulletList.Bullet[i].CollisionData.CollisionType = TYPEENEMY
 				Radius = CalcRadius(BulletList.Bullet[i].ObjectData.Position,Sonec.ObjectData.Position)
 				if Radius < Sonec.ObjectData.Radius
-					Sonec.Health.State = Sonec.Health.State - BulletList.Bullet[i].BulletData.Damage
+					// Reuse the same proportional protection as explosion damage.
+					Sonec.Health.State = Sonec.Health.State - (BulletList.Bullet[i].BulletData.Damage - ShieldAbsorbDamage(Shield,Sonec,BulletList.Bullet[i].BulletData.Damage,Now))
 					BulletDelete(BulletList,i)
 				endif
 			endif
@@ -168,7 +194,8 @@ function BulletCollideOrbs(BulletList ref as TBulletList,OrbList ref as TOrbList
 	local Radius as float
 	
 	for i = 0 to BulletList.Bullet.Length
-		if BulletList.Bullet[i].Enabled = TRUE
+		// Orbs are player-only targets: enemy bullets must never destroy rewards.
+		if BulletList.Bullet[i].Enabled = TRUE and BulletList.Bullet[i].CollisionData.CollisionType = TYPEPLAYERONE
 			for k = 0 to OrbList.Orb.Length
 				if OrbList.Orb[k].Enabled = TRUE
 					if BoxInBox(BulletList.Bullet[i].CollisionData.Position1,BulletList.Bullet[i].CollisionData.Position2,OrbList.Orb[k].CollisionData.Position1,OrbList.Orb[k].CollisionData.Position2)
@@ -181,6 +208,30 @@ function BulletCollideOrbs(BulletList ref as TBulletList,OrbList ref as TOrbList
 		endif
 	next i
 	
+endfunction
+
+//----------------------------------------------------------------------
+// 
+//----------------------------------------------------------------------
+
+function BulletCollideWalkers(BulletList ref as TBulletList,WalkerList ref as TWalkerList,Now as integer)
+	local i as integer
+	local k as integer
+	for i = 0 to BulletList.Bullet.Length
+		// Enemy bullets must not damage Walkers; only player bullets hit their turret.
+		if BulletList.Bullet[i].Enabled = TRUE and BulletList.Bullet[i].CollisionData.CollisionType = TYPEPLAYERONE
+			for k = 0 to WalkerList.Walker.Length
+				if WalkerList.Walker[k].Enabled = TRUE and BulletList.Bullet[i].Enabled = TRUE
+					if BoxInBox(BulletList.Bullet[i].CollisionData.Position1,BulletList.Bullet[i].CollisionData.Position2,WalkerList.Walker[k].WalkerCollisionData.Tower.Position1,WalkerList.Walker[k].WalkerCollisionData.Tower.Position2)
+						WalkerList.Walker[k].Health.State = WalkerList.Walker[k].Health.State - BulletList.Bullet[i].BulletData.Damage
+						WalkerList.Walker[k].HitFlashUntil = Now + 150
+						ColorSet(WalkerList.Walker[k].WalkerSpriteData.Tower.Color,255,0,0,255)
+						BulletDelete(BulletList,i)
+					endif
+				endif
+			next k
+		endif
+	next i
 endfunction
 
 //----------------------------------------------------------------------
@@ -250,10 +301,7 @@ function BulletMove(Bullet ref as TBullet,World ref as TWorld,Now as integer)
 			
 			SpritePositionCalc(Bullet.SpriteData.Position,Bullet.ObjectData.Position,World.Position)
 			
-			Bullet.CollisionData.Position1.x = Bullet.ObjectData.Position.x - Bullet.ObjectData.Size.Height * 0.5
-			Bullet.CollisionData.Position1.y = Bullet.ObjectData.Position.y - Bullet.ObjectData.Size.Width  * 0.5
-			Bullet.CollisionData.Position2.x = Bullet.ObjectData.Position.x + Bullet.ObjectData.Size.Height * 0.5
-			Bullet.CollisionData.Position2.y = Bullet.ObjectData.Position.y + Bullet.ObjectData.Size.Width  * 0.5
+			BulletCollisionBoundsCalculate(Bullet)
 			
 			TimeReset(Bullet.ObjectData.MoveTimer,Now)
 			

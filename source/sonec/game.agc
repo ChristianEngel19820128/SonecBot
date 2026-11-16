@@ -10,8 +10,15 @@ function GameCreate(Game ref as TGame,vx as integer,vy as integer)
 	
 	GameProtoLoad(Game)
 	
+	SetJoystickIndex(Game)
+	
 	SoundLoad(Game.Sound)
 	
+	Game.DebugText.Length = 0
+	Game.DebugText[0] = CreateText("")
+	SetTextPosition(Game.DebugText[0],10,35)
+	SetTextSize(Game.DebugText[0],16)
+	SetTextColor(Game.DebugText[0],255,255,255,255)
 	Game.IsLost = TRUE
 	Game.IsPause = FALSE
 	
@@ -132,9 +139,9 @@ endfunction
 
 function GameInput(Game ref as TGame,Now as integer)
 
-	SonecInput(Game.Sonec,Game.JetfireList,Game.ProtoJetfire,Game.World,Now)
+	SonecInput(Game.Sonec,Game.JetfireList,Game.ProtoJetfire,Game.World,Game.JoystickIndex,Now)
 	
-	if GetRawJoystickButtonPressed(1,joystickButtonBack) = 1
+	if GetJoyPressed(Game.JoystickIndex,joystickButtonBack) = 1
 		Game.IsLost = TRUE
 	endif
 	
@@ -146,12 +153,12 @@ endfunction
 
 function GameActionInput(Game ref as TGame,Now as integer)
 
-	SonecFlameGunInput(Game.Sonec,Game.FlameList,Game.ProtoFlame,Game.World,Game.Sound,Now)
-	SonecPlasmaBlitzGunInput(Game.Sonec,Game.FlashList,Game.ProtoFlash,Game.PlasmaBlitzList,Game.ProtoPlasmaBlitz,Game.World,Now)
-	SonecMGunInput(Game.Sonec,Game.FlashList,Game.ProtoFlash,Game.BulletList,Game.ProtoBullet,Game.World,Game.Sound,Now)
-	SonecGrenadeLauncherInput(Game.Sonec,Game.GrenadeList,Game.ProtoGrenade,Game.World,Game.Sound,Now)
-	SonecShieldInput(Game.Sonec,Game.Shield,Game.World,Now)
-	SonecInenergieInput(Game.Sonec,Game.Inenergie,Game.EnergieList,Game.World,Now)
+	SonecFlameGunInput(Game.Sonec,Game.FlameList,Game.ProtoFlame,Game.World,Game.Sound,Game.JoystickIndex,Now)
+	SonecPlasmaBlitzGunInput(Game.Sonec,Game.FlashList,Game.ProtoFlash,Game.PlasmaBlitzList,Game.ProtoPlasmaBlitz,Game.World,Game.JoystickIndex,Now)
+	SonecMGunInput(Game.Sonec,Game.FlashList,Game.ProtoFlash,Game.BulletList,Game.ProtoBullet,Game.World,Game.Sound,Game.JoystickIndex,Now)
+	SonecGrenadeLauncherInput(Game.Sonec,Game.GrenadeList,Game.ProtoGrenade,Game.World,Game.Sound,Game.JoystickIndex,Now)
+	SonecShieldInput(Game.Sonec,Game.Shield,Game.World,Game.JoystickIndex,Now)
+	SonecInenergieInput(Game.Sonec,Game.Inenergie,Game.EnergieList,Game.World,Game.JoystickIndex,Now)
 
 endfunction
 
@@ -161,6 +168,7 @@ endfunction
 
 function GameDo(Game ref as TGame,Now as integer)
 
+	local WalkerChance as integer
 	local Index as integer
 	local i as integer
 	
@@ -188,6 +196,14 @@ function GameDo(Game ref as TGame,Now as integer)
 			Index = PlateAdd(Game.PlateList,Game.ProtoPlate,Game.World,Now)
 			if Index >= 0
 				ChestAdd(Game.ChestList,Game.ProtoChest,Game.World,Game.PlateList.Plate[Index],Index,Now)
+				if WalkerCountAll(Game.WalkerList) < 5
+					// Longer platforms provide more room for walkers (35% at 200 px).
+					WalkerChance = 3500 * Game.PlateList.Plate[Index].ObjectData.Size.Width / 200
+					if WalkerChance > 8500 then WalkerChance = 8500
+					if random(0,10000) < WalkerChance
+						WalkerAdd(Game.WalkerList,Game.ProtoWalker,Game.ChestList,Game.World,Game.PlateList.Plate[Index],Index,Now)
+					endif
+				endif
 			endif
 		endif
 	endif
@@ -212,37 +228,41 @@ function GameDo(Game ref as TGame,Now as integer)
 		endif
 	endif
 	
-	if WalkerCountAll(Game.WalkerList) < 5
-		if random(0,10000) < 35
-			//WalkerAdd(Game.WalkerList,Game.ProtoWalker,Game.World,Now)
-		endif
-	endif
-	
+
 	OrbMoveAll(Game.OrbList,Game.World,Now)
 	OrbHealthRegenerate(Game.OrbList,Game,Now)
 	
 	MineMoveAll(Game.MineList,Game.Sonec,Game.Inenergie,Game.World,Now)
 	MineHealthRegenerate(Game.MineList,Game,Now)
 	MineCollideSonec(Game.MineList,Game.Sonec,Game,Now)
-
-	WalkerMoveAll(Game.WalkerList,Game.ProtoWalker,Game.World,Now)
-	WalkerHealthRegenerate(Game.WalkerList,Game,Now)
-		
+	
+	
 	JetfireLifeCycle(Game.JetfireList,Now)
 	EnergieMoveAll(Game.EnergieList,Game.World,Now)
 	EnergieLifeCycle(Game.EnergieList,Now)
 	EnergieCollect(Game.EnergieList,Game.Sonec)
 	
 	ExplosionMoveAll(Game.ExplosionList,Game.World,Now)
-	ExplosionCollideSonec(Game.ExplosionList,Game.Sonec)
+	ShieldShapeTest(Game.Shield,Game.ProtoShield,Game.ExplosionList,Game.ProtoExplosion,Game.DebugText[0])
+	ExplosionCollideSonec(Game.ExplosionList,Game.Sonec,Game.Shield,Now)
 	ExplosionCollideChest(Game.ExplosionList,Game.ChestList)
 	ExplosionCollideOrb(Game.ExplosionList,Game.OrbList)
 	ExplosionCollideMine(Game.ExplosionList,Game.MineList)
+	ExplosionCollideWalkers(Game.ExplosionList,Game.WalkerList,Now)
 	
 	SonecEnergyRegenerate(Game.Sonec,Now)
 	SonecHealthRegenerate(Game.Sonec,Now)
 		
 	PlateMoveAll(Game.PlateList,Game.World,Now)
+	WalkerMoveAll(Game.WalkerList,Game.ProtoWalker,Game.PlateList,Game.ChestList,Game.Sonec,Game.World,Now)
+	WalkerHealthRegenerate(Game.WalkerList,Game,Now)
+	// Select the turret side after walking/turning, before rebuilding its pose.
+	WalkerTurretFaceTargetAll(Game.WalkerList,Game.Sonec,Game.Screen.Width,Now)
+	WalkerAnimateAll(Game.WalkerList,Game.ProtoWalker,Game.World,Now)
+	// Turret world positions are current; enemy bullets join the normal Bullet pipeline.
+	WalkerFireAll(Game.WalkerList,Game.ProtoWalker,Game.BulletList,Game.ProtoBullet,Game.FlashList,Game.ProtoFlash,Game.World,Game.Sonec,Game.Screen.Width,Now)
+	// Keep live Walker flashes on their barrels while platforms move vertically.
+	WalkerFlashFollowAll(Game.WalkerList,Game.FlashList,Game.World)
 	ChestMoveAll(Game.ChestList,Game.PlateList,Game.World)
 	ChestCheckAll(Game.ChestList,Game.ProtoChest)
 	PlateCheckAll(Game.PlateList,Game.ProtoPlate)
@@ -256,10 +276,12 @@ function GameDo(Game ref as TGame,Now as integer)
 	FlameCollideOrbs(Game.FlameList,Game.OrbList)
 	FlameCollideMine(Game.FlameList,Game.MineList)
 	FlameCollideChest(Game.FlameList,Game.ChestList)
+	FlameCollideWalkers(Game.FlameList,Game.WalkerList,Now)
 	
 	BulletMoveall(Game.BulletList,Game.World,Now)
-	BulletCollide(Game.BulletList,Game.Sonec)
+	BulletCollide(Game.BulletList,Game.Sonec,Game.Shield,Now)
 	BulletCollideOrbs(Game.BulletList,Game.OrbList)
+	BulletCollideWalkers(Game.BulletList,Game.WalkerList,Now)
 	BulletCollideMine(Game.BulletList,Game.MineList)
 	BulletCollideChest(Game.BulletList,Game.ChestList)
 	
@@ -267,12 +289,15 @@ function GameDo(Game ref as TGame,Now as integer)
 	GrenadeCollideOrbs(Game.GrenadeList,Game.OrbList,Game,Now)
 	GrenadeCollideMine(Game.GrenadeList,Game.MineList,Game,Now)
 	GrenadeCollideChest(Game.GrenadeList,Game.ChestList,Game,Now)
+	GrenadeCollideWalkers(Game.GrenadeList,Game.WalkerList,Game,Now)
 	GrenadeCollidePlate(Game.GrenadeList,Game.PlateList,Game,Now)
 	
 	PlasmaBlitzLifeCycle(Game.PlasmaBlitzList,Now)
 	PlasmaBlitzCollideOrbs(Game.PlasmaBlitzList,Game.OrbList,Now)
-	PlasmaBlitzCollideMine(Game.PlasmaBlitzList,Game.MineList)
-	PlasmaBlitzCollideChest(Game.PlasmaBlitzList,Game.ChestList)
+	PlasmaBlitzCollideMine(Game.PlasmaBlitzList,Game.MineList,Now)
+	PlasmaBlitzCollideChest(Game.PlasmaBlitzList,Game.ChestList,Now)
+	PlasmaBlitzCollideWalkers(Game.PlasmaBlitzList,Game.WalkerList,Now)
+	PlasmaBlitzCollisionTimerReset(Game.PlasmaBlitzList,Now)
 	
 	SonecRefreshAnimations(Game.Sonec,Game.PlasmaBlitzList,Game.FlashList,Game.World)
 	Game.IsLost = Game.Sonec.IsLost
@@ -287,7 +312,7 @@ function GameAnimate(Game ref as TGame,Now as integer)
 	
 	InenergieAnimate(Game.Inenergie,Now)
 	SonecAnimate(Game.Sonec,Game.ProtoSonec,Now)
-	ShieldAnimate(Game.Shield,Now)
+	ShieldAnimate(Game.Shield,Game.Sonec,Now)
 	ExplosionAnimateAll(Game.ExplosionList,Game.ProtoExplosion,Now)
 	
 endfunction
@@ -312,7 +337,7 @@ function GameDraw(Game ref as TGame)
 	
 	OrbDrawAll(Game.OrbList,Game.ProtoOrb)
 	MineDrawAll(Game.MineList,Game.ProtoMine)
-	WalkerDrawAll(Game.WalkerList,Game.ProtoWalker)
+	WalkerDrawAll(Game.WalkerList,Game.ProtoWalker,Game.World)
 	
 	InenergieDraw(Game.Inenergie,Game.ProtoInenergie)
 	JetfireDrawAll(Game.JetfireList,Game.ProtoJetfire)
@@ -320,15 +345,27 @@ function GameDraw(Game ref as TGame)
 	BulletDrawAll(Game.BulletList,Game.ProtoBullet)
 	GrenadeDrawAll(Game.GrenadeList,Game.ProtoGrenade)
 	PlasmaBlitzDrawAll(Game.PlasmaBlitzList,Game.ProtoPlasmaBlitz)
+	// Muzzle flashes are foreground effects: rendered after Walker and bullet sprites.
 	FlashDrawAll(Game.FlashList,Game.ProtoFlash)
+	// Debug muzzle markers remain visible above bullets and flashes.
+	WalkerMuzzleDebugDrawAll(Game.WalkerList,Game.ProtoWalker,Game.World)
 	SonecDraw(Game.Sonec,Game.ProtoSonec)
 	ShieldDraw(Game.Shield,Game.ProtoShield)
+
 
 	ExplosionDrawAll(Game.ExplosionList,Game.ProtoExplosion)
 
 	CloudDrawAll(Game.CloudList,Game.ProtoCloud,1,1.75)
 
-	GuiEnergyDraw(Game.Gui,Game.Sonec,Game.Screen)
+	GuiEnergyDraw(Game.Gui,Game.Sonec,Game.Screen,GetMilliseconds())
+	// F2 compares one platform and one visible skyscraper without affecting movement.
+	PlateDebugDrawAll(Game.PlateList,Game.TowerList)
+	if SHIELD_SHAPE_TEST = 1 and Device$ = "windows"
+		local debugIndex as integer
+		for debugIndex = 0 to Game.DebugText.Length
+			DrawText(Game.DebugText[debugIndex])
+		next debugIndex
+	endif
 
 endfunction
 

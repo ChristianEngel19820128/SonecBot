@@ -1,0 +1,11 @@
+{
+
+	"AnimInEnergie":[
+		{"Image":{"File":{"Path":"/media/gfx/effects","Name":"inenergie_1.png"}}},
+		{"Image":{"File":{"Path":"/media/gfx/effects","Name":"inenergie_2.png"}}},
+		{"Image":{"File":{"Path":"/media/gfx/effects","Name":"inenergie_3.png"}}},
+		{"Image":{"File":{"Path":"/media/gfx/effects","Name":"inenergie_4.png"}}},
+		{"Image":{"File":{"Path":"/media/gfx/effects","Name":"inenergie_5.png"}}}
+	]
+
+}

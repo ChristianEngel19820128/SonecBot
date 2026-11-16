@@ -261,8 +261,8 @@ function ChestMove(Chest ref as TChest,PlateList ref as TPlateList,World ref as 
 		
 		Chest.CollisionData.Position1.x = Chest.ObjectData.Position.x
 		Chest.CollisionData.Position1.y = Chest.ObjectData.Position.y
-		Chest.CollisionData.Position2.x = Chest.ObjectData.Position.x + (Chest.ObjectData.Size.Width * Chest.SpriteData.Scale)
-		Chest.CollisionData.Position2.y = Chest.ObjectData.Position.y + (Chest.ObjectData.Size.Height * Chest.SpriteData.Scale)
+		Chest.CollisionData.Position2.x = Chest.ObjectData.Position.x + Chest.ObjectData.Size.Width
+		Chest.CollisionData.Position2.y = Chest.ObjectData.Position.y + Chest.ObjectData.Size.Height
 				
 	endif
 		

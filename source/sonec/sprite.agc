@@ -54,29 +54,48 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
+// Optional A/B rendering experiment. 0 = original float; 1 = window-pixel snap.
+// Used ONLY on temporary display data for platforms and skyscrapers.
+global MotionRenderSnapEnabled as integer
+
+function MotionRenderSnapPosition(Position ref as TPosition)
+	local ScaleX as float
+	local ScaleY as float
+
+	if GetVirtualWidth() > 0 and GetVirtualHeight() > 0
+		ScaleX = GetDeviceWidth()*(1.0/GetVirtualWidth())
+		ScaleY = GetDeviceHeight()*(1.0/GetVirtualHeight())
+		if ScaleX > 0
+			Position.x = Floor(Position.x*ScaleX+0.5)*(1.0/ScaleX)
+		endif
+		if ScaleY > 0
+			Position.y = Floor(Position.y*ScaleY+0.5)*(1.0/ScaleY)
+		endif
+	endif
+endfunction
+
 function SpriteDraw(Sprite ref as TSprite,Data ref as TSpriteData)
 	
 	if Sprite.ID > 0
-		if Data.OffsetOn = TRUE
-			SetSpriteOffset(Sprite.ID,Data.Offset.x,Data.Offset.y)
-		else
-			SetSpriteOffset(Sprite.ID,GetSpriteWidth(Sprite.ID)/2,GetSpriteHeight(Sprite.ID)/2)
-		endif
 		if Sprite.Data.Scale <> Data.Scale
 			SetSpriteScaleByOffset(Sprite.ID,Data.Scale,Data.Scale)
-			if Data.OffsetOn = TRUE
-				SetSpriteOffset(Sprite.ID,Data.Offset.x*Data.Scale,Data.Offset.y*Data.Scale)
-			else
-				SetSpriteOffset(Sprite.ID,GetSpriteWidth(Sprite.ID)/2,GetSpriteHeight(Sprite.ID)/2)
-			endif
+		endif
+		// Always apply the final pivot after scaling. Otherwise an unchanged scale
+		// resets OffsetOn sprites to their unscaled pivot on the next draw.
+		if Data.OffsetOn = TRUE
+			SetSpriteOffset(Sprite.ID,Data.Offset.x*Data.Scale,Data.Offset.y*Data.Scale)
+		else
+			// Use float multiplication: AGK integer division may lose half pixels.
+			SetSpriteOffset(Sprite.ID,GetSpriteWidth(Sprite.ID)*0.5,GetSpriteHeight(Sprite.ID)*0.5)
 		endif
 		if Sprite.Data.Angle <> Data.Angle
 			SetSpriteAngle(Sprite.ID,Data.Angle)
 		endif
+		// Keep subpixel positions for rendering; compare visually with the former Floor() path.
 		if Data.Center = TRUE
-			SetSpritePositionByOffset(Sprite.ID,Floor(Data.Position.x),Floor(Data.Position.y))
+			SetSpritePositionByOffset(Sprite.ID,Data.Position.x,Data.Position.y)
 		else
-			SetSpritePosition(Sprite.ID,Floor(Data.Position.x),Floor(Data.Position.y))
+			SetSpritePosition(Sprite.ID,Data.Position.x,Data.Position.y)
 		endif
 		if Sprite.Data.Color.Value <> Data.Color.Value
 			SetSpriteColor(Sprite.ID,Data.Color.Red,Data.Color.Green,Data.Color.Blue,Data.Color.Alpha)

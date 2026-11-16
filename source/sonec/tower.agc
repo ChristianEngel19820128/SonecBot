@@ -74,6 +74,15 @@ function TowerNew(Tower ref as TTower,ProtoTower ref as TProtoTower,World ref as
 	local i as integer
 	
 	Tower.Enabled = TRUE
+	// Reset diagnostic fields when a pooled tower entry is created or reused.
+	Tower.DebugDeltaX = 0
+	Tower.DebugCalcRange = 0
+	Tower.DebugElapsedMs = 0
+	Tower.DebugUpdated = 0
+	Tower.DebugFrameMs = 0
+	Tower.DebugLastNow = Now
+	Tower.DebugHistoryCount = 0
+	Tower.DebugHistoryNext = 0
 	
 	TimeSet(Tower.ObjectData.MoveTimer,10,10)
 	TimeReset(Tower.ObjectData.MoveTimer,Now)
@@ -216,21 +225,52 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
+// F5 mode is a tower-only experiment. No platform, Walker or event timer changes.
+global TowerMotionEveryFrameEnabled as integer
+
 function TowerMove(Tower ref as TTower,World ref as TWorld,Now as integer)
 
 	local x as float
 	local sx as float
 	local r as float
 	local i as integer
+	local MoveThisFrame as integer
+	local ElapsedMs as integer
 	
 	if Tower.Enabled = TRUE
-		if TimeGet(Tower.ObjectData.MoveTimer,Now) > 0
+		// Capture the actual GameDo-frame time, even if the tower timer skips a step.
+		Tower.DebugFrameMs = Now - Tower.DebugLastNow
+		if Tower.DebugFrameMs < 0 then Tower.DebugFrameMs = 0
+		Tower.DebugLastNow = Now
+		Tower.DebugDeltaX = 0
+		Tower.DebugCalcRange = 0
+		Tower.DebugElapsedMs = 0
+		Tower.DebugUpdated = 0
+		// A: original 10-ms gate. B: use the elapsed time on every GameDo update.
+		MoveThisFrame = 0
+		if TowerMotionEveryFrameEnabled = 1
+			ElapsedMs = Now - Tower.ObjectData.MoveTimer.Stamp
+			if ElapsedMs > 0
+				MoveThisFrame = 1
+				r = ElapsedMs*0.001*Tower.ObjectData.MoveTimer.Range*Tower.ObjectData.MoveTimer.Multiplier
+			endif
+		else
+			if TimeGet(Tower.ObjectData.MoveTimer,Now) > 0
+				MoveThisFrame = 1
+				ElapsedMs = Tower.ObjectData.MoveTimer.FullDifference
+				r = Tower.ObjectData.MoveTimer.CalcRange
+			endif
+		endif
+		if MoveThisFrame = 1
 			
 			x = Tower.ObjectData.Position.x
 			sx = Tower.ObjectData.MoveSpeed.x
-			r = Tower.ObjectData.MoveTimer.CalcRange
+			Tower.DebugCalcRange = r
+			Tower.DebugElapsedMs = ElapsedMs
+			Tower.DebugUpdated = 1
 			
 			Tower.ObjectData.Position.x = x - sx*r
+			Tower.DebugDeltaX = Tower.ObjectData.Position.x - x
 			
 			for i = 0 to Tower.TowerPart.Length
 				Tower.TowerPart[i].ObjectData.Position.x = Tower.ObjectData.Position.x
@@ -240,6 +280,13 @@ function TowerMove(Tower ref as TTower,World ref as TWorld,Now as integer)
 			TimeReset(Tower.ObjectData.MoveTimer,Now)
 			
 		endif
+		// Store the last 60 GameDo frames, including frames without timer movement.
+		Tower.DebugHistoryDX[Tower.DebugHistoryNext] = Tower.DebugDeltaX
+		Tower.DebugHistoryFrameMs[Tower.DebugHistoryNext] = Tower.DebugFrameMs
+		Tower.DebugHistoryStep[Tower.DebugHistoryNext] = Tower.DebugUpdated
+		Tower.DebugHistoryNext = Tower.DebugHistoryNext + 1
+		if Tower.DebugHistoryNext >= 60 then Tower.DebugHistoryNext = 0
+		if Tower.DebugHistoryCount < 60 then Tower.DebugHistoryCount = Tower.DebugHistoryCount + 1
 	endif
 		
 endfunction
@@ -263,13 +310,19 @@ endfunction
 //----------------------------------------------------------------------
 
 function TowerPartDraw(TowerPart ref as TTowerPart,ProtoTower ref as TProtoTower)
+	local DrawData as TSpriteData
 	
+	// Keep every tower part's world and collision positions untouched.
+	DrawData = TowerPart.SpriteData
+	if MotionRenderSnapEnabled = 1
+		MotionRenderSnapPosition(DrawData.Position)
+	endif
 	select TowerPart.TowerType
 		case 0
-			SpriteDraw(ProtoTower.AnimSmallTower[TowerPart.TowerIndex].Sprite,TowerPart.SpriteData)
+			SpriteDraw(ProtoTower.AnimSmallTower[TowerPart.TowerIndex].Sprite,DrawData)
 		endcase
 		case 1
-			SpriteDraw(ProtoTower.AnimTower[TowerPart.TowerIndex].Sprite,TowerPart.SpriteData)
+			SpriteDraw(ProtoTower.AnimTower[TowerPart.TowerIndex].Sprite,DrawData)
 		endcase
 	endselect
 	

@@ -8,6 +8,9 @@
 #constant MOVEDOWN 0
 #constant MOVEUP 1
 
+#constant ELEMENTLEFT 0
+#constant ELEMENTRIGHT 1
+
 #constant FALLACCELERATION 0.01
 
 #constant REGENERGY 1
@@ -95,6 +98,8 @@ type TObjectData
 	Rotation as float
 	RotationAlignment as integer
 	Angle as float
+	AngleAnimate as float
+	AngleDelta as float
 	Radius as float
 	Position as TPosition
 	AnchorPosition as TPosition
@@ -172,6 +177,9 @@ type TProtoShield
 endtype
 
 type TEnergyShield
+	DamageTrailAmount as float
+	DamageTrailStartMs as integer
+	DamageTrailEndMs as integer
 	ShieldTimer as TTime
 	State as integer
 	StateMax as integer
@@ -179,6 +187,14 @@ type TEnergyShield
 endtype
 
 type TShield
+	SizeMultiplier as float
+	LastDamageMs as integer
+	DamageCooldownActive as integer
+	ShapeTestChecks as integer
+	ShapeTestHits as integer
+	ShapeTestRadiusHits as integer
+	ShapeTestOnlyHits as integer
+	ShapeTestRadiusOnlyHits as integer
 	Enabled as integer
 	ObjectData as TObjectData
 	SpriteData as TSpriteData
@@ -252,6 +268,7 @@ type TProtoWalkerAnimation
 	Thigh as TProtoData
 	Shank as TProtoData
 	Socket as TProtoData
+	Barrel as TProtoData
 endtype
 
 type TProtoWalker
@@ -262,34 +279,78 @@ endtype
 type TWalkerObjectData
 	Tower as TObjectData
 	Corpus as TObjectData
-	Thigh as TObjectData
-	Shank as TObjectData
-	Socket as TObjectData
+	Thigh as TObjectData[1]
+	Shank as TObjectData[1]
+	Socket as TObjectData[1]
+	Barrel as TObjectData[1]
 endtype
 
 type TWalkerSpriteData
 	Tower as TSpriteData
 	Corpus as TSpriteData
-	Thigh as TSpriteData
-	Shank as TSpriteData
-	Socket as TSpriteData
+	Thigh as TSpriteData[1]
+	Shank as TSpriteData[1]
+	Socket as TSpriteData[1]
+	Barrel as TSpriteData[1]
 endtype
 
 type TWalkerCollisionData
 	Tower as TCollisionData
 	Corpus as TCollisionData
-	Thigh as TCollisionData
-	Shank as TCollisionData
-	Socket as TCollisionData
+	Thigh as TCollisionData[1]
+	Shank as TCollisionData[1]
+	Socket as TCollisionData[1]
+	Barrel as TCollisionData[1]
 endtype
 
 type TWalker
+	PlateIndex as integer
+	PlateOffsetX as float
+	PlateOffsetY as float
+	WalkPhase as float
+	TurnPending as integer
+	SkeletonFootX as float[1]
+	SkeletonFootY as float[1]
+	SkeletonFootStartX as float[1]
+	SkeletonFootTargetX as float[1]
+	SkeletonSwing as integer[1]
+	SkeletonDebugIK as float
+	SkeletonDebugProto as float
+	SkeletonDebugSprite as float
+	SkeletonDebugShankIK as float
+	SkeletonDebugShankSprite as float
+	NextPauseMs as integer
+	PauseUntilMs as integer
+	FireTimer as TTime
+	FireState as integer
+	FireStateUntilMs as integer
+	// One fixed aim angle per burst; improve slowly while the target stays in view.
+	AimAngle as float
+	AimActive as integer
+	AimSalvos as integer
+	// Independent projected turret swivel around the Corpus offset.
+	TurretSwivelActive as integer
+	TurretSwivelFrom as integer
+	TurretSwivelTo as integer
+	TurretSwivelStartMs as integer
+	TurretWidthScale as float
+	// Independent additive barrel recoil, leaving all neutral pivots intact.
+	BarrelRecoilActive as integer[1]
+	BarrelRecoilStartMs as integer[1]
+	BarrelRecoilAngle as float[1]
+	BarrelRecoilDistance as float[1]
+	TowerRecoilActive as integer
+	TowerRecoilStartMs as integer
+	TowerRecoilAngle as float
+	TowerRecoilDistance as float
 	Enabled as integer
 	ObjectData as TObjectData
 	CollisionData as TCollisionData
 	WalkerObjectData as TWalkerObjectData
 	WalkerSpriteData as TWalkerSpriteData
 	WalkerCollisionData as TWalkerCollisionData
+	HitFlashUntil as integer
+	AnimationData as TAnimationData
 	Health as THealth	
 	State as TObjectState
 endtype
@@ -376,6 +437,8 @@ type TFlash
 	SpriteData as TSpriteData
 	EffectData as TEffectData
 	FlashAnimIndex as integer
+	AttachedWalkerIndex as integer
+	AttachedBarrelIndex as integer
 endtype
 
 type TFlashList
@@ -484,6 +547,20 @@ type TPlate
 	YShift as TYShift
 	SpriteData as TSpriteData
 	CollisionData as TCollisionData
+	// F1 platform diagnostics only. These fields never affect movement.
+	DebugDeltaX as float
+	DebugDeltaY as float
+	DebugCalcRange as float
+	DebugElapsedMs as integer
+	DebugUpdated as integer
+	// Rolling history of the last 60 GameDo frames (including frames with no timer step).
+	DebugFrameMs as integer
+	DebugLastNow as integer
+	DebugHistoryDX as float[59]
+	DebugHistoryFrameMs as integer[59]
+	DebugHistoryStep as integer[59]
+	DebugHistoryCount as integer
+	DebugHistoryNext as integer
 endtype
 
 type TPlateList
@@ -515,6 +592,18 @@ type TProtoExplosion
 endtype
 
 type TExplosion
+	LastSonecHitMs as integer
+	LastChestHitMs as integer[-1]
+	LastOrbHitMs as integer[-1]
+	LastMineHitMs as integer[-1]
+	LastWalkerHitMs as integer[-1]
+	MeasureStartMs as integer
+	MeasureChecks as integer
+	MeasureHits as integer
+	MeasureDamage as integer
+	MeasureChestHits as integer
+	MeasureOrbHits as integer
+	MeasureMineHits as integer
 	Enabled as integer
 	ExplosionType as integer
 	ObjectData as TObjectData
@@ -546,6 +635,18 @@ type TTower
 	TowerType as integer
 	TowerPart as TTowerPart[-1]
 	ObjectData as TObjectData
+	// F2 measurements only; never used in tower movement or rendering.
+	DebugDeltaX as float
+	DebugCalcRange as float
+	DebugElapsedMs as integer
+	DebugUpdated as integer
+	DebugFrameMs as integer
+	DebugLastNow as integer
+	DebugHistoryDX as float[59]
+	DebugHistoryFrameMs as integer[59]
+	DebugHistoryStep as integer[59]
+	DebugHistoryCount as integer
+	DebugHistoryNext as integer
 endtype
 
 type TTowerList
@@ -614,8 +715,11 @@ type TSound
 endtype
 
 type TGame
+	DebugText as integer[-1]
 	
 	Screen as TSize
+	
+	JoystickIndex as integer
 	
 	Sound as TSound
 	

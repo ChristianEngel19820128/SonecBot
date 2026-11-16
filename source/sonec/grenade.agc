@@ -227,6 +227,34 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
+// Player grenade impacts the existing Walker turret hit zone.
+// The grenade creates its normal explosion; Walker blast damage is a later step.
+function GrenadeCollideWalkers(GrenadeList ref as TGrenadeList,WalkerList ref as TWalkerList,Game ref as TGame,Now as integer)
+
+	local i as integer
+	local k as integer
+
+	for i = 0 to GrenadeList.Grenade.Length
+		if GrenadeList.Grenade[i].Enabled = TRUE
+			for k = 0 to WalkerList.Walker.Length
+				if WalkerList.Walker[k].Enabled = TRUE and GrenadeList.Grenade[i].Enabled = TRUE
+					if BoxInBox(GrenadeList.Grenade[i].CollisionData.Position1,GrenadeList.Grenade[i].CollisionData.Position2,WalkerList.Walker[k].WalkerCollisionData.Tower.Position1,WalkerList.Walker[k].WalkerCollisionData.Tower.Position2)
+						WalkerList.Walker[k].Health.State = WalkerList.Walker[k].Health.State - GrenadeList.Grenade[i].BulletData.Damage
+						WalkerList.Walker[k].HitFlashUntil = Now + 150
+						ColorSet(WalkerList.Walker[k].WalkerSpriteData.Tower.Color,255,0,0,255)
+						GrenadeDestroy(GrenadeList,i,Game.ExplosionList,Game.ProtoExplosion,Game,GrenadeList.Grenade[i].ObjectData.Position,Now)
+					endif
+				endif
+			next k
+		endif
+	next i
+
+endfunction
+
+//-----------------------------------------------------------------------
+// 
+//-----------------------------------------------------------------------
+
 function GrenadeCollidePlate(GrenadeList ref as TGrenadeList,PlateList ref as TPlateList,Game ref as TGame,Now as integer)
 	
 	local i as integer
