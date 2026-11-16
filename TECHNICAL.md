@@ -279,6 +279,12 @@ Entwickler bestätigt mehrfachen Tod **innerhalb derselben HTML5-Browsersitzung*
 
 **Nachweisgrenze:** GitHub-Code geprüft; kein AGK-Compile/Browser-Test durch Assistenten. Entwickler soll neue Windows-/HTML5-Fassung und Screenshot prüfen: Vollenergie nahe HP-Balken, Überladung nahe Schildbereich, Gesamt maximal ca. 350 px; normale Verbrauchs-/Regenerationsanimation und Neustart ohne Überlauf. Erst nach positivem Ergebnis abschließen.
 
+### HUD-Testwerte konkretisiert: Normal 4000, Overload 500 (16.11.2026)
+
+Entwickler akzeptiert den proportionalen HUD-Screenshot als funktional und bittet um eindeutigen Test mit **4000 normaler Energie plus 500 Overload, insgesamt 4500**. In `sonec.agc:SonecInit()` `Energy.StateMax` von 5250 auf **4000**, Startwert von vorher 5250 (keine Überladung) auf **4500** gesetzt. Die erste Version des neuen HUDs skalierte rote Segmente noch relativ zu `Energy.StateMax`, sodass +500 nur `ceil(500*7/4000)=1` rotes Segment gezeigt hätte; daher skaliert `gui.agc` die Überladung jetzt gegen **500**, damit +500 **7 rote** Segmente füllt. Das rote Maximum bleibt auf sieben Slots begrenzt. Grüner Balken weiter `ceil(EnergyLoad*43/4000)`; zusammen ca. 350 Pixel.
+
+**Keine anderen Gameplayänderungen:** Energiekosten, Regeneration, Schwellen bei Energieobjekten und Overload-Health-Schaden sind unverändert. Gerade `SonecHealthRegenerate()` zieht bei Überladung weiter Gesundheit ab; 4500 ist daher als **bewusster temporärer Sichttestwert** zu behandeln, nicht als endgültiges Release-Balancing. Kein eigener AGK-/HTML5-Test des Assistenten; Entwickler soll direkt nach Start/Neustart die volle grüne/rote Anzeige und anschließend den erwarteten Verbrauch prüfen.
+
 ## 7. Übergabe und Historie
 
 [HANDOFF.md](HANDOFF.md) enthält getesteten Referenzcommit, exakte Parameter, Release-Gates, offene Entscheidungen und einen direkten Starttext. Tatsächlichen develop-HEAD neu abfragen, lokale Nutzerdateien/alte Anhänge nicht voraussetzen.
