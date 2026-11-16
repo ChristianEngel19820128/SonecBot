@@ -1,10 +1,20 @@
 # SonecBot – Technische Dokumentation
 
-**Dokumentstatus:** Bestandsaufnahme 3.20 (Alpha-Walker lokal akzeptiert; HTML5-Pre-Alpha priorisiert, 16. November 2026)  
+**Dokumentstatus:** Bestandsaufnahme 3.21 (letzter freigegebener 3-px-Turmrückstoß implementiert; Sichttest offen, 16. November 2026)  
 **Branch:** `develop`  
 **Engine:** AppGameKit Studio (AGK)  
 **Erste Zielplattform:** HTML5  
 **Prüfmethode:** Statische Quellcodeanalyse sowie vom Entwickler berichtete lokale Spieltests; kein eigener Build- oder Laufzeittest durch den Assistenten
+
+## Letzter freigegebener Walker-Zusatz – 3-px-Turmrückstoß
+
+**Freigabe und Umfang (16. November 2026):** Nach lokal akzeptiertem Alpha-Walker wünscht der Entwickler vor HTML5 noch einen begrenzten letzten Zusatz: Turm bei jedem der zwei Schüsse 3 px zurück und wieder vor. Implementiert sind nur der additive Elternimpuls und notwendige Anbindung an Rohre/Turm-Trefferzone/neutralen Flash; kein neues Balancing oder IK-Umbau. Danach erneut kurzen Sichttest, dann Releasefokus beibehalten.
+
+**Ablauf:** WALKER_TOWER_RECOIL_PX=3.0, HOLD_MS=60, END_MS=150. Vier neue TWalker-Felder (Active/StartMs/Angle/Distance), in WalkerNew initialisiert. WalkerFireShot speichert nach Erzeugung der Bullet/des Flashes Start und Winkel des neuen Turmimpulses; es wird nicht zum vorigen Impuls addiert. WalkerTowerRecoilApply baut aus verstrichener Zeit die absolute Distanz auf: 3 px für 60 ms, danach linear mit expliziter Float-Arithmetik auf 0 bis 150 ms. Der nächste Schuss nach 150 ms bekommt daher erneut einen eigenen vollständigen Impuls. Rohrimpulse bleiben unabhängig 300 ms lang, Erholungszeit unverändert 300 ms.
+
+**Pose und Effekte:** WalkerAnimate ruft den Elternimpuls nach WalkerPartsCalculate und vor WalkerTowerCollisionCalculate auf. Tower.Position/AnchorPosition und beide Rohrpositionen/-anker werden gemeinsam in `(-Sin(FireAngle),Cos(FireAngle))*Distance` verschoben und Spritepositionen aktualisiert. Danach wird die passende Turm-AABB berechnet; eigener Rohrimpuls wird wie zuvor später addiert. Corpus, Hüftanker, Fußziele, Proto-Offsets und untere IK unverändert. Der Flash-Folger rechnet neben dem jeweiligen Rohrrückstoß auch den gemeinsamen Turmversatz heraus, sodass der zuletzt vereinbarte neutrale Schussort trotz visueller Turmbewegung erhalten bleibt. Bullet und Flash entstehen vor Impulsbeginn; AimAngle, Streuung, Sicht-/Zielregeln und Schussabstände bleiben gleich.
+
+**Validierung und nächster Test:** 78 Fälle mit übersetzten tatsächlichen Funktionskörpern für sechs horizontale/geneigte Winkel, Hold-/Rücklauf-/Endgrenzen, identische Bewegung beider Kinder, passende AABB-Verschiebung, unveränderten Corpus, zwei neu gestartete nicht aufsummierte Impulse, neutrale Projektil-/Flash-Ursprünge trotz gleichzeitiger Rohrbewegung und vollständige Rückkehr. Statischer Vergleich bestätigt unveränderte Ziel-, IK-, Bewegungs-, Anker-, Schwenk-, Zeichen-, Salven- und eigene Rohr-Rückstoßfunktionen. **Kein AGK-Compile oder lokaler Bildtest dieses neuen Zusatzes.** Entwickler kurz zwei Turmimpulse pro Salve in beiden Richtungen und bei Neigung beobachten lassen, anschließend direkt HTML5-Browsertest; keine weitere Walkerpolitur ohne konkreten Releaseblocker.
 
 ## Aktueller Releasefokus – 16. November 2026
 
@@ -457,7 +467,7 @@ Der Vergleich mit Crystal Columns/Crystals erfolgte anhand von `main.agc`, `def_
 
 ## 12. Übergabe bei Chatlimit oder neuem Chat
 
-**Neuester Arbeitsschritt (16. November 2026, Dokumentstand 3.20; hat Vorrang vor älteren Prioritätsnotizen):** Entwickler-Art/Proto-Commit 0051b8b bestätigt; aktueller Walker lokal als alpha-tauglich akzeptiert, Name Alpha-Walker. 10-s-Windowsvideo anhand extrahierter Frames geprüft, kein neuer offensichtlicher Geometrieblocker; keine eigene AGK-/Browserausführung. Heute HTML5-Pre-Alpha online angestrebt. Nächster Schritt HTML5-Export/Browsertest, Controller/Intro/Pause/Tod/Neustart prüfen, nur konkrete Blocker reparieren, README/itch.io-Controls/Known-Limits und Upload. Tastaturpfad unvollständig (Intro/Pause Gamepad, KEY_2 doppelt); Gamepad-only als Minimalvorschlag, nicht als bestätigte Eingabeentscheidung. Keine weitere Walkerpolitur/IK-Änderung, Highscore-/Options-/KB-Ausarbeitung zurückstellen. Browser-/Veröffentlichungserfolg offen.
+**Neuester Arbeitsschritt (16. November 2026, Dokumentstand 3.21; hat Vorrang vor älteren Prioritätsnotizen):** Nach akzeptiertem Alpha-Walker ausdrücklich noch 3-px-Turmrückstoß freigegeben und implementiert. Pro Schuss eigener Impuls: 60 ms halten, 90 ms linear zurück, nach 150 ms neutral; zweiter Schuss startet frisch, keine Aufsummierung. Beide Rohre und Turm-AABB folgen, Corpus/IK/Pivots bleiben fest. Flash neutralisiert Turm- und Rohrrückstoß, Bulletstart davor. Bisherige Streuung, 150-ms-Schussabstand, 300-ms-Rohrimpulse/Recovery erhalten. 78 übersetzte Funktionsfälle bestanden, AGK-Compile/Sichttest offen. Kurz diesen letzten Zusatz prüfen, dann HTML5-Export und Browser-/Eingabe-/Tod-/Neustartgates, nur echte Blocker. Keine weitere automatische Walkerpolitur.
 
 **Verlässlicher Startpunkt:** GitHub-Repository `ChristianEngel19820128/SonecBot`, Branch `develop`. Zuerst `AGENTS.md`, `PROJECT.md`, `TECHNICAL.md` und `TODO.md` lesen, anschließend den tatsächlichen Branch-HEAD und die betroffenen AGK-/JSON-Dateien **neu abfragen**. Dokumente können gegenüber neueren Commits veralten; immer Code und dokumentierten Teststatus abgleichen. Der dokumentierte Renderer-Code-Stand bleibt **`506b51f`** (`#renderer "Basic"`), Timer-Änderung **`d536043`** (`1000.0 / Span`, lokal unauffällig getestet), F2-Uhrendiagnose **`61840dc`** (lokal bestätigt), F5-Hochhaus-A/B bis **`1b95bb6`** (vom Entwickler visuell verglichen), Hochhaus-Standard B ab **`ae6f2d4`** (erneuter AGK-Test ausstehend); die tatsächlichen Dokumentationscommits und den Branch-HEAD immer neu prüfen; bitte stets den echten aktuellen Branch-HEAD prüfen.
 

@@ -29,6 +29,10 @@
 #constant WALKER_BARREL_RECOIL_RISE_MS 60
 #constant WALKER_BARREL_RECOIL_HOLD_MS 180
 #constant WALKER_BARREL_RECOIL_END_MS 300
+// A separate, nonaccumulating parent impulse completes before the next shot.
+#constant WALKER_TOWER_RECOIL_PX 3.0
+#constant WALKER_TOWER_RECOIL_HOLD_MS 60
+#constant WALKER_TOWER_RECOIL_END_MS 150
 #constant WALKER_MUZZLE_FLASH_CYCLES 10
 
 //----------------------------------------------------------------------
@@ -408,6 +412,10 @@ function WalkerNew(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,World r
 	Walker.BarrelRecoilAngle[1] = 0.0
 	Walker.BarrelRecoilDistance[0] = 0.0
 	Walker.BarrelRecoilDistance[1] = 0.0
+	Walker.TowerRecoilActive = FALSE
+	Walker.TowerRecoilStartMs = 0
+	Walker.TowerRecoilAngle = 0.0
+	Walker.TowerRecoilDistance = 0.0
 	
 	// Fixed slower test pace: compare foot contact and turns at a consistent speed.
 	Walker.ObjectData.MoveSpeed.x = 0.05
@@ -745,6 +753,47 @@ endfunction
 // Add recoil only after rebuilding the neutral attachment chain. Never change
 // Proto offsets, the Corpus pivot, or lower-body IK. A later tower impulse can
 // be applied to the neutral parent before these independent barrel offsets.
+// Parent recoil is added to freshly rebuilt neutral parts, before barrel recoil.
+function WalkerTowerRecoilApply(Walker ref as TWalker,World ref as TWorld,Now as integer)
+	local i as integer
+	local Elapsed as integer
+	local Distance as float
+	local dx as float
+	local dy as float
+
+	Distance = 0.0
+	if Walker.TowerRecoilActive = TRUE
+		Elapsed = Now-Walker.TowerRecoilStartMs
+		if Elapsed < 0 then Elapsed = 0
+		if Elapsed < WALKER_TOWER_RECOIL_HOLD_MS
+			Distance = WALKER_TOWER_RECOIL_PX
+		else
+			if Elapsed < WALKER_TOWER_RECOIL_END_MS
+				Distance = WALKER_TOWER_RECOIL_PX*(WALKER_TOWER_RECOIL_END_MS-Elapsed)*1.0/(WALKER_TOWER_RECOIL_END_MS-WALKER_TOWER_RECOIL_HOLD_MS)
+			else
+				Walker.TowerRecoilActive = FALSE
+			endif
+		endif
+	endif
+	Walker.TowerRecoilDistance = Distance
+	if Distance > 0.0
+		dx = -Sin(Walker.TowerRecoilAngle)*Distance
+		dy = Cos(Walker.TowerRecoilAngle)*Distance
+		Walker.WalkerObjectData.Tower.Position.x = Walker.WalkerObjectData.Tower.Position.x+dx
+		Walker.WalkerObjectData.Tower.Position.y = Walker.WalkerObjectData.Tower.Position.y+dy
+		Walker.WalkerObjectData.Tower.AnchorPosition.x = Walker.WalkerObjectData.Tower.AnchorPosition.x+dx
+		Walker.WalkerObjectData.Tower.AnchorPosition.y = Walker.WalkerObjectData.Tower.AnchorPosition.y+dy
+		SpritePositionCalc(Walker.WalkerSpriteData.Tower.Position,Walker.WalkerObjectData.Tower.Position,World.Position)
+		for i = 0 to 1
+			Walker.WalkerObjectData.Barrel[i].Position.x = Walker.WalkerObjectData.Barrel[i].Position.x+dx
+			Walker.WalkerObjectData.Barrel[i].Position.y = Walker.WalkerObjectData.Barrel[i].Position.y+dy
+			Walker.WalkerObjectData.Barrel[i].AnchorPosition.x = Walker.WalkerObjectData.Barrel[i].AnchorPosition.x+dx
+			Walker.WalkerObjectData.Barrel[i].AnchorPosition.y = Walker.WalkerObjectData.Barrel[i].AnchorPosition.y+dy
+			SpritePositionCalc(Walker.WalkerSpriteData.Barrel[i].Position,Walker.WalkerObjectData.Barrel[i].Position,World.Position)
+		next i
+	endif
+endfunction
+
 function WalkerBarrelRecoilApply(Walker ref as TWalker,World ref as TWorld,Now as integer)
 	local i as integer
 	local Elapsed as integer
@@ -836,6 +885,7 @@ function WalkerAnimate(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,Wor
 	endif
 
 	WalkerPartsCalculate(Walker,ProtoWalker,World)
+	WalkerTowerRecoilApply(Walker,World,Now)
 	WalkerTowerCollisionCalculate(Walker,ProtoWalker)
 	// Only the turret projection changes width; the Corpus and lower IK do not.
 	if Walker.TurretSwivelActive = TRUE
@@ -1066,16 +1116,19 @@ function WalkerFireShot(Walker ref as TWalker,WalkerIndex as integer,ProtoWalker
 	if Walker.FireState = 1 then BarrelIndex = 0
 	FireAngle = WalkerMuzzlePositionCalculate(Walker,ProtoWalker,MuzzlePosition)
 	BulletAdd(BulletList,ProtoBullet,World,MuzzlePosition,FireAngle,0.0,TYPEENEMY,Now)
-	// Both effects use the same origin; the flash stays attached to the moving barrel.
+	// Both effects use the same origin; flash following removes visual recoil.
 	FlashIndex = FlashAdd(FlashList,ProtoFlash,World,0,WALKER_MUZZLE_FLASH_CYCLES,MuzzlePosition,FireAngle,0.0,Now)
 	if FlashIndex >= 0
 		FlashList.Flash[FlashIndex].AttachedWalkerIndex = WalkerIndex
 		FlashList.Flash[FlashIndex].AttachedBarrelIndex = BarrelIndex
 	endif
-	// Spawn at the unrecoiled muzzle, then animate only this firing barrel.
+	// Spawn before recoil; restart one parent impulse and the firing barrel.
 	Walker.BarrelRecoilActive[BarrelIndex] = TRUE
 	Walker.BarrelRecoilStartMs[BarrelIndex] = Now
 	Walker.BarrelRecoilAngle[BarrelIndex] = FireAngle
+	Walker.TowerRecoilActive = TRUE
+	Walker.TowerRecoilStartMs = Now
+	Walker.TowerRecoilAngle = FireAngle
 	WalkerAnimate(Walker,ProtoWalker,World,Now)
 endfunction
 
@@ -1241,6 +1294,9 @@ function WalkerFlashFollowAll(WalkerList ref as TWalkerList,FlashList ref as TFl
 						// but undoing this barrel's purely visual recoil displacement.
 						FlashList.Flash[i].ObjectData.Position.x = FlashList.Flash[i].ObjectData.Position.x + Sin(WalkerList.Walker[WalkerIndex].BarrelRecoilAngle[BarrelIndex])*WalkerList.Walker[WalkerIndex].BarrelRecoilDistance[BarrelIndex]
 						FlashList.Flash[i].ObjectData.Position.y = FlashList.Flash[i].ObjectData.Position.y - Cos(WalkerList.Walker[WalkerIndex].BarrelRecoilAngle[BarrelIndex])*WalkerList.Walker[WalkerIndex].BarrelRecoilDistance[BarrelIndex]
+						// Keep the established neutral flash position during parent recoil too.
+						FlashList.Flash[i].ObjectData.Position.x = FlashList.Flash[i].ObjectData.Position.x + Sin(WalkerList.Walker[WalkerIndex].TowerRecoilAngle)*WalkerList.Walker[WalkerIndex].TowerRecoilDistance
+						FlashList.Flash[i].ObjectData.Position.y = FlashList.Flash[i].ObjectData.Position.y - Cos(WalkerList.Walker[WalkerIndex].TowerRecoilAngle)*WalkerList.Walker[WalkerIndex].TowerRecoilDistance
 						SpritePositionCalc(FlashList.Flash[i].SpriteData.Position,FlashList.Flash[i].ObjectData.Position,World.Position)
 					endif
 				endif

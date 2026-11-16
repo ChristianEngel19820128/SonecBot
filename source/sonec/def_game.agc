@@ -339,6 +339,10 @@ type TWalker
 	BarrelRecoilStartMs as integer[1]
 	BarrelRecoilAngle as float[1]
 	BarrelRecoilDistance as float[1]
+	TowerRecoilActive as integer
+	TowerRecoilStartMs as integer
+	TowerRecoilAngle as float
+	TowerRecoilDistance as float
 	Enabled as integer
 	ObjectData as TObjectData
 	CollisionData as TCollisionData
