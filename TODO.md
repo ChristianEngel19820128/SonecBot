@@ -1,6 +1,6 @@
 # SonecBot – Aktuelle Aufgaben und Meilensteine
 
-**Dokumentstatus:** Version 4.8 – sechs Bewegungsaktionen an Action-Mapping angeschlossen  
+**Dokumentstatus:** Version 4.9 – Start/Pause an Action-Mapping angeschlossen, Hover-Befund offen  
 **Stand:** 16. November 2026  
 **Branch:** `develop`  
 **Aktuelles Ziel:** Funktionierende HTML5-Pre-Alpha auf itch.io im **Draft per Secret URL** für eingeladene Community-Tester bereitstellen, Feedback sammeln. **Nicht auf Published umstellen**; den einmaligen öffentlichen Index-Push für einen späteren, noch nicht beschlossenen Release bewahren. Keine Deadline.
@@ -48,6 +48,12 @@
 **Schritt 3 lokal bestätigt:** Entwickler meldet `Compilation finished successfully.` nach Hinzufügen der digitalen Action-Abfragen.
 
 **Schritt 4 / 4b vom Entwickler erfolgreich getestet:** AGK Studio kompiliert; alle sechs Tastaturaktionen J/K/L/I/U/O sowie die Gamepad-Regressionsaktionen A/B/X/Y/LB/RB laut Entwickler erfolgreich. Weitere Funktionen dadurch noch nicht bestätigt.
+
+**Schritt 5 vom Entwickler erfolgreich getestet:** AGK-Compile und sechs Bewegungstests einschließlich Stick, D-Pad und Trigger bestanden (Entwicklerbericht). Keine neue HTML5-Bestätigung.
+
+**Schritt 6a implementiert, AGK-Compile/Test offen:** In `intro.agc` nimmt `IntroDo()` jetzt `Keys ref as TKeys` an und verwendet `InputActionPressed(...ACTION_START)` für Enter/Gamepad-Start; die zusätzliche Gamepad-A-Bestätigung bleibt bestehen. `main.agc` verwendet dieselbe Action für Pause/Fortsetzen und reicht `Keys` ins Intro durch. Der Intro-/Spielzustandszweig bleibt getrennt (keine absichtliche Sofortpause nach Start). **Noch nicht geändert:** Backspace/Select (alter Select-Menüsprung während aktivem Spiel besteht weiterhin), Hover, Menünavigation, Optionsmenü, Cookie. **Nächster einzelner Test:** AGK-Compile; Enter im Menü, Gamepad Start/A im Menü, Enter und Start zum Pausieren/Fortsetzen, keine Doppelauslösung.
+
+**Separater Hover-Befund aus Schritt-5-Test (Entwicklerbeobachtung, noch nicht reproduziert/analysiert):** Bei Ctrl/Hover scheint Sonec gelegentlich auf Höhe einzurasten und erst bei Down wieder zu sinken. Ursache, Bedingungen, Einfluss von Stick/Button 9 und tatsächliche Zustandsänderungen noch ungeprüft. **Nicht im Patch 6a beheben**; isoliert testen und analysieren, bevor Eingriff. Für folgende Tests Rückmeldungen mit optionalem Freitextfeld und einem einzigen bewussten Sende-Button anbieten, damit Abhaken keine Nachricht auslöst.
 
 **Schritt 5 implementiert, AGK-Compile und Bewegungstests offen:** In `SonecInput()` lesen alle sechs Bewegungsaktionen (W/S/A/D/Q/E) nun die `TKeys`-Abfragen über `InputActionState`. D-Pad ist dabei über die bereits hinterlegten vier digitalen Pad-Bindings abgedeckt; direkte redundante D-Pad-Abfragen in diesen Bedingungen entfernt. Analoge Gamepad-Achsen und Trigger (`GetJoyX/Y/Z/RZ`) sowie Timing, Jetpack-Energie, Ducken, Rückwärtslaufen und Blickrichtungsberechnung nicht absichtlich verändert. `GameInput(Game,Keys,Now)` und `main.agc` geben das vorhandene `Keys` weiter. **Hover über Ctrl/Button 9 bleibt unverändert**, ebenso Start, Back, Intro, Pause, Menüs. Gamepad-Select kehrt weiterhin außerhalb der vereinbarten künftigen Pausenregel direkt ins Menü zurück – separate spätere Änderung; nicht bereits als gelöst ansehen. **Nächster Test:** AGK-Compile, danach WASD+Q/E, Jetpack/Flug, Blickrichtung und Gamepad-Stick/D-Pad/Trigger; HTML5 noch ausstehend.
 
