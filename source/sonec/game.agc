@@ -288,6 +288,7 @@ function GameDo(Game ref as TGame,Now as integer)
 	GrenadeCollideOrbs(Game.GrenadeList,Game.OrbList,Game,Now)
 	GrenadeCollideMine(Game.GrenadeList,Game.MineList,Game,Now)
 	GrenadeCollideChest(Game.GrenadeList,Game.ChestList,Game,Now)
+	GrenadeCollideWalkers(Game.GrenadeList,Game.WalkerList,Game,Now)
 	GrenadeCollidePlate(Game.GrenadeList,Game.PlateList,Game,Now)
 	
 	PlasmaBlitzLifeCycle(Game.PlasmaBlitzList,Now)
