@@ -780,6 +780,7 @@ type TIntro
 	TextEnd as integer
 	TextHelp as integer
 	SelctionPos as integer
+	AnalogMenuHeld as integer
 	IsOption as integer
 	IsQuit as integer
 	TimerHelp as TTime
