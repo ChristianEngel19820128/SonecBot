@@ -125,8 +125,22 @@ SetTextColor(Pause,0,255,255,222)
 SetTextPosition(Pause,vx/2,vy/2)
 SetTextSize(Pause,30)
 
+local PauseHintResume as integer
+PauseHintResume = CreateText("ENTER / START - RESUME")
+SetTextAlignment(PauseHintResume,1)
+SetTextColor(PauseHintResume,0,255,255,222)
+SetTextPosition(PauseHintResume,vx/2,vy/2+40)
+SetTextSize(PauseHintResume,16)
+
+local PauseHintBack as integer
+PauseHintBack = CreateText("BACKSPACE / SELECT - MAIN MENU")
+SetTextAlignment(PauseHintBack,1)
+SetTextColor(PauseHintBack,0,255,255,222)
+SetTextPosition(PauseHintBack,vx/2,vy/2+62)
+SetTextSize(PauseHintBack,16)
+
 // Prepared binding data now used by the six combat/energy and six movement actions.
-// Menus, pause, Back and Hover still use existing input routines.
+// Start/Pause and paused-only Back use actions; Hover remains unchanged.
 local Keys as TKeys
 InputSetDefaultBindings(Keys)
 
@@ -226,22 +240,30 @@ repeat
 		endif
 		IntroDraw(Intro)
 	else
-		if InputActionPressed(Keys,Game.JoystickIndex,ACTION_START) = 1
-			if Game.IsPause = FALSE
-				Game.IsPause = TRUE
-			else
-				Game.IsPause = FALSE
+		// Back works only while paused; Back takes priority over Start.
+		if Game.IsPause = TRUE and InputActionPressed(Keys,Game.JoystickIndex,ACTION_BACK) = 1
+			Game.IsLost = TRUE
+			Game.IsPause = FALSE
+		else
+			if InputActionPressed(Keys,Game.JoystickIndex,ACTION_START) = 1
+				if Game.IsPause = FALSE
+					Game.IsPause = TRUE
+				else
+					Game.IsPause = FALSE
+				endif
 			endif
-		endif
-		if Game.IsPause = FALSE
-			GameInput(Game,Keys,CurrentNow)
-			GameActionInput(Game,Keys,CurrentNow)
-			GameDo(Game,CurrentNow)		
-			GameAnimate(Game,CurrentNow)
-		endif		
-		GameDraw(Game)
-		if Game.IsPause = TRUE
-			Drawtext(Pause)
+			if Game.IsPause = FALSE
+				GameInput(Game,Keys,CurrentNow)
+				GameActionInput(Game,Keys,CurrentNow)
+				GameDo(Game,CurrentNow)		
+				GameAnimate(Game,CurrentNow)
+			endif		
+			GameDraw(Game)
+			if Game.IsPause = TRUE
+				Drawtext(Pause)
+				Drawtext(PauseHintResume)
+				Drawtext(PauseHintBack)
+			endif
 		endif
 	endif	
 	
