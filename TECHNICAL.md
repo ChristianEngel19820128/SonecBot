@@ -143,6 +143,16 @@ Zieltermin des Nutzers: **16. November 2026**. Keine Veröffentlichung, erfolgre
 - Browsercache/XAMPP: Nach Dateiaustausch alte Assets/Skripte möglich; Entwickler empfiehlt in geöffneten DevTools die Cache-Deaktivierung während lokaler Tests. Noch Kandidat für reproduzierbare Knowledge-Base-Notiz, keine pauschale Aussage über AGK-Enginefehler.
 - Weitere Browser-Release-Gates: alle Gamepad-Aktionen (Grundfunktion bestätigt), Pause, Tod, mindestens zwei Neustarts und itch.io-Draft/Secret-URL-Test. Geplante Untersuchung fehlender Kollisionsabfragen ist zunächst **Analyse**; nur bestätigte relevante Fehler mit gemeinsamer Freigabe beheben. Die Spawnwahrscheinlichkeiten sind separat auf Frame-/Zeitbasis zu prüfen.
 
+### HTML5-Gamepad-Funktionstest abgeschlossen – Entwicklermeldung, 16. November 2026
+
+Lokaler Apache/XAMPP-Browsertest mit Xbox-/kompatiblem Controller, 60 Hz/VSync als Referenz: Bewegung über D-Pad und linken Stick, Rückwärtsbewegung über beide unteren Trigger, Energieanziehung L1, Schild rechte Schultertaste, X Flammenwerfer, Y Plasma-Blitz, A Maschinengewehr, B Granatwerfer und Start Pause funktionieren laut Entwickler. Andere Tasten derzeit ohne zugewiesene Funktion. Nach erster Controller-Eingabe kann HTML5-Controller-Index 1 bis zu 2–3 s zur Erkennung benötigen; der Windows-Enumerationsweg gilt nicht als HTML5-Alternative. Die Tastatur ist unvollständig und nicht zumutbare Release-Eingabe.
+
+**Offene Tastenbezeichnung:** Der Entwickler schrieb „R2 Schild“, zugleich R2 als unterer Trigger für Rückwärtsbewegung. `SonecShieldInput` liest jedoch `JoystickButtonRR` (6, gewöhnlich RB/R1), die Rückwärtssteuerung Z/RZ. Nicht als Code-Fehler werten; tatsächliche Beschriftung vor itch.io-Controls klären.
+
+**HTML5-Ende:** Entwickler berichtet ESC/QUIT ohne Beenden. `GetESCPressed()` prüft ESC ausschließlich unter Windows, `main.agc` terminiert über `Intro.IsQuit` nur bei `Device$ <> "html5"`. Das ist im Quellcode nachvollziehbares Browserverhalten, kein bestätigter AGK-Bug. Mögliche Knowledge-Base-Themen: Browser-Gamepad-Aktivierung/Index-Workaround, Browser-vs.-Desktop-Ende und Cache bei XAMPP-Reloads. Knowledge Base zunächst nicht verändert.
+
+**Nicht bestätigt:** exakter SHA des getesteten exportierten Builds, AGK-/Browser-Version, Tod und zwei Neustarts, itch.io-Draft-Einbettung, andere Browser/Controller.
+
 ## 7. Übergabe und Historie
 
 [HANDOFF.md](HANDOFF.md) enthält getesteten Referenzcommit, exakte Parameter, Release-Gates, offene Entscheidungen und einen direkten Starttext. Tatsächlichen develop-HEAD neu abfragen, lokale Nutzerdateien/alte Anhänge nicht voraussetzen.
