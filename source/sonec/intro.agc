@@ -56,7 +56,32 @@ function IntroCreate(Intro ref as TIntro,vx as integer,vy as integer,Now as inte
 	SetTextBold(Intro.TextHelp,1)
 	SetTextColor(Intro.TextHelp,255,255,255,222)
 	
+	// Options screen is display-only in this step; settings are not editable yet.
+	Intro.TextOptionsTitle = CreateText("OPTIONS")
+	SetTextAlignment(Intro.TextOptionsTitle,1)
+	SetTextPosition(Intro.TextOptionsTitle,vx/2,vy/2-75)
+	SetTextSize(Intro.TextOptionsTitle,30)
+	SetTextBold(Intro.TextOptionsTitle,1)
+	SetTextColor(Intro.TextOptionsTitle,0,255,255,222)
+
+	Intro.TextOptionsHover = CreateText("HOVER MODE - COMING LATER")
+	SetTextAlignment(Intro.TextOptionsHover,1)
+	SetTextPosition(Intro.TextOptionsHover,vx/2,vy/2-20)
+	SetTextSize(Intro.TextOptionsHover,19)
+
+	Intro.TextOptionsBindings = CreateText("KEY BINDINGS - COMING LATER")
+	SetTextAlignment(Intro.TextOptionsBindings,1)
+	SetTextPosition(Intro.TextOptionsBindings,vx/2,vy/2+15)
+	SetTextSize(Intro.TextOptionsBindings,19)
+
+	Intro.TextOptionsBack = CreateText("BACKSPACE / SELECT - BACK")
+	SetTextAlignment(Intro.TextOptionsBack,1)
+	SetTextPosition(Intro.TextOptionsBack,vx/2,vy/2+75)
+	SetTextSize(Intro.TextOptionsBack,19)
+	SetTextColor(Intro.TextOptionsBack,0,255,255,222)
+
 	Intro.SelctionPos = 1
+	Intro.IsOption = FALSE
 	Intro.AnalogMenuHeld = FALSE
 	Intro.IsQuit = FALSE
 	
@@ -135,7 +160,14 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Joyst
 	local AnalogStep as integer
 	local AnalogY as float
 	
-	// Analog menu navigation: one step per stick deflection, rearmed at neutral.
+	if Intro.IsOption = TRUE
+		// Back closes this screen; no selection or gameplay changes here.
+		if InputActionPressed(Keys,JoystickIndex,ACTION_BACK) = 1
+			Intro.IsOption = FALSE
+			PlaySound(Sound.SelectSound)
+		endif
+	else
+		// Analog menu navigation: one step per stick deflection, rearmed at neutral.
 	AnalogY = GetJoyY(JoystickIndex)
 	if AnalogY > -0.3 and AnalogY < 0.3
 		Intro.AnalogMenuHeld = FALSE
@@ -222,6 +254,7 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Joyst
 		
 	endif
 	
+	endif
 endfunction Value
 
 //----------------------------------------------------------------------
@@ -232,10 +265,17 @@ function IntroDraw(Intro ref as TIntro)
 
 	SpriteDraw(Intro.ProtoBackground.Sprite,Intro.Background.SpriteData)
 	
-	Drawtext(Intro.TextStart)
-	Drawtext(Intro.TextOption)
-	Drawtext(Intro.TextEnd)
-	Drawtext(Intro.TextHelp)
+	if Intro.IsOption = TRUE
+		Drawtext(Intro.TextOptionsTitle)
+		Drawtext(Intro.TextOptionsHover)
+		Drawtext(Intro.TextOptionsBindings)
+		Drawtext(Intro.TextOptionsBack)
+	else
+		Drawtext(Intro.TextStart)
+		Drawtext(Intro.TextOption)
+		Drawtext(Intro.TextEnd)
+		Drawtext(Intro.TextHelp)
+	endif
 	
 endfunction
 
