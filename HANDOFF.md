@@ -169,6 +169,14 @@
 
 **Nächster vereinbarter der drei Punkte:** HUD-Energiebalken mit angemessenem rotem Overload-Anzeigebereich visuell an Höhe von HP plus Schild annähern. Referenz-Screenshot aus dem Chat. Nur Anzeige, keine Ressourcen-/Schadenswerte ändern; erst Codepfad/Abmessungen und dann eigenen lokalen Test.
 
+## Aktueller einzelner HUD-Schritt: Energie-/Overload-Skala (16.11.2026)
+
+**Gemeinsam freigegeben, lokal noch nicht getestet:** In `source/sonec/gui.agc:GuiEnergyDraw()` wurde **nur die Visualisierung** geändert. Das grüne Energielimit hatte zuvor 20 große Segmente, Overload 10 je weiterem `Energy.StateMax`. Die Bilddaten im Repository zeigen: `bar_horizontal_small.png` für HP/Schild **16×2 px**, `bar_horizontal.png` für Energie **32×5 px**, Energie zeichnet mit **2 px zusätzlichem vertikalem Abstand**. Die aufgerundete/gerundete proportionale Zielskala zum vorhandenen HP+Schild-Bereich `150+25` kleinen Segmenten ergibt **43 grüne und 7 rote Plätze**, bzw. ca. 301+49=350 px Gesamthöhe. Der Dreisatz wird in `GuiEnergyDraw()` anhand der tatsächlichen Spritehöhen berechnet, statt die Zahlen fest einzuprogrammieren. Die Energieanzeige skaliert den Lade- und Overload-Wert anteilig zum jeweiligen Platzmaximum; **die Overload-Anzeige wird zur maximalen Höhe gekappt**, überhöhte Überladung kann nicht das HUD überschießen. Rot ist nur sichtbar, wenn `Energy.State > Energy.StateMax`.
+
+**Testauftrag:** Neuer Windows-/HTML5-Build: voller normaler grüner Energiebalken ungefähr so hoch wie der volle HP-Bereich; bei Überladung rote Segmente unmittelbar darüber, insgesamt ungefähr bis HP plus Schild. Verbrauch/Regeneration sollen weiter proportional angezeigt werden und nicht verändert sein. Auch Niedrigenergie, Start nach Neustart und keine Bildschirmüberschreitung prüfen. Schaden, Energieverbrauch, `StateMax`, Wiederaufladung, Schild- und Munition-Sprites bleiben unverändert.
+
+**Reihenfolge:** Walker-Stopp und Schildwirkung sind vorher positiv getestet. Sonec kann noch in den Walker hineinspringen (separater Befund), Sound-Event-Entkopplung ist später. **Keine zusätzlichen Änderungen vor dem HUD-Nachtest.** itch.io-Seite bleibt Draft; Secret-URL-Test offen.
+
 ## 1. Sofortiger Einstieg im neuen Chat
 
 1. `AGENTS.md`, diese Datei, `PROJECT.md`, die aktuelle `TODO.md` und den aktuellen Status/Übergabeabschnitt in `TECHNICAL.md` lesen. Alte datierte Technikabschnitte sind Historie, keine neue Aufgabenfreigabe.
