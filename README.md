@@ -12,9 +12,9 @@ SonecBot is a reworking of an earlier **BlitzBasic Plus** project. The preserved
 
 The developer successfully compiled the current build, exported HTML5, tested it locally through Apache/XAMPP, created and uploaded the ZIP, and confirmed that the game starts inside the itch.io embed. The embedded test verified controller detection, movement (including backward movement and flight), all four weapons, shield, energy attraction, pause, and death by energy depletion/falling. ESC and the quit action are intentionally unavailable in the HTML5 player. No visible tearing was reported in the local browser test; performance on other devices has not yet been established.
 
-**The itch.io page remains in Draft with secret-link access; it is not publicly published.** The secret link can be shared with invited community testers. The exact export SHA was not independently recorded, and repeated restarts have been verified in the local HTML5 session but **not separately confirmed in the itch.io embed**. The Alpha-Walker and initial player-weapon collision paths have passed targeted developer tests.
+**The itch.io page remains in Draft with secret-link access; it is not publicly published.** The secret link can be shared with invited community testers. The exact export SHA was not independently recorded, and repeated restarts have been verified in the local HTML5 session; **a restart in the itch.io embed was subsequently confirmed by the developer**. The Alpha-Walker and initial player-weapon collision paths have passed targeted developer tests.
 
-The active development branch is [`develop`](https://github.com/ChristianEngel19820128/SonecBot/tree/develop). `main` remains an earlier reference until a separately agreed and tested milestone merge.
+The itch.io page now links to both the [`develop`](https://github.com/ChristianEngel19820128/SonecBot/tree/develop) and [`main`](https://github.com/ChristianEngel19820128/SonecBot/tree/main) GitHub branches, as confirmed by the developer. **`develop` is the active development branch**; `main` remains an earlier reference until a separately approved milestone merge.
 
 ## Gameplay
 
@@ -22,7 +22,7 @@ The active development branch is [`develop`](https://github.com/ChristianEngel19
 - **Manage resources:** health, shields, energy and ammunition matter. Energy is shared between movement and several combat abilities.
 - **Face different hazards:** mines, orbs, towers and the multi-part **Alpha-Walker**. The Walker patrols platforms, stops in front of Sonec and aims its two-shot bursts; its turret is the intended weak point.
 - **Use the environment:** direct hits and nearby explosions can damage targets, and chain reactions can produce surprising encounters.
-- **Try again:** game-over and multiple restarts have been tested in the same local HTML5 browser session.
+- **Try again:** game-over and multiple restarts have been tested in the local HTML5 browser, and a restart has also been confirmed inside itch.io.
 
 This is an early experimental build, not a feature-complete game. Balance, objectives and presentation may change in response to player feedback.
 
