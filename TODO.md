@@ -43,6 +43,12 @@ Der lokal getestete Code-Referenzcommit ist [`18f92a965810763b552bd96649607c112f
 - [ ] **Spawn-Zeitbasis untersuchen (Hypothese):** Zufallsentscheidungen innerhalb `GameDo()` wirken möglicherweise frameabhängig. Tatsächlichen Codepfad, Zeit-/FPS-Abhängigkeit und Release-Relevanz prüfen, Alternativen gemeinsam abwägen; erst nach Entscheidung ändern und lokal nachtesten. Keine pauschale Balancekorrektur.
 - [ ] **Englische itch.io-Texte als Markdown** zusammenstellen; 💚 als vereinbarte Kennzeichnung in README/itch.io verwenden.
 
+### Aktueller kleiner Kollisionsschritt – Test beim Entwickler offen
+
+- [ ] **Flammenwerfer → Walker-Turm:** neuer `FlameCollideWalkers()`-Pfad implementiert und in `GameDo()` eingebunden; bisher nur statisch geprüft. Nutzer kompiliert und testet lokal: Turmtreffer/roter Flash, Schaden, Zerstörung/Drop, Regression bei Minen/Orbs/Kisten. **Kein nächster Codepfad vor Rückmeldung.**
+- [ ] Anschließend Treffermatrix gemeinsam schrittweise erweitern: derzeit unter anderem Plasma-Blitz→Mine/Kiste (leere Funktionen), Plasma-Blitz→Walker, Granate/Explosion→Walker und Flamme→weitere vorgesehene Ziele. Sonec-Waffen sollen grundsätzlich alle beschädigbaren Ziele erreichen. Weitere Schadensarten/Panzerungsmodelle bleiben Zukunftsentwurf.
+- [ ] Für das Fraktionskonzept Player (ggf. Player 2), Enemy, Neutral zunächst Verhalten klären; keine automatische Fraktions- oder Balancing-Umstellung.
+
 ## 3. Für später: reguläre Alpha / Fehler nur bei konkreter Reproduktion
 
 ### Eingabe und Spielablauf
