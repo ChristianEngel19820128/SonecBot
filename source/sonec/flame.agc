@@ -283,6 +283,42 @@ function FlameCollideChest(FlameList ref as TFlameList,ChestList ref as TChestLi
 endfunction
 
 //----------------------------------------------------------------------
+// Player flame vs. the existing Walker turret hit zone.
+// Use the same growing flame circle as chest collisions, without changing
+// the Walker's accepted pose, animation or projectile damage values.
+//----------------------------------------------------------------------
+
+function FlameCollideWalkers(FlameList ref as TFlameList,WalkerList ref as TWalkerList,Now as integer)
+
+	local i as integer
+	local k as integer
+	local Radius as float
+	local NearestPoint as TPosition
+
+	for i = 0 to FlameList.Flame.Length
+		if FlameList.Flame[i].Enabled = TRUE
+			Radius = FlameCollisionRadius(FlameList.Flame[i])
+			for k = 0 to WalkerList.Walker.Length
+				if WalkerList.Walker[k].Enabled = TRUE and FlameList.Flame[i].Enabled = TRUE
+					NearestPoint = FlameList.Flame[i].ObjectData.Position
+					if NearestPoint.x < WalkerList.Walker[k].WalkerCollisionData.Tower.Position1.x then NearestPoint.x = WalkerList.Walker[k].WalkerCollisionData.Tower.Position1.x
+					if NearestPoint.x > WalkerList.Walker[k].WalkerCollisionData.Tower.Position2.x then NearestPoint.x = WalkerList.Walker[k].WalkerCollisionData.Tower.Position2.x
+					if NearestPoint.y < WalkerList.Walker[k].WalkerCollisionData.Tower.Position1.y then NearestPoint.y = WalkerList.Walker[k].WalkerCollisionData.Tower.Position1.y
+					if NearestPoint.y > WalkerList.Walker[k].WalkerCollisionData.Tower.Position2.y then NearestPoint.y = WalkerList.Walker[k].WalkerCollisionData.Tower.Position2.y
+					if CalcRadius(FlameList.Flame[i].ObjectData.Position,NearestPoint) <= Radius
+						WalkerList.Walker[k].Health.State = WalkerList.Walker[k].Health.State - FlameList.Flame[i].BulletData.Damage
+						WalkerList.Walker[k].HitFlashUntil = Now + 150
+						ColorSet(WalkerList.Walker[k].WalkerSpriteData.Tower.Color,255,0,0,255)
+						FlameDelete(FlameList,i)
+					endif
+				endif
+			next k
+		endif
+	next i
+
+endfunction
+
+//----------------------------------------------------------------------
 // 
 //----------------------------------------------------------------------
 
