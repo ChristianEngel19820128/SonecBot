@@ -1,6 +1,6 @@
 # SonecBot – Aktuelle Aufgaben und Meilensteine
 
-**Dokumentstatus:** Version 4.2 – itch.io-Embed-Neustart und Links bestätigt  
+**Dokumentstatus:** Version 4.3 – erster Keyboard-Feedbackblocker und Merge-PR #1  
 **Stand:** 16. November 2026  
 **Branch:** `develop`  
 **Aktuelles Ziel:** Funktionierende HTML5-Pre-Alpha auf itch.io im **Draft per Secret URL** für eingeladene Community-Tester bereitstellen, Feedback sammeln. **Nicht auf Published umstellen**; den einmaligen öffentlichen Index-Push für einen späteren, noch nicht beschlossenen Release bewahren. Keine Deadline.
@@ -39,7 +39,16 @@
 - **Startenergie 4.500 bei Normalmaximum 4.000:** bewusste aktuelle Testwerte, +500 Overload; Overload kann Gesundheitskosten verursachen. Keine endgültige Spielbalance behaupten.
 - **Minen-Frameratenabhängigkeit und Gruppenwahrnehmung:** untersucht, für die Pre-Alpha unverändert akzeptiert.
 
-## 3. Später – gesammelt, nicht als Pre-Alpha-Blocker
+## 3. Erstes Community-Feedback und Post-Pre-Alpha-Patchplanung (16.11.2026, Abend)
+
+**Beobachtung, keine Vermutung:** Der Entwickler berichtet, dass **drei Personen SonecBot wegen der fehlenden vollständigen Tastatursteuerung nicht spielen können**. Das ist eine bestätigte **Zugangshürde** für Tester ohne Gamepad, noch kein getesteter Implementierungsfehler. Gamepad-only war als Grenze im Pre-Alpha-Text offengelegt, aber die Rückmeldung macht Tastaturunterstützung zum ersten konkreten Kandidaten der Post-Pre-Alpha-Patches. Bestehende funktionierende Gamepad-Belegung unangetastet lassen.
+
+- [ ] **Nach Abschluss des Main-Merge-Meilensteins read-only Inventur** der vorhandenen Tastaturabfragen in `sonec.agc`, `intro.agc`, `controls.agc`, `main.agc` und Eingabekonstanten: Bewegung/Jetpack, MG, Granaten, Flamme, Plasma, Schild, Energieanziehung, Menü, Bestätigung, Pause, Neustart. Insbesondere historische Doppelbelegung `KEY_2` für MG/Granate beachten.
+- [ ] **Dann gemeinsam minimalistisches Keyboard-Layout definieren**, das im Browser nutzbar ist und nicht mit browserreservierten Tasten kollidiert. Keine automatische Implementierung und noch kein vollständiges Options-/Remapping-System.
+- [ ] **Kleine Post-Pre-Alpha-Patches einzeln freigeben und unter Windows, Apache-HTML5 und itch.io-Embed testen.** Testkriterium: ohne Gamepad Start → Spiel → Bewegung/Kampf/Schild → Pause → Tod/Neustart; Gamepad-Regression prüfen.
+- [ ] **Späterer Merge `develop`→`main`:** Beim ersten Vergleich vom 16.11.2026 hat `main` zwei eigene Commits (README-Anpassungen), `develop` 413 zusätzliche Commits. [PR #1](https://github.com/ChristianEngel19820128/SonecBot/pull/1) wurde zur Mergeprüfung eröffnet, **GitHub meldet mergeable=false**. Nicht blind überschreiben oder Force-Push. Vor der eigentlichen Freigabe README-Divergenz/Konflikt gezielt auflösen, Merge prüfen und erst dann `main` aktualisieren. **Merge derzeit offen.**
+
+## 4. Später – gesammelt, nicht als Pre-Alpha-Blocker
 
 ### Gameplay, KI und Kollisionen
 
@@ -59,13 +68,13 @@
 - [ ] Längere Aufnahmen bei Gelegenheit: GifCam-/RAM-Hypothese prüfen und ggf. Aufnahmealternative suchen; nicht in den aktuellen Releasefluss ziehen.
 - [ ] Hochscores/Online-Anbindung aus Crystals, Speicherformat, weitere AGK-/Renderer-/VSync-/FPS-/Browser-Tests und Performancebeobachtung später gezielt bearbeiten.
 
-## 4. AGK Knowledge Base – eigener freizugebender Arbeitsschritt
+## 5. AGK Knowledge Base – eigener freizugebender Arbeitsschritt
 
 Die [agk-knowledge-base](https://github.com/ChristianEngel19820128/agk-knowledge-base) bleibt ohne gesonderte Vereinbarung **read-only**.
 
 - [ ] Kandidaten gesammelt halten: HTML5-Gamepad-Index/Initialisierung, Browser-ESC/QUIT, XAMPP-Cache/Hard-Reload, Timer/FPS-abhängiges Spawning, Sprite-/Float-/Integer-Division, Random-Grenzen, verschachtelte Konstanten und Turm-Schwenkprojektion.
 - [ ] Für jeden Kandidaten zuvor genaue Quelle/Revision, beobachtetes Symptom, Gegenprobe, Status (bestätigt/Hypothese) und wiederverwendbaren Nutzen prüfen; keine unbestätigten Enginebugs behaupten.
 
-## 5. Vorgehensweise
+## 6. Vorgehensweise
 
 Kleine einzeln vereinbarte Schritte, echter Test durch Entwickler in AGK Studio/Apache, Resultat und Grenzen dokumentieren, danach nächsten Punkt auswählen. `develop` ist die aktive Spielcode-Branch; `main`, Legacy und Lizenz nur nach ausdrücklicher Vereinbarung ändern. Keine ungefragten Änderungen an bereits akzeptierten Walker-Pivots, IK oder Kampfsystemen. Historische Detailprotokolle bleiben in [TECHNICAL.md](TECHNICAL.md), [HANDOFF.md](HANDOFF.md) und Git.
