@@ -163,7 +163,7 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function BulletCollide(BulletList ref as TBulletList,Sonec ref as TSonec)
+function BulletCollide(BulletList ref as TBulletList,Sonec ref as TSonec,Shield ref as TShield,Now as integer)
 	
 	local i as integer
 	local Radius as float
@@ -173,7 +173,8 @@ function BulletCollide(BulletList ref as TBulletList,Sonec ref as TSonec)
 			if BulletList.Bullet[i].CollisionData.CollisionType = TYPEENEMY
 				Radius = CalcRadius(BulletList.Bullet[i].ObjectData.Position,Sonec.ObjectData.Position)
 				if Radius < Sonec.ObjectData.Radius
-					Sonec.Health.State = Sonec.Health.State - BulletList.Bullet[i].BulletData.Damage
+					// Reuse the same proportional protection as explosion damage.
+					Sonec.Health.State = Sonec.Health.State - (BulletList.Bullet[i].BulletData.Damage - ShieldAbsorbDamage(Shield,Sonec,BulletList.Bullet[i].BulletData.Damage,Now))
 					BulletDelete(BulletList,i)
 				endif
 			endif
