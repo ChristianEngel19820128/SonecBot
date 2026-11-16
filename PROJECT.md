@@ -242,6 +242,8 @@ Die bevorzugte Darstellungsform sind **animierte Porträtbilder**. Ein dreidimen
 
 Die Entscheidung über Aussehen, technische Umsetzung und Integration steht noch aus.
 
+**Zusätzliche Idee (16. November 2026):** Ein erster, bewusst kleiner Umsetzungsschritt könnte **ohne Sprachsynthese und ohne fertiges Porträt** nur Warnmeldungen oben im Spielbild zeigen: fett, rot, in Großbuchstaben, etwa `MINEFIELD DETECTED`, wenn Minen gruppenweise erscheinen. Ein passendes Symbol oder später animiertes Avatarbild und Sprachausgabe bleiben Optionen. Vor Umsetzung passende Auslöseereignisse, Anzeigedauer und die Vermeidung wiederholter Warnungen festlegen. Der Entwickler beobachtet oft Minengruppen; Spawnverteilung und mögliche Frameabhängigkeit gesondert analysieren. Dies ist eine zukünftige Gestaltungsidee, **kein Releaseblocker oder Auftrag für unmittelbaren Code**.
+
 ### Aufgaben und Missionen
 
 Eine spätere Erweiterung durch Aufgaben oder Missionen ist denkbar.
