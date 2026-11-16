@@ -1,8 +1,8 @@
 # Übergabe: Alpha-Walker abgeschlossen → HTML5-Pre-Alpha
 
 **Stand:** 16. November 2026  
-**Ziel:** HTML5-Pre-Alpha heute auf itch.io veröffentlichen  
-**Status:** Alpha-Walker-Aufgabe abgeschlossen; HTML5-Export/Browsertest/Upload noch offen  
+**Ziel:** HTML5-Pre-Alpha kontrolliert testen und ausgewählten Personen über itch.io-Draft/Secret-URL zugänglich machen; öffentliche Veröffentlichung später entscheiden  
+**Status:** Alpha-Walker abgeschlossen; HTML5-Export/Browsertest/Draft-Upload noch offen, kein öffentlicher Publish geplant  
 **Repository:** ChristianEngel19820128/SonecBot  
 **Arbeitsbranch:** `develop`  
 **Letzter lokal getesteter Codecommit:** [`18f92a965810763b552bd96649607c112f966238`](https://github.com/ChristianEngel19820128/SonecBot/commit/18f92a965810763b552bd96649607c112f966238)
@@ -10,13 +10,18 @@
 > Der Nutzer bestätigt nach dem letzten 3-px-Turmrückstoß: „test bestanden. funktioniert alles wie erwartet.“ Anschließend ausdrücklich: „aufgabe Alpha Walker abgeschloßen.“
 > Jetzt Deployment fortsetzen, nicht die Walker-Entwicklung neu beginnen. Der tatsächliche develop-HEAD muss neu abgefragt werden; diese Übergabe selbst ist ein nachfolgender Dokumentationsstand.
 
+> **Aktuelle gemeinsame Entscheidung (16. November 2026; ersetzt ältere Termin-/Veröffentlichungsformulierungen unten):** Kein hektischer öffentlicher Release am 16. November. Die HTML5-Pre-Alpha ist für die AGK-Community und ausgewählte Personen bestimmt. Die itch.io-Seite bleibt absichtlich **Draft**; der **Secret-URL-Link** ermöglicht den Zugang für alle, die ihn besitzen. Die Umstellung auf **Published** wird bewusst zurückgehalten, weil laut Entwickler der einmalige itch.io-Index-Push dadurch ausgelöst wird und später nicht erneut verfügbar ist. Veröffentlichung eventuell zu Beta 0.9 oder 1.0, **noch offen**. Kein Publish ohne ausdrückliche Freigabe. Der Besitzer pflegt itch.io manuell; Texte dafür **in englischem Markdown**. 💚 ist das vereinbarte Zeichen für README und itch.io.
+>
+> **Arbeitsweise:** In kleinen gemeinsam freigegebenen Schritten vorgehen. Nutzer exportiert/kompiliert in lokalem AGK Studio, testet mit lokalem Apache im Browser/Gamepad und pflegt itch.io; Assistent prüft GitHub-Quellen und dokumentiert präzise, ohne lokale Tests zu behaupten. Besonderheiten mit Nachweisstatus festhalten, aktuellen Schritt beenden, erst danach über Folgearbeit bzw. Knowledge-Base-Eintrag entscheiden. Crystals 1.0 ist die bewährte Prozesserfahrung. GitHub-HEAD bei jedem Einstieg neu lesen; Snapshot vor dieser Dokumentationsänderung: `3840bfa545aeec6df6902180415d22efdd58f3ba`.
+> **Prüfkandidat, noch kein bestätigter Bug:** Spawn-Zufallsentscheidungen liegen in `GameDo()` und könnten pro Frame statt pro Zeit erfolgen. Vor jeder Änderung tatsächliche Frequenzen/Spielwirkung bewerten; keine pauschale Balancingmaßnahme.
+
 ## 1. Sofortiger Einstieg im neuen Chat
 
 1. `AGENTS.md`, diese Datei, `PROJECT.md`, die aktuelle `TODO.md` und den aktuellen Status/Übergabeabschnitt in `TECHNICAL.md` lesen. Alte datierte Technikabschnitte sind Historie, keine neue Aufgabenfreigabe.
 2. Tatsächlichen `develop`-HEAD und benötigte Dateien direkt von GitHub neu lesen. `main` und `source/legacy/` unangetastet lassen.
 3. Klären, ob der Nutzer bereits den aktuellen HTML5-Export hat. Bisher wurde dem Assistenten kein Export-ZIP und keine laufende Browserfassung bereitgestellt. Falls noch kein Export vorliegt, erstellt der Nutzer ihn in AppGameKit Studio.
 4. Den echten HTML5-Build im Browser testen lassen bzw. bei bereitgestelltem Build selbst prüfen. Keine Windows-Ergebnisse als Browsertest ausgeben.
-5. Nur konkrete Releaseblocker beheben. Danach Beschreibung/Controls/bekannte Grenzen und itch.io-Upload abschließen.
+5. Nur gemeinsam bestätigte konkrete Releaseblocker beheben. Danach englische Beschreibung/Controls/bekannte Grenzen und manuellen Upload im itch.io-**Draft** samt Test des Secret-URL-Builds vorbereiten. Nicht auf Published umstellen.
 
 **Nächste sinnvolle Nachricht:** „Der Alpha-Walker ist abgeschlossen. Hast du den aktuellen HTML5-Export schon erstellt? Wenn ja, prüfen wir damit zuerst Start, Gamepad, Pause, Tod und Neustart im Browser.“
 
@@ -45,7 +50,7 @@ Keine Annahme automatischer Übernahme des alten Chats, Videos, lokaler Dateien 
 
 Letzter Zusatz ist im lokal getesteten Commit `18f92a9` enthalten. Der Nutzer hat ihn abschließend positiv geprüft. Assistentenprüfungen waren statische Analysen, mathematische Modelle und teilweise übersetzte AGK-Funktionslogik, **kein eigener AGK-Compile**. Ein ca. 10-s-Windowsvideo wurde anhand extrahierter Frames beurteilt. Ein vollständiger HTML5-Test ist nicht erfolgt.
 
-## 3. Reihenfolge bis zur heutigen Veröffentlichung
+## 3. Reihenfolge bis zum kontrollierten Draft-Testrelease
 
 | Priorität | Aufgabe | Freigabekriterium / Stand |
 | --- | --- | --- |
@@ -54,9 +59,9 @@ Letzter Zusatz ist im lokal getesteten Commit `18f92a9` enthalten. Der Nutzer ha
 | 3 | Spielablauf | Kurzer Kampf, Pause/Fortsetzen, Tod und mindestens zwei Neustarts ohne unspielbaren Zustand |
 | 4 | Nur Blocker korrigieren | Konkreter reproduzierter Fehler → kleinster Fix + tatsächlicher Nachtest; Walker nicht neu entwerfen |
 | 5 | README/itch.io fertigstellen | Ehrliche Pre-Alpha-Kennzeichnung, tatsächliche Controls, Browser/Gamepad-Hinweise, bekannte Grenzen |
-| 6 | Upload + eingebetteter Test | Export auf richtiger itch.io-Projektseite bereitstellen; anschließend direkt dort erneut starten/testen |
+| 6 | Draft-Upload + eingebetteter Test | Besitzer lädt auf die bestehende Draft-Seite hoch und testet über deren Secret URL; kein Published-Wechsel |
 
-Der Nutzer möchte die Pre-Alpha **am 16. November 2026** online bringen. Spieltitel ist vorläufig SonecBot; Alpha-Walker bezeichnet den Gegner. Keine Veröffentlichung, fertige ZIP-Datei oder getestete Browser-/Controllerkombination behaupten, bevor diese tatsächlich vorliegt. itch.io-Projekt-URL und Zugriff sind hier noch nicht dokumentiert.
+Die frühere Zielmarke **16. November 2026** wurde als feste Deadline aufgehoben; Sorgfalt geht vor Geschwindigkeit. Spieltitel ist vorläufig SonecBot; Alpha-Walker bezeichnet den Gegner. Keine Veröffentlichung, fertige ZIP-Datei oder getestete Browser-/Controllerkombination behaupten, bevor diese tatsächlich vorliegt. itch.io-Seite ist im Draft; Secret URL und Zugriff sind hier noch nicht dokumentiert.
 
 ## 4. Eingabe: wichtigste bekannte Releasefrage
 
@@ -83,7 +88,7 @@ Der Nutzer möchte die Pre-Alpha **am 16. November 2026** online bringen. Spielt
 
 Draufsicht/weitere Grafik- und IK-Politur, zusätzliche Gegner, dynamisch winkelabhängige Zielzeiten, Vorhalt-KI, Optionsmenü und Key-Rebinding, neues Punktesystem/Online-Highscores, vollständige Energie-/Schadensbalance, zusätzliche Schild-/Explosionssysteme und ausführliche Kompatibilitäts-/Rendererstudien.
 
-Die Knowledge Base [agk-knowledge-base](https://github.com/ChristianEngel19820128/agk-knowledge-base) soll mit den Projekten wachsen. Kandidaten bleiben dokumentiert: Schwenkprojektion ohne Zusatzsprite, Integer-/Float-Auswertung, negative Random-Grenzen und robustes Zentrieren, verschachtelte Konstanten, Zylinder für Himmel/Wolken in anderem Projekt. Kurzes Register mit Symptom/Muster/Status/Quelle ist vorgeschlagen. Negative Random-Grenzen sind **kein isoliert bewiesener Enginebug**: beim erfolgreichen 0°-Test wurden zugleich Streuung und Random-Eingaben geändert. Kandidaten-/Artikelpflege bis nach dem dringenden Release zurückstellen.
+Die Knowledge Base [agk-knowledge-base](https://github.com/ChristianEngel19820128/agk-knowledge-base) soll mit den Projekten wachsen. Kandidaten bleiben dokumentiert: Schwenkprojektion ohne Zusatzsprite, Integer-/Float-Auswertung, negative Random-Grenzen und robustes Zentrieren, verschachtelte Konstanten, Zylinder für Himmel/Wolken in anderem Projekt. Kurzes Register mit Symptom/Muster/Status/Quelle ist vorgeschlagen. Negative Random-Grenzen sind **kein isoliert bewiesener Enginebug**: beim erfolgreichen 0°-Test wurden zugleich Streuung und Random-Eingaben geändert. Kandidaten ohne Druck dokumentieren; Knowledge-Base-Arbeit jeweils erst nach Abschluss des aktuellen Schritts gesondert priorisieren.
 
 ## 7. Arbeitsregeln und Quellen
 
