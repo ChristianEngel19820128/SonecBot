@@ -5,7 +5,7 @@
 **Status:** Alpha-Walker abgeschlossen; **HTML5-Export und erster lokaler Browserstart laut Entwickler bestanden**; Gamepad-Aktions- und Pause-Test laut Entwickler bestanden; Tod/Mehrfachneustart und Draft-Upload noch offen, kein öffentlicher Publish geplant  
 **Repository:** ChristianEngel19820128/SonecBot  
 **Arbeitsbranch:** `develop`  
-**Letzter lokal getesteter Codecommit:** [`18f92a965810763b552bd96649607c112f966238`](https://github.com/ChristianEngel19820128/SonecBot/commit/18f92a965810763b552bd96649607c112f966238)
+**Historischer, lokal akzeptierter Walker-Abschluss-Codecommit:** [`18f92a965810763b552bd96649607c112f966238`](https://github.com/ChristianEngel19820128/SonecBot/commit/18f92a965810763b552bd96649607c112f966238)
 
 > Der Nutzer bestätigt nach dem letzten 3-px-Turmrückstoß: „test bestanden. funktioniert alles wie erwartet.“ Anschließend ausdrücklich: „aufgabe Alpha Walker abgeschloßen.“
 > Jetzt Deployment fortsetzen, nicht die Walker-Entwicklung neu beginnen. Der tatsächliche develop-HEAD muss neu abgefragt werden; diese Übergabe selbst ist ein nachfolgender Dokumentationsstand.
@@ -73,13 +73,23 @@
 
 **Noch fehlend aus der Grundmatrix:** direkter Granatenaufprall → Walker und Explosion → Walker; bei späterer Umsetzung Doppelschaden getrennt entscheiden. Plasmaenergie und hohe Wirkung sind weiterhin qualitative Balancebeobachtungen, kein aktueller Balanceauftrag.
 
-## Aktueller Einzelschritt: direkter Granatenaufprall → Alpha-Walker (16. November 2026)
+## Vorheriger Einzelschritt: direkter Granatenaufprall → Alpha-Walker (16. November 2026; lokal positiv)
 
 **Vorheriger Blitz-Schritt bestanden:** Entwickler bestätigt „gut das funktioniert =)“ für Plasma-Blitz → Walker. Kein detaillierter Messwert oder explizit getrennte Windows-/HTML5-Angabe zu diesem konkreten Test. Plasma-Blitz gegen Walker als lokal funktionierend gemeldet; nicht weiter an Energiekosten oder Balancing drehen.
 
 **Jetzt umgesetzt, echter Test offen:** `GrenadeCollideWalkers()` in `source/sonec/grenade.agc` ergänzt; Aufruf in `GameDo()` zwischen Kisten- und Plattformkollision. Wie beim Maschinengewehr die bestehende `WalkerCollisionData.Tower`-Box mit `BoxInBox` prüfen; vorhandenen direkten Granatenschaden abziehen, roten Turmflash setzen, dann über bestehendes `GrenadeDestroy()` eine reguläre Explosion erzeugen und Granate löschen. **Walker-Explosionsschaden ausdrücklich noch nicht ergänzt.** Keine Änderungen an Explosionen, Zielpanzerung, IK oder Balancing.
 
 **Nächster konkreter Test durch Entwickler:** Windows-AGK-Compile, direkter Granatentreffer auf Walker-Turm (Trefferreaktion und Explosion), ausreichend viele Treffer können Walker zerstören; andere Granatenkollisionen gegen Kisten/Orbs/Minen/Plattformen bleiben korrekt. Danach HTML5 prüfen. Die Explosion trifft den Walker auch bei direktem Granatenaufprall noch **nicht** als eigene Schadensquelle. Erst nach Ergebnis nächste Entscheidung zum separaten Explosionspfad und möglichem Doppelschaden treffen.
+
+## Granaten-Aufpralltest abgeschlossen – Entwicklermeldung 16. November 2026
+
+**Ergebnis:** Entwickler berichtet einen direkten Volltreffer auf den Alpha-Walker-Turm: „alles wie erwartet“. Der neu ergänzte `GrenadeCollideWalkers()`-Pfad gilt für diesen lokalen Versuch als **bestanden**. Ob genau dieser Versuch im Windows- oder HTML5-Build stattfand und welcher konkrete Export-SHA verwendet wurde, wurde nicht ausdrücklich zugeordnet. Keine unabhängige Laufzeitprüfung des Assistenten; Walker-Zerstörung durch wiederholte Granaten, einzelne Flash-/Drop-Details und sämtliche Regressionen nicht getrennt bestätigt.
+
+**Beobachtete Granatenmechanik:** Rückstoß kann Sonec zurückversetzen; Granaten folgen einer gekrümmten, nach unten fallenden Bahn, treffen auf Distanz gelegentlich zuerst den Plattformboden und explodieren dort. Abschuss verbraucht Munition („Plasmagranaten“). Das sind bewusst zu erhaltende spielerische Eigenschaften; vorerst **keine** Physik-, Munitions- oder Balanceänderung.
+
+**Stand der Treffermatrix:** Bullet, Flamme, Plasma-Blitz und direkter Granatenaufprall sind jetzt als Kollisionen mit Walker-Turm implementiert; die jeweiligen zuletzt berichteten Tests waren positiv. **Nur Explosion → Walker fehlt** als separater Schadenspfad. Vor Änderung die bestehende `ExplosionCollide*`-Zeitsteuerung und die Überlappung mit dem Granatenaufprall prüfen, um Doppelschaden bewusst zu gestalten. Dies ist der nächste **Prüf- und Entscheidungsgegenstand**, noch keine Implementierungsfreigabe.
+
+**Referenzpflege:** Der im Dokumentkopf verlinkte Hash `18f92a9` ist der historische **Walker-Abschlussstand**, nicht der aktuelle Branch-HEAD und nicht der neueste Kollisions-Build. Den tatsächlichen `develop`-HEAD bei jedem Einstieg erneut abfragen; aktueller getesteter lokaler Export-Commit für den Granatentest wurde nicht separat festgehalten.
 
 ## 1. Sofortiger Einstieg im neuen Chat
 
