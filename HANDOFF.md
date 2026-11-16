@@ -65,13 +65,21 @@
 
 **Nächster Vorschlag, noch nicht implementiert:** Plasma-Blitz → Walker als isolierter dritter Kollisionsschritt. Danach Granatenaufprall/Explosion getrennt bewerten, um ungewollten Doppelschaden zu vermeiden. Kein Balancing, keine IK-/Walker-Politur; vor Codeänderung gemeinsam nächsten Schritt festlegen.
 
-## Laufender Einzeltest: Plasma-Blitz als Walker-Blitzableiter (16. November 2026)
+## Vorheriger Einzeltest: Plasma-Blitz als Walker-Blitzableiter (16. November 2026; lokal positiv)
 
 **Gemeinsam freigegebener nächster Schritt:** `PlasmaBlitzCollideWalkers()` in `source/sonec/plasmablitz.agc` ergänzt und nach Orb/Mine/Kiste, **vor** dem gemeinsamen `PlasmaBlitzCollisionTimerReset()` in `game.agc` aufgerufen. Trefferzone ist dieselbe Walker-Turm-AABB wie beim Maschinengewehr; BoxInBox, vorhandener `BulletData.Damage`, `HitFlashUntil=Now+150` und roter Turmflash werden verwendet. Der Blitz bleibt wie bei den bisherigen anderen Zieltypen während der Entladung aktiv. Keine Änderungen an Aufladung, Energiekosten, Schäden, Walker-IK/AI oder Fraktionen.
 
 **Status: nur statisch geprüft, KEIN AGK-/HTML5-Test.** Besitzer soll lokal Windows/HTML5 prüfen: Walker-Turm wird bei Blitzentladung rot und nimmt Schaden; kann bei genügenden Treffern zerstört werden; Orb/Mine/Kiste funktionieren weiter; keine übermäßig schnelle Schadensfolge oder sonstige Regression. Erst nach Ergebnis dokumentieren und nächsten Schritt vereinbaren.
 
 **Noch fehlend aus der Grundmatrix:** direkter Granatenaufprall → Walker und Explosion → Walker; bei späterer Umsetzung Doppelschaden getrennt entscheiden. Plasmaenergie und hohe Wirkung sind weiterhin qualitative Balancebeobachtungen, kein aktueller Balanceauftrag.
+
+## Aktueller Einzelschritt: direkter Granatenaufprall → Alpha-Walker (16. November 2026)
+
+**Vorheriger Blitz-Schritt bestanden:** Entwickler bestätigt „gut das funktioniert =)“ für Plasma-Blitz → Walker. Kein detaillierter Messwert oder explizit getrennte Windows-/HTML5-Angabe zu diesem konkreten Test. Plasma-Blitz gegen Walker als lokal funktionierend gemeldet; nicht weiter an Energiekosten oder Balancing drehen.
+
+**Jetzt umgesetzt, echter Test offen:** `GrenadeCollideWalkers()` in `source/sonec/grenade.agc` ergänzt; Aufruf in `GameDo()` zwischen Kisten- und Plattformkollision. Wie beim Maschinengewehr die bestehende `WalkerCollisionData.Tower`-Box mit `BoxInBox` prüfen; vorhandenen direkten Granatenschaden abziehen, roten Turmflash setzen, dann über bestehendes `GrenadeDestroy()` eine reguläre Explosion erzeugen und Granate löschen. **Walker-Explosionsschaden ausdrücklich noch nicht ergänzt.** Keine Änderungen an Explosionen, Zielpanzerung, IK oder Balancing.
+
+**Nächster konkreter Test durch Entwickler:** Windows-AGK-Compile, direkter Granatentreffer auf Walker-Turm (Trefferreaktion und Explosion), ausreichend viele Treffer können Walker zerstören; andere Granatenkollisionen gegen Kisten/Orbs/Minen/Plattformen bleiben korrekt. Danach HTML5 prüfen. Die Explosion trifft den Walker auch bei direktem Granatenaufprall noch **nicht** als eigene Schadensquelle. Erst nach Ergebnis nächste Entscheidung zum separaten Explosionspfad und möglichem Doppelschaden treffen.
 
 ## 1. Sofortiger Einstieg im neuen Chat
 
