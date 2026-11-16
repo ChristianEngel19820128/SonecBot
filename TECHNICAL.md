@@ -153,6 +153,14 @@ Lokaler Apache/XAMPP-Browsertest mit Xbox-/kompatiblem Controller, 60 Hz/VSync a
 
 **Nicht bestätigt:** exakter SHA des getesteten exportierten Builds, AGK-/Browser-Version, Tod und zwei Neustarts, itch.io-Draft-Einbettung, andere Browser/Controller.
 
+### Kollisionsmatrix und erster schmaler Implementierungsschritt (16. November 2026)
+
+**Entscheidung:** Sonecs Maschinengewehr, Flammen, Granaten (kinetischer Einschlag/Explosion) und Plasma-Blitz sollen prinzipiell alle beschädigbaren Ziele treffen können. Spätere Schadensarten (Plasmaexplosion, Plasmaflamme, Kinetik, Plasma-Blitz) und Gegenpanzerungen bleiben Design, **nicht** Teil dieses Patches. Faction-Planung: Player 1/optional Player 2, Enemy, Neutral; derzeitige Quellkonstanten `TYPEPLAYERONE`, `TYPEPLAYERTWO`, `TYPEENEMY` sind keine komplette neutrale Trefferlogik.
+
+**Erster Codepfad implementiert, noch nicht kompiliert oder im Browser nachgetestet:** `FlameCollideWalkers()` in `flame.agc`, aufgerufen nach den bestehenden Flammenkollisionen in `GameDo()`. Verwendet `FlameCollisionRadius()` und Circle-vs-Nearest-Point auf Walkers **bestehender Turm-AABB**, zieht den bestehenden Flammenschaden ab, zeigt den vorhandenen 150-ms-Turmtrefferflash und verbraucht die Flamme. Kein Eingriff in Walker-Pose/IK, Projektilwerte, Faction-Matrix oder Panzerung. Als erster separater Schritt zu prüfen: AGK-Compile, Treffer sichtbar am Turm, Health/Hitflash, Tod/Drop, keine Regression von Kisten-/Orb-/Minenflammen.
+
+**Bestand der übrigen aktiven Pfade (Codeprüfung am vorherigen HEAD `ff37a326`):** Maschinengewehr gegen Orb/Mine/Kiste/Walkerturm; Flamme gegen Orb/Mine/Kiste; direkte Granate gegen Orb/Mine/Kiste/Plattform (Explosion bei Einschlag); Explosion gegen Sonec/Orb/Mine/Kiste; Plasma-Blitz gegen Orbs. `PlasmaBlitzCollideMine` und `PlasmaBlitzCollideChest` waren leere Funktionskörper. Noch nicht umgesetzte Walker-Pfade für Granate/Explosion/Plasma-Blitz sowie weitere Ziele bleiben Folgeaufgaben. Jede vorhandene Funktion gegen ihren tatsächlichen Aufrufpfad prüfen; bloße Existenz ist kein aktiver Treffermechanismus.
+
 ## 7. Übergabe und Historie
 
 [HANDOFF.md](HANDOFF.md) enthält getesteten Referenzcommit, exakte Parameter, Release-Gates, offene Entscheidungen und einen direkten Starttext. Tatsächlichen develop-HEAD neu abfragen, lokale Nutzerdateien/alte Anhänge nicht voraussetzen.
