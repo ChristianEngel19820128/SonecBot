@@ -23,6 +23,12 @@ Die [aktive Aufgabenliste](TODO.md) wurde nach den gemeinsamen Tests bereinigt; 
 
 **Jetzt nächster konkreter Schritt:** README und englischen itch.io-Draft-Text auf den inzwischen tatsächlich getesteten Stand bringen; vorher gegebenenfalls den frischen HTML5-Export/Screenshots als Basis verifizieren. Danach manuell auf bestehende itch.io-Seite im **Draft** hochladen und über deren Secret URL testen; **niemals Published aktivieren**. Beim nächsten Export den genauen `develop`-Codecommit notieren. Weitere Themen (Sound-Funktionen, Avatarwarnung, Sprung-Körperkontakt, Balancing, Knowledge Base, GifCam, vollständige Tastatur) sind keine aktuellen Freigaben. Frühere Tests/Entscheidungen weiter unten sind historisch und können überholte Aufgabenformulierungen enthalten.
 
+## README für Tester aktualisiert; Merge erst nach Draft-Nachtest (16.11.2026)
+
+Die englische `README.md` wurde auf den tatsächlich beobachteten HTML5-Pre-Alpha-Stand gebracht: Spielbeschreibung, Xbox-kompatible Gamepad-Belegung, Controller-Initialisierung, bestätigte lokale Spielrunde/Pause/Tod/Neustarts, Walker-/Schild-/Waffenfunktionen, aktuelle Energiewerte 4000 normal/4500 Start, bekannte Grenzen und Einladung zu reproduzierbarem Feedback. Das **itch.io-Draft-Embed ist noch nicht getestet**, externe Browser-/Controller-Kompatibilität nicht behaupten. 💚 ist enthalten. Besitzer öffnet die bestehende itch.io-Draft-Seite und ermittelt ihren vorhandenen Inhalt; HTML5-ZIP, itch.io-Text und Secret-URL-Nachtest sind noch offene nächste Schritte.
+
+**Branch-Entscheidung zur Diskussion, nicht ausgeführt:** Entwickler möchte erwägen, nach erfolgreichem Test der Draft-Seite den akzeptierten `develop`-Stand nach `main` zu mergen. Diese Reihenfolge wird unterstützt: erst Export und echter Draft-Embed-/Controller-Smoke-Test, dann gemeinsam den Mergepunkt beschließen. **Kein Merge durchgeführt.** Ein GitHub-Merge berührt nicht den Status der itch.io-Seite; **Draft bleibt Draft**, kein öffentliches Published ohne separate ausdrückliche Freigabe.
+
 ## Aktueller HTML5-Testbefund (Entwicklermeldung, 16. November 2026)
 
 - **Bestanden:** HTML5-Export mit lokalem AGK Studio; Browserstart über lokalen Apache/XAMPP im gemeinsam entwickelten Frame mit Run-Knopf (vergleichbar mit der geplanten itch.io-Einbettung). Spiel startet.
