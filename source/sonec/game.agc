@@ -151,14 +151,14 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function GameActionInput(Game ref as TGame,Now as integer)
+function GameActionInput(Game ref as TGame,Keys ref as TKeys,Now as integer)
 
-	SonecFlameGunInput(Game.Sonec,Game.FlameList,Game.ProtoFlame,Game.World,Game.Sound,Game.JoystickIndex,Now)
-	SonecPlasmaBlitzGunInput(Game.Sonec,Game.FlashList,Game.ProtoFlash,Game.PlasmaBlitzList,Game.ProtoPlasmaBlitz,Game.World,Game.JoystickIndex,Now)
-	SonecMGunInput(Game.Sonec,Game.FlashList,Game.ProtoFlash,Game.BulletList,Game.ProtoBullet,Game.World,Game.Sound,Game.JoystickIndex,Now)
-	SonecGrenadeLauncherInput(Game.Sonec,Game.GrenadeList,Game.ProtoGrenade,Game.World,Game.Sound,Game.JoystickIndex,Now)
-	SonecShieldInput(Game.Sonec,Game.Shield,Game.World,Game.JoystickIndex,Now)
-	SonecInenergieInput(Game.Sonec,Game.Inenergie,Game.EnergieList,Game.World,Game.JoystickIndex,Now)
+	SonecFlameGunInput(Game.Sonec,Game.FlameList,Game.ProtoFlame,Game.World,Game.Sound,Keys,Game.JoystickIndex,Now)
+	SonecPlasmaBlitzGunInput(Game.Sonec,Game.FlashList,Game.ProtoFlash,Game.PlasmaBlitzList,Game.ProtoPlasmaBlitz,Game.World,Keys,Game.JoystickIndex,Now)
+	SonecMGunInput(Game.Sonec,Game.FlashList,Game.ProtoFlash,Game.BulletList,Game.ProtoBullet,Game.World,Game.Sound,Keys,Game.JoystickIndex,Now)
+	SonecGrenadeLauncherInput(Game.Sonec,Game.GrenadeList,Game.ProtoGrenade,Game.World,Game.Sound,Keys,Game.JoystickIndex,Now)
+	SonecShieldInput(Game.Sonec,Game.Shield,Game.World,Keys,Game.JoystickIndex,Now)
+	SonecInenergieInput(Game.Sonec,Game.Inenergie,Game.EnergieList,Game.World,Keys,Game.JoystickIndex,Now)
 
 endfunction
 
