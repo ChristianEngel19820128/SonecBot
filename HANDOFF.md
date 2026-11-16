@@ -2,7 +2,7 @@
 
 **Stand:** 16. November 2026  
 **Ziel:** HTML5-Pre-Alpha kontrolliert testen und ausgewählten Personen über itch.io-Draft/Secret-URL zugänglich machen; öffentliche Veröffentlichung später entscheiden  
-**Status:** Alpha-Walker abgeschlossen; **HTML5-Export und erster lokaler Browserstart laut Entwickler bestanden**; weitere Gamepad-Aktions-/Pause-/Tod-/Neustarttests und Draft-Upload noch offen, kein öffentlicher Publish geplant  
+**Status:** Alpha-Walker abgeschlossen; **HTML5-Export und erster lokaler Browserstart laut Entwickler bestanden**; Gamepad-Aktions- und Pause-Test laut Entwickler bestanden; Tod/Mehrfachneustart und Draft-Upload noch offen, kein öffentlicher Publish geplant  
 **Repository:** ChristianEngel19820128/SonecBot  
 **Arbeitsbranch:** `develop`  
 **Letzter lokal getesteter Codecommit:** [`18f92a965810763b552bd96649607c112f966238`](https://github.com/ChristianEngel19820128/SonecBot/commit/18f92a965810763b552bd96649607c112f966238)
@@ -24,6 +24,18 @@
 - **XAMPP-Cache-Hinweis als Knowledge-Base-Kandidat:** Nach Austausch der HTML5-Dateien während des Entwickelns Browser-Cache deaktivieren (z. B. DevTools/Network „Disable cache“, wirksam bei geöffneten DevTools) und neu laden, sonst kann die alte Version weiter erscheinen. Entwicklerbeobachtung, noch kein separater plattformübergreifender Nachweis oder eigenständiger KB-Eintrag.
 - **Nächste fachliche Prüfung (noch kein Änderungsauftrag):** Welche fehlenden Kollisionsabfragen wirken im Test widersprüchlich, wenn Treffer keine Wirkung zeigen? Relevante Aufrufpfade, Absichten und Priorität untersuchen, bevor Code verändert wird. Spawn-Zeitbasis bleibt separater Kandidat.
 - **Arbeitsregel:** Beobachtung festhalten, aktuellen Prüfschritt abschließen, anschließend **gemeinsam** den nächsten Schritt wählen. Kein neues Walker-Polishing.
+
+## Abgeschlossener HTML5-Controller-Funktionstest – Entwicklermeldung 16. November 2026
+
+**Ergebnis:** Der Entwickler hat den Gamepad-Funktionstest im lokalen HTML5-Build beendet. Xbox- bzw. Xbox-kompatibler Controller, Apache/XAMPP, 60-Hz-Testreferenz mit VSync. Getestet und funktionierend: untere linke/rechte Trigger für Rückwärtsbewegung nach links/rechts, linke obere Schultertaste für Energieanziehung, rechte Schultertaste für Schild (vom Entwickler als „R2“ bezeichnet; **abweichende Benennung mit Code prüfen**), X Flammenwerfer, Y Plasma-Blitz, A Maschinengewehr, B Granatwerfer, Start Pause, D-Pad und linker Analogstick für Bewegung. Nicht belegte andere Tasten haben derzeit keine Funktion. Es wird keine vollständige Tastatursteuerung für die Pre-Alpha angeboten.
+
+**Abgleich mit Quellcode:** `sonec.agc:SonecShieldInput` nutzt `JoystickButtonRR` (in `def_joypad.agc` Taste 6; normalerweise rechte obere Schultertaste/RB/R1); in `SonecInput` werden die unteren Trigger über Z/RZ-Achsen für Rückwärtsbewegung gelesen. Die Angabe „R2 Schild“ **nicht ohne Rückfrage als tatsächliche Belegung übernehmen**. Keine Codeänderung allein aufgrund der Benennung.
+
+**HTML5-Beenden:** ESC und QUIT beenden den Browserbuild nicht. Quellcodeprüfung: `GetESCPressed()` ist Windows-gebunden; `main.agc` berücksichtigt `Intro.IsQuit` beim Verlassen ausdrücklich nur außerhalb HTML5. Nicht ungeprüft als Releaseblocker oder AGK-Enginebug werten; bei Browser-Einbettung kann dies gewollt sein.
+
+**Knowledge-Base-Kandidaten:** HTML5-Gamepad-Index-1-Workaround, erste Tasteneingabe und 2–3-s-Verzögerung; Desktop-vs.-Browser-Beenden; XAMPP-Cache-Stolperfalle. Bestehende KB `topics/timing-and-frame-rates.md` enthält die Spawn-Frameabhängigkeit bereits als Codeprüfkandidat. Kandidaten dokumentieren, erst nach dem aktuellen Projektschritt eine eigene KB-Ergänzung freigeben. Einzelne AGK-/Browser-Version und getesteter Build-SHA sind noch nicht protokolliert.
+
+**Noch offen für vollständige Releaseprüfung:** Tod und mindestens zwei Neustarts, Browserkompatibilität außerhalb dieses lokalen Testaufbaus, späterer itch.io-Draft/Secret-URL-Test. Nächste fachliche Entscheidung gemeinsam: Kollisionstreffermatrix auf fehlende Reaktion prüfen, zunächst read-only.
 
 ## 1. Sofortiger Einstieg im neuen Chat
 
