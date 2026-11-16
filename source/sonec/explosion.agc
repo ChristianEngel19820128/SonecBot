@@ -109,6 +109,7 @@ function ExplosionNew(Explosion ref as TExplosion,ProtoExplosion ref as TProtoEx
 	Explosion.LastChestHitMs.Length = -1
 	Explosion.LastOrbHitMs.Length = -1
 	Explosion.LastMineHitMs.Length = -1
+	Explosion.LastWalkerHitMs.Length = -1
 	Explosion.MeasureChecks = 0
 	Explosion.MeasureHits = 0
 	Explosion.MeasureDamage = 0
@@ -370,6 +371,45 @@ function ExplosionCollideMine(ExplosionList ref as TExplosionList,MineList ref a
 		endif
 	next i
 	
+endfunction
+
+//----------------------------------------------------------------------
+// 
+//----------------------------------------------------------------------
+
+// Explosion circle against the established Walker turret hit box.
+// Each Walker has its own damage interval for this explosion.
+function ExplosionCollideWalkers(ExplosionList ref as TExplosionList,WalkerList ref as TWalkerList,Now as integer)
+
+	local i as integer
+	local k as integer
+	local NearestPoint as TPosition
+
+	for i = 0 to ExplosionList.Explosion.Length
+		if ExplosionList.Explosion[i].Enabled = TRUE
+			for k = 0 to WalkerList.Walker.Length
+				if WalkerList.Walker[k].Enabled = TRUE
+					NearestPoint = ExplosionList.Explosion[i].ObjectData.Position
+					if NearestPoint.x < WalkerList.Walker[k].WalkerCollisionData.Tower.Position1.x then NearestPoint.x = WalkerList.Walker[k].WalkerCollisionData.Tower.Position1.x
+					if NearestPoint.x > WalkerList.Walker[k].WalkerCollisionData.Tower.Position2.x then NearestPoint.x = WalkerList.Walker[k].WalkerCollisionData.Tower.Position2.x
+					if NearestPoint.y < WalkerList.Walker[k].WalkerCollisionData.Tower.Position1.y then NearestPoint.y = WalkerList.Walker[k].WalkerCollisionData.Tower.Position1.y
+					if NearestPoint.y > WalkerList.Walker[k].WalkerCollisionData.Tower.Position2.y then NearestPoint.y = WalkerList.Walker[k].WalkerCollisionData.Tower.Position2.y
+					if CalcRadius(ExplosionList.Explosion[i].ObjectData.Position,NearestPoint) < ExplosionList.Explosion[i].ObjectData.Radius
+						if ExplosionList.Explosion[i].LastWalkerHitMs.Length < k
+							ExplosionList.Explosion[i].LastWalkerHitMs.Length = k
+						endif
+						if EXPLOSION_TIMED_DAMAGE = 0 or ExplosionList.Explosion[i].LastWalkerHitMs[k] = 0 or GetMilliseconds()-ExplosionList.Explosion[i].LastWalkerHitMs[k] >= EXPLOSION_DAMAGE_INTERVAL_MS
+							ExplosionList.Explosion[i].LastWalkerHitMs[k] = GetMilliseconds()
+							WalkerList.Walker[k].Health.State = WalkerList.Walker[k].Health.State - ExplosionList.Explosion[i].BulletData.Damage
+							WalkerList.Walker[k].HitFlashUntil = Now + 150
+							ColorSet(WalkerList.Walker[k].WalkerSpriteData.Tower.Color,255,0,0,255)
+						endif
+					endif
+				endif
+			next k
+		endif
+	next i
+
 endfunction
 
 //----------------------------------------------------------------------
