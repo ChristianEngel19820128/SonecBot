@@ -30,7 +30,7 @@ Der lokal getestete Code-Referenzcommit ist [`18f92a965810763b552bd96649607c112f
 
 - [x] **HTML5-Export lokal erstellt (Entwicklermeldung, 16.11.2026).** Export gelang; genaue exportierte Code-Revision/ZIP hier nicht separat geprüft.
 - [x] **Erster lokaler Browserstart:** Über lokalen Apache/XAMPP und vorhandenen Run-Frame startet das Spiel laut Entwickler. Audio, alle Assets und Eingaben damit **noch nicht einzeln bestätigt**.
-- [x] **HTML5-Gamepad-Funktionstest (Entwicklermeldung):** Xbox-kompatibler Controller, Index-1-Workaround (erste Eingabe, eventuell 2–3 s). D-Pad/Analogstick, linke/rechte Trigger für Rückwärtsbewegung, L1 Energieanziehung, rechter Schulterbutton Schild, X Flammenwerfer, Y Plasma-Blitz, A Maschinengewehr, B Granatwerfer, Start Pause – laut Entwickler alle funktionsfähig. **Bezeichnungsabweichung:** Schild wurde im Chat „R2“ genannt, Code nutzt RR/RB/R1; gemeinsam klären, bevor öffentliche Controls geschrieben werden. Tastatur ist keine zumutbare Alternative.
+- [x] **HTML5-Gamepad-Funktionstest (Entwicklermeldung):** Xbox-kompatibler Controller, Index-1-Workaround (erste Eingabe, eventuell 2–3 s). D-Pad/Analogstick, linke/rechte Trigger für Rückwärtsbewegung, L1 Energieanziehung, rechter Schulterbutton Schild, X Flammenwerfer, Y Plasma-Blitz, A Maschinengewehr, B Granatwerfer, Start Pause – laut Entwickler alle funktionsfähig. **Bezeichnung geklärt:** „R2 Schild“ war ein Schreibfehler; Schild RB/R1, untere Trigger LT/L2 und RT/R2 für Rückwärtsbewegung. Tastatur ist keine zumutbare Alternative.
 - [ ] **Spielrunde testen:** Bewegung/Jetpack/Waffen/Schild/Energieaktionen, Walker-Kampf, Pause/Fortsetzen, Tod und mindestens zwei Neustarts.
 - [ ] **Gameplay-Smoketest vervollständigen:** Entwickler beobachtet bei 60 Hz/VSync flüssiges Spiel und auch bei kurz getesteten 75 Hz vergleichbar flüssiges Gameplay; weitere Tests bewusst wieder bei 60 Hz. Gamepad-Aktionen und Pause laut Entwickler bestanden; Tod/Mehrfachneustart noch separat nachweisen.
 - [ ] **HTML5-Beenden einordnen:** ESC/QUIT beenden den Browserbuild nicht; Code schließt HTML5-QUIT bewusst aus, ESC-Helfer ist Windows-spezifisch. UX/Einbettung bewerten, nicht als Enginebug behaupten.
@@ -43,9 +43,9 @@ Der lokal getestete Code-Referenzcommit ist [`18f92a965810763b552bd96649607c112f
 - [ ] **Spawn-Zeitbasis untersuchen (Hypothese):** Zufallsentscheidungen innerhalb `GameDo()` wirken möglicherweise frameabhängig. Tatsächlichen Codepfad, Zeit-/FPS-Abhängigkeit und Release-Relevanz prüfen, Alternativen gemeinsam abwägen; erst nach Entscheidung ändern und lokal nachtesten. Keine pauschale Balancekorrektur.
 - [ ] **Englische itch.io-Texte als Markdown** zusammenstellen; 💚 als vereinbarte Kennzeichnung in README/itch.io verwenden.
 
-### Aktueller kleiner Kollisionsschritt – Test beim Entwickler offen
+### Erster Kollisionsschritt – lokal bestanden
 
-- [ ] **Flammenwerfer → Walker-Turm:** neuer `FlameCollideWalkers()`-Pfad implementiert und in `GameDo()` eingebunden; bisher nur statisch geprüft. Nutzer kompiliert und testet lokal: Turmtreffer/roter Flash, Schaden, Zerstörung/Drop, Regression bei Minen/Orbs/Kisten. **Kein nächster Codepfad vor Rückmeldung.**
+- [x] **Flammenwerfer → Walker-Turm, lokaler Entwicklertest bestanden (16.11.2026):** `FlameCollideWalkers()` ist eingebunden; Entwickler bestätigt erwartete Trefferwirkung und Zerstörung aller geprüften Objektarten einschließlich Walker. Flammenwerfer wirkt dabei **sehr stark** (qualitative Beobachtung, kein Balancingtest). Einzelne Flash-/Drop-Details wurden nicht separat bestätigt. **Schritt abgeschlossen; erst gemeinsam nächste Kombination wählen.**
 - [ ] Anschließend Treffermatrix gemeinsam schrittweise erweitern: derzeit unter anderem Plasma-Blitz→Mine/Kiste (leere Funktionen), Plasma-Blitz→Walker, Granate/Explosion→Walker und Flamme→weitere vorgesehene Ziele. Sonec-Waffen sollen grundsätzlich alle beschädigbaren Ziele erreichen. Weitere Schadensarten/Panzerungsmodelle bleiben Zukunftsentwurf.
 - [ ] Für das Fraktionskonzept Player (ggf. Player 2), Enemy, Neutral zunächst Verhalten klären; keine automatische Fraktions- oder Balancing-Umstellung.
 
