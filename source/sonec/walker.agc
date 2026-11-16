@@ -1237,6 +1237,10 @@ function WalkerFlashFollowAll(WalkerList ref as TWalkerList,FlashList ref as TFl
 					BarrelIndex = FlashList.Flash[i].AttachedBarrelIndex
 					if BarrelIndex >= 0 and BarrelIndex <= 1
 						FlashList.Flash[i].ObjectData.Position = WalkerList.Walker[WalkerIndex].WalkerObjectData.Barrel[BarrelIndex].AnchorPosition
+						// Keep the flash at the neutral muzzle, following the parent/platform
+						// but undoing this barrel's purely visual recoil displacement.
+						FlashList.Flash[i].ObjectData.Position.x = FlashList.Flash[i].ObjectData.Position.x + Sin(WalkerList.Walker[WalkerIndex].BarrelRecoilAngle[BarrelIndex])*WalkerList.Walker[WalkerIndex].BarrelRecoilDistance[BarrelIndex]
+						FlashList.Flash[i].ObjectData.Position.y = FlashList.Flash[i].ObjectData.Position.y - Cos(WalkerList.Walker[WalkerIndex].BarrelRecoilAngle[BarrelIndex])*WalkerList.Walker[WalkerIndex].BarrelRecoilDistance[BarrelIndex]
 						SpritePositionCalc(FlashList.Flash[i].SpriteData.Position,FlashList.Flash[i].ObjectData.Position,World.Position)
 					endif
 				endif
