@@ -1,6 +1,6 @@
 # SonecBot – Aktuelle Aufgaben und Meilensteine
 
-**Dokumentstatus:** Version 4.7 – sechs Kampf-/Energieaktionen an Action-Mapping angeschlossen  
+**Dokumentstatus:** Version 4.8 – sechs Bewegungsaktionen an Action-Mapping angeschlossen  
 **Stand:** 16. November 2026  
 **Branch:** `develop`  
 **Aktuelles Ziel:** Funktionierende HTML5-Pre-Alpha auf itch.io im **Draft per Secret URL** für eingeladene Community-Tester bereitstellen, Feedback sammeln. **Nicht auf Published umstellen**; den einmaligen öffentlichen Index-Push für einen späteren, noch nicht beschlossenen Release bewahren. Keine Deadline.
@@ -46,6 +46,10 @@
 **Schritt 2 vom Entwickler bestätigt:** AGK Studio meldet `Compilation finished successfully.` für die Standardbelegung / `InputSetDefaultBindings()`. Kein vollständiger Gameplay-Regressionstest behauptet.
 
 **Schritt 3 lokal bestätigt:** Entwickler meldet `Compilation finished successfully.` nach Hinzufügen der digitalen Action-Abfragen.
+
+**Schritt 4 / 4b vom Entwickler erfolgreich getestet:** AGK Studio kompiliert; alle sechs Tastaturaktionen J/K/L/I/U/O sowie die Gamepad-Regressionsaktionen A/B/X/Y/LB/RB laut Entwickler erfolgreich. Weitere Funktionen dadurch noch nicht bestätigt.
+
+**Schritt 5 implementiert, AGK-Compile und Bewegungstests offen:** In `SonecInput()` lesen alle sechs Bewegungsaktionen (W/S/A/D/Q/E) nun die `TKeys`-Abfragen über `InputActionState`. D-Pad ist dabei über die bereits hinterlegten vier digitalen Pad-Bindings abgedeckt; direkte redundante D-Pad-Abfragen in diesen Bedingungen entfernt. Analoge Gamepad-Achsen und Trigger (`GetJoyX/Y/Z/RZ`) sowie Timing, Jetpack-Energie, Ducken, Rückwärtslaufen und Blickrichtungsberechnung nicht absichtlich verändert. `GameInput(Game,Keys,Now)` und `main.agc` geben das vorhandene `Keys` weiter. **Hover über Ctrl/Button 9 bleibt unverändert**, ebenso Start, Back, Intro, Pause, Menüs. Gamepad-Select kehrt weiterhin außerhalb der vereinbarten künftigen Pausenregel direkt ins Menü zurück – separate spätere Änderung; nicht bereits als gelöst ansehen. **Nächster Test:** AGK-Compile, danach WASD+Q/E, Jetpack/Flug, Blickrichtung und Gamepad-Stick/D-Pad/Trigger; HTML5 noch ausstehend.
 
 **Schritt 4 implementiert, AGK-Compile und Gameplay-Test offen:** Sechs vorhandene Sonec-Eingabefunktionen (MG, Granatwerfer, Flamme, Plasma, Energieanziehung, Schild) lesen `TKeys` über `InputActionState()` (vier Waffen, weiterhin Dauerfeuer und MG-Burst-Logik) bzw. `InputActionPressed()` (zwei Umschaltaktionen). `GameActionInput()` erhält `Keys` vom in `main.agc` initialisierten lokalen Datensatz und reicht ihn an die sechs Sonec-Funktionen weiter. Standardtasten: J MG, K Granate, L Flamme, I Plasma, U Energieanziehung, O Schild. Bestehende A/B/X/Y/LB/RB-Gamepad-Belegung soll unverändert arbeiten. Bewegung, Start, Back, Menüs, Pause, Hover und Trigger/Achsen blieben unangetastet. **Nächster Test:** AGK-Compile, dann sechs Aktionen mit Tastatur sowie Gamepad-Regression; dies wurde vom Assistenten nicht ausgeführt. Cookie/Optionsmenü bleiben spätere Schritte.
 
