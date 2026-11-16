@@ -254,7 +254,7 @@ function PlasmaBlitzCollideOrbs(PlasmaBlitzList ref as TPlasmaBlitzList,OrbList 
 						//endif
 					endif
 				next k
-				TimeReset(PlasmaBlitzList.PlasmaBlitz[i].CollisionData.CollisionTimer,Now)
+				// Reset after all target classes in PlasmaBlitzCollisionTimerReset().
 			endif
 		endif
 	next i
@@ -265,16 +265,67 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function PlasmaBlitzCollideMine(PlasmaBlitzList ref as TPlasmaBlitzList,MineList ref as TMineList)
-	
+function PlasmaBlitzCollideMine(PlasmaBlitzList ref as TPlasmaBlitzList,MineList ref as TMineList,Now as integer)
+
+	local i as integer
+	local k as integer
+
+	for i = 0 to PlasmaBlitzList.PlasmaBlitz.Length
+		if PlasmaBlitzList.PlasmaBlitz[i].Enabled = TRUE
+			if TimeGet(PlasmaBlitzList.PlasmaBlitz[i].CollisionData.CollisionTimer,Now) > 0
+				for k = 0 to MineList.Mine.Length
+					if MineList.Mine[k].Enabled = TRUE
+						if BoxInBox(PlasmaBlitzList.PlasmaBlitz[i].CollisionData.Position1,PlasmaBlitzList.PlasmaBlitz[i].CollisionData.Position2,MineList.Mine[k].CollisionData.Position1,MineList.Mine[k].CollisionData.Position2)
+							MineList.Mine[k].Health.State = MineList.Mine[k].Health.State - PlasmaBlitzList.PlasmaBlitz[i].BulletData.Damage
+							ColorSet(MineList.Mine[k].SpriteData.Color,255,0,0,255)
+						endif
+					endif
+				next k
+			endif
+		endif
+	next i
+
 endfunction
 
 //----------------------------------------------------------------------
 // 
 //----------------------------------------------------------------------
 
-function PlasmaBlitzCollideChest(PlasmaBlitzList ref as TPlasmaBlitzList,ChestList ref as TChestList)
-	
+function PlasmaBlitzCollideChest(PlasmaBlitzList ref as TPlasmaBlitzList,ChestList ref as TChestList,Now as integer)
+
+	local i as integer
+	local k as integer
+
+	for i = 0 to PlasmaBlitzList.PlasmaBlitz.Length
+		if PlasmaBlitzList.PlasmaBlitz[i].Enabled = TRUE
+			if TimeGet(PlasmaBlitzList.PlasmaBlitz[i].CollisionData.CollisionTimer,Now) > 0
+				for k = 0 to ChestList.Chest.Length
+					if ChestList.Chest[k].Enabled = TRUE
+						if BoxInBox(PlasmaBlitzList.PlasmaBlitz[i].CollisionData.Position1,PlasmaBlitzList.PlasmaBlitz[i].CollisionData.Position2,ChestList.Chest[k].CollisionData.Position1,ChestList.Chest[k].CollisionData.Position2)
+							ChestList.Chest[k].Health.State = ChestList.Chest[k].Health.State - PlasmaBlitzList.PlasmaBlitz[i].BulletData.Damage
+							ColorSet(ChestList.Chest[k].SpriteData.Color,255,0,0,255)
+						endif
+					endif
+				next k
+			endif
+		endif
+	next i
+
+endfunction
+
+// One collision interval for Orbs, Mines and Chests, then reset once.
+function PlasmaBlitzCollisionTimerReset(PlasmaBlitzList ref as TPlasmaBlitzList,Now as integer)
+
+	local i as integer
+
+	for i = 0 to PlasmaBlitzList.PlasmaBlitz.Length
+		if PlasmaBlitzList.PlasmaBlitz[i].Enabled = TRUE
+			if TimeGet(PlasmaBlitzList.PlasmaBlitz[i].CollisionData.CollisionTimer,Now) > 0
+				TimeReset(PlasmaBlitzList.PlasmaBlitz[i].CollisionData.CollisionTimer,Now)
+			endif
+		endif
+	next i
+
 endfunction
 
 //----------------------------------------------------------------------
