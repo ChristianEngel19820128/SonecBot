@@ -12,10 +12,10 @@
 #constant WALKER_TURRET_MIN_WIDTH 0.40
 // Four intervals give five visible widths: 1.00, 0.85, 0.70, 0.55, 0.40.
 #constant WALKER_TURRET_WIDTH_STEPS 4
-// Temporary zero-spread diagnosis. Previous balancing values: 14.0 / 5.0 degrees.
-#constant WALKER_AIM_INITIAL_ERROR 0.0
-#constant WALKER_AIM_MIN_ERROR 0.0
-#constant WALKER_AIM_IMPROVEMENT 2.0
+// New small-spread balancing trial after the successful zero-spread test.
+#constant WALKER_AIM_INITIAL_ERROR 3.0
+#constant WALKER_AIM_MIN_ERROR 1.0
+#constant WALKER_AIM_IMPROVEMENT 0.5
 #constant WALKER_AIM_MAX_SALVOS 5
 // The old fixed diagonal trial is off by default; with no target lock,
 // keep the ordinary horizontal 90/270 degree burst.
