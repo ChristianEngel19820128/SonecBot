@@ -2,7 +2,7 @@
 
 **Stand:** 16. November 2026  
 **Ziel:** HTML5-Pre-Alpha kontrolliert testen und ausgewählten Personen über itch.io-Draft/Secret-URL zugänglich machen; öffentliche Veröffentlichung später entscheiden  
-**Status:** Alpha-Walker abgeschlossen; HTML5-Export/Browsertest/Draft-Upload noch offen, kein öffentlicher Publish geplant  
+**Status:** Alpha-Walker abgeschlossen; **HTML5-Export und erster lokaler Browserstart laut Entwickler bestanden**; weitere Gamepad-/Pause-/Tod-/Neustarttests und Draft-Upload noch offen, kein öffentlicher Publish geplant  
 **Repository:** ChristianEngel19820128/SonecBot  
 **Arbeitsbranch:** `develop`  
 **Letzter lokal getesteter Codecommit:** [`18f92a965810763b552bd96649607c112f966238`](https://github.com/ChristianEngel19820128/SonecBot/commit/18f92a965810763b552bd96649607c112f966238)
@@ -14,6 +14,15 @@
 >
 > **Arbeitsweise:** In kleinen gemeinsam freigegebenen Schritten vorgehen. Nutzer exportiert/kompiliert in lokalem AGK Studio, testet mit lokalem Apache im Browser/Gamepad und pflegt itch.io; Assistent prüft GitHub-Quellen und dokumentiert präzise, ohne lokale Tests zu behaupten. Besonderheiten mit Nachweisstatus festhalten, aktuellen Schritt beenden, erst danach über Folgearbeit bzw. Knowledge-Base-Eintrag entscheiden. Crystals 1.0 ist die bewährte Prozesserfahrung. GitHub-HEAD bei jedem Einstieg neu lesen; Snapshot vor dieser Dokumentationsänderung: `3840bfa545aeec6df6902180415d22efdd58f3ba`.
 > **Prüfkandidat, noch kein bestätigter Bug:** Spawn-Zufallsentscheidungen liegen in `GameDo()` und könnten pro Frame statt pro Zeit erfolgen. Vor jeder Änderung tatsächliche Frequenzen/Spielwirkung bewerten; keine pauschale Balancingmaßnahme.
+
+## Aktueller HTML5-Testbefund (Entwicklermeldung, 16. November 2026)
+
+- **Bestanden:** HTML5-Export mit lokalem AGK Studio; Browserstart über lokalen Apache/XAMPP im gemeinsam entwickelten Frame mit Run-Knopf (vergleichbar mit der geplanten itch.io-Einbettung). Spiel startet.
+- **Darstellung:** Entwickler berichtet flüssiges Gameplay bei 60 Hz mit VSync und auch bei einer kurzen Umstellung auf 75 Hz. Für weitere Tests bleibt die Windows-Bildwiederholrate **60 Hz**. Das sind subjektive lokale Beobachtungen, kein unabhängiger Browser-/Performance-Benchmark.
+- **Noch offen:** genaue exportierte Code-Revision nicht separat bestätigt; Browser-/Controllerkombination, alle Funktionen, Pause, Tod, zwei Neustarts und itch.io-Einbettung nicht als bestanden markieren.
+- **XAMPP-Cache-Hinweis als Knowledge-Base-Kandidat:** Nach Austausch der HTML5-Dateien während des Entwickelns Browser-Cache deaktivieren (z. B. DevTools/Network „Disable cache“, wirksam bei geöffneten DevTools) und neu laden, sonst kann die alte Version weiter erscheinen. Entwicklerbeobachtung, noch kein separater plattformübergreifender Nachweis oder eigenständiger KB-Eintrag.
+- **Nächste fachliche Prüfung (noch kein Änderungsauftrag):** Welche fehlenden Kollisionsabfragen wirken im Test widersprüchlich, wenn Treffer keine Wirkung zeigen? Relevante Aufrufpfade, Absichten und Priorität untersuchen, bevor Code verändert wird. Spawn-Zeitbasis bleibt separater Kandidat.
+- **Arbeitsregel:** Beobachtung festhalten, aktuellen Prüfschritt abschließen, anschließend **gemeinsam** den nächsten Schritt wählen. Kein neues Walker-Polishing.
 
 ## 1. Sofortiger Einstieg im neuen Chat
 
