@@ -191,6 +191,12 @@
 
 **Nachtest:** Neu kompilierter Windows-/HTML5-Build: beim Start volle 43 grüne und ungefähr drei rote Energiebalken, Transparenz 170 auf allen HUD-Balken, lesbare rote Schildspur und kritische Anzeigen, proportionaler Verbrauch. Overload von 1500 würde sieben Slots füllen; normale Startenergie bleibt 4500. Screenshot und optisches Urteil des Entwicklers abwarten. **Nur statische GitHub-Codeprüfung erfolgt, kein eigener Laufzeittest.** itch.io bleibt Draft; Secret-URL-Test weiterhin offen.
 
+## HUD-Transparenz: gemeinsamer Wert 100 zum visuellen Nachtest (16.11.2026)
+
+**Ausdrücklich freigegeben:** Der Entwickler beurteilt die zwei Screenshots des vorherigen Standes mit HUD-Alpha 170 und Overload-Skala 1500 als funktional, wünscht jedoch deutlich weniger HUD-Überlagerung des Spielbildes. In `source/sonec/gui.agc` steht nun zentral `#constant HUD_BAR_ALPHA 100`, und alle zehn `ColorSet(Data.Color,...)`-Aufrufe in `GuiEnergyDraw()` nutzen diese Konstante statt des zuvor fest eingetragenen `170`. Betrifft HP, Schild mit roter Schadensspur, Energie/Overload, MG- und Granatenmunition; keine anderen Sprite-/Grafikkomponenten geändert.
+
+**Unverändert:** Normalenergie 4000, Startenergie 4500, sieben rote Overload-Slots für die Anzeige bis +1500 (beim Start ca. drei rote), alle Energiekosten und Spielmechaniken. **Status: nur statisch geprüft, neuer AGK-/HTML5-Sichttest offen.** Nach frisch gebautem Stand die Lesbarkeit der grünen, roten und blauen Balken vor verschiedenen Spielhintergründen vergleichen. Bei zu wenig Kontrast genügt künftig **eine** Anpassung der Konstante, z. B. auf 120. Kein weiteres Feature parallel.
+
 ## 1. Sofortiger Einstieg im neuen Chat
 
 1. `AGENTS.md`, diese Datei, `PROJECT.md`, die aktuelle `TODO.md` und den aktuellen Status/Übergabeabschnitt in `TECHNICAL.md` lesen. Alte datierte Technikabschnitte sind Historie, keine neue Aufgabenfreigabe.
