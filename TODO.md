@@ -1,6 +1,6 @@
 # SonecBot – Aktuelle Aufgaben und Meilensteine
 
-**Dokumentstatus:** Version 4.9 – Start/Pause an Action-Mapping angeschlossen, Hover-Befund offen  
+**Dokumentstatus:** Version 5.0 – Back nur aus Pause und Pausenhinweise ergänzt; Hover-Befund offen  
 **Stand:** 16. November 2026  
 **Branch:** `develop`  
 **Aktuelles Ziel:** Funktionierende HTML5-Pre-Alpha auf itch.io im **Draft per Secret URL** für eingeladene Community-Tester bereitstellen, Feedback sammeln. **Nicht auf Published umstellen**; den einmaligen öffentlichen Index-Push für einen späteren, noch nicht beschlossenen Release bewahren. Keine Deadline.
@@ -50,6 +50,10 @@
 **Schritt 4 / 4b vom Entwickler erfolgreich getestet:** AGK Studio kompiliert; alle sechs Tastaturaktionen J/K/L/I/U/O sowie die Gamepad-Regressionsaktionen A/B/X/Y/LB/RB laut Entwickler erfolgreich. Weitere Funktionen dadurch noch nicht bestätigt.
 
 **Schritt 5 vom Entwickler erfolgreich getestet:** AGK-Compile und sechs Bewegungstests einschließlich Stick, D-Pad und Trigger bestanden (Entwicklerbericht). Keine neue HTML5-Bestätigung.
+
+**Schritt 6a vollständig vom Entwickler bestätigt:** AGK-Compile erfolgreich, Enter und Gamepad-Start/A im Intro, Enter und Gamepad-Start zum Pausieren/Fortsetzen, keine unbeabsichtigte Sofortpause, keine weiteren Auffälligkeiten (sechs Prüfpunkte bestanden).
+
+**Schritt 6b implementiert, AGK-Compile und Funktionstest offen:** Die alte `GetJoyPressed(...JoystickButtonBack)`-Abfrage in `GameInput()`, die direkt aus dem laufenden Spiel zum Intro führte, ist entfernt. In `main.agc` wird `InputActionPressed(Keys,Game.JoystickIndex,ACTION_BACK)` nur bei `Game.IsPause = TRUE` ausgewertet. Backspace/Select setzt dann `Game.IsLost = TRUE` und `Game.IsPause = FALSE`; im selben Durchlauf werden keine Game-Updates/Draws ausgeführt. Back hat Vorrang vor gleichzeitigem Start. Unter PAUSE stehen jetzt die Zeilen `ENTER / START - RESUME` und `BACKSPACE / SELECT - MAIN MENU`. Restliche Menü-/Hover-/Action-Logik nicht geändert. **Nächster Schritt:** AGK-Compile und Test: Backspace und Gamepad-Select im aktiven Spiel ohne Wirkung; beide aus Pause führen zum Menü; Enter/Start pausieren und setzen weiter fort; Menü-Neustart funktioniert, Hinweise lesbar. Nicht als bereits getestet markieren.
 
 **Schritt 6a implementiert, AGK-Compile/Test offen:** In `intro.agc` nimmt `IntroDo()` jetzt `Keys ref as TKeys` an und verwendet `InputActionPressed(...ACTION_START)` für Enter/Gamepad-Start; die zusätzliche Gamepad-A-Bestätigung bleibt bestehen. `main.agc` verwendet dieselbe Action für Pause/Fortsetzen und reicht `Keys` ins Intro durch. Der Intro-/Spielzustandszweig bleibt getrennt (keine absichtliche Sofortpause nach Start). **Noch nicht geändert:** Backspace/Select (alter Select-Menüsprung während aktivem Spiel besteht weiterhin), Hover, Menünavigation, Optionsmenü, Cookie. **Nächster einzelner Test:** AGK-Compile; Enter im Menü, Gamepad Start/A im Menü, Enter und Start zum Pausieren/Fortsetzen, keine Doppelauslösung.
 
