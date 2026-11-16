@@ -31,8 +31,8 @@ Der lokal getestete Code-Referenzcommit ist [`18f92a965810763b552bd96649607c112f
 - [x] **HTML5-Export lokal erstellt (Entwicklermeldung, 16.11.2026).** Export gelang; genaue exportierte Code-Revision/ZIP hier nicht separat geprüft.
 - [x] **Erster lokaler Browserstart:** Über lokalen Apache/XAMPP und vorhandenen Run-Frame startet das Spiel laut Entwickler. Audio, alle Assets und Eingaben damit **noch nicht einzeln bestätigt**.
 - [x] **HTML5-Gamepad-Funktionstest (Entwicklermeldung):** Xbox-kompatibler Controller, Index-1-Workaround (erste Eingabe, eventuell 2–3 s). D-Pad/Analogstick, linke/rechte Trigger für Rückwärtsbewegung, L1 Energieanziehung, rechter Schulterbutton Schild, X Flammenwerfer, Y Plasma-Blitz, A Maschinengewehr, B Granatwerfer, Start Pause – laut Entwickler alle funktionsfähig. **Bezeichnung geklärt:** „R2 Schild“ war ein Schreibfehler; Schild RB/R1, untere Trigger LT/L2 und RT/R2 für Rückwärtsbewegung. Tastatur ist keine zumutbare Alternative.
-- [ ] **Spielrunde testen:** Bewegung/Jetpack/Waffen/Schild/Energieaktionen, Walker-Kampf, Pause/Fortsetzen, Tod und mindestens zwei Neustarts.
-- [ ] **Gameplay-Smoketest vervollständigen:** Entwickler beobachtet bei 60 Hz/VSync flüssiges Spiel und auch bei kurz getesteten 75 Hz vergleichbar flüssiges Gameplay; weitere Tests bewusst wieder bei 60 Hz. Gamepad-Aktionen und Pause laut Entwickler bestanden; Tod/Mehrfachneustart noch separat nachweisen.
+- [x] **Spielrunde: Kernablauf laut HTML5-Entwicklertest bestanden:** Bewegung/Jetpack/Waffen/Schild-Aktivierung/Energieaktionen, Walker-Kampf, Pause/Fortsetzen sowie mehrfach Tod (Minen und Walker-Beschuss) und **mehrfacher Neustart innerhalb derselben weiterhin laufenden Browsersitzung**. Schild-Wirkung gegen Kugeln bleibt separat defekt; andere Browser/Export-SHA nicht dokumentiert.
+- [x] **Gameplay-Smoketest für aktuelle Browser-Sitzung positiv:** 60 Hz/VSync flüssig (75 Hz kurz ebenfalls), Controlleraktionen und Pause bestätigt. **Tod durch Minen und Walker-Beschuss plus mindestens zwei Neustarts in derselben Sitzung** bestätigt. Langzeit-/andere Browser-/Schild-Detailtests bleiben getrennt.
 - [ ] **HTML5-Beenden einordnen:** ESC/QUIT beenden den Browserbuild nicht; Code schließt HTML5-QUIT bewusst aus, ESC-Helfer ist Windows-spezifisch. UX/Einbettung bewerten, nicht als Enginebug behaupten.
 - [ ] **Fehlende Kollisionsabfragen gezielt untersuchen:** Prüfen, welche vorgesehenen Treffer ohne Reaktion bleiben und ob das die Pre-Alpha spielerisch stört; konkrete Codepfade/Absicht vor Fix prüfen. Noch kein bestätigter einzelner Fehler oder Freigabe für Änderungen.
 - [ ] **Nur konkrete Releaseblocker korrigieren:** kleinster nachvollziehbarer Eingriff mit tatsächlichem Nachtest, kein weiterer Walker-/IK-Umbau.
@@ -80,14 +80,20 @@ Der lokal getestete Code-Referenzcommit ist [`18f92a965810763b552bd96649607c112f
 - [ ] Optionale separate Trefferzonen/Schadensreaktionen für Walker-Körperteile später gemeinsam gestalten. Der aktuelle gezielte Turmtreffer ist eine spielerische Besonderheit und soll jetzt erhalten bleiben.
 - [ ] Nach den Release-Gates ein längeres Gameplayvideo aufnehmen; GifCam kann laut Entwickler unter hoher Speicherlast instabil wirken (RAM-Ursache Vermutung). Eine passende alternative Aufnahme-Lösung erst bei Gelegenheit vergleichen.
 - [ ] Achievements als spätere Spielidee sammeln; derzeit keine implementiert. „Waffenschein für alle“ ist ein Scherz, kein Feature.
-- [ ] Für Pre-Alpha vorrangig HTML5-Tod + mindestens zwei Neustarts prüfen und danach itch.io-Seite im **Draft** per Secret-URL testen; **nicht öffentlich publishen**.
+- [x] HTML5-Tod + mindestens zwei Neustarts im laufenden Browsertest bestätigt. **Weiter offen:** itch.io-Seite im **Draft** per Secret-URL eingebettet testen; **nicht öffentlich publishen**.
 
 ### Neue Spieltest-Befunde: Walker, Energie-HUD, Schild (16.11.2026)
 
 - [ ] **Walker/Sonec-Körperkontakt:** Entwickler beobachtet, dass Walker durch Sonec läuft, statt anzuhalten und zu schießen. `WalkerMove()` berücksichtigt Kisten/Plattformkanten, nicht Sonec als Hindernis; `GameDo()` hat keinen direkten Walker↔Sonec-Körperkollisionspfad. Gewünschtes Verhalten vor Codeänderung genau festlegen, danach isoliert testen; bestehende KI, Fuß-/Turm-IK schützen.
 - [ ] **Energie-HUD-Proportion:** Screenshot/Entwicklerwunsch: grüne Energie plus angemessener roter Overload-Bereich ungefähr so hoch wie HP plus Schild. Ist: in `GuiEnergyDraw()` HP=150 kleine Segmente, Schild bis 25, Energie=20 große Segmente, Overload proportional `EnergyOverload*10/Energy.StateMax`. Nur Darstellung anpassen, keine Ressourcenwerte/Balanceänderung; später eigene Sichtprüfung.
 - [ ] **Schild gegen Walker-Geschosse – technischer Befund:** `ShieldAbsorbDamage()` wird bei Explosion→Sonec verwendet, aber **nicht** bei `BulletCollide()` gegen feindliche Kugeln (direkter Health-Abzug). Aktivierung des Schilds allein genügt nicht. Ziel: im Spiel testen und in kleinem separatem Schritt vorhandene Schutzfunktion in feindlichen Kugeltrefferpfad einbinden, keine neue Schild-/Rüstungslogik entwerfen.
-- [ ] **HTML5-Release-Gate offen:** Entwickler berichtet häufige Spielertode und prüft weiter; Tod und mindestens zwei Neustarts in derselben Browser-Sitzung wurden noch nicht ausdrücklich als erfolgreich abgeschlossen. Ergebnis abwarten, nicht vorwegnehmen.
+- [x] **HTML5-Release-Gate bestanden:** Entwickler bestätigt mehrfachen Tod durch Minen/Walker, mehrfachen Neustart in derselben aktiven Browser-Sitzung, Spiel weiterhin lauffähig. Kein Beleg für Langzeit-Memory-Verhalten oder andere Browser.
+
+### Spätere Helferwarnungen und Minenspawn-Prüfung
+
+- [ ] **Informationsavatar (bereits im Projekt vorgesehen):** zuerst optional nur eine gut sichtbare rote Warnmeldung in Großbuchstaben oben, z. B. „MINEFIELD DETECTED“ bei neu auftauchender Minengruppe. Eventuell Bild/animiertes Porträt, später Sprachausgabe. Warnkriterium, Dauer, Priorität und Spam-Vermeidung vor Implementierung gemeinsam festlegen. Kein aktueller Codeauftrag.
+- [ ] **Minen-Spawns gesondert prüfen:** Entwickler sieht meist gruppenartige Minenvorkommen. In `GameDo()` ist eine Zufallsprüfung pro Update mit anschließend zufälliger Anzahl vorhanden; Frameabhängigkeit ist plausibel, aber noch kein gemessener Defekt. Verteilung, Anzahl, Fairness und mögliche Warn-Signale erst analysieren; keine spontane Änderung.
+- [ ] **Nächsten schmalen Funktionsschritt gemeinsam wählen:** favorisiert vorhandene Schildabsorption für feindliche Walker-Kugeln; anschließend Walker-Sonec-Körperkontakt und Energie-/Overload-HUD. Änderungen getrennt testen.
 
 ## 3. Für später: reguläre Alpha / Fehler nur bei konkreter Reproduktion
 
