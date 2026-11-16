@@ -76,6 +76,7 @@ UseNewDefaultFonts(1)
 
 #include "def_joypad.agc"
 #include "def_keys.agc"
+#include "def_input.agc"
 #include "def_game.agc"
 #include "controls.agc"
 #include "math.agc"
