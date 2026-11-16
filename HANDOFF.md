@@ -15,6 +15,16 @@
 > **Arbeitsweise:** In kleinen gemeinsam freigegebenen Schritten vorgehen. Nutzer exportiert/kompiliert in lokalem AGK Studio, testet mit lokalem Apache im Browser/Gamepad und pflegt itch.io; Assistent prüft GitHub-Quellen und dokumentiert präzise, ohne lokale Tests zu behaupten. Besonderheiten mit Nachweisstatus festhalten, aktuellen Schritt beenden, erst danach über Folgearbeit bzw. Knowledge-Base-Eintrag entscheiden. Crystals 1.0 ist die bewährte Prozesserfahrung. GitHub-HEAD bei jedem Einstieg neu lesen; Snapshot vor dieser Dokumentationsänderung: `3840bfa545aeec6df6902180415d22efdd58f3ba`.
 > **Prüfkandidat, noch kein bestätigter Bug:** Spawn-Zufallsentscheidungen liegen in `GameDo()` und könnten pro Frame statt pro Zeit erfolgen. Vor jeder Änderung tatsächliche Frequenzen/Spielwirkung bewerten; keine pauschale Balancingmaßnahme.
 
+## Post-Pre-Alpha: Hover-Fix 6c – gehaltene Eingabe (16.11.2026, spät)
+
+**6b vollständig vom Entwickler bestätigt:** AGK-Compile und alle acht Testfälle bestanden (Backspace/Select außerhalb Pause ohne Wirkung, aus Pause zum Menü, Enter/Start fortsetzen, Neustart, Hinweise); keine Auffälligkeiten.
+
+**Hover reproduzierbarer Symptombefund:** A+Ctrl oder D+Ctrl → langsames Fallen; Ctrl loslassen bei gehaltenem A → normal; A loslassen bei gehaltenem Ctrl → ungefähr gleiche Höhe; S drücken → weiter langsames Schweben. Code erklärt einen möglichen latched State: `Sonec.State.Hover` wurde nur in seitlichen Bewegungszweigen geändert. Die genaue Bedienungsverbesserung (Space oder Shift; alternative Pad-Taste) ist bewusst **nicht** Teil dieses Fixes.
+
+**Freigegebener minimaler Fix auf `develop` implementiert, AGK-Compile und Test offen:** `source/sonec/sonec.agc` ruft nun genau einmal innerhalb des vorhandenen `Sonec.InputTimer`-Gates `Sonec.State.Hover = InputActionState(Keys,JoystickIndex,ACTION_HOVER)` auf. Die beiden identischen Setzer innerhalb von Links-/Rechtsbewegung wurden entfernt. Ctrl und Pad-Button 9 bleiben in `InputSetDefaultBindings()` unverändert. `SonecMove()` und Multiplikator 0.20, Jetpack, sonstige Bewegung, Waffen und UI unverändert. Die tatsächliche An-/Aus-Reaktion folgt dem bisherigen Eingabe-Timer und der Bewegungsaktualisierung, nicht einer garantierten sofortigen Physikänderung im selben Frame.
+
+**Nächster Test:** Entwickler kompiliert neuen `develop`-HEAD, prüft getrennt Ctrl und Pad-Button 9 während freiem Fall, Loslassen beim A/D-Bewegen und ohne Seitwärtsbewegung, normales Fallen nach Loslassen sowie bisherigen Jetpack/Waffen-Pfad. Erst danach neue Hover-Tastenbelegung besprechen. Keine Änderung an `agk-knowledge-base`, anderen Projekten oder itch.io.
+
 ## Post-Pre-Alpha: Schritt 6b Back nur aus Pause (16.11.2026, spät)
 
 **Schritt 6a vollständig vom Entwickler getestet und bestanden:** AGK-Compile, Enter für Intro-Start, Gamepad-Start und A als Menübestätigung, Enter/Gamepad-Start für Pause/Fortsetzen, keine Sofortpause nach Spielstart; keine Auffälligkeiten. Sechs von sechs Prüfpunkten bestätigt.
