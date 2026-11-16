@@ -120,7 +120,8 @@ function GuiEnergyDraw(Gui ref as TGui,Sonec ref as TSonec,Screen as TSize,Now a
 
 	Data.Position.x = 30
 	max = ceil(EnergyLoad*EnergyBarsMax*1.0/Sonec.Energy.StateMax)
-	maxOverload = ceil(EnergyOverload*OverloadBarsMax*1.0/Sonec.Energy.StateMax)
+	// The first 500 overload units fill the reserved red HUD section.
+	maxOverload = ceil(EnergyOverload*OverloadBarsMax*1.0/500.0)
 	if maxOverload > OverloadBarsMax then maxOverload = OverloadBarsMax
 	
 	ColorSet(Data.Color,0,255,0,255)
