@@ -219,6 +219,18 @@ Vorher wurden nur Orb-Kollisionen implementiert, wobei `PlasmaBlitzCollideOrbs()
 
 **Später:** Gameplayvideo nach den Kern-Releaseprüfungen erwünscht. GifCam-Probleme könnten laut Entwickler mit hohem RAM-Verbrauch bei vielen laufenden Programmen zusammenhängen; Hypothese, keine technische Diagnose. Alternativen gegebenenfalls später prüfen. Achievements sind eine Zukunftsidee, gegenwärtig nicht implementiert.
 
+### Laufender Spieltest: Sonec/Walker-Körperkontakt, HUD-Skalierung und Schildprüfung (16.11.2026)
+
+**Beobachtungen des Entwicklers:** (1) Alpha-Walker läuft durch Sonec statt vor ihm zu stoppen und zu feuern; (2) Energie-HUD soll mit grüner Füllung und angemessenem rotem Overload-Bereich ungefähr auf Höhe von HP+Schild kommen, Screenshot im Gespräch; (3) Schutzwirkung des aktivierten Schilds noch ungeprüft. Mehrfache Tode berichtet; kein ausdrücklicher Abschluss für Tod + zwei Browserneustarts.
+
+**Quelllage `develop` `a313b080`:** `GameDo()` führt `WalkerMoveAll(...PlateList,ChestList,...)` und `SonecCollidePlate(...PlateList,ChestList,...)` getrennt aus. `WalkerMove()` begrenzt Bewegung an Plattformkanten und prüft `WalkerChestDistanceAhead()`, nicht aber Sonec; keine aktive Walker↔Sonec-Körperkontaktbehandlung in der Hauptschleife gesehen. Vor Implementierung gewünschte Stoppdistanz, Fortsetzung nach Verlassen der Zone und Interaktion mit FireState klären; IK und vorhandene Bewegungs-/Turmmechanik nicht refaktorieren.
+
+**HUD:** `gui.agc:GuiEnergyDraw()` nutzt `ceil(Health.State*150/StateMax)` Segmente, Schild `ceil(EnergyShield.State*25/StateMax)`, gewöhnliche Energie `ceil(EnergyLoad*20/Energy.StateMax)` und Overload `ceil(EnergyOverload*10/Energy.StateMax)`. HP/Schild und Energie benutzen unterschiedliche Sprites und vertikale Abstände. Die Anforderung ist proportional **optisch**, keine beabsichtigte Änderung von `Energy.StateMax`, Energieverbrauch, Schildkapazität oder Lebenspunkten. Ein Overload-Maximum für Anzeige ist noch gemeinsam zu spezifizieren.
+
+**Schildbefund:** `shield.agc:ShieldAbsorbDamage()` existiert und wird bei `ExplosionCollideSonec(...Shield,Now)` angewandt. Der aktive `bullet.agc:BulletCollide(BulletList,Sonec)` behandelt `TYPEENEMY` und reduziert unmittelbar `Sonec.Health.State` um `Bullet.BulletData.Damage`, **ohne** `ShieldAbsorbDamage()`. Daher bietet die bestehende Implementierung keinen Kugelschutz; ein A/B-Schadensvergleich im Spiel wurde noch nicht gemeldet. Möglicher kleinster Fix später: signatur- und aufrufseitig Schild/`Now` weiterreichen und den vorhandenen Absorptionswert abziehen. Keine neuen Schutzparameter erfinden.
+
+**Status:** ausschließlich Code gelesen und Befunde dokumentiert, **keinerlei Spielcodeänderung**. Für Release zuerst einzeln priorisieren und nach jeder Änderung unter AGK/HTML5 nachtesten, statt mehrere Änderungen zu bündeln.
+
 ## 7. Übergabe und Historie
 
 [HANDOFF.md](HANDOFF.md) enthält getesteten Referenzcommit, exakte Parameter, Release-Gates, offene Entscheidungen und einen direkten Starttext. Tatsächlichen develop-HEAD neu abfragen, lokale Nutzerdateien/alte Anhänge nicht voraussetzen.
