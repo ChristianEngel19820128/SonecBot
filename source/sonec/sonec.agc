@@ -1050,7 +1050,8 @@ function SonecMove(Sonec ref as TSonec,World ref as TWorld,Screen as TSize,Now a
 		Sonec.ObjectData.Position.x = Sonec.ObjectData.Position.x + Sonec.ObjectData.MoveSpeed.x
 		Sonec.ObjectData.Position.y = Sonec.ObjectData.Position.y + Sonec.ObjectData.MoveSpeed.y
 		
-		if Sonec.State.Hover = TRUE
+		// Active jetpack flight takes priority over the Hover air brake.
+		if Sonec.State.Hover = TRUE and Sonec.State.Fly = FALSE
 			Sonec.ObjectData.MoveSpeed.y = Sonec.ObjectData.MoveSpeed.y * 0.20
 		endif
 		
