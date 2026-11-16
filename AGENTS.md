@@ -19,6 +19,17 @@ The current game is developed in AppGameKit Studio.
 
 **Primary goal:** Produce a stable, playable alpha version before expanding the game with additional features.
 
+## Collaboration and release workflow (confirmed 16 November 2026)
+
+- Work as a team in **small, jointly agreed steps**: inspect the actual GitHub `develop` HEAD, understand the current question, discuss evidence and options, approve the exact change, implement only that scope, and check results together.
+- The owner runs AppGameKit Studio and a local Apache test server on their desktop. **Only the owner can perform and confirm local AGK exports, compiles, browser/gamepad runs and itch.io page changes here.** Assistant code review and static checks are not runtime tests.
+- If an interesting AGK peculiarity appears, record the observation, evidence level and source in the relevant project documentation, **finish the current task step first**, and only then decide whether to investigate or add it to the [AGK Knowledge Base](https://github.com/ChristianEngel19820128/agk-knowledge-base). The Knowledge Base is reusable background knowledge, not an automatic parallel task. The 1.0 release of Crystals provides useful process experience.
+- GitHub repositories can be read as needed for comparisons; write changes remain subject to each repository's permissions and a specific agreement. Do not expand work to another repository automatically.
+- Maintain handoff-ready notes as part of each approved change: actual HEAD/tested revision, what was changed, who tested it and where, verified versus suspected findings, open decisions, and the **single next step**. Before a chat change or context limit, update `HANDOFF.md` and relevant status documents. Never assume prior chat attachments or local files are accessible.
+- Prioritize a playable HTML5 pre-alpha for the AGK community and selected testers, **not a rushed public launch**. The itch.io project page deliberately remains in **Draft**. Its secret URL can be shared with chosen testers; anyone holding that URL may access it. The owner reports that switching to Published provides a one-time discovery/index boost that cannot be regained; **do not publish or suggest changing the visibility without explicit owner approval**. The decision to publish at beta 0.9 or 1.0 is open.
+- itch.io edits and uploads are done manually by the owner. Prepare itch.io texts and public release-facing descriptions in **English Markdown** for copy/paste. The green heart **💚** is the agreed visual identity for GitHub README and itch.io.
+- Do not spend the last release steps on general balance or Walker polish. Investigate potentially frame-driven spawn probabilities as a **hypothesis**, compare options, and change only after an explicit decision and real test.
+
 ## 2. Fundamental rule: investigation first
 
 **The default authorization is READ-ONLY.**
