@@ -79,6 +79,7 @@ UseNewDefaultFonts(1)
 #include "def_input.agc"
 #include "def_game.agc"
 #include "controls.agc"
+#include "input.agc"
 #include "math.agc"
 #include "collision.agc"
 #include "color.agc"
@@ -123,6 +124,10 @@ SetTextBold(Pause,1)
 SetTextColor(Pause,0,255,255,222)
 SetTextPosition(Pause,vx/2,vy/2)
 SetTextSize(Pause,30)
+
+// Prepared binding data; existing gameplay input is not switched over yet.
+local Keys as TKeys
+InputSetDefaultBindings(Keys)
 
 local Intro as TIntro
 local Game as TGame
