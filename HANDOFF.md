@@ -135,13 +135,21 @@
 
 **Weitere Release-Gate:** itch.io **Draft**-Upload und Secret-URL-Browser-Einbettung weiterhin offen; niemals Published aktivieren.
 
-## Aktueller enger Code-Schritt: Schild absorbiert feindliche Walker-Kugeln (16.11.2026)
+## Abgeschlossener enger Code-Schritt: Schild absorbiert feindliche Walker-Kugeln (16.11.2026; lokal bestanden)
 
 **Freigabe:** Nach bestandenem HTML5-Tod-/Mehrfachneustart-Test haben wir vereinbart, die drei Befunde nacheinander zu bearbeiten; der Entwickler schließt die bisherige Browsersitzung. Schritt 1 **Schild gegen Walker-Geschosse** ist auf `develop` implementiert, aber **noch nicht lokal kompiliert oder im Browser getestet**. `bullet.agc:BulletCollide()` erhält jetzt zusätzlich `Shield ref as TShield, Now as integer` und verwendet im `TYPEENEMY`-Trefferpfad `Damage - ShieldAbsorbDamage(Shield,Sonec,Damage,Now)`; `game.agc:GameDo()` reicht `Game.Shield,Now` weiter. Die bereits für Explosionen genutzte `ShieldAbsorbDamage()` bleibt unverändert. Auch Bullet-Geometrie, Waffenwerte, Schildenergie-Kosten, Walker-Animation und HUD sind unverändert.
 
 **Konkreter Nachtest:** Neu kompilierter Windows-/HTML5-Build des aktuellen `develop`: (1) Ohne Schild bei Walker-Beschuss normale Lebensabnahme. (2) Bei geladenem/aktivem Schild gleicher Feindbeschuss: weniger direkte HP-Abnahme, sichtbare Schildladungs-Abnahme/rote Schadensspur. (3) Entladener oder deaktivierter Schild bietet keinen Kugelschutz; (4) Schild gegen Explosionen funktioniert weiterhin; (5) Spiel startet normal, keine AGK-Signatur- oder Laufzeitprobleme. Schutz ist proportional und bis zum bisherigen `SHIELD_MAX_PROTECTION_PERCENT`-Wert begrenzt, **keine volle Unverwundbarkeit** erwarten. Dies ist kein eigener Laufzeittest des Assistenten.
 
 **Erst nach positiver Rückmeldung** Punkt 2 (Walker hält vor Sonec an) gemeinsam detaillieren und dann als eigenen Schritt ändern; Punkt 3 (Energie-/Overload-HUD-Proportion) bleibt offen. Informationsavatar/Minenwarnung sind später. itch.io bleibt **Draft**, Secret-URL-Test ist noch offen.
+
+## Schild gegen Walker-Geschosse: Entwicklertest vollständig bestanden (16.11.2026)
+
+**Bestätigung nach aktuellem Codepatch:** Entwickler meldet „alle tests als bestanden markiert“. Walker verursacht ohne aktiven Schild Gesundheitsschaden; bei aktivem Schild wird dessen Ladung unter sichtbarer **roter Schadensspur über der Schildanzeige** abgebaut, bis sie verbraucht ist. Die vereinbarte Testliste (Schild an/aus/leer, Explosionsregression) gilt nach Nutzerbestätigung insgesamt als bestanden; nicht einzelne, ungenannte Messzahlen behaupten. Änderungen in `bullet.agc` und `game.agc` sind damit **lokal akzeptiert**. Kein weiterer Schildcode notwendig.
+
+**Zusätzliche emergente Spielsituation:** Ein Walker traf eine Mine mit seinem Schuss und wurde durch die Explosion selbst zerstört. Vom Entwickler beobachtet und humorvoll berichtet; derzeit als plausible **neutrale Kettenreaktion/Gameplay-Ereignis**, **kein bestätigter Bug**. Kein sofortiger Eingriff in Explosionen oder Fraktionen.
+
+**Nächster bereits vereinbarter Punkt:** Walker soll **vor Sonec stoppen, nicht durch ihn hindurchlaufen und weiter feuern können**. Vor Umsetzung den vorhandenen Walker-Stoppmechanismus an Kisten und `FireState` ansehen und eine minimale Erkennung für Sonec diskutieren; IK, Turm-/Schussverhalten und die erfolgreiche Kollisionsmatrix erhalten. Danach Energie-/Overload-HUD separat bearbeiten. Für den Walker-Körperkontakt liegt noch **keine** Codeänderung vor.
 
 ## 1. Sofortiger Einstieg im neuen Chat
 
