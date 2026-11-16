@@ -125,7 +125,8 @@ SetTextColor(Pause,0,255,255,222)
 SetTextPosition(Pause,vx/2,vy/2)
 SetTextSize(Pause,30)
 
-// Prepared binding data; existing gameplay input is not switched over yet.
+// Prepared binding data; six combat/energy actions now use these mappings.
+// Movement, menus and pause still use their existing input routines.
 local Keys as TKeys
 InputSetDefaultBindings(Keys)
 
@@ -234,7 +235,7 @@ repeat
 		endif
 		if Game.IsPause = FALSE
 			GameInput(Game,CurrentNow)
-			GameActionInput(Game,CurrentNow)
+			GameActionInput(Game,Keys,CurrentNow)
 			GameDo(Game,CurrentNow)		
 			GameAnimate(Game,CurrentNow)
 		endif		
