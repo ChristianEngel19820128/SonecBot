@@ -168,92 +168,92 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Joyst
 		endif
 	else
 		// Analog menu navigation: one step per stick deflection, rearmed at neutral.
-	AnalogY = GetJoyY(JoystickIndex)
-	if AnalogY > -0.3 and AnalogY < 0.3
-		Intro.AnalogMenuHeld = FALSE
-	else
-		if Intro.AnalogMenuHeld = FALSE
-			if AnalogY < -0.5
-				AnalogStep = -1
-				Intro.AnalogMenuHeld = TRUE
-			endif
-			if AnalogY > 0.5
-				AnalogStep = 1
-				Intro.AnalogMenuHeld = TRUE
-			endif
-		endif
-	endif
-	
-	if TimeGet(Intro.TimerHelp,Now) > 0
-		IntroGambleHelp(Intro)
-		TimeReset(Intro.TimerHelp,Now)
-	endif
-	
-	if InputActionPressed(Keys,JoystickIndex,ACTION_MOVE_UP) = 1 or GetKeyPressed(KEY_UP) = 1 or AnalogStep = -1
-		if Intro.SelctionPos <= 1
-			Intro.SelctionPos = 3
+		AnalogY = GetJoyY(JoystickIndex)
+		if AnalogY > -0.3 and AnalogY < 0.3
+			Intro.AnalogMenuHeld = FALSE
 		else
-			dec Intro.SelctionPos
+			if Intro.AnalogMenuHeld = FALSE
+				if AnalogY < -0.5
+					AnalogStep = -1
+					Intro.AnalogMenuHeld = TRUE
+				endif
+				if AnalogY > 0.5
+					AnalogStep = 1
+					Intro.AnalogMenuHeld = TRUE
+				endif
+			endif
 		endif
-		PlaySound(Sound.MenuSound)
-	endif
-	
-		if InputActionPressed(Keys,JoystickIndex,ACTION_MOVE_DOWN) = 1 or GetKeyPressed(KEY_DOWN) = 1 or AnalogStep = 1
-		if Intro.SelctionPos >= 3
-			Intro.SelctionPos = 1
-		else
-			inc Intro.SelctionPos
+		
+		if TimeGet(Intro.TimerHelp,Now) > 0
+			IntroGambleHelp(Intro)
+			TimeReset(Intro.TimerHelp,Now)
 		endif
-		PlaySound(Sound.MenuSound)
-	endif
-	
-	select Intro.SelctionPos
-		case 1
-			SetTextColor(Intro.TextStart,0,255,255,222)
-			SetTextColor(Intro.TextOption,255,255,255,111)
-			SetTextColor(Intro.TextEnd,255,255,255,111)
-			SetTextSize(Intro.TextStart,32)
-			SetTextSize(Intro.TextOption,28)
-			SetTextSize(Intro.TextEnd,28)
-		endcase
-		case 2
-			
-			SetTextColor(Intro.TextStart,255,255,255,111)
-			SetTextColor(Intro.TextOption,0,255,255,222)
-			SetTextColor(Intro.TextEnd,255,255,255,111)
-			SetTextSize(Intro.TextStart,28)
-			SetTextSize(Intro.TextOption,32)
-			SetTextSize(Intro.TextEnd,28)
-		endcase
-		case 3
-			SetTextColor(Intro.TextStart,255,255,255,111)
-			SetTextColor(Intro.TextOption,255,255,255,111)
-			SetTextColor(Intro.TextEnd,0,255,255,222)
-			SetTextSize(Intro.TextStart,28)
-			SetTextSize(Intro.TextOption,28)
-			SetTextSize(Intro.TextEnd,32)
-		endcase
-	endselect
-	
-	if InputActionPressed(Keys,JoystickIndex,ACTION_START) = 1 or GetJoyPressed(JoystickIndex,joystickButtonA) = 1
+		
+		if InputActionPressed(Keys,JoystickIndex,ACTION_MOVE_UP) = 1 or GetKeyPressed(KEY_UP) = 1 or AnalogStep = -1
+			if Intro.SelctionPos <= 1
+				Intro.SelctionPos = 3
+			else
+				dec Intro.SelctionPos
+			endif
+			PlaySound(Sound.MenuSound)
+		endif
+		
+			if InputActionPressed(Keys,JoystickIndex,ACTION_MOVE_DOWN) = 1 or GetKeyPressed(KEY_DOWN) = 1 or AnalogStep = 1
+			if Intro.SelctionPos >= 3
+				Intro.SelctionPos = 1
+			else
+				inc Intro.SelctionPos
+			endif
+			PlaySound(Sound.MenuSound)
+		endif
+		
 		select Intro.SelctionPos
 			case 1
-				Value = TRUE
+				SetTextColor(Intro.TextStart,0,255,255,222)
+				SetTextColor(Intro.TextOption,255,255,255,111)
+				SetTextColor(Intro.TextEnd,255,255,255,111)
+				SetTextSize(Intro.TextStart,32)
+				SetTextSize(Intro.TextOption,28)
+				SetTextSize(Intro.TextEnd,28)
 			endcase
 			case 2
-				Intro.IsOption = TRUE
+				
+				SetTextColor(Intro.TextStart,255,255,255,111)
+				SetTextColor(Intro.TextOption,0,255,255,222)
+				SetTextColor(Intro.TextEnd,255,255,255,111)
+				SetTextSize(Intro.TextStart,28)
+				SetTextSize(Intro.TextOption,32)
+				SetTextSize(Intro.TextEnd,28)
 			endcase
 			case 3
-				Intro.IsQuit = TRUE
+				SetTextColor(Intro.TextStart,255,255,255,111)
+				SetTextColor(Intro.TextOption,255,255,255,111)
+				SetTextColor(Intro.TextEnd,0,255,255,222)
+				SetTextSize(Intro.TextStart,28)
+				SetTextSize(Intro.TextOption,28)
+				SetTextSize(Intro.TextEnd,32)
 			endcase
 		endselect
-		PlaySound(Sound.SelectSound)
-	endif
-	
-	if GetPointerPressed()
 		
-	endif
-	
+		if InputActionPressed(Keys,JoystickIndex,ACTION_START) = 1 or GetJoyPressed(JoystickIndex,joystickButtonA) = 1
+			select Intro.SelctionPos
+				case 1
+					Value = TRUE
+				endcase
+				case 2
+					Intro.IsOption = TRUE
+				endcase
+				case 3
+					Intro.IsQuit = TRUE
+				endcase
+			endselect
+			PlaySound(Sound.SelectSound)
+		endif
+		
+		if GetPointerPressed()
+			
+		endif
+		
 	endif
 endfunction Value
 
