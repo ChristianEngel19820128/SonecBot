@@ -231,6 +231,14 @@ Vorher wurden nur Orb-Kollisionen implementiert, wobei `PlasmaBlitzCollideOrbs()
 
 **Status:** ausschließlich Code gelesen und Befunde dokumentiert, **keinerlei Spielcodeänderung**. Für Release zuerst einzeln priorisieren und nach jeder Änderung unter AGK/HTML5 nachtesten, statt mehrere Änderungen zu bündeln.
 
+### HTML5-Game-over und Neustart: praktischer Entwicklertest bestanden (16.11.2026)
+
+Entwickler bestätigt mehrfachen Tod **innerhalb derselben HTML5-Browsersitzung** durch Minen und Walker-Beschuss und danach mehrfaches Wiederauferstehen durch Neustart. Die Sitzung läuft weiterhin; Pause funktioniert. Der geforderte grundlegende Tod-/Mindestens-zwei-Neustarts-Smoke-Test ist damit **positiv**. Nicht nachgewiesen sind alle Randfälle, Speicherlecks bei langen Sitzungen, andere Browser und der exakte exportierte Code-SHA. Keine eigenen Browser-Laufzeittests des Assistenten.
+
+**Spätere Informationsavatar-Umsetzung:** Schon als `PROJECT.md`-Idee vorgesehen. Neuer Vorschlag des Entwicklers: zuerst ein roter Warntext in Versalien am oberen Bildschirmrand, Beispiel „MINEFIELD DETECTED“ bei gruppenweise eintreffenden Minen; eventuell Grafik, später Sprachausgabe. Kein aktueller Implementierungsauftrag. Für Warntrigger Spawn-Ereignisse und Duplikatunterdrückung prüfen. `GameDo()` hat eine `random(0,10000) < 5`-Prüfung pro Update und anschließend `for i = 0 to random(0,15)` zum Hinzufügen mehrerer Minen, solange `MineCountAll < 15`; dies stützt die Rudel-Beobachtung und die Hypothese möglicher FPS-Abhängigkeit, ersetzt aber noch keine Messung. Nicht ungeprüft verändern.
+
+**Weitere priorisierte Punkte:** Feindkugeln umgehen `ShieldAbsorbDamage()`, daher zuerst enge Schadenspfadkorrektur mit A/B-Test erwägen; danach Walker-Sonec-Überlappung und optische HUD-Höhenskalierung getrennt. Noch keine Spielcodeänderung. itch.io-Draft/Secret-URL-Test weiterhin offen, öffentliche Veröffentlichung nicht freigegeben.
+
 ## 7. Übergabe und Historie
 
 [HANDOFF.md](HANDOFF.md) enthält getesteten Referenzcommit, exakte Parameter, Release-Gates, offene Entscheidungen und einen direkten Starttext. Tatsächlichen develop-HEAD neu abfragen, lokale Nutzerdateien/alte Anhänge nicht voraussetzen.
