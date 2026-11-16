@@ -15,6 +15,16 @@
 > **Arbeitsweise:** In kleinen gemeinsam freigegebenen Schritten vorgehen. Nutzer exportiert/kompiliert in lokalem AGK Studio, testet mit lokalem Apache im Browser/Gamepad und pflegt itch.io; Assistent prüft GitHub-Quellen und dokumentiert präzise, ohne lokale Tests zu behaupten. Besonderheiten mit Nachweisstatus festhalten, aktuellen Schritt beenden, erst danach über Folgearbeit bzw. Knowledge-Base-Eintrag entscheiden. Crystals 1.0 ist die bewährte Prozesserfahrung. GitHub-HEAD bei jedem Einstieg neu lesen; Snapshot vor dieser Dokumentationsänderung: `3840bfa545aeec6df6902180415d22efdd58f3ba`.
 > **Prüfkandidat, noch kein bestätigter Bug:** Spawn-Zufallsentscheidungen liegen in `GameDo()` und könnten pro Frame statt pro Zeit erfolgen. Vor jeder Änderung tatsächliche Frequenzen/Spielwirkung bewerten; keine pauschale Balancingmaßnahme.
 
+## Post-Pre-Alpha: Schritt 6b Back nur aus Pause (16.11.2026, spät)
+
+**Schritt 6a vollständig vom Entwickler getestet und bestanden:** AGK-Compile, Enter für Intro-Start, Gamepad-Start und A als Menübestätigung, Enter/Gamepad-Start für Pause/Fortsetzen, keine Sofortpause nach Spielstart; keine Auffälligkeiten. Sechs von sechs Prüfpunkten bestätigt.
+
+**Schritt 6b auf `develop` umgesetzt, AGK-Compile/Spieltest steht noch aus:** In `game.agc` wurde die direkte Gamepad-Back-Abfrage aus `GameInput()` entfernt. In `main.agc` wird `InputActionPressed(...ACTION_BACK)` nur ausgewertet, wenn `Game.IsPause = TRUE`. Beim Drücken von Backspace bzw. Select im Pausenzustand wird `Game.IsLost = TRUE` gesetzt und `Game.IsPause = FALSE`; Back hat bei gleichzeitiger Start-/Back-Eingabe Vorrang. Es wird in diesem Pfad keine Spiellogik oder GameDraw mehr ausgeführt, Intro erscheint im nächsten Durchlauf. Unter der PAUSE-Überschrift werden die neuen Texte `ENTER / START - RESUME` und `BACKSPACE / SELECT - MAIN MENU` gezeichnet. Der Intro-Gamepad-A-Confirm, Waffen, Bewegung und Hover blieben unverändert. **Kein bestätigter AGK-Compile oder HTML5-/Gamepad-Test dieses neuen Stands.**
+
+**Hover-Beobachtung weiterhin separat offen:** Ctrl/Hover scheint laut Entwickler gelegentlich einzurasten, bis Down gedrückt wird. Nicht mit Back-Patch vermischen, Ursache unbestätigt. Gemeinsame Test-Rückmeldungen mit optionalem Freitext und explizitem Senden-Button, nicht durch Abhaken auslösen.
+
+**Nächster einzeln zu testender Schritt:** Nutzer kompiliert den aktuellen `develop`-HEAD und bestätigt Backspace/Select ohne Wirkung im laufenden Spiel, Backspace/Select aus Pause ins Intro, Pausenhinweise und funktionierenden Neustart aus Intro. Danach erst Hover-Diagnose/Schritt 6c gesondert freigeben.
+
 ## Post-Pre-Alpha: Schritt 6a Start/Pause (16.11.2026, spät)
 
 **Schritt 5 bestätigt:** Entwickler meldet erfolgreichen AGK-Compile und sechs Bewegungstests inklusive Stick, D-Pad und Trigger. Neues HTML5-Ergebnis bisher nicht berichtet.
