@@ -135,6 +135,14 @@
 
 **Weitere Release-Gate:** itch.io **Draft**-Upload und Secret-URL-Browser-Einbettung weiterhin offen; niemals Published aktivieren.
 
+## Aktueller enger Code-Schritt: Schild absorbiert feindliche Walker-Kugeln (16.11.2026)
+
+**Freigabe:** Nach bestandenem HTML5-Tod-/Mehrfachneustart-Test haben wir vereinbart, die drei Befunde nacheinander zu bearbeiten; der Entwickler schließt die bisherige Browsersitzung. Schritt 1 **Schild gegen Walker-Geschosse** ist auf `develop` implementiert, aber **noch nicht lokal kompiliert oder im Browser getestet**. `bullet.agc:BulletCollide()` erhält jetzt zusätzlich `Shield ref as TShield, Now as integer` und verwendet im `TYPEENEMY`-Trefferpfad `Damage - ShieldAbsorbDamage(Shield,Sonec,Damage,Now)`; `game.agc:GameDo()` reicht `Game.Shield,Now` weiter. Die bereits für Explosionen genutzte `ShieldAbsorbDamage()` bleibt unverändert. Auch Bullet-Geometrie, Waffenwerte, Schildenergie-Kosten, Walker-Animation und HUD sind unverändert.
+
+**Konkreter Nachtest:** Neu kompilierter Windows-/HTML5-Build des aktuellen `develop`: (1) Ohne Schild bei Walker-Beschuss normale Lebensabnahme. (2) Bei geladenem/aktivem Schild gleicher Feindbeschuss: weniger direkte HP-Abnahme, sichtbare Schildladungs-Abnahme/rote Schadensspur. (3) Entladener oder deaktivierter Schild bietet keinen Kugelschutz; (4) Schild gegen Explosionen funktioniert weiterhin; (5) Spiel startet normal, keine AGK-Signatur- oder Laufzeitprobleme. Schutz ist proportional und bis zum bisherigen `SHIELD_MAX_PROTECTION_PERCENT`-Wert begrenzt, **keine volle Unverwundbarkeit** erwarten. Dies ist kein eigener Laufzeittest des Assistenten.
+
+**Erst nach positiver Rückmeldung** Punkt 2 (Walker hält vor Sonec an) gemeinsam detaillieren und dann als eigenen Schritt ändern; Punkt 3 (Energie-/Overload-HUD-Proportion) bleibt offen. Informationsavatar/Minenwarnung sind später. itch.io bleibt **Draft**, Secret-URL-Test ist noch offen.
+
 ## 1. Sofortiger Einstieg im neuen Chat
 
 1. `AGENTS.md`, diese Datei, `PROJECT.md`, die aktuelle `TODO.md` und den aktuellen Status/Übergabeabschnitt in `TECHNICAL.md` lesen. Alte datierte Technikabschnitte sind Historie, keine neue Aufgabenfreigabe.
