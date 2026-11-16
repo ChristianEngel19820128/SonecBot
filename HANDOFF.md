@@ -91,7 +91,7 @@
 
 **Referenzpflege:** Der im Dokumentkopf verlinkte Hash `18f92a9` ist der historische **Walker-Abschlussstand**, nicht der aktuelle Branch-HEAD und nicht der neueste Kollisions-Build. Den tatsächlichen `develop`-HEAD bei jedem Einstieg erneut abfragen; aktueller getesteter lokaler Export-Commit für den Granatentest wurde nicht separat festgehalten.
 
-## Aktueller Einzeltest: Explosion → Alpha-Walker (16. November 2026)
+## Vorheriger Einzeltest: Explosion → Alpha-Walker (16. November 2026; lokal positiv)
 
 **Gemeinsam freigegeben und auf `develop` implementiert, AGK-/HTML5-Nachtest offen.** Eine Explosion soll alle getroffenen Walker über die **bestehende Turm-AABB** beschädigen; der Explosionsradius wird als Kreis gegen den nächstgelegenen Punkt dieser Box geprüft. Ergänzt: `LastWalkerHitMs[-1]` in `TExplosion` (`def_game.agc`), Initialisierung in `ExplosionNew()`, neue `ExplosionCollideWalkers()` in `explosion.agc` und Aufruf in `GameDo()` nach den bisherigen Explosion-Mine-Kollisionen. Jeder Walker hat pro Explosion einen eigenen Trefferzeitstempel, entsprechend den bestehenden Kisten/Orb/Minen-Pfaden. Die aktuellen Konfigurationen **30 Schaden je mindestens 100 ms** sowie die vorhandenen Radien und Animationen bleiben unverändert. Vorhandenen roten Turm-Trefferflash wiederverwenden; keine neue Schadensklasse und keine Walker-IK-/KI-Änderung.
 
@@ -100,6 +100,16 @@
 **Spielgefühl bewahren:** Entwickler berichtet, dass SonecBot nun als Spiel mit Gegnern und Gegenwehr bereits Spaß macht und nicht mehr nur eine technische Demo ist. In diesem Test die bestehende Spielmechanik erhalten; erst nach lokalem Nachtest gemeinsam entscheiden, ob Explosionen zu stark oder zu schwach wirken. Das itch.io-Projekt bleibt Draft.
 
 **Nächster Schritt:** Besitzer testet diesen einen Explosionspfad und meldet sichtbare Wirkung/Regressionsstatus. Keine weiteren Änderungen bis zur Auswertung.
+
+## Erster Waffen-Kollisionsdurchgang abgeschlossen – Entwicklertest (16. November 2026)
+
+**Letzter Test erfolgreich:** Entwickler meldet zum neuen `ExplosionCollideWalkers()`-Pfad ausdrücklich „sprengtest erfolgreich“: **direkter Granatentreffer und passive/nahe Explosion zerstören den Walker**. Damit sind die ursprünglich betrachteten Trefferpfade Maschinengewehr, Flammenwerfer, Plasma-Blitz, direkter Granatenaufprall und Explosion gegen Walker eingebaut; die schrittweisen lokalen Tests waren positiv. Für den jüngsten Explosionsversuch wurde Windows/HTML5 **nicht separat** benannt; keine eigenen Laufzeitprüfungen des Assistenten und kein vollständiger Regressionstest aller Zielkombinationen behaupten. **Keine weitere Kollisions- oder Balanceänderung als Folge dieses Erfolgs.**
+
+**Spielgefühl wichtig:** Walker prägt das Spiel laut Entwickler besonders: nicht generischer Gegner, unter Umständen leichter zu zerstören als große Kisten, aber der Spieler muss die **Turm-Trefferzone** erreichen. Das bestehende Spiel mit echter Gegenwehr macht bereits Spaß. Unterschiedliche Trefferzonen je Walker-Körperteil waren früher angedacht, sind **Zukunftsdesign** und ausdrücklich kein Pre-Alpha-Umbau.
+
+**Später, nicht jetzt:** Entwickler möchte nach Abschluss der ausstehenden Releaseprüfungen ein längeres Gameplayvideo versuchen. GifCam streikt mitunter, nach Einschätzung des Entwicklers eventuell wegen zu hoher RAM-Auslastung bei vielen gleichzeitig laufenden Programmen (Vermutung, nicht verifiziert). Eine Alternative bei Gelegenheit recherchieren, ohne die laufende Releaseprüfung aufzuhalten. Achievements existieren noch nicht; als mögliche spätere Erweiterung notiert. Humorvolle „Waffenschein für alle freigeschaltet“-Bemerkung ist **kein implementiertes Achievement**.
+
+**Nächster gemeinsamer Fokus:** Wieder die separaten HTML5-Pre-Alpha-Release-Gates priorisieren (insbesondere Tod und mindestens zwei Neustarts; anschließend itch.io **Draft**/Secret-URL, nicht Published), ohne neue Systeme zu beginnen. Erst Umfang und Teststatus zusammen klären.
 
 ## 1. Sofortiger Einstieg im neuen Chat
 
