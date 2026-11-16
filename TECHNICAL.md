@@ -161,6 +161,14 @@ Lokaler Apache/XAMPP-Browsertest mit Xbox-/kompatiblem Controller, 60 Hz/VSync a
 
 **Bestand der übrigen aktiven Pfade (Codeprüfung am vorherigen HEAD `ff37a326`):** Maschinengewehr gegen Orb/Mine/Kiste/Walkerturm; Flamme gegen Orb/Mine/Kiste; direkte Granate gegen Orb/Mine/Kiste/Plattform (Explosion bei Einschlag); Explosion gegen Sonec/Orb/Mine/Kiste; Plasma-Blitz gegen Orbs. `PlasmaBlitzCollideMine` und `PlasmaBlitzCollideChest` waren leere Funktionskörper. Noch nicht umgesetzte Walker-Pfade für Granate/Explosion/Plasma-Blitz sowie weitere Ziele bleiben Folgeaufgaben. Jede vorhandene Funktion gegen ihren tatsächlichen Aufrufpfad prüfen; bloße Existenz ist kein aktiver Treffermechanismus.
 
+### Plasma-Blitz → Mine/Kiste: kleiner Folgepatch, Browser-Test offen (16. November 2026)
+
+Vorher wurden nur Orb-Kollisionen implementiert, wobei `PlasmaBlitzCollideOrbs()` den bestehenden 50-ms-`CollisionTimer` am Ende bereits zurücksetzte. Nun prüfen drei einzelne Funktionen jeweils dieselbe `TimeGet(...,Now)>0`-Bedingung: `PlasmaBlitzCollideOrbs`, `PlasmaBlitzCollideMine`, `PlasmaBlitzCollideChest`. Der Reset wird **einmal nach diesen drei Aufrufen** in `PlasmaBlitzCollisionTimerReset()` ausgeführt. Die Reihenfolge ist bewusst und Teil dieses kleinen Patches; bei späteren zusätzlichen Zielklassen auch die Reset-Reihenfolge berücksichtigen. Minen und Kisten nutzen ihre bereits aktualisierten `CollisionData.Position1/Position2`, `BoxInBox`, vorhandenen `BulletData.Damage` und Rotfärbung; Blitz wird wie beim Orb-Treffer nicht gelöscht.
+
+**Status:** Nur anhand der GitHub-Quelle auf `develop` geprüft; kein eigener AGK-Compile/Browser-Test. Zu prüfen: Kompilierung, Mine/Kiste tatsächlich treffbar und zerstörbar, Orb-Verhalten unverändert, korrekter 50-ms-Schadensrhythmus und keine neuen Timing-/Mehrfachtrefferprobleme.
+
+**Keine Balanceänderung:** Entwickler beschreibt Plasma-Blitz als aufzuladende, anschließend entladene starke Waffe mit vermutlich hohen Energiekosten; Flammenwerfer zehrt ebenfalls stark an Energie, die zum Fliegen benötigt wird. Qualitative Meldung, noch keine quantitativ geprüfte Balance; getrennt von Kollisionsimplementierung behandeln.
+
 ## 7. Übergabe und Historie
 
 [HANDOFF.md](HANDOFF.md) enthält getesteten Referenzcommit, exakte Parameter, Release-Gates, offene Entscheidungen und einen direkten Starttext. Tatsächlichen develop-HEAD neu abfragen, lokale Nutzerdateien/alte Anhänge nicht voraussetzen.
