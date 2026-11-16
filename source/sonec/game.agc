@@ -275,6 +275,7 @@ function GameDo(Game ref as TGame,Now as integer)
 	FlameCollideOrbs(Game.FlameList,Game.OrbList)
 	FlameCollideMine(Game.FlameList,Game.MineList)
 	FlameCollideChest(Game.FlameList,Game.ChestList)
+	FlameCollideWalkers(Game.FlameList,Game.WalkerList,Now)
 	
 	BulletMoveall(Game.BulletList,Game.World,Now)
 	BulletCollide(Game.BulletList,Game.Sonec)
