@@ -127,7 +127,7 @@ Hochhausbewegung standardmäßig positiver dt-Pfad (B); Plattformbewegung im Nor
 
 1. Nutzer erstellt/bereitstellt aktuellen AGK-HTML5-Export; bisher kein ZIP/Browserbuild im Chat.
 2. Browserstart mit Assets, Intro/Start und Audio prüfen.
-3. Gamepad-Index 1 praktisch nachweisen. IntroDo und Pause verwenden Gamepad; Tastatur ist unvollständig, KEY_2 doppelt belegt. Minimalvorschlag Gamepad-only mit klarer Beschreibung; noch nicht abschließend beschlossen/getestet.
+3. **Grundsätzliche HTML5-Gamepad-Funktion vom Entwickler bestätigt** (Xbox- oder kompatibler Controller). Festen Index 1 im HTML5-Workaround beibehalten: Erst nach einer initialen Eingabe wird Controller 1 verfügbar, möglicherweise mit 2–3 s Verzögerung; Windows-Erkennungsverfahren funktioniert im HTML5-Pfad nicht. IntroDo und Pause verwenden Gamepad; Tastatur ist unvollständig, KEY_2 doppelt belegt. **Alle Tasten im Windows-Compile getestet, nicht alle HTML5-Aktionen**. Gamepad-only-Hinweis und vollständigen Browser-Aktionstest vor Draft-Freigabe vorsehen.
 4. Spielrunde, Kampf, Pause/Fortsetzen, Tod und mindestens zwei Neustarts testen.
 5. Nur konkrete Releaseblocker minimal korrigieren; keine weitere Walkerentwicklung.
 6. README/itch.io mit tatsächlichen Controls, Known Limits und Pre-Alpha-Status finalisieren.
@@ -141,7 +141,7 @@ Zieltermin des Nutzers: **16. November 2026**. Keine Veröffentlichung, erfolgre
 - Mit VSync bei Windows 60 Hz wird das Gameplay als flüssig beschrieben; kurze Umstellung auf 75 Hz ergibt laut Entwickler ebenfalls flüssiges Gameplay. Für weitere Prüfung wird 60 Hz bevorzugt. Keine eigenen Messdaten, keine unabhängige Browserkontrolle und keine Bestätigung aller Eingaben.
 - Der aktuelle HTML5-Export wurde hier nicht als Datei bereitgestellt; sein exakter Codecommit wurde nicht eigens verifiziert. Vorheriger lokal getesteter **Walker-Codecommit** im Dokumentkopf bleibt als solcher gültig.
 - Browsercache/XAMPP: Nach Dateiaustausch alte Assets/Skripte möglich; Entwickler empfiehlt in geöffneten DevTools die Cache-Deaktivierung während lokaler Tests. Noch Kandidat für reproduzierbare Knowledge-Base-Notiz, keine pauschale Aussage über AGK-Enginefehler.
-- Weitere Browser-Release-Gates: Gamepad/Actions, Pause, Tod, mindestens zwei Neustarts und itch.io-Draft/Secret-URL-Test. Geplante Untersuchung fehlender Kollisionsabfragen ist zunächst **Analyse**; nur bestätigte relevante Fehler mit gemeinsamer Freigabe beheben. Die Spawnwahrscheinlichkeiten sind separat auf Frame-/Zeitbasis zu prüfen.
+- Weitere Browser-Release-Gates: alle Gamepad-Aktionen (Grundfunktion bestätigt), Pause, Tod, mindestens zwei Neustarts und itch.io-Draft/Secret-URL-Test. Geplante Untersuchung fehlender Kollisionsabfragen ist zunächst **Analyse**; nur bestätigte relevante Fehler mit gemeinsamer Freigabe beheben. Die Spawnwahrscheinlichkeiten sind separat auf Frame-/Zeitbasis zu prüfen.
 
 ## 7. Übergabe und Historie
 
