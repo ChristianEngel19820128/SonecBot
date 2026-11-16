@@ -82,6 +82,13 @@ Der lokal getestete Code-Referenzcommit ist [`18f92a965810763b552bd96649607c112f
 - [ ] Achievements als spätere Spielidee sammeln; derzeit keine implementiert. „Waffenschein für alle“ ist ein Scherz, kein Feature.
 - [ ] Für Pre-Alpha vorrangig HTML5-Tod + mindestens zwei Neustarts prüfen und danach itch.io-Seite im **Draft** per Secret-URL testen; **nicht öffentlich publishen**.
 
+### Neue Spieltest-Befunde: Walker, Energie-HUD, Schild (16.11.2026)
+
+- [ ] **Walker/Sonec-Körperkontakt:** Entwickler beobachtet, dass Walker durch Sonec läuft, statt anzuhalten und zu schießen. `WalkerMove()` berücksichtigt Kisten/Plattformkanten, nicht Sonec als Hindernis; `GameDo()` hat keinen direkten Walker↔Sonec-Körperkollisionspfad. Gewünschtes Verhalten vor Codeänderung genau festlegen, danach isoliert testen; bestehende KI, Fuß-/Turm-IK schützen.
+- [ ] **Energie-HUD-Proportion:** Screenshot/Entwicklerwunsch: grüne Energie plus angemessener roter Overload-Bereich ungefähr so hoch wie HP plus Schild. Ist: in `GuiEnergyDraw()` HP=150 kleine Segmente, Schild bis 25, Energie=20 große Segmente, Overload proportional `EnergyOverload*10/Energy.StateMax`. Nur Darstellung anpassen, keine Ressourcenwerte/Balanceänderung; später eigene Sichtprüfung.
+- [ ] **Schild gegen Walker-Geschosse – technischer Befund:** `ShieldAbsorbDamage()` wird bei Explosion→Sonec verwendet, aber **nicht** bei `BulletCollide()` gegen feindliche Kugeln (direkter Health-Abzug). Aktivierung des Schilds allein genügt nicht. Ziel: im Spiel testen und in kleinem separatem Schritt vorhandene Schutzfunktion in feindlichen Kugeltrefferpfad einbinden, keine neue Schild-/Rüstungslogik entwerfen.
+- [ ] **HTML5-Release-Gate offen:** Entwickler berichtet häufige Spielertode und prüft weiter; Tod und mindestens zwei Neustarts in derselben Browser-Sitzung wurden noch nicht ausdrücklich als erfolgreich abgeschlossen. Ergebnis abwarten, nicht vorwegnehmen.
+
 ## 3. Für später: reguläre Alpha / Fehler nur bei konkreter Reproduktion
 
 ### Eingabe und Spielablauf
