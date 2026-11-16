@@ -4,7 +4,7 @@
 
 Pilot Sonec across moving platforms, fly with an energy-powered jetpack, collect resources and survive encounters with mines, orbs, destructible objects and the heavily armed **Alpha-Walker**. Choose your weapons carefully: flying, shielding yourself and using special weapons all compete for energy.
 
-SonecBot is a reworking of an earlier **BlitzBasic Plus** project. The preserved legacy sources are in `source/legacy/`; active AGK development is in `source/sonec/`.
+SonecBot is a reworking of a game originally written in **BlitzBasic Plus**. A later attempt to recreate it in **BlitzMax** was never completed. The preserved legacy sources are in `source/legacy/`; active AppGameKit Studio development is in `source/sonec/`.
 
 ## Current status: playable HTML5 pre-alpha
 
@@ -14,7 +14,16 @@ The developer successfully compiled the current build, exported HTML5, tested it
 
 **The itch.io page remains in Draft with secret-link access; it is not publicly published.** The secret link can be shared with invited community testers. The exact export SHA was not independently recorded, and repeated restarts have been verified in the local HTML5 session; **a restart in the itch.io embed was subsequently confirmed by the developer**. The Alpha-Walker and initial player-weapon collision paths have passed targeted developer tests.
 
-The itch.io page now links to both the [`develop`](https://github.com/ChristianEngel19820128/SonecBot/tree/develop) and [`main`](https://github.com/ChristianEngel19820128/SonecBot/tree/main) GitHub branches, as confirmed by the developer. **`develop` is the active development branch**; `main` remains an earlier reference until a separately approved milestone merge.
+The itch.io page links to both the [`develop`](https://github.com/ChristianEngel19820128/SonecBot/tree/develop) and [`main`](https://github.com/ChristianEngel19820128/SonecBot/tree/main) GitHub branches, as confirmed by the developer.
+
+## Branches
+
+This repository uses two branches:
+
+- **[`main`](https://github.com/ChristianEngel19820128/SonecBot/tree/main)** — the milestone/reference branch. It is not automatically the latest development version or the same as a public itch.io release.
+- **[`develop`](https://github.com/ChristianEngel19820128/SonecBot/tree/develop)** — the active development branch with current changes, experiments, fixes and post-pre-alpha work; individual changes may be unfinished or not yet tested.
+
+For the latest development work, see `develop`. Tested milestones are brought into `main` after review; GitHub milestone merges do **not** publish the itch.io Draft page.
 
 ## Gameplay
 
