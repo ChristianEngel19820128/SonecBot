@@ -8,11 +8,11 @@ SonecBot is a reworking of an earlier **BlitzBasic Plus** project. The preserved
 
 ## Current status: playable HTML5 pre-alpha
 
-**16 November 2026 — preparing a private test for invited players.**
+**16 November 2026 — HTML5 pre-alpha uploaded to itch.io and tested in its embedded player.**
 
-The developer has successfully run the HTML5 export locally through Apache/XAMPP and tested controller input, combat, pausing, death and repeated restarts within one browser session. The Alpha-Walker and the initial player-weapon collision coverage have also passed targeted local tests.
+The developer successfully compiled the current build, exported HTML5, tested it locally through Apache/XAMPP, created and uploaded the ZIP, and confirmed that the game starts inside the itch.io embed. The embedded test verified controller detection, movement (including backward movement and flight), all four weapons, shield, energy attraction, pause, and death by energy depletion/falling. ESC and the quit action are intentionally unavailable in the HTML5 player. No visible tearing was reported in the local browser test; performance on other devices has not yet been established.
 
-**The itch.io HTML5 embed and draft-page access have not yet been verified.** The game is **not publicly released**. The itch.io page will deliberately remain in **Draft** while selected testers use its **secret URL**. Anyone with that link may be able to access the draft test; please do not treat it as a public release.
+**The itch.io page remains in Draft with secret-link access; it is not publicly published.** The secret link can be shared with invited community testers. The exact export SHA was not independently recorded, and repeated restarts have been verified in the local HTML5 session but **not separately confirmed in the itch.io embed**. The Alpha-Walker and initial player-weapon collision paths have passed targeted developer tests.
 
 The active development branch is [`develop`](https://github.com/ChristianEngel19820128/SonecBot/tree/develop). `main` remains an earlier reference until a separately agreed and tested milestone merge.
 
@@ -69,7 +69,7 @@ We are interested in practical feedback from invited players, especially:
 - Can you pause, die and restart without getting stuck?
 - Did you encounter a repeatable bug? Please include browser, operating system, controller and the steps that caused it.
 
-For now, local developer tests have been positive, but **external browser/device compatibility remains to be established**.
+Local developer tests and the first itch.io embedded playtest have been positive, but **external browser/device compatibility remains to be established**.
 
 ## Development and project notes
 
