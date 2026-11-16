@@ -1,6 +1,6 @@
 # SonecBot – Aktuelle Aufgaben und Meilensteine
 
-**Dokumentstatus:** Version 4.5 – Eingabe-Standardwerte initialisiert, noch ohne aktive Anbindung  
+**Dokumentstatus:** Version 4.6 – digitale Action-Abfragen ergänzt, noch ohne aktive Anbindung  
 **Stand:** 16. November 2026  
 **Branch:** `develop`  
 **Aktuelles Ziel:** Funktionierende HTML5-Pre-Alpha auf itch.io im **Draft per Secret URL** für eingeladene Community-Tester bereitstellen, Feedback sammeln. **Nicht auf Published umstellen**; den einmaligen öffentlichen Index-Push für einen späteren, noch nicht beschlossenen Release bewahren. Keine Deadline.
@@ -42,6 +42,10 @@
 ## 3. Erstes Community-Feedback und Post-Pre-Alpha-Patchplanung (16.11.2026, Abend)
 
 **Schritt 1 lokal bestätigt:** Der Entwickler hat `def_input.agc` erfolgreich in AGK Studio kompiliert (Parse Time 61,70 ms, 11.920 Zeilen, 76.514 Tokens); dies bestätigt Syntax/Include, kein neuer Eingabe-Laufzeittest.
+
+**Schritt 2 vom Entwickler bestätigt:** AGK Studio meldet `Compilation finished successfully.` für die Standardbelegung / `InputSetDefaultBindings()`. Kein vollständiger Gameplay-Regressionstest behauptet.
+
+**Schritt 3 implementiert, Compile offen:** `input.agc` erweitert um `InputActionState(Keys,JoystickIndex,Action)` und `InputActionPressed(Keys,JoystickIndex,Action)`: sichere Prüfung der Aktionsindizes, keine Abfrage unzugewiesener 0-Codes, Verknüpfung der vorhandenen Tastatur- und digitalen Gamepad-Wrapper. Hover übernimmt in den Defaultdaten den **bereits von SonecBot verwendeten** `JoystickButtonPadLeft = 9`; physische Identifikation (L3?) und Button 11 bleiben offen. Gamepad-Analogachsen und Trigger weiter im alten Eingabecode; keine Gameplay-Abfrage wurde umgestellt. **Nächster Schritt:** AGK-Compile durch Entwickler, dann Testmigration nur nach Freigabe.
 
 **Schritt 2 implementiert, Compile offen:** `source/sonec/input.agc` enthält `InputSetDefaultBindings(Keys ref as TKeys)` und initialisiert alle 15 Einträge auf Standardwerte (zuerst nullen). Links W/S/A/D/Q/E, rechts J (MG), K (Granate), L (Flamme), I (Plasma), U (Energie), O (Schild), zusätzlich Ctrl (Hover), Enter (Start) und Backspace (Back). Für Gamepad: D-Pad-Richtungen sowie bisheriges A/B/X/Y/LB/RB/Start/Back; Analogsticks und Trigger bleiben im alten Code, L3/Hover bleibt unzugewiesen bis Geräte-/Browser-Test. `main.agc` bindet `input.agc` ein und initialisiert ein noch nicht von der Spiellogik verwendetes lokales `TKeys`. Kein Rebinding, Cookie, Optionsmenü oder geänderte Eingabeabfrage. **Nächster Schritt: AGK-Compile durch Entwickler.**
 
