@@ -15,6 +15,14 @@
 > **Arbeitsweise:** In kleinen gemeinsam freigegebenen Schritten vorgehen. Nutzer exportiert/kompiliert in lokalem AGK Studio, testet mit lokalem Apache im Browser/Gamepad und pflegt itch.io; Assistent prüft GitHub-Quellen und dokumentiert präzise, ohne lokale Tests zu behaupten. Besonderheiten mit Nachweisstatus festhalten, aktuellen Schritt beenden, erst danach über Folgearbeit bzw. Knowledge-Base-Eintrag entscheiden. Crystals 1.0 ist die bewährte Prozesserfahrung. GitHub-HEAD bei jedem Einstieg neu lesen; Snapshot vor dieser Dokumentationsänderung: `3840bfa545aeec6df6902180415d22efdd58f3ba`.
 > **Prüfkandidat, noch kein bestätigter Bug:** Spawn-Zufallsentscheidungen liegen in `GameDo()` und könnten pro Frame statt pro Zeit erfolgen. Vor jeder Änderung tatsächliche Frequenzen/Spielwirkung bewerten; keine pauschale Balancingmaßnahme.
 
+## Post-Pre-Alpha: Schritt 3 digitale Action-Abfragen (16.11.2026, Abend)
+
+**Schritt 2 vom Entwickler erfolgreich kompiliert:** `Compilation finished successfully.` Die Standards in `input.agc` und ihre Initialisierung in `main.agc` sind syntaktisch akzeptiert.
+
+**Schritt 3 auf `develop` implementiert, AGK-Compile ausstehend:** `InputActionState(Keys ref as TKeys,JoystickIndex as integer,Action as integer)` und `InputActionPressed(...)` in `source/sonec/input.agc` hinzugefügt. Beide prüfen `0..ACTION_LAST`, ignorieren nicht belegte Key-/Pad-Werte (0), führen Tastatur- und digitale Gamepad-Eingaben über bestehende `GetKeyState/GetKeyPressed/GetJoyState/GetJoyPressed` zusammen. Kein direkter Anschluss an `sonec.agc`, `intro.agc`, `game.agc` oder die Pausensteuerung; bisheriges Spielverhalten bleibt bestehen. Achsen und Trigger absichtlich noch nicht eingebunden. `ACTION_HOVER` verwendet nun in den Defaultdaten `JoystickButtonPadLeft = 9`, den die alte Hover-Routine bereits abfragt; **nicht belegt**, ob das physisch L3 ist. Gamepad Button 11 existiert, ist nicht zugeordnet. Die geplante Tastatur-Cookie-Speicherung, Optionsmenü und Gamepad-Remapping bleiben offen.
+
+**Nächster einzeln freizugebender Schritt:** Entwickler kompiliert den aktuellen `develop`-HEAD in AGK Studio. Anschließend einzelne Input-Aufrufstellen umstellen und Spieltests vereinbaren; keine weitergehende Änderung ohne neue Freigabe.
+
 ## Post-Pre-Alpha: Schritt 2 Standardbelegung (16.11.2026, Abend)
 
 **Schritt 1 vom Entwickler erfolgreich kompiliert:** 61,70 ms Parse Time, 11.920 Zeilen, 76.514 Tokens. Das bestätigt die Definitionen in `def_input.agc` und ihren Include, nicht einen neuen Gameplay- oder HTML5-Test.
