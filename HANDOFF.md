@@ -15,6 +15,14 @@
 > **Arbeitsweise:** In kleinen gemeinsam freigegebenen Schritten vorgehen. Nutzer exportiert/kompiliert in lokalem AGK Studio, testet mit lokalem Apache im Browser/Gamepad und pflegt itch.io; Assistent prüft GitHub-Quellen und dokumentiert präzise, ohne lokale Tests zu behaupten. Besonderheiten mit Nachweisstatus festhalten, aktuellen Schritt beenden, erst danach über Folgearbeit bzw. Knowledge-Base-Eintrag entscheiden. Crystals 1.0 ist die bewährte Prozesserfahrung. GitHub-HEAD bei jedem Einstieg neu lesen; Snapshot vor dieser Dokumentationsänderung: `3840bfa545aeec6df6902180415d22efdd58f3ba`.
 > **Prüfkandidat, noch kein bestätigter Bug:** Spawn-Zufallsentscheidungen liegen in `GameDo()` und könnten pro Frame statt pro Zeit erfolgen. Vor jeder Änderung tatsächliche Frequenzen/Spielwirkung bewerten; keine pauschale Balancingmaßnahme.
 
+## Post-Pre-Alpha: Schritt 2 Standardbelegung (16.11.2026, Abend)
+
+**Schritt 1 vom Entwickler erfolgreich kompiliert:** 61,70 ms Parse Time, 11.920 Zeilen, 76.514 Tokens. Das bestätigt die Definitionen in `def_input.agc` und ihren Include, nicht einen neuen Gameplay- oder HTML5-Test.
+
+**Schritt 2 – auf `develop` umgesetzt, AGK-Compile steht aus:** `source/sonec/input.agc` neu mit `InputSetDefaultBindings(Keys ref as TKeys)`. Die Funktion setzt `TKeys.Version`, nullt alle 15 Bindings und weist Standardbelegungen zu: W/S/A/D/Q/E für 6 Bewegung, J MG, K Granatwerfer, L Flammenwerfer, I Plasma, U Energieanziehung, O Schild, Ctrl Hover, Enter Start, Backspace Back. Gamepad-Daten: D-Pad-Richtungen, A/B/X/Y, LB/RB, Start/Back wie bisher; analoge Achsen/Trigger bleiben im unveränderten alten Eingabecode. L3-Hover noch unbestätigt und NICHT als Default hinterlegt. `main.agc` inkludiert `input.agc` nach `controls.agc` und initialisiert ein lokales `Keys as TKeys`. **Noch keine Spielroutine liest `Keys`, keine Veränderung der aktiven Steuerung, kein Optionsmenü, keine Cookies.** Nutzer muss diesen neuen Stand lokal mit AGK Studio kompilieren; bei Fehler genau die Meldung prüfen, bevor weitergearbeitet wird.
+
+**Nächster einzelner Schritt:** AGK-Compile-Test für die neue Initialisierungsfunktion. Danach Eingabeabfragen schrittweise auf Actions umstellen, erst mit gesonderter Freigabe.
+
 ## Post-Pre-Alpha: Eingabestrukturen angelegt (16.11.2026, Abend)
 
 **Meilenstein:** [PR #1](https://github.com/ChristianEngel19820128/SonecBot/pull/1) wurde nach gesonderter Auflösung des README-Konflikts erfolgreich nach `main` gemergt (Merge-Commit `0ee67107641f7eeb5f4471241bc0ac145fd0e41c`). `main` enthält den akzeptierten Pre-Alpha-Meilenstein; **neue Arbeit wieder nur auf `develop`**. itch.io bleibt Draft/Secret URL und wurde nicht verändert.
