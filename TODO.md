@@ -84,7 +84,7 @@ Der lokal getestete Code-Referenzcommit ist [`18f92a965810763b552bd96649607c112f
 
 ### Neue Spieltest-Befunde: Walker, Energie-HUD, Schild (16.11.2026)
 
-- [ ] **Walker/Sonec-Körperkontakt:** Distanzprüfung gegen Sonecs Kreis plus vertikalen Überlappungstest in `WalkerMove()` ergänzt. Stoppen während normaler Standpause mit unverändertem FireState, Kisten-/Kantenregeln und IK. **AGK-/HTML5-Test noch offen.**
+- [x] **Walker-Stopp bei Sonec:** Entwickler bestätigt passenden Abstand in beiden Richtungen (Screenshots), Stoppen und Schießen mit Schaden, normales Weg-/Überfliegen. Nur Walker-Bewegungsstopp, keine vollständige wechselseitige Körperkollision; Sprung in Walker bleibt separater Befund.
 - [ ] **Energie-HUD-Proportion:** Screenshot/Entwicklerwunsch: grüne Energie plus angemessener roter Overload-Bereich ungefähr so hoch wie HP plus Schild. Ist: in `GuiEnergyDraw()` HP=150 kleine Segmente, Schild bis 25, Energie=20 große Segmente, Overload proportional `EnergyOverload*10/Energy.StateMax`. Nur Darstellung anpassen, keine Ressourcenwerte/Balanceänderung; später eigene Sichtprüfung.
 - [x] **Schild gegen Walker-Geschosse – lokal bestanden:** `BulletCollide()` nutzt vorhandenen Absorptionspfad für `TYPEENEMY`; Entwickler bestätigt Schaden ohne Schild, Abbau der Schildladung mit roter Schadensspur bei aktiviertem Schild bis zum Verbrauch und bezeichnet **alle vereinbarten Tests als bestanden**. Keine neuen Balancewerte.
 - [x] **HTML5-Release-Gate bestanden:** Entwickler bestätigt mehrfachen Tod durch Minen/Walker, mehrfachen Neustart in derselben aktiven Browser-Sitzung, Spiel weiterhin lauffähig. Kein Beleg für Langzeit-Memory-Verhalten oder andere Browser.
@@ -93,7 +93,7 @@ Der lokal getestete Code-Referenzcommit ist [`18f92a965810763b552bd96649607c112f
 
 - [ ] **Informationsavatar (bereits im Projekt vorgesehen):** zuerst optional nur eine gut sichtbare rote Warnmeldung in Großbuchstaben oben, z. B. „MINEFIELD DETECTED“ bei neu auftauchender Minengruppe. Eventuell Bild/animiertes Porträt, später Sprachausgabe. Warnkriterium, Dauer, Priorität und Spam-Vermeidung vor Implementierung gemeinsam festlegen. Kein aktueller Codeauftrag.
 - [ ] **Minen-Spawns gesondert prüfen:** Entwickler sieht meist gruppenartige Minenvorkommen. In `GameDo()` ist eine Zufallsprüfung pro Update mit anschließend zufälliger Anzahl vorhanden; Frameabhängigkeit ist plausibel, aber noch kein gemessener Defekt. Verteilung, Anzahl, Fairness und mögliche Warn-Signale erst analysieren; keine spontane Änderung.
-- [ ] **Nächster einzelner Funktionsschritt:** Walker/Sonec-Körperkontakt; danach Energie-/Overload-HUD. Schildschritt abgeschlossen. Änderungen getrennt testen.
+- [ ] **Nächster einzelner Funktionsschritt:** Energie-/Overload-HUD optisch anpassen; Walker-Stopp und Schildschritt bestanden. Sonecs Sprung-Körperkollision separat später beurteilen.
 
 ### Abgeschlossener Einzelschritt: Schild gegen Feindkugeln – Entwicklertest bestanden
 
@@ -102,11 +102,14 @@ Der lokal getestete Code-Referenzcommit ist [`18f92a965810763b552bd96649607c112f
 
 - [ ] **Beobachtete Kettenreaktion nicht ungeprüft als Fehler behandeln:** Walker schoss auf Mine und wurde von der Explosion selbst zerstört; kann als gewünschtes emergentes Gameplay gelten. Erst bei reproduzierbarem Balance-/Logikproblem ändern.
 
-### Aktueller isolierter Nachtest: Walker stoppt vor Sonec
+### Abgeschlossener isolierter Nachtest: Walker stoppt vor Sonec
 
-- [ ] **Windows-/HTML5-Buildtest offen:** `WalkerSonecDistanceAhead()` nutzt die bestehende Walker-Hülle und Sonecs `ObjectData.Radius`, prüft auch vertikale Überlappung. `WalkerMove()` begrenzt die Schrittweite und beginnt bei Sonec eine normale Standpause, **ohne** Kisten-TurnPending oder FireState zu verändern. Walker muss links und rechts vor Sonec stoppen, weiterhin schießen, nach Ausweichen wieder gehen; Überfliegen, Kistenstopp, Plattformkanten und IK/Schusslogik gegenprüfen. Der Assistent hat nicht lokal kompiliert.
+- [x] **Walker-Stopp-Entwicklertest positiv:** `WalkerSonecDistanceAhead()` gegen bestehenden Radius/Hülle; beidseitige optisch passende Standdistanz, Schießen/Schaden und Weg-/Überfliegen ausdrücklich bestätigt. Andere einzelne Regressionsfälle nicht separat berichtet; keine eigene AGK-Ausführung durch Assistenten.
 - [x] **Sonec-Radius statisch geprüft:** Radius = `GetSpriteWidth(...)*0.5`, `SpriteData.Scale = 1`; keine nochmalige Skalierung des Radius in `sonec.agc` gefunden. Sichtbare Passung bleibt Laufzeittest.
 - [ ] Danach als separaten Schritt Energie-/Overload-HUD-Proportion anhand des Screenshots anpassen; keine aktuellen Ressourcen-/Balanceänderungen.
+
+- [ ] **Sonec springt in Walker hinein:** Vom Entwickler beobachtet, obwohl Walker horizontal vor Sonec stoppt. Separate aktive Sonec→Walker-Körperkollision später bewerten; keine unkontrollierte IK-/Turmänderung.
+- [ ] **Gemeinsame Sound-Auslösung:** Sounds in den passenden allgemeinen Ereignis-/Schussfunktionen statt nur in Sonec-spezifischen Routinen abspielen. Vor Änderung einzelne bestehende Sound-Trigger inventarisieren, um Mehrfachsound zu vermeiden.
 
 ## 3. Für später: reguläre Alpha / Fehler nur bei konkreter Reproduktion
 
