@@ -177,6 +177,12 @@
 
 **Reihenfolge:** Walker-Stopp und Schildwirkung sind vorher positiv getestet. Sonec kann noch in den Walker hineinspringen (separater Befund), Sound-Event-Entkopplung ist später. **Keine zusätzlichen Änderungen vor dem HUD-Nachtest.** itch.io-Seite bleibt Draft; Secret-URL-Test offen.
 
+## HUD-Overload-Sichttest: 4000 + 500 Energie (16.11.2026)
+
+**Neue konkrete Entwicklerentscheidung nach positivem Screenshot der proportionalen HUD-Anzeige:** `Sonec.Energy.StateMax = 4000`, `Sonec.Energy.State = 4500` beim Start/Neustart, also **500 Overload** für den nächsten visuellen Test. Die separate rote HUD-Skala in `gui.agc` ist so angepasst, dass **500 überschüssige Energie alle sieben roten Reserve-Segmente** füllt. Die normale Energie füllt 43 grüne Segmente. Beide bleiben proportional (volle 43+7 Slots ca. 350 px ≈ HP+Schild). Anders als beim vorigen Stand ist das ein **bewusstes Startwerte- und Anzeigeskalen-Testsetup**. Die tatsächliche Energiekapazität wird auf 4000 reduziert; Waffen-/Jetpack-/Schild-Verbrauch, Regeneration, Überladungsschaden und Energieaufnahme wurden nicht geändert.
+
+**Wichtig für den Nachtest:** `SonecHealthRegenerate()` behandelt Overload weiterhin als gesundheitsschädlich (`Overload/100` pro Gesundheitsregenerationstakt, multipliziert mit `COSTOVERLOAD`). Die rote Reserve kann daher beim Spielen verschwinden bzw. Lebenspunkte kosten; idealerweise unmittelbar nach dem Start einen Screenshot machen, auch Verbrauch und eventuellen Overload-Gesundheitseffekt beobachten. **Nur GitHub-Code geprüft; lokaler Windows-/HTML5-Test noch offen.** Erst nach Entwicklerbefund den HUD-Schritt abhaken. Bildreferenz vom Entwickler im laufenden Chat, nicht als Datei im Repository behaupten.
+
 ## 1. Sofortiger Einstieg im neuen Chat
 
 1. `AGENTS.md`, diese Datei, `PROJECT.md`, die aktuelle `TODO.md` und den aktuellen Status/Übergabeabschnitt in `TECHNICAL.md` lesen. Alte datierte Technikabschnitte sind Historie, keine neue Aufgabenfreigabe.
