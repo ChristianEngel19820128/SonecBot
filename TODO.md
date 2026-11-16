@@ -65,10 +65,15 @@ Der lokal getestete Code-Referenzcommit ist [`18f92a965810763b552bd96649607c112f
 ### Abgeschlossener Einzeltest: direkter Granatenaufprall → Walker
 
 - [x] **Direkter Granatentreffer auf Walker-Turm laut Entwickler bestanden:** `GrenadeCollideWalkers()` implementiert; Volltreffer, Ablauf „alles wie erwartet“. Der konkrete getestete Windows-/HTML5-Kontext wurde nicht getrennt angegeben; keine eigenen Laufzeittests. Zerstörung nach vielen Treffern und Regressionen der übrigen Granaten-Ziele nicht einzeln nachgewiesen.
-- [ ] **Späterer separater Schritt:** Explosion → Walker noch nicht implementiert. Zunächst Aufprall testen, dann gemeinsame Entscheidung zu Explosionsfläche, Timing und möglichem Doppelschaden.
+- [ ] **Separat implementiert:** Explosion → Walker nutzt bestehenden Radius/100-ms-Rhythmus; kein weiterer Granatenaufprall-Umbau. Test und Bewertung der kombinierten Wirkung offen.
 
 - [ ] **Beobachtete Granatenmechanik erhalten:** Rückstoß kann Sonec zurückversetzen, gekrümmte Flugbahn fällt nach unten, Granaten explodieren ggf. vorher am Plattformboden; Munition („Plasmagranaten“) wird verbraucht. Keine ungefragte Änderung an Flugphysik oder Ressourcen.
-- [ ] **Nächster Prüfschritt:** Explosion → Walker als letzter offener Pfad der ersten Kollisionsmatrix. Vor Umsetzung Explosions-Timing/Radius, direkte Trefferüberlappung und mögliche Doppelwirkung untersuchen und gemeinsam entscheiden.
+- [ ] **Aktueller Testschritt:** Explosion → Walker ist als letzter Pfad der ersten Kollisionsmatrix implementiert; lokaler Test offen. Explosions-Timing/Radius und mögliche Doppelwirkung beim Test beobachten.
+
+### Aktueller Einzeltest: Explosionswirkung → Walker
+
+- [ ] **Windows-/HTML5-Nachtest:** `ExplosionCollideWalkers()` mit bestehender Turm-AABB als Kreis-gegen-Box, `LastWalkerHitMs` pro Explosion/Walker und unverändert 30 Schaden je mindestens 100 ms implementiert. Direkter Granatentreffer + nachfolgende Explosion und Granate auf Plattform nahe Walker getrennt prüfen; Trefferflash und möglicher Walker-Tod, andere Explosionsziele und normale Granatenkollisionen als Regression testen.
+- [ ] **Nach Testentscheidung:** Doppelschaden aus Aufprall und Druckwelle sowie mögliche Walker-Zerstörungsketten anhand des Spielgefühls bewerten. Keine automatische Balance-/Panzerungsänderung.
 
 ## 3. Für später: reguläre Alpha / Fehler nur bei konkreter Reproduktion
 
