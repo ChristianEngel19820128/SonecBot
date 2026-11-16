@@ -1,6 +1,6 @@
 # SonecBot – Aktuelle Aufgaben und Meilensteine
 
-**Dokumentstatus:** Version 5.4 – Tastaturnavigation im Intro ergänzt, Test ausstehend  
+**Dokumentstatus:** Version 5.5 – Analogstick-Menünavigation ergänzt, Test ausstehend  
 **Stand:** 16. November 2026  
 **Branch:** `develop`  
 **Aktuelles Ziel:** Funktionierende HTML5-Pre-Alpha auf itch.io im **Draft per Secret URL** für eingeladene Community-Tester bereitstellen, Feedback sammeln. **Nicht auf Published umstellen**; den einmaligen öffentlichen Index-Push für einen späteren, noch nicht beschlossenen Release bewahren. Keine Deadline.
@@ -62,6 +62,10 @@
 **Schritt 6d vom Entwickler vollständig bestanden:** AGK-Compile und alle 8 Tests: W allein Aufstieg, Ctrl allein Luftbremse, W+Ctrl normaler Jetpack-Aufstieg, Übergang W loslassen bei gehaltenem Ctrl zu Hover, beide loslassen normales Fallen, Gamepad-Stick hoch + Button 9 und Bewegung/Waffen ohne Regression. Entwickler beobachtet zusätzlich: Während Pause losgelassenes Ctrl ist nach Fortsetzen korrekt nicht mehr aktiv.
 
 **Schritt 6e vom Entwickler vollständig bestätigt:** AGK-Compile und 8/8 Funktionstests bestanden: Space halten/loslassen, WASD/QE+Space gleichzeitig, W+Space normaler Aufstieg, Ctrl kein Hover mehr, Gamepad-Button 9 weiter aktiv, Loslassen in Pause nach Fortsetzen korrekt. Keine Auffälligkeiten.
+
+**Schritt 7a Entwickler-Testbericht:** AGK-Compile und Tastatur W/S, Pfeile, Menü-Wrap, Enter erfolgreich; auch Gamepad-D-Pad sowie Gamepad Start/A funktionieren nach Klarstellung. Einzig fehlend war die **linke Analogstick-Navigation im Intro**; dies war bisher nicht implementiert, kein nachgewiesener Rückschritt. Schritt 7a noch nicht endgültig geschlossen, bis der Ergänzungstest 7a.1 erfolgreich ist.
+
+**Schritt 7a.1 implementiert, noch kein AGK-Compile/Gamepad-Test:** In `def_game.agc` hat `TIntro` das Feld `AnalogMenuHeld`, bei `IntroCreate()` auf FALSE gesetzt. `IntroDo()` liest `GetJoyY(JoystickIndex)`: bei Auslenkung kleiner -0.5 genau ein Menüschritt hoch, bei größer +0.5 genau ein Schritt runter; Sperre bis Rückkehr in neutralen Bereich (-0.3 bis +0.3), um das Durchrauschen beim Halten zu vermeiden. Die bestehende W/S-/Pfeil-/D-Pad-Navigation, Menü-Wrap, Sounds und Enter/Start/A-Bestätigung bleiben. Keine Options-, Hover- oder Gameplay-Änderung. **Nächster Test:** AGK-Compile, Stick hoch/runter je einen Schritt und bei Halten keine Wiederholung, Neutralstellung/erneutes Auslenken, D-Pad/W/S/Pfeile sowie Start/A/Enter und Spielstart. `OPTIONS` bleibt Platzhalter.
 
 **Schritt 7a implementiert, AGK-Compile und Funktionstest offen:** In `IntroDo()` liest die Menü-Navigation jetzt `InputActionPressed(Keys,JoystickIndex,ACTION_MOVE_UP/DOWN)` (W/S und bestehendes D-Pad) sowie zusätzlich `GetKeyPressed(KEY_UP/KEY_DOWN)` für die Pfeiltasten. Auswahl-Wrap 1..3, Menü-Ton und Enter/Start/Gamepad-A-Confirm bleiben unverändert; `OPTIONS` setzt weiterhin nur `Intro.IsOption`, kein echtes Optionsmenü implementiert. **Nächster kleiner Test:** AGK-Compile; W/S und Pfeile durch alle drei Menüpunkte inklusive Wrap, Enter bestätigt START, D-Pad- und Gamepad-A/Start-Regression. Auswahl von OPTIONS noch nicht als funktionierendes Untermenü bewerten. Nicht gleichzeitig Hover-Modus oder Speichern implementieren.
 
