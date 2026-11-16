@@ -1,10 +1,22 @@
 # SonecBot – Technische Dokumentation
 
-**Dokumentstatus:** Bestandsaufnahme 3.19 (Rohrmarker bewegen sich; Flash-Rückstoß entkoppelt, 16. November 2026)  
+**Dokumentstatus:** Bestandsaufnahme 3.20 (Alpha-Walker lokal akzeptiert; HTML5-Pre-Alpha priorisiert, 16. November 2026)  
 **Branch:** `develop`  
 **Engine:** AppGameKit Studio (AGK)  
 **Erste Zielplattform:** HTML5  
 **Prüfmethode:** Statische Quellcodeanalyse sowie vom Entwickler berichtete lokale Spieltests; kein eigener Build- oder Laufzeittest durch den Assistenten
+
+## Aktueller Releasefokus – 16. November 2026
+
+**Alpha-Walker:** Entwickler bewertet den aktuellen Gesamtstand lokal alpha-tauglich und benennt den Gegner Alpha-Walker. Eigener Grafik-/Proto-Commit `0051b8bee28b43f1f5cce787fbc5b412889bfa60` ist im tatsächlichen develop-HEAD bestätigt. Kein Umbenennen von Quellcodedateien/Typen. Vor Pre-Alpha keine weiteren Walker-/IK-/Turm-Polituränderungen ohne konkret nachgewiesenen spielverhindernden Befund.
+
+**Video-Beurteilung:** `walker_movement_24.mp4`, ca. 10.18 s, 1342×698, nominell 33 FPS Aufnahme. Zeitlich verteilte extrahierte Frames zeigen mehrere Walker auf Plattformen, wechselnde Beinposen, geneigten Waffenaufbau und Pauseanzeigen. Der Aufbau wirkt in gezeigten Sequenzen zusammenhängend, keine neue offensichtliche Geometrieablösung erkannt. Das ist eine visuelle Prüfung der Aufnahme, kein eigener AGK-Lauf, kein kontrollierter Frame-Pacing-/Treffer-/Schadens-/HTML5-Test.
+
+**Aktuelle Codebefunde für den nächsten Release-Schritt:** HTML5 in main.agc fordert SetVSync(1); def_joypad.agc setzt Index 1. Dieser Browserpfad ist noch praktisch zu prüfen. IntroDo nutzt für Auswahl/Bestätigung Gamepad, die aktive Pauseabfrage in main.agc ebenfalls Gamepad-Start. controls.agc enthält zwar GetStartPressed mit Enter, IntroDo verwendet diesen Helfer aber nicht. SonecInput besitzt Tastaturfragmente; Maschinengewehr und Granatwerfer prüfen beide KEY_2. Deshalb keinen vollständig spielbaren Tastaturmodus behaupten. GameInit setzt Pause/Lost zurück und initialisiert Objektpools, der tatsächliche Tod-/Neustartfluss muss im Browser getestet werden.
+
+**Heute nötige Gates, anschließend nur Blocker:** HTML5 exportieren und Assets/Start im Browser prüfen; eine vollständige Eingabemethode inklusive Start/Pause nachweisen; Spielrunde mit Walker, Tod und zwei Neustarts; klare Controls/Pre-Alpha-/Known-Limits-Hinweise; itch.io-Upload und eingebetteten Build erneut prüfen. Minimalvorschlag Gamepad-only mit deutlichem Hinweis, sofern Browser-Gamepad funktioniert; noch nicht als Nutzerentscheidung oder Testerfolg ausgeben. Schild/Bullet- und Explosion/Walker-Grenzen kurz bewerten, keine umfassende Neuentwicklung beginnen.
+
+**Bewusst spätere Aufgaben:** optionaler Turmimpuls, Draufsicht, weitere Gegner, Options-/Rebinding-System, neues Punktesystem, Online-Highscores, vollständige Energie-/Grafikbalance und Knowledge-Base-Ausarbeitung. Energie 5250 bleibt vorläufig. Empfehlung ist eine scope-begrenzte Pre-Alpha heute; Veröffentlichung/Browsererfolg noch nicht erfolgt.
 
 ## 1. Projektstruktur
 
@@ -445,7 +457,7 @@ Der Vergleich mit Crystal Columns/Crystals erfolgte anhand von `main.agc`, `def_
 
 ## 12. Übergabe bei Chatlimit oder neuem Chat
 
-**Neuester Arbeitsschritt (16. November 2026, Dokumentstand 3.19; hat Vorrang vor älteren Prioritätsnotizen):** Bewegte Rohrmarker lokal bestätigt. Entwickler hat Grafik/Proto lokal auf 3 px geändert, noch nicht committed; Dateien ausdrücklich nicht durch Assistenten ändern, Entwickler verbessert Kontrast und committet später. Nur WalkerFlashFollowAll geändert: Rückstoßversatz aus Barrel-Anchor zurückrechnen, Flash bleibt neutral am Schussort und folgt weiter Eltern-/Plattformbewegung. Rohr-/Schuss-/Zeit-/IK-/Grafik-/Proto-Werte unverändert. 72 übersetzte Funktionsfälle bestanden, AGK-Test offen. Jetzt Rohrbewegung ohne mitwandernden Flash beurteilen. F1-HUD-Flashzeile bleibt vereinfachter Barrel0-Wert und ist nicht realer Pool-Flash.
+**Neuester Arbeitsschritt (16. November 2026, Dokumentstand 3.20; hat Vorrang vor älteren Prioritätsnotizen):** Entwickler-Art/Proto-Commit 0051b8b bestätigt; aktueller Walker lokal als alpha-tauglich akzeptiert, Name Alpha-Walker. 10-s-Windowsvideo anhand extrahierter Frames geprüft, kein neuer offensichtlicher Geometrieblocker; keine eigene AGK-/Browserausführung. Heute HTML5-Pre-Alpha online angestrebt. Nächster Schritt HTML5-Export/Browsertest, Controller/Intro/Pause/Tod/Neustart prüfen, nur konkrete Blocker reparieren, README/itch.io-Controls/Known-Limits und Upload. Tastaturpfad unvollständig (Intro/Pause Gamepad, KEY_2 doppelt); Gamepad-only als Minimalvorschlag, nicht als bestätigte Eingabeentscheidung. Keine weitere Walkerpolitur/IK-Änderung, Highscore-/Options-/KB-Ausarbeitung zurückstellen. Browser-/Veröffentlichungserfolg offen.
 
 **Verlässlicher Startpunkt:** GitHub-Repository `ChristianEngel19820128/SonecBot`, Branch `develop`. Zuerst `AGENTS.md`, `PROJECT.md`, `TECHNICAL.md` und `TODO.md` lesen, anschließend den tatsächlichen Branch-HEAD und die betroffenen AGK-/JSON-Dateien **neu abfragen**. Dokumente können gegenüber neueren Commits veralten; immer Code und dokumentierten Teststatus abgleichen. Der dokumentierte Renderer-Code-Stand bleibt **`506b51f`** (`#renderer "Basic"`), Timer-Änderung **`d536043`** (`1000.0 / Span`, lokal unauffällig getestet), F2-Uhrendiagnose **`61840dc`** (lokal bestätigt), F5-Hochhaus-A/B bis **`1b95bb6`** (vom Entwickler visuell verglichen), Hochhaus-Standard B ab **`ae6f2d4`** (erneuter AGK-Test ausstehend); die tatsächlichen Dokumentationscommits und den Branch-HEAD immer neu prüfen; bitte stets den echten aktuellen Branch-HEAD prüfen.
 

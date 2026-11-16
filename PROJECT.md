@@ -1,6 +1,6 @@
 # SonecBot – Projektübersicht
 
-**Dokumentstatus:** Version 0.9  
+**Dokumentstatus:** Version 0.10  
 **Projektstatus:** In Entwicklung  
 **Engine:** AppGameKit Studio (AGK)  
 **Aktiver Entwicklungszweig:** `develop`  
@@ -135,7 +135,7 @@ Minen können die Spielfigur verfolgen und stellen eine bewegliche Gefahr dar.
 
 Ein entsprechendes System ist im AGK-Quellcode vorhanden.
 
-### Walker
+### Alpha-Walker (Walker)
 
 Der Walker ist ein größerer, mehrteiliger Gegner mit gelenkbasiert animierten Körperteilen und einem drehbaren Waffenaufbau.
 
@@ -145,7 +145,7 @@ Für die aktuelle AGK-Version sind schwere Maschinengewehre als Bewaffnung vorge
 
 **Meilenstein: Alpha-taugliche Laufanimation.** Aufbauend auf der erfolgreichen 2-Knochen-IK und korrekten Corpus-/Turmanbindung (Referenz-Commit `deb8b74`, 13. November) wurden die getrennten Fußziele, der Wechsel zwischen Stand- und Schwungbein, die sanfte Rückkehr zur Standpose und das kontrollierte Umdrehen an Plattformkanten umgesetzt. Die Walker laufen jetzt mit einer einheitlichen Testgeschwindigkeit von `0.05`. Die Fußgelenke werden für eine optisch stimmige Auflage um 8 px über die Plattformoberkante gesetzt. Der Standpose-Test sowie die weißen Skelett-, Gelenk- und Winkelanzeigen sind deaktiviert, bleiben im Code aber zuschaltbar. Der Entwickler hat Stand und Gangbild mit Screenshots und kurzen Videos lokal geprüft und die Laufanimation als **für die Alpha ausreichend** bewertet. Das bedeutet nicht, dass ein HTML5-Test oder eine abschließende Prüfung aller Randfälle bereits erfolgt ist.
 
-**Walker-Bewaffnung (lokaler Stand 15. November 2026):** Die horizontale Zwei-Schuss-Salve ist integriert. Bullet und Mündungsfeuer starten seit `48ce0dd` am gemeinsamen Barrel-Anchor; die linke/rechte Rohrgrafik und die beiden Flash-Positionen wurden schrittweise justiert und in lokalen Screenshots vom Entwickler als passend bewertet. Das Mündungsfeuer folgt auch bei Plattformbewegung dem Walker. Die F1-Diagnose zeigt die relevanten IK-/Waffenpositionen in einer rechts oben verankerten Anzeige. **Die Spielmechanik gilt damit nicht als vollständig abgenommen:** Feuerzustände, alle Kollisionsregeln und HTML5-Randfälle sind weiter zu testen. Zielerfassung, diagonale Schüsse und begrenzte Torso-/Turm-Neigung bleiben spätere Erweiterungen; die funktionierende Bein-IK und die Anschlüsse sind dabei Referenz. Kisten als eigene Umkehrpunkte und eine zusätzliche Corpus-Trefferzone sind noch zu prüfen.
+**Alpha-Walker – lokal akzeptierter Stand (16. November 2026):** Der Entwickler bewertet den Walker nach Gesamtgefühl-Test als alpha-tauglich und benennt ihn **Alpha-Walker**. Gemeinsame Corpus-/Waffenneigung, eigenständige Turmseitenwahl mit 800-ms-Schwenkprojektion, 400-ms-Zielvorbereitung, Zwei-Schuss-Salve mit gespeichertem Winkel, kleine lernende Streuung ±3° bis ±1°, wechselnder Rohrrückstoß und neutral positionierter Flash sind umgesetzt und in der lokalen Entwicklung bewertet. Rohrgrafik und passende Proto wurden mit Commit `0051b8b` vom Entwickler eingecheckt. Das Referenzvideo zeigt mehrere Walker in Plattformumgebung und optisch zusammenhängenden Bein-/Waffenaufbau. **Für den Pre-Alpha-Release keine weitere Walker-Politur ohne konkreten spielverhindernden Befund.** Lokale Windows-/Video-Bewertung ersetzt keinen HTML5-/Gamepad-/Neustarttest; verbleibende Randfälle bleiben dokumentiert.
 
 **Grafisches Polishing – bewusst nachrangig:** Die Bein-Grafiken könnten bei Bedarf etwas schlanker werden oder feinere Gelenk-, Kontur- und Lichtdetails erhalten. Die aktuelle kräftige, eigenständige Walker-Silhouette ist für die Alpha akzeptiert; Änderungen an den Originalgrafiken sind nicht Voraussetzung für die Bewaffnung. Ein Keyframe-Werkzeug wie Spriter bleibt optional für besondere Animationen (z. B. Knien, Aufstehen oder Zerstörung).
 
@@ -187,13 +187,19 @@ Für die HTML5-Version müssen Browser- und Gamepad-Kompatibilität überprüft 
 
 Ob eine zusätzliche Tastatursteuerung erforderlich ist und wie diese umgesetzt wird, ist noch nicht abschließend festgelegt.
 
-## 8. Erste Veröffentlichung: Alpha
+## 8. Erste Veröffentlichung: HTML5-Pre-Alpha, danach Alpha
 
 ### Zielplattform
 
 **HTML5**, mit einer Veröffentlichung auf itch.io als erstem Ziel.
 
 Ein Windows-Build kann später zusätzlich angeboten werden.
+
+### Aktuelles Veröffentlichungsziel
+
+Der Entwickler möchte die **HTML5-Pre-Alpha am 16. November 2026** auf itch.io online stellen. Der lokal akzeptierte Alpha-Walker ist der eingefrorene Gegner-Referenzstand. Zuerst aktuellen HTML5-Export im Browser prüfen; nur konkrete Fehler korrigieren, die Start, Steuerung, Spielrunde oder Neustart verhindern. Ein öffentlicher Build muss seinen tatsächlichen Eingabeumfang, den experimentellen Stand und bekannte Einschränkungen klar benennen. Eine Gamepad-only-Pre-Alpha ist als Minimalvorschlag vertretbar, wenn der Controller im Browser tatsächlich funktioniert und die Seite dies deutlich sagt; diese Eingabeentscheidung ist noch zu bestätigen.
+
+Zusätzlicher Turmrückstoß, Draufsicht, neue Gegner, Optionsmenü, neue Punkte-/Online-Highscore-Systeme und umfassendes Energie-/Grafikbalancing sind für diesen kurzfristigen Pre-Alpha-Vorschlag nachrangig. Vorläufige Energie 5250 nicht stillschweigend als endgültige Alpha-Balance ausgeben. Die folgenden Alpha-Anforderungen bleiben als regulärer Zielrahmen bestehen.
 
 ### Verbindliche Anforderungen
 
@@ -279,4 +285,4 @@ Unbestätigte Annahmen dürfen nicht als gesicherte Eigenschaften des Spiels dar
 - Mögliche Aufgaben und Missionen
 - Späteres Veröffentlichungs- und Versionsschema
 
-**Nächster Meilenstein:** Gelegentliches Ruckeln horizontal nach links fahrender Plattformen mit F1-Messdaten eingrenzen; anschließend die Walker-Schüsse und Plattformbindung in Randfällen weiter testen. Danach HTML5-Build und Gamepad-Steuerung praktisch prüfen sowie die verbleibenden Alpha-Anforderungen priorisieren. Die aktuelle Walker-Laufanimation gilt als alpha-tauglicher Referenzstand; grafische Verfeinerungen bleiben optional.
+**Nächster Meilenstein:** Aktuellen HTML5-Export im Browser testen: Laden, Start, mindestens eine vollständige Eingabemethode, Spielrunde, Pause/Fortsetzen, Tod und Neustart. Danach nur echte Blocker beheben, Controls/bekannte Grenzen in README und itch.io-Seite abgleichen und die Pre-Alpha veröffentlichen. Alpha-Walker/IK vorerst erhalten; neue Features nach Veröffentlichung priorisieren.
