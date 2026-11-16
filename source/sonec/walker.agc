@@ -24,6 +24,11 @@
 #constant WALKER_FIRE_INTERVAL_MS 1800
 #constant WALKER_BURST_SHOT_DELAY_MS 150
 #constant WALKER_BURST_RECOVERY_MS 200
+// Three recoil positions (0/5/10 px), fully home before the second shot.
+#constant WALKER_BARREL_RECOIL_PX 10.0
+#constant WALKER_BARREL_RECOIL_RISE_MS 30
+#constant WALKER_BARREL_RECOIL_HOLD_MS 90
+#constant WALKER_BARREL_RECOIL_END_MS 150
 #constant WALKER_MUZZLE_FLASH_CYCLES 10
 
 //----------------------------------------------------------------------
@@ -395,6 +400,14 @@ function WalkerNew(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,World r
 	Walker.TurretSwivelTo = LOOKLEFT
 	Walker.TurretSwivelStartMs = 0
 	Walker.TurretWidthScale = 1.0
+	Walker.BarrelRecoilActive[0] = FALSE
+	Walker.BarrelRecoilActive[1] = FALSE
+	Walker.BarrelRecoilStartMs[0] = 0
+	Walker.BarrelRecoilStartMs[1] = 0
+	Walker.BarrelRecoilAngle[0] = 0.0
+	Walker.BarrelRecoilAngle[1] = 0.0
+	Walker.BarrelRecoilDistance[0] = 0.0
+	Walker.BarrelRecoilDistance[1] = 0.0
 	
 	// Fixed slower test pace: compare foot contact and turns at a consistent speed.
 	Walker.ObjectData.MoveSpeed.x = 0.05
@@ -729,6 +742,49 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
+// Add recoil only after rebuilding the neutral attachment chain. Never change
+// Proto offsets, the Corpus pivot, or lower-body IK. A later tower impulse can
+// be applied to the neutral parent before these independent barrel offsets.
+function WalkerBarrelRecoilApply(Walker ref as TWalker,World ref as TWorld,Now as integer)
+	local i as integer
+	local Elapsed as integer
+	local Distance as float
+	local dx as float
+	local dy as float
+
+	for i = 0 to 1
+		Distance = 0.0
+		if Walker.BarrelRecoilActive[i] = TRUE
+			Elapsed = Now-Walker.BarrelRecoilStartMs[i]
+			if Elapsed < 0 then Elapsed = 0
+			if Elapsed < WALKER_BARREL_RECOIL_RISE_MS
+				Distance = WALKER_BARREL_RECOIL_PX*0.5
+			else
+				if Elapsed < WALKER_BARREL_RECOIL_HOLD_MS
+					Distance = WALKER_BARREL_RECOIL_PX
+				else
+					if Elapsed < WALKER_BARREL_RECOIL_END_MS
+						Distance = WALKER_BARREL_RECOIL_PX*0.5
+					else
+						Walker.BarrelRecoilActive[i] = FALSE
+					endif
+				endif
+			endif
+		endif
+		Walker.BarrelRecoilDistance[i] = Distance
+		if Distance > 0.0
+			// Bullet direction is (Sin(angle),-Cos(angle)); recoil is opposite.
+			dx = -Sin(Walker.BarrelRecoilAngle[i])*Distance
+			dy = Cos(Walker.BarrelRecoilAngle[i])*Distance
+			Walker.WalkerObjectData.Barrel[i].Position.x = Walker.WalkerObjectData.Barrel[i].Position.x+dx
+			Walker.WalkerObjectData.Barrel[i].Position.y = Walker.WalkerObjectData.Barrel[i].Position.y+dy
+			Walker.WalkerObjectData.Barrel[i].AnchorPosition.x = Walker.WalkerObjectData.Barrel[i].AnchorPosition.x+dx
+			Walker.WalkerObjectData.Barrel[i].AnchorPosition.y = Walker.WalkerObjectData.Barrel[i].AnchorPosition.y+dy
+			SpritePositionCalc(Walker.WalkerSpriteData.Barrel[i].Position,Walker.WalkerObjectData.Barrel[i].Position,World.Position)
+		endif
+	next i
+endfunction
+
 function WalkerAnimate(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,World ref as TWorld,Now as integer)
 	local AimOffset as float
 	local AimProgress as float
@@ -789,6 +845,7 @@ function WalkerAnimate(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,Wor
 		Walker.WalkerObjectData.Barrel[0].AnchorPosition.x = Walker.WalkerObjectData.Corpus.Position.x + (Walker.WalkerObjectData.Barrel[0].AnchorPosition.x-Walker.WalkerObjectData.Corpus.Position.x)*Walker.TurretWidthScale
 		Walker.WalkerObjectData.Barrel[1].AnchorPosition.x = Walker.WalkerObjectData.Corpus.Position.x + (Walker.WalkerObjectData.Barrel[1].AnchorPosition.x-Walker.WalkerObjectData.Corpus.Position.x)*Walker.TurretWidthScale
 	endif
+	WalkerBarrelRecoilApply(Walker,World,Now)
 	if Walker.HitFlashUntil > Now
 		ColorSet(Walker.WalkerSpriteData.Tower.Color,255,0,0,255)
 	endif
@@ -971,7 +1028,10 @@ endfunction
 // In FireState 0 this is the first (upward) shot, in FireState 1 the second (downward).
 function WalkerMuzzlePositionCalculate(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,Position ref as TPosition)
 	local Angle as float
-	Position = Walker.WalkerObjectData.Barrel[0].AnchorPosition
+	local BarrelIndex as integer
+	BarrelIndex = 1
+	if Walker.FireState = 1 then BarrelIndex = 0
+	Position = Walker.WalkerObjectData.Barrel[BarrelIndex].AnchorPosition
 	if Walker.AimActive = TRUE
 		Angle = Walker.AimAngle
 	else
@@ -1001,11 +1061,22 @@ function WalkerFireShot(Walker ref as TWalker,WalkerIndex as integer,ProtoWalker
 	local MuzzlePosition as TPosition
 	local FireAngle as float
 	local FlashIndex as integer
+	local BarrelIndex as integer
+	BarrelIndex = 1
+	if Walker.FireState = 1 then BarrelIndex = 0
 	FireAngle = WalkerMuzzlePositionCalculate(Walker,ProtoWalker,MuzzlePosition)
 	BulletAdd(BulletList,ProtoBullet,World,MuzzlePosition,FireAngle,0.0,TYPEENEMY,Now)
 	// Both effects use the same origin; the flash stays attached to the moving barrel.
 	FlashIndex = FlashAdd(FlashList,ProtoFlash,World,0,WALKER_MUZZLE_FLASH_CYCLES,MuzzlePosition,FireAngle,0.0,Now)
-	if FlashIndex >= 0 then FlashList.Flash[FlashIndex].AttachedWalkerIndex = WalkerIndex
+	if FlashIndex >= 0
+		FlashList.Flash[FlashIndex].AttachedWalkerIndex = WalkerIndex
+		FlashList.Flash[FlashIndex].AttachedBarrelIndex = BarrelIndex
+	endif
+	// Spawn at the unrecoiled muzzle, then animate only this firing barrel.
+	Walker.BarrelRecoilActive[BarrelIndex] = TRUE
+	Walker.BarrelRecoilStartMs[BarrelIndex] = Now
+	Walker.BarrelRecoilAngle[BarrelIndex] = FireAngle
+	WalkerAnimate(Walker,ProtoWalker,World,Now)
 endfunction
 
 // FireState: 0 = idle, 1 = waiting for second bullet, 2 = recovery, 3 = aiming.
@@ -1157,13 +1228,17 @@ endfunction
 function WalkerFlashFollowAll(WalkerList ref as TWalkerList,FlashList ref as TFlashList,World ref as TWorld)
 	local i as integer
 	local WalkerIndex as integer
+	local BarrelIndex as integer
 	for i = 0 to FlashList.Flash.Length
 		if FlashList.Flash[i].Enabled = TRUE
 			WalkerIndex = FlashList.Flash[i].AttachedWalkerIndex
 			if WalkerIndex >= 0 and WalkerIndex <= WalkerList.Walker.Length
 				if WalkerList.Walker[WalkerIndex].Enabled = TRUE
-					FlashList.Flash[i].ObjectData.Position = WalkerList.Walker[WalkerIndex].WalkerObjectData.Barrel[0].AnchorPosition
-					SpritePositionCalc(FlashList.Flash[i].SpriteData.Position,FlashList.Flash[i].ObjectData.Position,World.Position)
+					BarrelIndex = FlashList.Flash[i].AttachedBarrelIndex
+					if BarrelIndex >= 0 and BarrelIndex <= 1
+						FlashList.Flash[i].ObjectData.Position = WalkerList.Walker[WalkerIndex].WalkerObjectData.Barrel[BarrelIndex].AnchorPosition
+						SpritePositionCalc(FlashList.Flash[i].SpriteData.Position,FlashList.Flash[i].ObjectData.Position,World.Position)
+					endif
 				endif
 			endif
 		endif

@@ -334,6 +334,11 @@ type TWalker
 	TurretSwivelTo as integer
 	TurretSwivelStartMs as integer
 	TurretWidthScale as float
+	// Independent additive barrel recoil, leaving all neutral pivots intact.
+	BarrelRecoilActive as integer[1]
+	BarrelRecoilStartMs as integer[1]
+	BarrelRecoilAngle as float[1]
+	BarrelRecoilDistance as float[1]
 	Enabled as integer
 	ObjectData as TObjectData
 	CollisionData as TCollisionData
@@ -429,6 +434,7 @@ type TFlash
 	EffectData as TEffectData
 	FlashAnimIndex as integer
 	AttachedWalkerIndex as integer
+	AttachedBarrelIndex as integer
 endtype
 
 type TFlashList

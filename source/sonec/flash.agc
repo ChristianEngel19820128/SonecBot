@@ -41,6 +41,7 @@ function FlashNew(Flash ref as TFlash,ProtoFlash ref as TProtoFlash,World ref as
 	Flash.Enabled = TRUE
 	// Pool entries may be reused; only Walker shots claim a Walker index.
 	Flash.AttachedWalkerIndex = -1
+	Flash.AttachedBarrelIndex = -1
 	
 	Flash.FlashAnimIndex = FlashType
 	// Initialize lifetime before computing the initial sprite scale (new pool objects start at zero).

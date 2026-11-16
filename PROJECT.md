@@ -1,6 +1,6 @@
 # SonecBot – Projektübersicht
 
-**Dokumentstatus:** Version 0.8  
+**Dokumentstatus:** Version 0.9  
 **Projektstatus:** In Entwicklung  
 **Engine:** AppGameKit Studio (AGK)  
 **Aktiver Entwicklungszweig:** `develop`  
@@ -48,6 +48,10 @@ Die Spielwelt enthält eine futuristische Stadtlandschaft, bewegliche Plattforme
 Die Kamera folgt der Spielfigur innerhalb festgelegter Grenzen auch vertikal.
 
 Ein Sturz unter den spielbaren Bereich kann zum Tod der Spielfigur führen.
+
+### Fairness als Grundregel
+
+Fairness gilt für Sonec ebenso wie für computergesteuerte Gegner. Eine übermäßige Bevorzugung einer Seite darf das Zusammenspiel aus Bewegung, Kampf und Ressourcen nicht aushebeln. Treffer, Zielverhalten und Gegenwehr müssen nachvollziehbar und spielerisch angemessen sein; diese Regel ist bei jeder Änderung von KI, Waffen, Schaden und Balancing zu berücksichtigen.
 
 ### Spielbeginn und Spielerfahrung
 
