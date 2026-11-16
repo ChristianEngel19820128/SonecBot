@@ -285,6 +285,14 @@ Entwickler akzeptiert den proportionalen HUD-Screenshot als funktional und bitte
 
 **Keine anderen Gameplayänderungen:** Energiekosten, Regeneration, Schwellen bei Energieobjekten und Overload-Health-Schaden sind unverändert. Gerade `SonecHealthRegenerate()` zieht bei Überladung weiter Gesundheit ab; 4500 ist daher als **bewusster temporärer Sichttestwert** zu behandeln, nicht als endgültiges Release-Balancing. Kein eigener AGK-/HTML5-Test des Assistenten; Entwickler soll direkt nach Start/Neustart die volle grüne/rote Anzeige und anschließend den erwarteten Verbrauch prüfen.
 
+### HUD-Skala 1500 / Alpha 170 für alle Balken (16.11.2026; Test offen)
+
+**Entwicklerfeedback:** Bei +500 Overload auf sieben roten Segmenten entfernte kurzer Flug rund drei Segmente; Skala zu empfindlich. Übernahme des Vorschlags **1500 Overload als 7-Segment-Anzeigebereich**, keine Erhöhung tatsächlicher Startenergie oder Kapazität. Änderung nur in `gui.agc`: `maxOverload = ceil(EnergyOverload*OverloadBarsMax*1.0/1500.0)`, unveränderte Obergrenze sieben. Bei `Energy.State=4500`, `Energy.StateMax=4000` ergibt das `ceil(500*7/1500)=3` rote Segmente. Die roten Slots repräsentieren einen theoretischen Darstellungsbereich bis +1500; darüber begrenzt das HUD auf sieben Slots. Bestehende Risiken/Kosten der Überladung bleiben unverändert.
+
+**Zweiter visual-only Test:** Sämtliche 10 expliziten `ColorSet(Data.Color,R,G,B,255)`-Aufrufe innerhalb `GuiEnergyDraw()` auf `...170` umgestellt. Betroffen: HP in grün/rot, Schild blau, rote Schildschadensspur, Energie in grün, Overload in rot, MG- und Granatenanzeigen in grün/rot. Die Proto-/Spriteassets selbst, Welt-Sprites und sonstige Farbzuweisungen sind nicht geändert. Alpha kann Darstellung je nach Hintergrund anders wirken; unter Windows/HTML5 visuell kontrollieren.
+
+**Status:** GitHub-Quellprüfung, kein eigener AGK-Compile. Nutzer soll frischen Build und Screenshot liefern; Test erst danach als bestanden markieren. Keine Balancing-/Spielphysikänderung.
+
 ## 7. Übergabe und Historie
 
 [HANDOFF.md](HANDOFF.md) enthält getesteten Referenzcommit, exakte Parameter, Release-Gates, offene Entscheidungen und einen direkten Starttext. Tatsächlichen develop-HEAD neu abfragen, lokale Nutzerdateien/alte Anhänge nicht voraussetzen.
