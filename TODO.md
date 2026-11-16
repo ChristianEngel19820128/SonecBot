@@ -1,9 +1,9 @@
 # SonecBot – Aktuelle Aufgaben und Meilensteine
 
-**Dokumentstatus:** Version 4.0 – bereinigte aktive Aufgabenliste  
+**Dokumentstatus:** Version 4.1 – itch.io-Draft-Test bestätigt  
 **Stand:** 16. November 2026  
 **Branch:** `develop`  
-**Aktuelles Ziel:** Kontrollierter HTML5-Pre-Alpha-Test für eingeladene Spieler über die **itch.io-Draft-Seite / Secret URL**. **Nicht auf Published umstellen**; den einmaligen öffentlichen Index-Push für einen späteren, noch nicht beschlossenen Release bewahren. Keine Deadline.
+**Aktuelles Ziel:** Funktionierende HTML5-Pre-Alpha auf itch.io im **Draft per Secret URL** für eingeladene Community-Tester bereitstellen, Feedback sammeln. **Nicht auf Published umstellen**; den einmaligen öffentlichen Index-Push für einen späteren, noch nicht beschlossenen Release bewahren. Keine Deadline.
 
 > Bei Chatwechsel zuerst [HANDOFF.md](HANDOFF.md) und den echten `develop`-HEAD lesen. Historische Arbeits- und Testdetails stehen in [TECHNICAL.md](TECHNICAL.md), in [dieser ausführlichen TODO-Version vor der Konsolidierung](https://github.com/ChristianEngel19820128/SonecBot/blob/b1d7da8f4bad6255e612948e833a39ab60a48243/TODO.md) und in Git. Datierte ältere „offen“-Einträge bezeichnen frühere Zwischenstände, **nicht** die heutige Aufgabenpriorität.
 
@@ -20,13 +20,16 @@
 
 **Testnachweis:** Alle praktischen Spielergebnisse sind Meldungen/Screenshots des Entwicklers; der Assistent hat keinen eigenen AGK-Compile oder HTML5-Browserlauf ausgeführt. Der exakte SHA einzelner lokal exportierter Builds wurde nicht jeweils festgehalten.
 
-## 2. Jetzt bis zum kontrollierten itch.io-Draft-Test
+## 2. Aktueller Meilenstein: itch.io-Draft-Pre-Alpha läuft
 
-- [ ] **Aktuellen `develop`-Build frisch als HTML5 exportieren und über lokalen Apache noch einmal kurz smoke-testen.** Start/Intro, Gamepad (inkl. Initialisierungszeit), Energie-HUD Alpha 100, Kampf/Schild, Pause und Neustart prüfen; keine komplette Wiederholung aller bereits bestandenen Einzelschritte verlangen. Export-SHA und ggf. AGK-/Browser-Version diesmal notieren, soweit verfügbar.
-- [ ] **README und englische itch.io-Beschreibung aktualisieren:** ehrliche „HTML5 pre-alpha“-Kennzeichnung, **Gamepad required**, tatsächlich getestete Steuerung, Controller-Aktivierungsverzögerung und bekannte Grenzen; 💚 als vereinbarte Kennzeichnung. Die alten Angaben 5.250 Energie / fehlender Kugelschild / fehlender Walker-Explosionspfad sind **überholt** und vor dem Teilen zu korrigieren.
-- [ ] **Screenshots/Cover und optional längeres Gameplayvideo auswählen.** Video nur, wenn ohne Verzögerung möglich; GifCam-Probleme bei hoher RAM-Auslastung sind eine Vermutung, keine bestätigte Ursache.
-- [ ] **Manueller Upload auf bestehende itch.io-Seite im Status Draft**, HTML5-Einbettung und Seitendarstellung kontrollieren; Secret URL mit mindestens einem eingeladenen Testzugang nachprüfen. **Kein Wechsel zu Published.** Besitzer verwaltet itch.io selbst.
-- [ ] **Erstes externes Spielerfeedback sammeln:** Spielbarkeit, Controller-Kompatibilität, Verständlichkeit, Minenhäufungen, Waffen-/Ressourcenbalance und beobachtete Fehler. Erst bei konkret reproduziertem, relevantem Problem einen kleinen einzelnen Fix vereinbaren und erneut lokal testen.
+- [x] **Windows-/AGK-Compile und frischer HTML5-Export erfolgreich (Entwicklermeldung 16.11.2026).** Lokaler Apache-Nachtest erfolgreich, kein sichtbares Tearing berichtet. ZIP mit HTML5-`index.html` erstellt und auf itch.io hochgeladen; keine vom Assistenten unabhängig geprüfte ZIP-Datei. Exakter exportierter Code-SHA nicht protokolliert.
+- [x] **itch.io-Draft-Embed lädt das Spiel:** Screenshot zeigt das Menü und FPS-Anzeige 60; anschließend Entwickler-Smoke-Test direkt im eingebetteten Spiel. Controller erkannt, Pause funktioniert, alle Waffen, Schild, Energieanziehung und alle Lauf-/Bewegungsfunktionen funktionieren; Tod durch erschöpfte Energie und Absturz getestet. ESC/QUIT sind bewusst im HTML5-Build deaktiviert. **Entwicklerbericht**, kein vom Assistenten ausgeführter Browserlauf.
+- [x] **README und englische itch.io-Seitenbeschreibung aktualisiert.** Promo-Cover/-Banner ergänzt; AI-Disclosure auf Text/Dialog, Code und aufgrund KI-generierter Promografiken auch Graphics ausgelegt (tatsächlich gesetzte Formularhäkchen nicht unabhängig geprüft). 💚 bleibt Projektkennzeichen.
+- [x] **Secret-URL-Seite im Draft bereitgestellt:** Entwickler bestätigt Upload und gespeicherte Beschreibung; vorliegender Screenshot zeigt Seite in Draft. Die Secret URL darf an ausgewählte Community-Tester weitergereicht werden. **Keine öffentliche Published-Freigabe und kein öffentlicher Release.**
+- [ ] **Falls noch nicht geschehen: Neustart nach Game-over direkt im itch.io-Embed einmal kurz bestätigen.** Mehrere Neustarts im lokalen HTML5-Browser waren bereits erfolgreich; nicht automatisch als itch.io-Embed-Test ausgeben.
+- [ ] **GitHub-Link zur Branch `develop` auf der itch.io-Seite ergänzen:** übernimmt der Entwickler selbst; noch nicht als erledigt behaupten.
+- [ ] **Feedback der ersten externen Spieler abwarten und sammeln:** tatsächliche Browser-/Controller-Unterstützung, Start/Pause/Neustart, Balance, Minen, Verständlichkeit. Nur reproduzierbare und relevante Probleme einzeln korrigieren; **kein Minenspawn-Umbau vor Testerfeedback.**
+- [ ] **Später gesondert über `develop` → `main` entscheiden:** nach akzeptiertem Draft-Meilenstein, eventuell am Abend. Merge **nicht ausgeführt**; vorher Änderungen/Branch-Differenz gemeinsam prüfen. GitHub-Merge und itch.io-Status sind unabhängig; itch.io bleibt Draft bis ausdrücklicher späterer Publish-Entscheidung.
 
 ### Bekannte Grenzen für Release-Text oder bewusste Akzeptanz
 
