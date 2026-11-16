@@ -307,6 +307,10 @@ Der vorherige Anzeigemaßstab +1500 für sieben rote Segmente sowie Energie `Sta
 
 **Veröffentlichung/Branch:** Die Seite ist über Secret URL im Draft erreichbar und wird von Besitzer an ausgewählte Community-Tester geteilt; **nicht Published**. `develop` bleibt aktiv; ein späterer Merge nach `main` ist **nicht ausgeführt** und vorab gesondert zu beschließen. Der Entwickler ergänzt einen `develop`-GitHub-Link selbst auf itch.io. Die URL mit Secret-Token nicht in öffentliche Dokumente aufnehmen. KI-generierte Werbegrafik ist als Promo-Interpretation zu kennzeichnen; AI-Disclosure-Text zu Graphics, Text/Dialog und Code wurde vorbereitet.
 
+### Letzter itch.io-Nachtrag: Neustart + GitHub-Links (16.11.2026)
+
+**Zusätzlicher Entwicklertest:** Nach dem erfolgreichen Funktions-Smoke-Test im itch.io-HTML5-Embed wurde auch der **Neustart** als „soweit ok“ bestätigt. Damit ist der einfache Neustart im Embed positiv gemeldet; mehrere lokale HTML5-Neustarts waren bereits zuvor bestanden. Keine vollständige Langzeit-/Browserübergreifende Regression oder eigener Browserlauf des Assistenten. Auf der itch.io-Draft-Seite sind laut Entwickler nun **zwei separate GitHub-Links** zu `develop` und `main` gesetzt. Die Seite verbleibt ausdrücklich im **Draft mit Secret URL**; der Link wird an Community-Tester weitergegeben. Der spätere Merge `develop`→`main` ist **noch nicht ausgeführt**. Keine Spielcodeänderung.
+
 ## 7. Übergabe und Historie
 
 [HANDOFF.md](HANDOFF.md) enthält getesteten Referenzcommit, exakte Parameter, Release-Gates, offene Entscheidungen und einen direkten Starttext. Tatsächlichen develop-HEAD neu abfragen, lokale Nutzerdateien/alte Anhänge nicht voraussetzen.
