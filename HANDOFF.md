@@ -2,7 +2,7 @@
 
 **Stand:** 16. November 2026  
 **Ziel:** HTML5-Pre-Alpha kontrolliert testen und ausgewählten Personen über itch.io-Draft/Secret-URL zugänglich machen; öffentliche Veröffentlichung später entscheiden  
-**Status:** Alpha-Walker abgeschlossen; **HTML5-Export und erster lokaler Browserstart laut Entwickler bestanden**; Gamepad-Aktions- und Pause-Test laut Entwickler bestanden; Tod und mehrfacher Neustart im laufenden HTML5-Browsertest bestanden; Draft-Upload noch offen, kein öffentlicher Publish geplant  
+**Status:** Alpha-Walker abgeschlossen; HTML5-Compile/Export, lokaler Apache-Test und **itch.io-Draft-Upload samt eingebettetem Gameplay-Smoke-Test laut Entwickler erfolgreich**; Gamepad, Bewegung, Waffen, Schild/Energieanziehung, Pause und Tod im itch.io-Embed bestätigt. Neustarts lokal mehrfach geprüft, im itch.io-Embed noch nicht separat bestätigt. **Draft / Secret URL, nicht Published**; externer Community-Test beginnt. Merge nach `main` offen.  
 **Repository:** ChristianEngel19820128/SonecBot  
 **Arbeitsbranch:** `develop`  
 **Historischer, lokal akzeptierter Walker-Abschluss-Codecommit:** [`18f92a965810763b552bd96649607c112f966238`](https://github.com/ChristianEngel19820128/SonecBot/commit/18f92a965810763b552bd96649607c112f966238)
@@ -14,6 +14,16 @@
 >
 > **Arbeitsweise:** In kleinen gemeinsam freigegebenen Schritten vorgehen. Nutzer exportiert/kompiliert in lokalem AGK Studio, testet mit lokalem Apache im Browser/Gamepad und pflegt itch.io; Assistent prüft GitHub-Quellen und dokumentiert präzise, ohne lokale Tests zu behaupten. Besonderheiten mit Nachweisstatus festhalten, aktuellen Schritt beenden, erst danach über Folgearbeit bzw. Knowledge-Base-Eintrag entscheiden. Crystals 1.0 ist die bewährte Prozesserfahrung. GitHub-HEAD bei jedem Einstieg neu lesen; Snapshot vor dieser Dokumentationsänderung: `3840bfa545aeec6df6902180415d22efdd58f3ba`.
 > **Prüfkandidat, noch kein bestätigter Bug:** Spawn-Zufallsentscheidungen liegen in `GameDo()` und könnten pro Frame statt pro Zeit erfolgen. Vor jeder Änderung tatsächliche Frequenzen/Spielwirkung bewerten; keine pauschale Balancingmaßnahme.
+
+## Aktuellster Stand – erfolgreiches itch.io-Draft-Deployment (16.11.2026, Vormittag)
+
+**Entwicklermeldung und Screenshot:** AGK-/Windows-Compile erfolgreich; HTML5-Export erfolgreich; erneuter Apache-Test erfolgreich und dabei **kein sichtbares Tearing**. `index.html` wurde erzeugt, ein ZIP erstellt, hochgeladen und die englische Seitenbeschreibung gespeichert. Die bestehende itch.io-Seite zeigt den neuen KI-generierten Banner, das Spielmenü und eine 60-FPS-Anzeige und bleibt sichtbar als **DRAFT / Secret URL** markiert. Der Entwickler darf den geheimen Link an ausgewählte Community-Mitglieder verteilen; **keine Änderung auf Published**. Dass im Embed 60 FPS angezeigt werden, ersetzt keinen plattformübergreifenden Performance-Nachweis. Die ursprüngliche Crystals-Testdatei hat der Entwickler zuvor entfernt.
+
+**Direkt im itch.io-Embed laut Entwickler bestanden:** Controller erkannt, Pause, **alle vier Waffen**, Schild, Energieanziehung, alle Lauf-/Bewegungsfunktionen; Tod durch fehlende Energie/Absturz möglich. ESC und Quit sind im HTML5-Build absichtlich deaktiviert. **Wichtig:** Tod und mehrfacher Neustart waren bereits im *lokalen* HTML5-Browser erfolgreich; ein Neustart **nach Game-over im itch.io-Embed** ist aus der letzten Rückmeldung nicht separat belegt. Andere Browser/Controller und längeres Laufzeitverhalten ebenfalls nicht. Kein eigener Browserlauf durch Assistent; exakter Binär-Export-SHA nicht dokumentiert.
+
+**Seitenpflege:** Englische Beschreibung eingebaut; KI-generierte Promo-Cover-/Bannerinterpretationen verwendet (nicht die Original-Ingame-Sprites), AI-Disclosure wurde gemeinsam mit Code, Text/Dialog und Graphics formuliert; tatsächliche gesetzte Häkchen nicht unabhängig geprüft. 💚 ist der feste Markenhinweis. Ein GitHub-Link zur aktiven `develop`-Branch wird vom Entwickler noch selbst auf itch.io ergänzt. Den geheimen Query-Parameter **nicht in öffentliche Repo-Dokumentation kopieren**.
+
+**Nächster Arbeitsschritt:** Dokumentation fertigstellen, danach Ruhe und erstes Community-Feedback. Optional den letzten Embed-Neustart einmal testen. `develop` nach `main` ist **erst für später/am Abend zur gemeinsamen Entscheidung** vorgesehen und **nicht** erfolgt. Die separate Veröffentlichung der itch.io-Seite bleibt bewusst zurückgestellt. Keine Spielcode-, Minenspawn- oder Walker-Änderung ohne neuen konkret getesteten Befund. Für aktuelle Prioritäten [TODO.md](TODO.md) verwenden; ältere Status-/Release-Gate-Abschnitte in diesem Dokument sind historische Momentaufnahmen.
 
 ## Aktuelle Priorität nach TODO-Konsolidierung (16. November 2026)
 
