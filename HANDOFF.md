@@ -15,6 +15,16 @@
 > **Arbeitsweise:** In kleinen gemeinsam freigegebenen Schritten vorgehen. Nutzer exportiert/kompiliert in lokalem AGK Studio, testet mit lokalem Apache im Browser/Gamepad und pflegt itch.io; Assistent prüft GitHub-Quellen und dokumentiert präzise, ohne lokale Tests zu behaupten. Besonderheiten mit Nachweisstatus festhalten, aktuellen Schritt beenden, erst danach über Folgearbeit bzw. Knowledge-Base-Eintrag entscheiden. Crystals 1.0 ist die bewährte Prozesserfahrung. GitHub-HEAD bei jedem Einstieg neu lesen; Snapshot vor dieser Dokumentationsänderung: `3840bfa545aeec6df6902180415d22efdd58f3ba`.
 > **Prüfkandidat, noch kein bestätigter Bug:** Spawn-Zufallsentscheidungen liegen in `GameDo()` und könnten pro Frame statt pro Zeit erfolgen. Vor jeder Änderung tatsächliche Frequenzen/Spielwirkung bewerten; keine pauschale Balancingmaßnahme.
 
+## Post-Pre-Alpha: Hover/Jets Schritt 6d (17.11.2026)
+
+**6c technisch vom Entwickler bestanden:** AGK-Compile und sämtliche 8 Hover-Tests erfolgreich: mit/ohne A/D halten, Ctrl/Button 9 loslassen beendet Hover, Jetpack und Bewegung weiterhin funktionsfähig. Der Testbericht enthielt neue Design-Beobachtungen statt durchgefallener Prüfpunkte.
+
+**Nutzerpräferenzen nach 6c:** Hover bleibt zunächst kostenlos und ohne eigenen Jet; mögliche Übermächtigkeit und Entdeckung durch Spieler beobachten. Geplante spätere Standardtaste **Space** statt Ctrl, da Ctrl ergonomisch schwer bedienbar. Späteres Optionsmenü soll **Umschalten als Standard** und **Halten als Alternative** anbieten, einschließlich Speicherung/Reset und klarer Zustände. Gamepad-Hover-Taste künftig auf Ergonomie untersuchen; bisher Button 9. Diese Optionen sind NICHT implementiert, nicht Teil von 6d.
+
+**6d ausschließlich auf `develop` implementiert, AGK-Compile/Runtime offen:** In `source/sonec/sonec.agc` wird die bereits vorhandene Luftbremsung mit Faktor 0.20 in `SonecMove()` nur noch ausgeführt, wenn `Sonec.State.Hover = TRUE and Sonec.State.Fly = FALSE`. So hat aktiver Jetpack-Flug Vorrang; nach W/Stick-Up loslassen und weiterhin gehaltenem Hover bremst Hover wieder den Fall. Keine Änderung der Hover-Eingabe, Defaultbelegung Ctrl/Button 9, Energie, Auftrieb, Grafik oder restlicher Physik. Bei fehlendem Jetpack-Schub (z. B. zu wenig Energie) bleibt Hover als Luftbremse erlaubt. Quelltext geprüft, aber bisher nicht lokal kompiliert.
+
+**Nächster kleiner Test:** Entwickler kompiliert aktuellen `develop`-HEAD, vergleicht Jetpack-Aufstieg W allein gegen W+Ctrl, prüft Ctrl allein während freien Fallens, Übergang W+Ctrl → Ctrl halten/W loslassen → beide loslassen, Gamepad-Stick hoch + Button 9 sowie normale Bewegung. Beobachtungen mit Freitext notieren, kein automatisches Absenden. Danach erst Space-Key-Default oder Hover-Modus separat freigeben.
+
 ## Post-Pre-Alpha: Hover-Fix 6c – gehaltene Eingabe (16.11.2026, spät)
 
 **6b vollständig vom Entwickler bestätigt:** AGK-Compile und alle acht Testfälle bestanden (Backspace/Select außerhalb Pause ohne Wirkung, aus Pause zum Menü, Enter/Start fortsetzen, Neustart, Hinweise); keine Auffälligkeiten.
