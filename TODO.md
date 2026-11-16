@@ -1,6 +1,6 @@
 # SonecBot – Aktuelle Aufgaben und Meilensteine
 
-**Dokumentstatus:** Version 5.3 – Space als Hover-Standard, Test ausstehend  
+**Dokumentstatus:** Version 5.4 – Tastaturnavigation im Intro ergänzt, Test ausstehend  
 **Stand:** 16. November 2026  
 **Branch:** `develop`  
 **Aktuelles Ziel:** Funktionierende HTML5-Pre-Alpha auf itch.io im **Draft per Secret URL** für eingeladene Community-Tester bereitstellen, Feedback sammeln. **Nicht auf Published umstellen**; den einmaligen öffentlichen Index-Push für einen späteren, noch nicht beschlossenen Release bewahren. Keine Deadline.
@@ -60,6 +60,10 @@
 **Hover-Fix 6c vom Entwickler getestet:** AGK-Compile erfolgreich, alle 8 technischen Tests bestätigt: gehaltenes Ctrl/Gamepad-Button 9 bremst das Fallen unabhängig von A/D und Loslassen beendet Hover; Jetpack/Bewegung weiterhin funktional. Bericht war wegen zusätzlicher Designbeobachtungen als „Auffälligkeiten / Fehler“ markiert, nicht wegen eines fehlgeschlagenen der acht Prüfpunkte. **Neue Designfragen:** Kostenloser Hover ohne Jet ist spielerisch sehr mächtig, zunächst bewusst beibehalten und Entdeckung/Balance durch Spieler beobachten; bevorzugter späterer Hover-Modus in Optionen ist **Umschalten** (Halten bleibt wählbar), bevorzugte neue Keyboard-Standardtaste **Space** statt Ctrl, Gamepad-Ergonomie separat testen. Noch nichts davon implementiert.
 
 **Schritt 6d vom Entwickler vollständig bestanden:** AGK-Compile und alle 8 Tests: W allein Aufstieg, Ctrl allein Luftbremse, W+Ctrl normaler Jetpack-Aufstieg, Übergang W loslassen bei gehaltenem Ctrl zu Hover, beide loslassen normales Fallen, Gamepad-Stick hoch + Button 9 und Bewegung/Waffen ohne Regression. Entwickler beobachtet zusätzlich: Während Pause losgelassenes Ctrl ist nach Fortsetzen korrekt nicht mehr aktiv.
+
+**Schritt 6e vom Entwickler vollständig bestätigt:** AGK-Compile und 8/8 Funktionstests bestanden: Space halten/loslassen, WASD/QE+Space gleichzeitig, W+Space normaler Aufstieg, Ctrl kein Hover mehr, Gamepad-Button 9 weiter aktiv, Loslassen in Pause nach Fortsetzen korrekt. Keine Auffälligkeiten.
+
+**Schritt 7a implementiert, AGK-Compile und Funktionstest offen:** In `IntroDo()` liest die Menü-Navigation jetzt `InputActionPressed(Keys,JoystickIndex,ACTION_MOVE_UP/DOWN)` (W/S und bestehendes D-Pad) sowie zusätzlich `GetKeyPressed(KEY_UP/KEY_DOWN)` für die Pfeiltasten. Auswahl-Wrap 1..3, Menü-Ton und Enter/Start/Gamepad-A-Confirm bleiben unverändert; `OPTIONS` setzt weiterhin nur `Intro.IsOption`, kein echtes Optionsmenü implementiert. **Nächster kleiner Test:** AGK-Compile; W/S und Pfeile durch alle drei Menüpunkte inklusive Wrap, Enter bestätigt START, D-Pad- und Gamepad-A/Start-Regression. Auswahl von OPTIONS noch nicht als funktionierendes Untermenü bewerten. Nicht gleichzeitig Hover-Modus oder Speichern implementieren.
 
 **Schritt 6e implementiert, AGK-Compile und Spieltest offen:** In `source/sonec/input.agc` wurde ausschließlich der Keyboard-Default `Keys.Binding[ACTION_HOVER].Key` von `KEY_CONTROL` auf `KEY_SPACE` geändert. Gamepad Button 9, Hover-Halten, Jetpack-Vorrang, Faktor 0.20, Energieverbrauch, Menüs, Bewegung und Waffen unverändert. **Nächster einzelner Test:** AGK-Compile, Space halten/loslassen, WASD/QE+Space, W+Space, Ctrl standardmäßig ohne Hover, Gamepad Button 9 und Release während Pause. **Später separat:** Hover-Umschalten als bevorzugte Standardeinstellung im Optionsmenü, Halten als Alternative; kostenlose Hover-Luftbremse zunächst bewusst beibehalten, Spielerfeedback abwarten.
 
