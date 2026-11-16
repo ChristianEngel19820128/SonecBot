@@ -15,6 +15,14 @@
 > **Arbeitsweise:** In kleinen gemeinsam freigegebenen Schritten vorgehen. Nutzer exportiert/kompiliert in lokalem AGK Studio, testet mit lokalem Apache im Browser/Gamepad und pflegt itch.io; Assistent prüft GitHub-Quellen und dokumentiert präzise, ohne lokale Tests zu behaupten. Besonderheiten mit Nachweisstatus festhalten, aktuellen Schritt beenden, erst danach über Folgearbeit bzw. Knowledge-Base-Eintrag entscheiden. Crystals 1.0 ist die bewährte Prozesserfahrung. GitHub-HEAD bei jedem Einstieg neu lesen; Snapshot vor dieser Dokumentationsänderung: `3840bfa545aeec6df6902180415d22efdd58f3ba`.
 > **Prüfkandidat, noch kein bestätigter Bug:** Spawn-Zufallsentscheidungen liegen in `GameDo()` und könnten pro Frame statt pro Zeit erfolgen. Vor jeder Änderung tatsächliche Frequenzen/Spielwirkung bewerten; keine pauschale Balancingmaßnahme.
 
+## Post-Pre-Alpha: Schritt 5 Bewegung auf Actions umgestellt (16.11.2026, Abend)
+
+**Schritt 4 und 4b vom Entwickler bestätigt:** AGK-Compile erfolgreich; sechs Tastaturaktionen J/K/L/I/U/O sowie Gamepad A/B/X/Y/LB/RB erfolgreich im Spiel getestet. Dies bestätigt die erste produktive `TKeys`-Verwendung für die sechs Waffen-/Energieaktionen.
+
+**Schritt 5 auf `develop` implementiert, AGK-Compile und Gameplay noch offen:** Nur sechs Bewegungsabfragen in `source/sonec/sonec.agc` auf `InputActionState(Keys,JoystickIndex,ACTION_MOVE_UP/DOWN/LEFT/RIGHT/BACK_LEFT/BACK_RIGHT)` umgestellt, mit Datenweitergabe über `GameInput(Game,Keys,Now)` und `main.agc`. Bisherige D-Pad-Abfragen sind in den ersetzten Bedingungen durch digitale Pad-Bindings abgedeckt; Stick-/Triggerachsen `GetJoyX/Y/Z/RZ`, Jetpack-Energiekosten, Sonec-Animations-/Blickrichtungslogik und übrige Bedingungen bleiben unangetastet. `GetJoyZ(1)` und `GetJoyRZ(1)` im alten Blickrichtungszweig wurden absichtlich **nicht** umgeschrieben; bestehender möglicher Index-1-Randfall separat prüfen, nicht ohne Befund ändern. Hover (Ctrl / Gamepad Button 9), Menü/Start/Pause, Gamepad-Back-Verhalten und restliche Spielmechanik bleiben unverändert. **Bekannte noch offene Designentscheidung:** Back/Select darf zukünftig nur aus Pause zum Menü führen, aktuell ist die ältere Live-Funktion noch vorhanden. Weitere Entwicklung (Optionsmenü, Cookie, spätere Pad-/Maus-Bindings) nicht Teil dieses Commits.
+
+**Nächster kleiner Schritt:** Entwickler kompiliert den neuen `develop`-Stand in AGK Studio, dann prüft WASD+Q/E, Jetpack, Ducken, korrekte Laufrichtung und entgegengesetzte Blickrichtung bei Rückwärtsbewegung sowie Gamepad-Stick, D-Pad, Trigger; Schild/Waffen sollten weiter funktionieren. Noch kein neuer HTML5-Test bestätigt.
+
 ## Post-Pre-Alpha: Schritt 4 erste aktive Action-Migration (16.11.2026, Abend)
 
 **Schritt 3 vom Entwickler erfolgreich kompiliert:** `Compilation finished successfully.` Die beiden Funktionen `InputActionState` und `InputActionPressed` sind vom AGK-Compiler akzeptiert.
