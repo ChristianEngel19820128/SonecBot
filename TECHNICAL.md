@@ -253,6 +253,14 @@ Entwickler bestätigt mehrfachen Tod **innerhalb derselben HTML5-Browsersitzung*
 
 **Nächster Einzelpunkt:** Walker kann momentan durch Sonec hindurchlaufen; die gewünschte Stop-/Feuerreaktion ist von Kistenstopp und bestehender Feuerzustandslogik abzugrenzen. Erst eng untersuchen, anschließend minimal implementieren und testen. Energie-HUD danach getrennt.
 
+### Walker/Sonec: eng begrenzter Bewegungsstopp und Radiusprüfung (16.11.2026; Test offen)
+
+**Radiusprüfung auf ausdrücklichen Hinweis des Entwicklers:** `SonecInit()` weist `Sonec.ObjectData.Size.Width = GetSpriteWidth(ProtoSonec.AnimRight.Stand.Sprite.ID)`, `Sonec.ObjectData.Radius = Sonec.ObjectData.Size.Width * 0.5`, `Sonec.SpriteData.Scale = 1` zu. Kein zweites Multiplizieren mit `SpriteData.Scale` in `sonec.agc` gefunden. Daher im erkennbaren Initialisierungspfad **keine doppelte Scale-Schrumpfung**, tatsächliche optische Sprite-/Hitbox-Passung im Spiel kontrollieren. Radius- oder Spritewerte wurden nicht geändert.
+
+**Neuer Walker-Movement-Pfad:** `WalkerSonecDistanceAhead(Walker,Sonec)` in `walker.agc` ermittelt in Weltkoordinaten die freie Distanz vor der bestehenden Walker-Hülle (`WALKER_HULL_HALF_WIDTH=50`, `WALKER_HULL_HORIZONTAL_CLEARANCE=5`, `WALKER_HULL_TOP=50`, `WALKER_HULL_BOTTOM=35`) und Sonecs Kreis-/AABB-Hilfsregion (`Sonec.ObjectData.Position ± Sonec.ObjectData.Radius`). Nur bei vertikaler Überlappung blockiert der Spieler, beim Ausweichen nach oben nicht. `WalkerMove()` fordert `Sonec ref as TSonec`, begrenzt `StepX` innerhalb des bisherigen `if StepX>0`-Zweigs nach `WalkerChestDistanceAhead()`, und setzt bei erreichten/überlappenden Hindernisabständen `Walker.PauseUntilMs=Now+1200`. Anders als eine Kiste löst Sonec **keine Umdrehung** aus, sondern die unveränderte `WalkerFireAll()`-Logik darf in der normalen Pause feuern. `WalkerMoveAll()` und der Aufruf in `game.agc` sind entsprechend angepasst.
+
+**Nachweisstatus:** GitHub-Signatur-/Aufrufprüfung bestanden; **kein eigener AGK-Compiler-/Laufzeittest**. Entwickler testet Windows/HTML5, Stop vor Sonec aus beiden Richtungen, reguläres Zielen/Schießen, Weiterlaufen bei freiem Weg, Flug über Walker hinweg und unveränderte Kisten-, Kanten-, Stand-/IK- und Turmregeln. Bei schlechter Distanz bitte erst Screenshot/Beobachtung, dann gezieltes Feintuning; keinen allgemeinen Collider-Umbau. HUD erst nach Testabschluss angehen.
+
 ## 7. Übergabe und Historie
 
 [HANDOFF.md](HANDOFF.md) enthält getesteten Referenzcommit, exakte Parameter, Release-Gates, offene Entscheidungen und einen direkten Starttext. Tatsächlichen develop-HEAD neu abfragen, lokale Nutzerdateien/alte Anhänge nicht voraussetzen.
