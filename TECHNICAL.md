@@ -201,7 +201,7 @@ Vorher wurden nur Orb-Kollisionen implementiert, wobei `PlasmaBlitzCollideOrbs()
 
 **Hash-Klarstellung:** `18f92a9` in der Kopfzeile bezeichnet ausdrücklich den historischen Abschluss des Alpha-Walkers. Vorliegende Kollisionsänderungen wurden danach auf `develop` committet und anschließend lokal getestet; der SHA des konkret exportierten und getesteten Binär-Builds ist nicht separat protokolliert. Tatsächlichen HEAD jeweils frisch lesen.
 
-### Explosion → Walker: letzter Kollisionspfad der ersten Matrix (16. November 2026; Test offen)
+### Explosion → Walker: letzter Kollisionspfad der ersten Matrix (16. November 2026; anschließend lokal positiv)
 
 **Eingriff bewusst auf vorhandene Geometrie begrenzt:** `TExplosion.LastWalkerHitMs` als dynamisches integer-Array pro Explosion/Walker; Initialisierung auf `Length = -1` in `ExplosionNew()`. `ExplosionCollideWalkers()` prüft die Distanz vom Explosionszentrum zum nächsten Punkt der bereits vorhandenen `WalkerCollisionData.Tower.Position1/Position2`-AABB. Nur bei Distanz kleiner als `Explosion.ObjectData.Radius` gilt der Turm als getroffen. Damit zählen nahe Explosionen am Rand der Turmgeometrie; andere Walker-Kollisionen sowie IK/Pivots bleiben unberührt.
 
@@ -210,6 +210,14 @@ Vorher wurden nur Orb-Kollisionen implementiert, wobei `PlasmaBlitzCollideOrbs()
 **Wichtige Konsequenzen:** Ein direkter Treffer einer Granate fügt kinetischen Schaden zu und löst die gewohnte Explosion aus, deren Radius im nachfolgenden Spielupdate zusätzlich Schaden am Walker verursachen kann. Auch Plattform-Bodenexplosionen und andere Explosionstypen sind dadurch potentiell gegen Walker wirksam; mögliche Kettenreaktion bei Walker-Zerstörung. Die Zahl der Treffer während einer Animation hängt von Überlappungsdauer und dem bestehenden Mindestintervall ab; das ist bewusst als bestehendes Schadensmodell übernommen, **noch nicht anhand eines aktuellen AGK-Builds gemessen**.
 
 **Testauftrag:** Windows-Compile und lokaler HTML5-Test durch Entwickler; Walker-Turmtreffer durch Direktaufprall vs. Explosion in der Nähe vergleichen; rote Reaktion, Zerstörung, doppelte Wirkung und weitere Explosionen gegen Sonec/Kisten/Orbs/Minen auf Regression prüfen. Der Entwickler bewertet das Spielgefühl; keine vorschnelle Schadensbalance oder Panzerungsänderung. Kein eigener AGK-Compile des Assistenten.
+
+### Kollisionsmatrix abgeschlossen – Explosions-Nachtest positiv (16. November 2026)
+
+**Evidenz:** Entwickler bestätigt „sprengtest erfolgreich“. Eine Granate mit direktem Treffer am Walker-Turm und eine Explosion ohne direkten Aufprall können den Walker zerstören. Somit funktioniert `ExplosionCollideWalkers()` lokal in den beiden maßgeblichen Fällen. Genaue Windows-/HTML5-Ausführungsumgebung für diesen Einzeltest, Intervall-Messung, komplette Regression der übrigen Explosionstargets und Export-Commit nicht einzeln dokumentiert. Keine zusätzlichen Spielcodeänderungen nötig, solange keine neue konkrete Auffälligkeit auftritt. Bestehende Turm-AABB und Explosionsintervall bleiben unangetastet.
+
+**Erste Matrix:** Player-Bullets, Flammen, Plasma-Blitz, direkter Granatenaufprall und Explosion haben implementierte Walker-Turmtrefferpfade. Erweiterte Kollision der Corpus-/Bein-/anderen Körperteile war als Zukunftsidee angelegt; ist kein Pre-Alpha-Releaseblocker. Der Entwickler hebt hervor, dass gerade die schwer erreichbare Turmzone den Walker als Gegner unverwechselbar macht und das Spiel mit Gegenwehr schon jetzt Spaß macht.
+
+**Später:** Gameplayvideo nach den Kern-Releaseprüfungen erwünscht. GifCam-Probleme könnten laut Entwickler mit hohem RAM-Verbrauch bei vielen laufenden Programmen zusammenhängen; Hypothese, keine technische Diagnose. Alternativen gegebenenfalls später prüfen. Achievements sind eine Zukunftsidee, gegenwärtig nicht implementiert.
 
 ## 7. Übergabe und Historie
 
