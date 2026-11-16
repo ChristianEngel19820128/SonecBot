@@ -85,7 +85,7 @@ Der lokal getestete Code-Referenzcommit ist [`18f92a965810763b552bd96649607c112f
 ### Neue Spieltest-Befunde: Walker, Energie-HUD, Schild (16.11.2026)
 
 - [x] **Walker-Stopp bei Sonec:** Entwickler bestätigt passenden Abstand in beiden Richtungen (Screenshots), Stoppen und Schießen mit Schaden, normales Weg-/Überfliegen. Nur Walker-Bewegungsstopp, keine vollständige wechselseitige Körperkollision; Sprung in Walker bleibt separater Befund.
-- [ ] **Energie-HUD-Proportion:** proportionaler Darstellungsfix auf `develop` umgesetzt (43 grüne/7 rote Slots ≈ 150 HP/25 Schild in Pixelhöhe); **visueller AGK-/HTML5-Nachtest offen**. Energie-/Ressourcenwerte unverändert.
+- [ ] **Energie-HUD-Proportion:** proportionaler Darstellungsfix auf `develop` umgesetzt (43 grüne/7 rote Slots ≈ 150 HP/25 Schild in Pixelhöhe); **visueller AGK-/HTML5-Nachtest offen; 4000+500-Starttest ergänzt**. Energie-/Ressourcenwerte unverändert.
 - [x] **Schild gegen Walker-Geschosse – lokal bestanden:** `BulletCollide()` nutzt vorhandenen Absorptionspfad für `TYPEENEMY`; Entwickler bestätigt Schaden ohne Schild, Abbau der Schildladung mit roter Schadensspur bei aktiviertem Schild bis zum Verbrauch und bezeichnet **alle vereinbarten Tests als bestanden**. Keine neuen Balancewerte.
 - [x] **HTML5-Release-Gate bestanden:** Entwickler bestätigt mehrfachen Tod durch Minen/Walker, mehrfachen Neustart in derselben aktiven Browser-Sitzung, Spiel weiterhin lauffähig. Kein Beleg für Langzeit-Memory-Verhalten oder andere Browser.
 
@@ -115,6 +115,11 @@ Der lokal getestete Code-Referenzcommit ist [`18f92a965810763b552bd96649607c112f
 
 - [ ] **Windows-/HTML5-Build und visuelle Kontrolle:** `GuiEnergyDraw()` skaliert Energie auf ca. **43 grüne und maximal 7 rote Segmente**, ermittelt aus HP 150 + Schild 25 × 2-Pixel-Segmenten und Energie 5+2-Pixel-Schritt = ca. 350 px. Voller grüner Balken ≈ voller HP-Balken, Overload rot darüber ≈ Schild-Reserve; Gesamtbereich ≈ HP+Schild. Niedrigenergie, Überladung, Verbrauch, Neustart und Screenshot prüfen. **Nur Code geprüft, kein lokaler Lauf.**
 - [ ] Nach HUD-Abnahme zu separatem Sonec→Walker-Sprungkontakt bzw. späteren Sound-Triggern zurückkehren, nicht automatisch gemeinsam umbauen.
+
+### Aktueller HUD-Overload-Test: 4000 normal + 500 Reserve
+
+- [ ] **Visueller Windows-/HTML5-Test nach Start/Neustart:** `SonecInit()` jetzt `Energy.StateMax=4000`, `Energy.State=4500`. `GuiEnergyDraw()` füllt bei +500 Overload alle **7 roten** Slots über **43 grünen** (ca. Höhe HP+Schild), nicht nur einen roten Slot. Initialer Screenshot, proportionaler Verbrauch, Überladung und Overload-Gesundheitsschaden beobachten. **Nur Codeänderung, noch nicht AGK-getestet.**
+- [ ] Nach erfolgreicher Prüfung entscheiden, ob die Startüberladung als Testhilfe oder als gewünschter Spielstart gelten soll. Keine weiteren Ressourcen-/Balanceänderungen im aktuellen Schritt.
 
 ## 3. Für später: reguläre Alpha / Fehler nur bei konkreter Reproduktion
 
