@@ -221,12 +221,12 @@ repeat
 	endif
 
 	if Game.IsLost = TRUE
-		if IntroDo(Intro,Game.Sound,Game.JoystickIndex,CurrentNow) = TRUE
+		if IntroDo(Intro,Game.Sound,Keys,Game.JoystickIndex,CurrentNow) = TRUE
 			GameInit(Game,CurrentNow)
 		endif
 		IntroDraw(Intro)
 	else
-		if GetJoyPressed(Game.JoystickIndex,joystickButtonStart) = 1
+		if InputActionPressed(Keys,Game.JoystickIndex,ACTION_START) = 1
 			if Game.IsPause = FALSE
 				Game.IsPause = TRUE
 			else
