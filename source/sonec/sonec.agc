@@ -617,6 +617,8 @@ function SonecInput(Sonec ref as TSonec,JetfireList ref as TJetfireList,ProtoJet
 	local Position as TPosition
 	
 	if TimeGet(Sonec.InputTimer,Now) > 0
+		// Hover follows the held binding independently of horizontal movement.
+		Sonec.State.Hover = InputActionState(Keys,JoystickIndex,ACTION_HOVER)
 		
 		Position.y = Sonec.ObjectData.Position.y -10
 		if Sonec.State.LookAlignment = LOOKLEFT
@@ -676,12 +678,6 @@ function SonecInput(Sonec ref as TSonec,JetfireList ref as TJetfireList,ProtoJet
 				Sonec.State.Move = TRUE
 				Sonec.State.Alignment = MOVELEFT
 			endif
-			if GetKeyState(Key_CONTROL) = 1 or GetJoyState(JoystickIndex,joystickButtonPadLeft) = 1
-				//Sonec.State.LookAlignment = LOOKRIGHT
-				Sonec.State.Hover = TRUE
-			else	
-				Sonec.State.Hover = FALSE
-			endif
 		endif
 		
 		if InputActionState(Keys,JoystickIndex,ACTION_MOVE_RIGHT) = 1 or InputActionState(Keys,JoystickIndex,ACTION_MOVE_BACK_RIGHT) = 1 or GetJoyX(JoystickIndex) > 0.5 or GetJoyRZ(JoystickIndex) > 0.5
@@ -701,12 +697,6 @@ function SonecInput(Sonec ref as TSonec,JetfireList ref as TJetfireList,ProtoJet
 			if Sonec.State.Stand = TRUE and Sonec.State.Duck = FALSE
 				Sonec.State.Move = TRUE
 				Sonec.State.Alignment = MOVERIGHT
-			endif
-			if GetKeyState(Key_CONTROL) = 1 or GetJoyState(JoystickIndex,joystickButtonPadLeft) = 1
-				//Sonec.State.LookAlignment = LOOKLEFT
-				Sonec.State.Hover = TRUE
-			else	
-				Sonec.State.Hover = FALSE
 			endif
 		endif
 		
