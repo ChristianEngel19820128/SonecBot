@@ -15,6 +15,16 @@
 > **Arbeitsweise:** In kleinen gemeinsam freigegebenen Schritten vorgehen. Nutzer exportiert/kompiliert in lokalem AGK Studio, testet mit lokalem Apache im Browser/Gamepad und pflegt itch.io; Assistent prüft GitHub-Quellen und dokumentiert präzise, ohne lokale Tests zu behaupten. Besonderheiten mit Nachweisstatus festhalten, aktuellen Schritt beenden, erst danach über Folgearbeit bzw. Knowledge-Base-Eintrag entscheiden. Crystals 1.0 ist die bewährte Prozesserfahrung. GitHub-HEAD bei jedem Einstieg neu lesen; Snapshot vor dieser Dokumentationsänderung: `3840bfa545aeec6df6902180415d22efdd58f3ba`.
 > **Prüfkandidat, noch kein bestätigter Bug:** Spawn-Zufallsentscheidungen liegen in `GameDo()` und könnten pro Frame statt pro Zeit erfolgen. Vor jeder Änderung tatsächliche Frequenzen/Spielwirkung bewerten; keine pauschale Balancingmaßnahme.
 
+## Post-Pre-Alpha: Schritt 6e Space als Hover-Default (17.11.2026)
+
+**Schritt 6d vom Entwickler vollständig bestanden:** AGK-Compile und sämtliche acht Jetpack/Hover-Prüfpunkte: W allein, Ctrl allein, W+Ctrl mit normalem Jetpack-Aufstieg, W loslassen bei gehaltenem Ctrl zu Hover, beide loslassen normal fallen, Gamepad-Stick hoch + Button 9 sowie Bewegung/Waffen weiterhin funktionsfähig. Zusätzlicher positiver Befund: Ctrl loslassen während Pause bewirkt bei Fortsetzen normalen Fall.
+
+**Schritt 6e auf `develop` implementiert, AGK-Compile/Gameplay noch offen:** In `source/sonec/input.agc` nur Keyboard-Default `Keys.Binding[ACTION_HOVER].Key = KEY_SPACE` statt `KEY_CONTROL`. Kein anderer Codepfad geändert. Weiterhin Hover durch Halten, Pad-Button 9, Jetpack-Vorrang, unveränderte Energie-/Physikregeln. Noch keine Bestätigung, dass Space im Spiel mit W/A/S/D/Q/E gut zu bedienen ist. Ctrl darf in der Standardbelegung Hover nicht mehr aktivieren.
+
+**Nach dem Test separat entscheiden:** Geplanter bevorzugter Hover-Modus `Umschalten` als Standard im Optionsmenü, `Halten` als Alternative; Optionsmenü und gespeicherte Settings noch nicht implementiert. Kostenloser Hover bleibt vorerst bewusste Designentscheidung; tatsächliches Spielerfeedback abwarten. Gamepad-Button 9 ist technisch als bestehender Hover-Button bestätigt, physische Tastenidentität/Ergonomie weiter offen.
+
+**Nächster Schritt:** Entwickler kompiliert neuen `develop`-HEAD und testet Space halten/loslassen, WASD/QE+Space, W+Space, Ctrl keine Hover-Funktion, Pad-Button 9, Pausen-Release. Berichte per Checkliste mit Freitext und explizitem Senden. Keine Änderungen an main, itch.io oder anderen Repositories.
+
 ## Post-Pre-Alpha: Hover/Jets Schritt 6d (17.11.2026)
 
 **6c technisch vom Entwickler bestanden:** AGK-Compile und sämtliche 8 Hover-Tests erfolgreich: mit/ohne A/D halten, Ctrl/Button 9 loslassen beendet Hover, Jetpack und Bewegung weiterhin funktionsfähig. Der Testbericht enthielt neue Design-Beobachtungen statt durchgefallener Prüfpunkte.
