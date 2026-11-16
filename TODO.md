@@ -121,6 +121,11 @@ Der lokal getestete Code-Referenzcommit ist [`18f92a965810763b552bd96649607c112f
 - [ ] **Visueller Windows-/HTML5-Test nach Start/Neustart:** `SonecInit()` jetzt `Energy.StateMax=4000`, `Energy.State=4500`. `GuiEnergyDraw()` füllt bei +500 Overload alle **7 roten** Slots über **43 grünen** (ca. Höhe HP+Schild), nicht nur einen roten Slot. Initialer Screenshot, proportionaler Verbrauch, Überladung und Overload-Gesundheitsschaden beobachten. **Nur Codeänderung, noch nicht AGK-getestet.**
 - [ ] Nach erfolgreicher Prüfung entscheiden, ob die Startüberladung als Testhilfe oder als gewünschter Spielstart gelten soll. Keine weiteren Ressourcen-/Balanceänderungen im aktuellen Schritt.
 
+### HUD-Folgetest: 1500 Overload-Skala + Alpha 170
+
+- [ ] **Neu kompilieren und visuell testen:** `gui.agc` zeigt bei Startenergie 4500 / Normalmaximum 4000 ungefähr **3 von 7 roten** Overload-Segmenten (7 bei +1500), statt 7 bei +500. Alle zehn HUD-Balken-`ColorSet` verwenden jetzt **Alpha 170** statt 255, einschließlich Schild-Schadensspur und Munition. Lesbarkeit vor Hintergrund, HP-Warnrot, Verbrauch und Neustart prüfen. **Code übernommen, Entwicklertest offen.**
+- [ ] Bei erfolgreichem Test festlegen, ob 4000 normal / 4500 Start als vorläufiges Spielsetup bleiben soll. Overload-/Energiebalance nicht nebenbei verändern.
+
 ## 3. Für später: reguläre Alpha / Fehler nur bei konkreter Reproduktion
 
 ### Eingabe und Spielablauf
