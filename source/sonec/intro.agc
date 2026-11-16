@@ -137,7 +137,7 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Joyst
 		TimeReset(Intro.TimerHelp,Now)
 	endif
 	
-	if GetJoyPressed(JoystickIndex,joystickButtonCrossUp) = 1
+	if InputActionPressed(Keys,JoystickIndex,ACTION_MOVE_UP) = 1 or GetKeyPressed(KEY_UP) = 1
 		if Intro.SelctionPos <= 1
 			Intro.SelctionPos = 3
 		else
@@ -146,7 +146,7 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Joyst
 		PlaySound(Sound.MenuSound)
 	endif
 	
-		if GetJoyPressed(JoystickIndex,joystickButtonCrossDown) = 1
+		if InputActionPressed(Keys,JoystickIndex,ACTION_MOVE_DOWN) = 1 or GetKeyPressed(KEY_DOWN) = 1
 		if Intro.SelctionPos >= 3
 			Intro.SelctionPos = 1
 		else
