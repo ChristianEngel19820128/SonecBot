@@ -37,11 +37,11 @@
 
 **Noch offen für vollständige Releaseprüfung:** Tod und mindestens zwei Neustarts, Browserkompatibilität außerhalb dieses lokalen Testaufbaus, späterer itch.io-Draft/Secret-URL-Test. Nächste fachliche Entscheidung gemeinsam: Kollisionstreffermatrix auf fehlende Reaktion prüfen, zunächst read-only.
 
-## Aktueller gemeinsamer Kollisionsschritt – Test noch ausstehend
+## Erster Kollisionsschritt abgeschlossen – nächster gemeinsam festzulegen
 
 **Neue Entscheidung (16. November 2026):** Sonec soll grundsätzlich allen beschädigbaren Objekten mit allen Waffen Schaden zufügen können, keine Waffe pauschal ausschließen. Geplante Fraktionen: Player/Sonec (ein zweiter Spieler war vorgesehen), Enemy, Neutral; genaue Nutzung noch offen. Spätere Schadensarten: Plasma-Explosion, Plasma-Flammen, kinetisch (auch Granatenaufprall), Plasma-Blitz, dazu unterschiedliche Panzerung/Schild; Konterprinzip wie Stein/Schere/Papier/Brunnen (Flammen gegen kleine schnelle Minen). **Noch keine Schadenstypen/-resistenzen implementieren.**
 
-**Erster isolierter Codepfad auf `develop`:** Flamme gegen Alpha-Walker-Turm in `flame.agc` (`FlameCollideWalkers`) und Aufruf in `game.agc`. Bestehender Flammenschaden, Turm-AABB, Flammenradius und vorhandener Trefferflash; **kein eigener AGK-Compile/HTML5-Test**. **NÄCHSTER SCHRITT:** Entwickler kompiliert und prüft diesen einen Trefferpfad inklusive Health, Flash, Zerstörung und Regressionen. Kein weiterer Kollisionscode, bevor wir das Testergebnis gemeinsam bewerten. `TECHNICAL.md` und `TODO.md` enthalten den Inventarstatus und das konkrete Testziel.
+**Erster isolierter Codepfad auf `develop` abgeschlossen:** Flamme gegen Alpha-Walker-Turm in `flame.agc` (`FlameCollideWalkers`) und Aufruf in `game.agc`. Entwickler meldet am 16.11.2026: „der flammenwerfer scheint sehr stark zu sein. und er funktioniert wie erwartet. alle objekte wurde zerstört ;)“. Treffer-/Zerstörungswirkung der geprüften Objekte inklusive Walker lokal bestätigt; starke Wirkung nur qualitativ beobachtet, **kein Balancingauftrag**. Flash/Drop nicht einzeln berichtet. Assistent hat nicht selbst kompiliert/getestet. **NÄCHSTER SCHRITT:** gemeinsam eine folgende Kollisionskombination auswählen und isoliert prüfen; noch keine weiteren Codeänderungen. `TECHNICAL.md` und `TODO.md` enthalten Details.
 
 **Controller-Bezeichnung geklärt:** Der zuvor genannte Schild auf „R2“ war ein Schreibfehler. R1/RB (obere rechte Schultertaste) = Schild; LT/L2 und RT/R2 (untere Trigger) = rückwärts links/rechts. Im HTML5-Browsertest funktionieren Schild und Rückwärtsbewegung wie erwartet.
 
