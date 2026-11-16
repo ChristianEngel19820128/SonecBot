@@ -251,13 +251,13 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function SonecFlameGunInput(Sonec ref as TSonec,FlameList ref as TFlameList,ProtoFlame ref as TProtoFlame,World ref as TWorld,Sound ref as TSound,JoystickIndex as integer,Now as integer)
+function SonecFlameGunInput(Sonec ref as TSonec,FlameList ref as TFlameList,ProtoFlame ref as TProtoFlame,World ref as TWorld,Sound ref as TSound,Keys ref as TKeys,JoystickIndex as integer,Now as integer)
 	
 	local Position as TPosition
 	local Angle as float
 	local Radius as float
 	
-	if (GetKeyState(KEY_3) = 1 or GetJoyState(JoystickIndex,joystickButtonX) = 1 )and Sonec.Energy.State >= COSTFLAME
+	if (InputActionState(Keys,JoystickIndex,ACTION_FIRE_FLAME) = 1 )and Sonec.Energy.State >= COSTFLAME
 		if TimeGet(Sonec.FlameGun.FireTimer,Now) > 0
 			
 			if Sonec.State.LookAlignment = LOOKLEFT
@@ -295,13 +295,13 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function SonecPlasmaBlitzGunInput(Sonec ref as TSonec,FlashList ref as TFlashList,ProtoFlash ref as TProtoFlash,PlasmaBlitzList ref as TPlasmaBlitzList,ProtoPlasmaBlitz ref as TProtoPlasmaBlitz,World ref as TWorld,JoystickIndex as integer,Now as integer)
+function SonecPlasmaBlitzGunInput(Sonec ref as TSonec,FlashList ref as TFlashList,ProtoFlash ref as TProtoFlash,PlasmaBlitzList ref as TPlasmaBlitzList,ProtoPlasmaBlitz ref as TProtoPlasmaBlitz,World ref as TWorld,Keys ref as TKeys,JoystickIndex as integer,Now as integer)
 	
 	local Position as TPosition
 	local Angle as float
 	local Radius as float
 	
-	if (GetKeyState(KEY_1) = 1 or GetJoyState(JoystickIndex,joystickButtonY) = 1) and Sonec.Energy.State >= COSTPLASMABLITZ
+	if (InputActionState(Keys,JoystickIndex,ACTION_FIRE_PLASMA) = 1) and Sonec.Energy.State >= COSTPLASMABLITZ
 		if TimeGet(Sonec.PlasmaBlitzGun.FireTimer,Now) > 0
 			
 			if Sonec.State.LookAlignment = LOOKLEFT
@@ -354,13 +354,13 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function SonecMGunInput(Sonec ref as TSonec,FlashList ref as TFlashList,ProtoFlash ref as TProtoFlash,BulletList ref as TBulletList,ProtoBullet ref as TProtoBullet,World ref as TWorld,Sound ref as TSound,JoystickIndex as integer,Now as integer)
+function SonecMGunInput(Sonec ref as TSonec,FlashList ref as TFlashList,ProtoFlash ref as TProtoFlash,BulletList ref as TBulletList,ProtoBullet ref as TProtoBullet,World ref as TWorld,Sound ref as TSound,Keys ref as TKeys,JoystickIndex as integer,Now as integer)
 	
 	local Position as TPosition
 	local Angle as float
 	local Radius as float
 	
-	if (GetKeyState(KEY_2) = 1 or GetJoyState(JoystickIndex,joystickButtonA) = 1 or Sonec.MGun.FireBurst > 0) and Sonec.MGun.Ammo > 0
+	if (InputActionState(Keys,JoystickIndex,ACTION_FIRE_MG) = 1 or Sonec.MGun.FireBurst > 0) and Sonec.MGun.Ammo > 0
 		if (Sonec.MGun.FireBurst = 0 and TimeGet(Sonec.MGun.FireTimer,Now) > 0)  or (Sonec.MGun.FireBurst > 0 and TimeGet(Sonec.MGun.FireBurstTimer,Now) > 0)
 			
 			if Sonec.MGun.FireBurst = 0 then Sonec.MGun.FireBurst = Sonec.MGun.FireBurstMax
@@ -407,14 +407,14 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function SonecGrenadeLauncherInput(Sonec ref as TSonec,GrenadeList ref as TGrenadeList,ProtoGrenade ref as TProtoGrenade,World ref as TWorld,Sound ref as TSound,JoystickIndex as integer,Now as integer)
+function SonecGrenadeLauncherInput(Sonec ref as TSonec,GrenadeList ref as TGrenadeList,ProtoGrenade ref as TProtoGrenade,World ref as TWorld,Sound ref as TSound,Keys ref as TKeys,JoystickIndex as integer,Now as integer)
 	
 	local Position as TPosition
 	local Angle as float
 	local Radius as float
 	local Recoil as float
 	
-	if (GetKeyState(KEY_2) = 1 or GetJoyState(JoystickIndex,joystickButtonB) = 1) and Sonec.GrenadeLauncher.Ammo > 0
+	if (InputActionState(Keys,JoystickIndex,ACTION_FIRE_GRENADE) = 1) and Sonec.GrenadeLauncher.Ammo > 0
 		if TimeGet(Sonec.GrenadeLauncher.FireTimer,Now) > 0
 			
 			Position.x = Sonec.ObjectData.Position.x
@@ -495,11 +495,11 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function SonecShieldInput(Sonec ref as TSonec,Shield ref as TShield,World ref as TWorld,JoystickIndex as integer,Now as integer)
+function SonecShieldInput(Sonec ref as TSonec,Shield ref as TShield,World ref as TWorld,Keys ref as TKeys,JoystickIndex as integer,Now as integer)
 
 	local Position as TPosition
 	
-	if GetKeyPressed(KEY_5) = 1 or GetJoyPressed(JoystickIndex,joystickButtonRR) = 1
+	if InputActionPressed(Keys,JoystickIndex,ACTION_SHIELD) = 1
 		if Shield.Enabled = FALSE
 			if Sonec.Energy.State >= COSTSHIELD
 				Shield.Enabled = TRUE
@@ -560,11 +560,11 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function SonecInenergieInput(Sonec ref as TSonec,Inenergie ref as TInenergie,EnergieList ref as TEnergieList,World ref as TWorld,JoystickIndex as integer,Now as integer)
+function SonecInenergieInput(Sonec ref as TSonec,Inenergie ref as TInenergie,EnergieList ref as TEnergieList,World ref as TWorld,Keys ref as TKeys,JoystickIndex as integer,Now as integer)
 	
 	local Position as TPosition
 	
-	if GetKeyPressed(KEY_4) = 1 or GetJoyPressed(JoystickIndex,joystickButtonLR) = 1
+	if InputActionPressed(Keys,JoystickIndex,ACTION_ATTRACT_ENERGY) = 1
 		if Inenergie.Enabled = FALSE
 			if Sonec.Energy.State >= COSTATTRACT
 				Inenergie.Enabled = TRUE
