@@ -126,6 +126,10 @@ Der lokal getestete Code-Referenzcommit ist [`18f92a965810763b552bd96649607c112f
 - [ ] **Neu kompilieren und visuell testen:** `gui.agc` zeigt bei Startenergie 4500 / Normalmaximum 4000 ungefähr **3 von 7 roten** Overload-Segmenten (7 bei +1500), statt 7 bei +500. Alle zehn HUD-Balken-`ColorSet` verwenden jetzt **Alpha 170** statt 255, einschließlich Schild-Schadensspur und Munition. Lesbarkeit vor Hintergrund, HP-Warnrot, Verbrauch und Neustart prüfen. **Code übernommen, Entwicklertest offen.**
 - [ ] Bei erfolgreichem Test festlegen, ob 4000 normal / 4500 Start als vorläufiges Spielsetup bleiben soll. Overload-/Energiebalance nicht nebenbei verändern.
 
+### Aktueller HUD-Einzeltest: HUD_BAR_ALPHA = 100
+
+- [ ] **Sichttest im frisch gebauten AGK-/HTML5-Stand:** `gui.agc` verwendet zentral `#constant HUD_BAR_ALPHA 100` in allen zehn HUD-`ColorSet`-Aufrufen (statt bisher 170). Lesbarkeit von HP, Schild und roter Schadensspur, Energie-Overload, MG- und Granatenmunition auf dunklem/hellerem Hintergrund prüfen. Die Overload-Skala 1500 und Start 4000+500 bleiben erhalten. Bei zu wenig Kontrast nur den einen Wert z. B. auf 120 erhöhen; **noch nicht lokal getestet**.
+
 ## 3. Für später: reguläre Alpha / Fehler nur bei konkreter Reproduktion
 
 ### Eingabe und Spielablauf
