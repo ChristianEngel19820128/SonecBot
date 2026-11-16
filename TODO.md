@@ -49,10 +49,13 @@ Der lokal getestete Code-Referenzcommit ist [`18f92a965810763b552bd96649607c112f
 - [ ] Anschließend Treffermatrix gemeinsam schrittweise erweitern: derzeit unter anderem Plasma-Blitz→Mine/Kiste (implementiert, Test offen), Plasma-Blitz→Walker, Granate/Explosion→Walker und Flamme→weitere vorgesehene Ziele. Sonec-Waffen sollen grundsätzlich alle beschädigbaren Ziele erreichen. Weitere Schadensarten/Panzerungsmodelle bleiben Zukunftsentwurf.
 - [ ] Für das Fraktionskonzept Player (ggf. Player 2), Enemy, Neutral zunächst Verhalten klären; keine automatische Fraktions- oder Balancing-Umstellung.
 
-### Laufender Einzeltest: Plasma-Blitz → Minen und Kisten
+### Abgeschlossener Einzeltest: Plasma-Blitz → Minen und Kisten
 
-- [ ] **AGK-/HTML5-Nachtest nach Codeänderung:** `PlasmaBlitzCollideMine()` und `PlasmaBlitzCollideChest()` wurden implementiert. Gemeinsamen 50-ms-Timer erst nach Orb-/Minen-/Kistenprüfung zurücksetzen. Minen und Kisten treffen/zerstören, Orb-Regression, Mehrfachtrefferverhalten und Compile prüfen. **Code vorbereitet, echter Test offen.**
+- [x] **Windows- und HTML5-Nachtest nach Codeänderung laut Entwickler erfolgreich:** `PlasmaBlitzCollideMine()` und `PlasmaBlitzCollideChest()` implementiert; gemeinsamer 50-ms-Timer nach Orb-/Minen-/Kistenprüfung zurückgesetzt. Große Kisten zeigen geringe Wirkung pro Blitz. Einzelne Zerstörungsfälle/Mehrfachtrefferintervalle nicht separat protokolliert; keine eigenen Tests des Assistenten.
 - [ ] **Energie- und Wirkungsgefühl später beurteilen:** Blitz muss aufladen und entlädt sich, wirkt stark und verbraucht vermutlich viel Energie; längere Flammenwerfernutzung konkurriert mit Flugenergie. Qualitative Entwicklerbeobachtung, kein Messwert oder sofortiger Balanceauftrag. Keine Schadensarten-/Rüstungserweiterung in diesem Schritt.
+
+- [ ] **Nächster gemeinsamer Vorschlag:** Plasma-Blitz → Walker als einziger nächster Kollisionspfad; danach direkten Granatenaufprall und Explosion gegen Walker getrennt planen, möglichen Doppelschaden beachten. Noch kein neuer Codeauftrag.
+- [ ] **HTML5-Debugtasten später überprüfen:** Browser-Funktionstasten lösen laut Entwickler Browserereignisse statt AGK-Diagnose aus; Windows-Debugging reicht für aktuelle Tests. Keine kurzfristige Neubelegung.
 
 ## 3. Für später: reguläre Alpha / Fehler nur bei konkreter Reproduktion
 
