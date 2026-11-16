@@ -239,11 +239,19 @@ Entwickler bestätigt mehrfachen Tod **innerhalb derselben HTML5-Browsersitzung*
 
 **Weitere priorisierte Punkte:** Feindkugeln umgehen `ShieldAbsorbDamage()`, daher zuerst enge Schadenspfadkorrektur mit A/B-Test erwägen; danach Walker-Sonec-Überlappung und optische HUD-Höhenskalierung getrennt. Noch keine Spielcodeänderung. itch.io-Draft/Secret-URL-Test weiterhin offen, öffentliche Veröffentlichung nicht freigegeben.
 
-### Schildabsorption für feindliche Kugeln – isolierter Fix (16.11.2026; Test offen)
+### Schildabsorption für feindliche Kugeln – isolierter Fix (16.11.2026; anschließend lokal bestanden)
 
 **Implementierung:** `bullet.agc:BulletCollide(BulletList,Sonec,Shield,Now)` nutzt beim tatsächlichen Treffer eines feindlichen Projektils (`CollisionType = TYPEENEMY`) dieselbe Formel wie `ExplosionCollideSonec`: `Health -= (BulletData.Damage - ShieldAbsorbDamage(Shield,Sonec,BulletData.Damage,Now))`. Der `GameDo()`-Aufruf in `game.agc` reicht jetzt `Game.Shield,Now` durch. Die Absorption findet nur statt, wenn der bestehende `ShieldAbsorbDamage()`-Pfad einen aktiven, nicht im Abbau befindlichen und geladenen Schild erkennt. Er reduziert Schildladung, aktualisiert Frame/Größe und Schadensspur. Keine Änderungen an `shield.agc`, Kugel-Eigenschaften, `SHIELD_MAX_PROTECTION_PERCENT`, Auf- und Abbau oder Explosionstreffern.
 
 **Nachweisgrenze:** Nur statischer GitHub-Vergleich; Entwickler hat alte Browsersitzung geschlossen und muss den aktuellen Code neu kompilieren/exportieren. Nächster Nachtest: Windows/HTML5, HP-Verlust ohne Schild, geringerer Verlust mit aktivem geladenem Schild, Schildladungsverbrauch und rote Spur, leer/deaktiviert normaler Kugelschaden, Explosionsabsorption nicht regressiert. Keine Behauptung eines bestandenen Builds vor Rückmeldung.
+
+### Schild-Feindkugel-Patch: Entwicklertest abgeschlossen; Kettenreaktion beobachtet
+
+**Testmeldung vom 16.11.2026:** Walker verursacht HP-Schaden ohne Schild. Mit Schild wird die Ladung sichtbar reduziert und die **rote Schadensspur oberhalb der Schildanzeige** zeigt die absorbierte Wirkung; dies setzt sich bis zur erschöpften Ladung fort. Entwickler erklärt ausdrücklich **alle zuvor vereinbarten Tests als bestanden**, inklusive der besprochenen Rest-/Regressionsprüfungen. Die vorherige Markierung „Test offen“ ist historischer Stand; **aktuelle Bewertung: lokal akzeptiert**. Keine eigenständigen AGK-Laufzeittests und keine quantitativen Messungen des Assistenten.
+
+**Emergente Kettenreaktion laut Spieler:** Walker hat auf eine Mine geschossen und wurde durch die resultierende Explosion selbst zerstört. Die bestehenden neutralen Explosions- und Fraktionsmechanismen erlauben solche Wechselwirkungen. Beobachtung, kein bestätigter Defekt, nicht aus dem Code heraus umdeuten oder ohne Spieltest abschalten.
+
+**Nächster Einzelpunkt:** Walker kann momentan durch Sonec hindurchlaufen; die gewünschte Stop-/Feuerreaktion ist von Kistenstopp und bestehender Feuerzustandslogik abzugrenzen. Erst eng untersuchen, anschließend minimal implementieren und testen. Energie-HUD danach getrennt.
 
 ## 7. Übergabe und Historie
 
