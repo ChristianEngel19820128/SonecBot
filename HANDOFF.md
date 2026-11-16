@@ -151,6 +151,14 @@
 
 **Nächster bereits vereinbarter Punkt:** Walker soll **vor Sonec stoppen, nicht durch ihn hindurchlaufen und weiter feuern können**. Vor Umsetzung den vorhandenen Walker-Stoppmechanismus an Kisten und `FireState` ansehen und eine minimale Erkennung für Sonec diskutieren; IK, Turm-/Schussverhalten und die erfolgreiche Kollisionsmatrix erhalten. Danach Energie-/Overload-HUD separat bearbeiten. Für den Walker-Körperkontakt liegt noch **keine** Codeänderung vor.
 
+## Aktueller Einzeltest: Walker stoppt vor Sonec und kann weiter feuern (16.11.2026)
+
+**Gemeinsam freigegebener Code-Schritt 2 der drei Gameplay-Befunde:** `source/sonec/walker.agc` enthält jetzt `WalkerSonecDistanceAhead()`, das eine horizontale Distanz zwischen der **bereits vorhandenen Walker-Hülle** (±50 px plus 5 px Freiraum, oben 50/unten 35 px) und Sonecs Kreisregion über `ObjectData.Position` und `ObjectData.Radius` ermittelt. Nur bei vertikaler Überlappung hält Sonec den Laufweg auf, damit Überfliegen weiter möglich ist. `WalkerMove()` beschränkt den aktuellen `StepX` auf den verbleibenden Abstand und setzt bei Kontakt `PauseUntilMs = Now + 1200` für die **bestehende Stand-/Schusslogik**; es wird **kein** `TurnPending` ausgelöst. `WalkerMoveAll()` und `game.agc:GameDo()` reichen Sonec als Parameter weiter. Die Kisten- und Kantenstoppregeln, FireState, IK, Turm/Pose, Geschwindigkeit und Bullet-Kollisionen bleiben unverändert. **Nur statisch geprüft; AGK-/HTML5-Test offen.**
+
+**Explizit vor der Änderung geprüft:** `SonecInit()` setzt `ObjectData.Size.Width = GetSpriteWidth(ProtoSonec.AnimRight.Stand.Sprite.ID)`, `ObjectData.Radius = ObjectData.Size.Width * 0.5` und `Sonec.SpriteData.Scale = 1`. Im gesamten geprüften `sonec.agc` wird der Radius nicht ein zweites Mal mit Scale multipliziert. **Kein Hinweis auf doppelte Radiusverkleinerung in dieser Initialisierung.** Ob der visuelle Spritebereich genau zum Kollisionsradius passt, erfordert Sicht-/Spieletest, nicht bloß Quellinspektion.
+
+**Testauftrag:** Neuer Windows-/HTML5-Build von `develop`: Walker läuft auf Sonec zu und bleibt vor ihm stehen statt hindurchzugehen; beide Richtungen testen; Walker zielt und feuert aus der Standpause weiterhin; verlässt Sonec die Laufbahn, setzt Walker nach normaler Pause seine Bewegung fort; beim Flug oberhalb/unterhalb keine unplausible horizontale Blockade; Kistenstopp, Plattformkanten, Stand-/Gangpose, Turm/Salve bleiben wie zuvor. Falls eine unangemessene Distanz oder Feuerausfall auftritt, erst nach Rückmeldung lokal korrigieren. **Punkt 3 Energie-/Overload-HUD bleibt unangetastet.**
+
 ## 1. Sofortiger Einstieg im neuen Chat
 
 1. `AGENTS.md`, diese Datei, `PROJECT.md`, die aktuelle `TODO.md` und den aktuellen Status/Übergabeabschnitt in `TECHNICAL.md` lesen. Alte datierte Technikabschnitte sind Historie, keine neue Aufgabenfreigabe.
