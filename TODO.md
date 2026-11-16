@@ -46,7 +46,7 @@ Der lokal getestete Code-Referenzcommit ist [`18f92a965810763b552bd96649607c112f
 ### Erster Kollisionsschritt – lokal bestanden
 
 - [x] **Flammenwerfer → Walker-Turm, lokaler Entwicklertest bestanden (16.11.2026):** `FlameCollideWalkers()` ist eingebunden; Entwickler bestätigt erwartete Trefferwirkung und Zerstörung aller geprüften Objektarten einschließlich Walker. Flammenwerfer wirkt dabei **sehr stark** (qualitative Beobachtung, kein Balancingtest). Einzelne Flash-/Drop-Details wurden nicht separat bestätigt. **Schritt abgeschlossen; erst gemeinsam nächste Kombination wählen.**
-- [ ] Anschließend Treffermatrix gemeinsam schrittweise erweitern: derzeit unter anderem Plasma-Blitz→Mine/Kiste (implementiert, Test offen), Plasma-Blitz→Walker (lokal positiv), Granate/Explosion→Walker und Flamme→weitere vorgesehene Ziele. Sonec-Waffen sollen grundsätzlich alle beschädigbaren Ziele erreichen. Weitere Schadensarten/Panzerungsmodelle bleiben Zukunftsentwurf.
+- [ ] Anschließend Treffermatrix gemeinsam schrittweise erweitern: derzeit unter anderem Plasma-Blitz→Mine/Kiste (implementiert, Test offen), Plasma-Blitz→Walker (lokal positiv), Granate→Walker (lokal positiv), Explosion→Walker offen und Flamme→weitere vorgesehene Ziele. Sonec-Waffen sollen grundsätzlich alle beschädigbaren Ziele erreichen. Weitere Schadensarten/Panzerungsmodelle bleiben Zukunftsentwurf.
 - [ ] Für das Fraktionskonzept Player (ggf. Player 2), Enemy, Neutral zunächst Verhalten klären; keine automatische Fraktions- oder Balancing-Umstellung.
 
 ### Abgeschlossener Einzeltest: Plasma-Blitz → Minen und Kisten
@@ -54,7 +54,7 @@ Der lokal getestete Code-Referenzcommit ist [`18f92a965810763b552bd96649607c112f
 - [x] **Windows- und HTML5-Nachtest nach Codeänderung laut Entwickler erfolgreich:** `PlasmaBlitzCollideMine()` und `PlasmaBlitzCollideChest()` implementiert; gemeinsamer 50-ms-Timer nach Orb-/Minen-/Kistenprüfung zurückgesetzt. Große Kisten zeigen geringe Wirkung pro Blitz. Einzelne Zerstörungsfälle/Mehrfachtrefferintervalle nicht separat protokolliert; keine eigenen Tests des Assistenten.
 - [ ] **Energie- und Wirkungsgefühl später beurteilen:** Blitz muss aufladen und entlädt sich, wirkt stark und verbraucht vermutlich viel Energie; längere Flammenwerfernutzung konkurriert mit Flugenergie. Qualitative Entwicklerbeobachtung, kein Messwert oder sofortiger Balanceauftrag. Keine Schadensarten-/Rüstungserweiterung in diesem Schritt.
 
-- [ ] **Derzeitiger gemeinsamer Schritt:** Direkter Granatenaufprall → Walker implementiert, AGK-/HTML5-Nachtest offen. Explosion → Walker bewusst separat; möglichen Doppelschaden beachten.
+- [x] **Direkter Granatenaufprall → Walker:** lokaler Volltreffer positiv bestätigt. **Nächster Prüfpunkt:** Explosion → Walker getrennt bewerten; möglichen Doppelschaden durch Aufprall plus Explosion beachten, noch keine Freigabe für Codeänderung.
 - [ ] **HTML5-Debugtasten später überprüfen:** Browser-Funktionstasten lösen laut Entwickler Browserereignisse statt AGK-Diagnose aus; Windows-Debugging reicht für aktuelle Tests. Keine kurzfristige Neubelegung.
 
 ### Abgeschlossener Einzeltest: Plasma-Blitz → Alpha-Walker
@@ -62,10 +62,13 @@ Der lokal getestete Code-Referenzcommit ist [`18f92a965810763b552bd96649607c112f
 - [x] **Plasma-Blitz → Walker lokal positiv:** Entwickler meldet „gut das funktioniert =)“. Welcher Browser-/Windows-Nachtest im Detail durchgeführt wurde und welcher Einzelschaden entstand, wurde nicht separat angegeben; keine Werte extrapolieren.
 - [ ] Nach Testentscheidung bleiben direkter Granatenaufprall → Walker und Explosion → Walker als zwei separate Trefferpfade. Unbeabsichtigten Doppelschaden berücksichtigen; keine automatische Schadensmodell-/Balanceänderung.
 
-### Aktueller Einzeltest: direkter Granatenaufprall → Walker
+### Abgeschlossener Einzeltest: direkter Granatenaufprall → Walker
 
-- [ ] **AGK-/HTML5-Nachtest:** `GrenadeCollideWalkers()` und `GameDo()`-Aufruf implementiert, nur statisch geprüft. Aufprall gegen Turm-AABB verursacht bisherigen Granatenschaden, Hitflash und normale Explosion. Zuerst Windows, dann HTML5; direkte Trefferwirkung, Zerstörung und Granaten-Kollisionen mit Orb/Mine/Kiste/Plattform beobachten.
+- [x] **Direkter Granatentreffer auf Walker-Turm laut Entwickler bestanden:** `GrenadeCollideWalkers()` implementiert; Volltreffer, Ablauf „alles wie erwartet“. Der konkrete getestete Windows-/HTML5-Kontext wurde nicht getrennt angegeben; keine eigenen Laufzeittests. Zerstörung nach vielen Treffern und Regressionen der übrigen Granaten-Ziele nicht einzeln nachgewiesen.
 - [ ] **Späterer separater Schritt:** Explosion → Walker noch nicht implementiert. Zunächst Aufprall testen, dann gemeinsame Entscheidung zu Explosionsfläche, Timing und möglichem Doppelschaden.
+
+- [ ] **Beobachtete Granatenmechanik erhalten:** Rückstoß kann Sonec zurückversetzen, gekrümmte Flugbahn fällt nach unten, Granaten explodieren ggf. vorher am Plattformboden; Munition („Plasmagranaten“) wird verbraucht. Keine ungefragte Änderung an Flugphysik oder Ressourcen.
+- [ ] **Nächster Prüfschritt:** Explosion → Walker als letzter offener Pfad der ersten Kollisionsmatrix. Vor Umsetzung Explosions-Timing/Radius, direkte Trefferüberlappung und mögliche Doppelwirkung untersuchen und gemeinsam entscheiden.
 
 ## 3. Für später: reguläre Alpha / Fehler nur bei konkreter Reproduktion
 
