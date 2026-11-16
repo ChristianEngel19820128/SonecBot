@@ -140,11 +140,8 @@ endfunction
 function GameInput(Game ref as TGame,Keys ref as TKeys,Now as integer)
 
 	SonecInput(Game.Sonec,Game.JetfireList,Game.ProtoJetfire,Game.World,Keys,Game.JoystickIndex,Now)
-	
-	if GetJoyPressed(Game.JoystickIndex,joystickButtonBack) = 1
-		Game.IsLost = TRUE
-	endif
-	
+	// Back/Select is handled only while paused in main.agc.
+
 endfunction
 
 //----------------------------------------------------------------------
