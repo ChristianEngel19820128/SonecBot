@@ -85,7 +85,7 @@ Der lokal getestete Code-Referenzcommit ist [`18f92a965810763b552bd96649607c112f
 ### Neue Spieltest-Befunde: Walker, Energie-HUD, Schild (16.11.2026)
 
 - [x] **Walker-Stopp bei Sonec:** Entwickler bestätigt passenden Abstand in beiden Richtungen (Screenshots), Stoppen und Schießen mit Schaden, normales Weg-/Überfliegen. Nur Walker-Bewegungsstopp, keine vollständige wechselseitige Körperkollision; Sprung in Walker bleibt separater Befund.
-- [ ] **Energie-HUD-Proportion:** Screenshot/Entwicklerwunsch: grüne Energie plus angemessener roter Overload-Bereich ungefähr so hoch wie HP plus Schild. Ist: in `GuiEnergyDraw()` HP=150 kleine Segmente, Schild bis 25, Energie=20 große Segmente, Overload proportional `EnergyOverload*10/Energy.StateMax`. Nur Darstellung anpassen, keine Ressourcenwerte/Balanceänderung; später eigene Sichtprüfung.
+- [ ] **Energie-HUD-Proportion:** proportionaler Darstellungsfix auf `develop` umgesetzt (43 grüne/7 rote Slots ≈ 150 HP/25 Schild in Pixelhöhe); **visueller AGK-/HTML5-Nachtest offen**. Energie-/Ressourcenwerte unverändert.
 - [x] **Schild gegen Walker-Geschosse – lokal bestanden:** `BulletCollide()` nutzt vorhandenen Absorptionspfad für `TYPEENEMY`; Entwickler bestätigt Schaden ohne Schild, Abbau der Schildladung mit roter Schadensspur bei aktiviertem Schild bis zum Verbrauch und bezeichnet **alle vereinbarten Tests als bestanden**. Keine neuen Balancewerte.
 - [x] **HTML5-Release-Gate bestanden:** Entwickler bestätigt mehrfachen Tod durch Minen/Walker, mehrfachen Neustart in derselben aktiven Browser-Sitzung, Spiel weiterhin lauffähig. Kein Beleg für Langzeit-Memory-Verhalten oder andere Browser.
 
@@ -110,6 +110,11 @@ Der lokal getestete Code-Referenzcommit ist [`18f92a965810763b552bd96649607c112f
 
 - [ ] **Sonec springt in Walker hinein:** Vom Entwickler beobachtet, obwohl Walker horizontal vor Sonec stoppt. Separate aktive Sonec→Walker-Körperkollision später bewerten; keine unkontrollierte IK-/Turmänderung.
 - [ ] **Gemeinsame Sound-Auslösung:** Sounds in den passenden allgemeinen Ereignis-/Schussfunktionen statt nur in Sonec-spezifischen Routinen abspielen. Vor Änderung einzelne bestehende Sound-Trigger inventarisieren, um Mehrfachsound zu vermeiden.
+
+### Aktueller HUD-Nachtest: Energie + Overload
+
+- [ ] **Windows-/HTML5-Build und visuelle Kontrolle:** `GuiEnergyDraw()` skaliert Energie auf ca. **43 grüne und maximal 7 rote Segmente**, ermittelt aus HP 150 + Schild 25 × 2-Pixel-Segmenten und Energie 5+2-Pixel-Schritt = ca. 350 px. Voller grüner Balken ≈ voller HP-Balken, Overload rot darüber ≈ Schild-Reserve; Gesamtbereich ≈ HP+Schild. Niedrigenergie, Überladung, Verbrauch, Neustart und Screenshot prüfen. **Nur Code geprüft, kein lokaler Lauf.**
+- [ ] Nach HUD-Abnahme zu separatem Sonec→Walker-Sprungkontakt bzw. späteren Sound-Triggern zurückkehren, nicht automatisch gemeinsam umbauen.
 
 ## 3. Für später: reguläre Alpha / Fehler nur bei konkreter Reproduktion
 
