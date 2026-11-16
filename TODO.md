@@ -30,9 +30,10 @@ Der lokal getestete Code-Referenzcommit ist [`18f92a965810763b552bd96649607c112f
 
 - [x] **HTML5-Export lokal erstellt (Entwicklermeldung, 16.11.2026).** Export gelang; genaue exportierte Code-Revision/ZIP hier nicht separat geprüft.
 - [x] **Erster lokaler Browserstart:** Über lokalen Apache/XAMPP und vorhandenen Run-Frame startet das Spiel laut Entwickler. Audio, alle Assets und Eingaben damit **noch nicht einzeln bestätigt**.
-- [ ] **HTML5-Gamepad-Aktionen vollständig prüfen:** Grundsätzliche Funktion mit Xbox-kompatiblem Controller laut Entwickler **bestanden**, Index-1-Workaround benötigt erste Eingabe, Initialisierung kann 2–3 s dauern. Windows-Compile-Tasten wurden bereits getestet, aber **nicht alle Aktionen im Browser**. Tastatur als alternative Vollsteuerung derzeit unzumutbar/unvollständig; Gamepad-only-Pre-Alpha mit entsprechendem Hinweis vorbereiten.
+- [x] **HTML5-Gamepad-Funktionstest (Entwicklermeldung):** Xbox-kompatibler Controller, Index-1-Workaround (erste Eingabe, eventuell 2–3 s). D-Pad/Analogstick, linke/rechte Trigger für Rückwärtsbewegung, L1 Energieanziehung, rechter Schulterbutton Schild, X Flammenwerfer, Y Plasma-Blitz, A Maschinengewehr, B Granatwerfer, Start Pause – laut Entwickler alle funktionsfähig. **Bezeichnungsabweichung:** Schild wurde im Chat „R2“ genannt, Code nutzt RR/RB/R1; gemeinsam klären, bevor öffentliche Controls geschrieben werden. Tastatur ist keine zumutbare Alternative.
 - [ ] **Spielrunde testen:** Bewegung/Jetpack/Waffen/Schild/Energieaktionen, Walker-Kampf, Pause/Fortsetzen, Tod und mindestens zwei Neustarts.
-- [ ] **Gameplay-Smoketest vervollständigen:** Entwickler beobachtet bei 60 Hz/VSync flüssiges Spiel und auch bei kurz getesteten 75 Hz vergleichbar flüssiges Gameplay; weitere Tests bewusst wieder bei 60 Hz. Einzelne Gamepad-Aktionen/Pause/Tod/Mehrfachneustart noch separat nachweisen.
+- [ ] **Gameplay-Smoketest vervollständigen:** Entwickler beobachtet bei 60 Hz/VSync flüssiges Spiel und auch bei kurz getesteten 75 Hz vergleichbar flüssiges Gameplay; weitere Tests bewusst wieder bei 60 Hz. Gamepad-Aktionen und Pause laut Entwickler bestanden; Tod/Mehrfachneustart noch separat nachweisen.
+- [ ] **HTML5-Beenden einordnen:** ESC/QUIT beenden den Browserbuild nicht; Code schließt HTML5-QUIT bewusst aus, ESC-Helfer ist Windows-spezifisch. UX/Einbettung bewerten, nicht als Enginebug behaupten.
 - [ ] **Fehlende Kollisionsabfragen gezielt untersuchen:** Prüfen, welche vorgesehenen Treffer ohne Reaktion bleiben und ob das die Pre-Alpha spielerisch stört; konkrete Codepfade/Absicht vor Fix prüfen. Noch kein bestätigter einzelner Fehler oder Freigabe für Änderungen.
 - [ ] **Nur konkrete Releaseblocker korrigieren:** kleinster nachvollziehbarer Eingriff mit tatsächlichem Nachtest, kein weiterer Walker-/IK-Umbau.
 - [ ] **Bekannte Mechanikgrenzen bewerten/benennen:** feindliche Bullets gegen Schild, Explosionen gegen Walker, vorläufige Ressourcenbalance. Keine große Schadens-/Physik-Neuentwicklung ohne bestätigten Bedarf.
@@ -79,6 +80,8 @@ Der lokal getestete Code-Referenzcommit ist [`18f92a965810763b552bd96649607c112f
 
 [agk-knowledge-base](https://github.com/ChristianEngel19820128/agk-knowledge-base) soll als Referenz mit den Projekten wachsen; entsprechende Regel steht in beiden AGENTS.md-Dateien.
 
+- [ ] **HTML5-Gamepad-Kandidat:** Fester Index 1, Browserinitialisierung erst nach erster Controller-Eingabe (möglicherweise 2–3 s); mit Crystals vergleichen und browser-/AGK-versionsabhängig dokumentieren. Vorläufig SonecBot-Entwicklertest, nicht universell.
+- [ ] **Browser-Beenden-Kandidat:** Windows ESC/QUIT gegenüber eingebettetem HTML5 ohne Programmende; Code-/UX-Entscheidung getrennt von AGK-Engineverhalten erklären.
 - [ ] **HTML5/XAMPP-Cache-Kandidat:** Nach Ersetzen von HTML5-Dateien kann der Browser alte Dateien weiter ausliefern; beim lokalen Entwickeln in geöffneten DevTools „Disable cache“ aktivieren und hart neu laden, sonst drohen Scheindefekte. Aktuell Entwicklerbeobachtung, KB-Eintrag und genaue Bedingungen später prüfen.
 - [ ] Sammlung gemeinsam sichten; kompaktes Register mit Symptom/Fallstrick, robustem Muster/Workaround, **Status**, Quelle/Revision und offenem Nachweis erwägen.
 - [ ] Positiv bewertete Turm-Schwenkprojektion ohne Zusatzsprite auf allgemeine Erklärung prüfen.
