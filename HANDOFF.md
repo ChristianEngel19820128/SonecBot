@@ -2,7 +2,7 @@
 
 **Stand:** 16. November 2026  
 **Ziel:** HTML5-Pre-Alpha kontrolliert testen und ausgewählten Personen über itch.io-Draft/Secret-URL zugänglich machen; öffentliche Veröffentlichung später entscheiden  
-**Status:** Alpha-Walker abgeschlossen; HTML5-Compile/Export, lokaler Apache-Test und **itch.io-Draft-Upload samt eingebettetem Gameplay-Smoke-Test laut Entwickler erfolgreich**; Gamepad, Bewegung, Waffen, Schild/Energieanziehung, Pause und Tod im itch.io-Embed bestätigt. Neustarts lokal mehrfach geprüft, im itch.io-Embed noch nicht separat bestätigt. **Draft / Secret URL, nicht Published**; externer Community-Test beginnt. Merge nach `main` offen.  
+**Status:** Alpha-Walker abgeschlossen; HTML5-Compile/Export, lokaler Apache-Test und **itch.io-Draft-Upload samt eingebettetem Gameplay-Smoke-Test laut Entwickler erfolgreich**; Gamepad, Bewegung, Waffen, Schild/Energieanziehung, Pause und Tod im itch.io-Embed bestätigt. Neustarts lokal mehrfach geprüft; anschließend ein Neustart direkt im itch.io-Embed vom Entwickler als „soweit ok“ bestätigt. **Draft / Secret URL, nicht Published**; externer Community-Test beginnt. Merge nach `main` offen.  
 **Repository:** ChristianEngel19820128/SonecBot  
 **Arbeitsbranch:** `develop`  
 **Historischer, lokal akzeptierter Walker-Abschluss-Codecommit:** [`18f92a965810763b552bd96649607c112f966238`](https://github.com/ChristianEngel19820128/SonecBot/commit/18f92a965810763b552bd96649607c112f966238)
@@ -14,6 +14,10 @@
 >
 > **Arbeitsweise:** In kleinen gemeinsam freigegebenen Schritten vorgehen. Nutzer exportiert/kompiliert in lokalem AGK Studio, testet mit lokalem Apache im Browser/Gamepad und pflegt itch.io; Assistent prüft GitHub-Quellen und dokumentiert präzise, ohne lokale Tests zu behaupten. Besonderheiten mit Nachweisstatus festhalten, aktuellen Schritt beenden, erst danach über Folgearbeit bzw. Knowledge-Base-Eintrag entscheiden. Crystals 1.0 ist die bewährte Prozesserfahrung. GitHub-HEAD bei jedem Einstieg neu lesen; Snapshot vor dieser Dokumentationsänderung: `3840bfa545aeec6df6902180415d22efdd58f3ba`.
 > **Prüfkandidat, noch kein bestätigter Bug:** Spawn-Zufallsentscheidungen liegen in `GameDo()` und könnten pro Frame statt pro Zeit erfolgen. Vor jeder Änderung tatsächliche Frequenzen/Spielwirkung bewerten; keine pauschale Balancingmaßnahme.
+
+## Letzte Rückmeldung vor der Pause (16.11.2026)
+
+**Entwickler bestätigt zwei separate GitHub-Links auf der itch.io-Draft-Seite:** einer zu `main`, einer zu `develop`. **Der Neustarttest direkt in der itch.io-Einbettung ist laut Entwickler „soweit ok“.** Das ergänzt den bereits vollständig bestandenen mehrfachen lokalen HTML5-Neustarttest; keine Behauptung über mehrfache eingebettete Neustarts, andere Browser oder Langzeitstabilität. Der Entwickler verteilt nun die **Secret URL** an die Community. Die Seite bleibt **Draft**, kein öffentlicher Published-Wechsel. Ein `develop`→`main`-Merge wurde lediglich für möglicherweise heute Abend oder später erwogen und **nicht ausgeführt**. Keine Spielcodeänderung; jetzt Pause/Feedback abwarten. Diese Meldung ist aktueller als ältere Statusabschnitte weiter unten.
 
 ## Aktuellster Stand – erfolgreiches itch.io-Draft-Deployment (16.11.2026, Vormittag)
 
