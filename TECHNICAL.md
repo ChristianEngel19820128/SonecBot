@@ -271,6 +271,14 @@ Entwickler bestätigt mehrfachen Tod **innerhalb derselben HTML5-Browsersitzung*
 
 **Nächster Schritt:** ausschließlich optische Skalierung des grünen Energiebalkens und roten Overload-Bereichs auf ungefähr die Gesamthöhe von HP+Schild; kein Energie-/HP-/Schild-Balancing und kein Walker-/Sound-Code gleichzeitig.
 
+### HUD: proportionaler Energie-/Overload-Dreisatz (16.11.2026; Test offen)
+
+**Quellenbasis:** `source/sonec/media/gfx/gui/bar_horizontal_small.png` ist 16×2 px und `bar_horizontal.png` 32×5 px (PNG-IHDR der GitHub-Assets). HP/Schild in `GuiEnergyDraw()`: `150` plus `25` kleine Balken mit 2 px vertikaler Schrittweite, zusammen **350 px**. Energie-Segmente nutzen 5 px plus 2 px Abstand, also **7 px** je Segment. Gerundeter Dreisatz: `150*2/7 ≈ 43` grüne und `25*2/7 ≈ 7` rote Segmente, zusammen **350 px**. Der Code berechnet beide Maxima aus `GetSpriteHeight()` und dem bisherigen festen Abstand `+2`.
+
+**Geänderter Code ausschließlich in `gui.agc`:** `EnergyBarsMax`/`OverloadBarsMax` sind lokale Integer, `max = ceil(EnergyLoad*EnergyBarsMax/Energy.StateMax)`, `maxOverload = ceil(EnergyOverload*OverloadBarsMax/Energy.StateMax)` (Float-Rechnung durch `*1.0`); maximaler roter Overload-Bereich auf `OverloadBarsMax` gedeckelt. Keine Änderung an tatsächlicher Energie, maximaler Energie, Verbrauch, Aufnahme, Überladung, Schild, HP, Ammo, Sprite-Positionen oder anderen Draw-Pfaden. Rote Slots werden nur bei Overload größer null gezeichnet, nicht als immer gefüllte Reserve.
+
+**Nachweisgrenze:** GitHub-Code geprüft; kein AGK-Compile/Browser-Test durch Assistenten. Entwickler soll neue Windows-/HTML5-Fassung und Screenshot prüfen: Vollenergie nahe HP-Balken, Überladung nahe Schildbereich, Gesamt maximal ca. 350 px; normale Verbrauchs-/Regenerationsanimation und Neustart ohne Überlauf. Erst nach positivem Ergebnis abschließen.
+
 ## 7. Übergabe und Historie
 
 [HANDOFF.md](HANDOFF.md) enthält getesteten Referenzcommit, exakte Parameter, Release-Gates, offene Entscheidungen und einen direkten Starttext. Tatsächlichen develop-HEAD neu abfragen, lokale Nutzerdateien/alte Anhänge nicht voraussetzen.
