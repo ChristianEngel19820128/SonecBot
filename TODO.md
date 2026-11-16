@@ -1,6 +1,6 @@
 # SonecBot – Aktuelle Aufgaben und Meilensteine
 
-**Dokumentstatus:** Version 5.6 – Menü-Navigation 7a/7a.1 vom Entwickler bestätigt; Optionsmenü als Nächstes besprechen  
+**Dokumentstatus:** Version 5.7 – Options-Unterbildschirm 7b eingebaut, Test offen  
 **Stand:** 16. November 2026  
 **Branch:** `develop`  
 **Aktuelles Ziel:** Funktionierende HTML5-Pre-Alpha auf itch.io im **Draft per Secret URL** für eingeladene Community-Tester bereitstellen, Feedback sammeln. **Nicht auf Published umstellen**; den einmaligen öffentlichen Index-Push für einen späteren, noch nicht beschlossenen Release bewahren. Keine Deadline.
@@ -64,6 +64,8 @@
 **Schritt 6e vom Entwickler vollständig bestätigt:** AGK-Compile und 8/8 Funktionstests bestanden: Space halten/loslassen, WASD/QE+Space gleichzeitig, W+Space normaler Aufstieg, Ctrl kein Hover mehr, Gamepad-Button 9 weiter aktiv, Loslassen in Pause nach Fortsetzen korrekt. Keine Auffälligkeiten.
 
 **Schritte 7a und 7a.1 vollständig vom Entwickler bestanden:** 7a-Tastaturprüfung (AGK-Compile, W/S, Pfeiltasten, Umlauf, Enter-Start) bestanden; Gamepad-Steuerkreuz und Start/A vom Entwickler ausdrücklich funktionsfähig bestätigt. Der fehlende Analogstick wurde anschließend in 7a.1 nachgerüstet; **alle 10/10 Checks** erfolgreich: Compile, einzelne Schritte hoch/runter, Halten ohne Wiederholung, Neutralstellung und erneute Auslenkung, Menüumlauf, D-Pad, Tastatur, Enter/Start/A und normaler Spielstart. Keine Auffälligkeiten. **Schritt abgeschlossen.** Kein neuer HTML5-Export oder itch.io-Test damit behauptet.
+
+**Schritt 7b freigegeben und umgesetzt; AGK-Compile/Gamepad-/Tastaturtest noch offen:** Im Intro ist ein eigenständiger, vorerst nicht editierbarer OPTIONS-Bildschirm mit Überschrift, Hinweisen `HOVER MODE - COMING LATER`, `KEY BINDINGS - COMING LATER` und `BACKSPACE / SELECT - BACK` vorhanden. `IntroDo()` verarbeitet bei `Intro.IsOption = TRUE` nur `InputActionPressed(...ACTION_BACK)` und schließt den Bildschirm; normale Menünavigation und Start/A/Enter werden in diesem Zustand nicht verarbeitet. `IntroDraw()` zeichnet wahlweise Hauptmenü oder Optionshinweise. `TIntro` enthält vier zusätzliche Text-Handles; `IntroCreate()` initialisiert sie und setzt `Intro.IsOption = FALSE`. Unverändert: tatsächliche Hover-Funktion, Space/Button 9, Jetpack-Priorität, Spielmechanik und Speichern. **Nächster Test:** Compile, OPTIONS über W/S/Analog/D-Pad und Enter/Start/A öffnen, Hinweis-Texte sichtbar; Backspace/Select zurück, anschließend START beginnt Spiel; Enter/A im Optionsschirm startet kein Spiel; Pause/Back im Spiel weiter wie gehabt. Der spätere Hover-Modus bevorzugt Toggle als Standard, Hold als Alternative, noch nicht implementiert.
 
 **Nächster möglicher Schritt (nur Besprechung, nicht freigegeben):** Das bisherige Hauptmenü-OPTIONS setzt `Intro.IsOption = TRUE`, zeigt jedoch noch keinen echten Optionsbildschirm. Zunächst minimalen Options-Unterbildschirm mit Navigation und Zurück festlegen; danach als gesonderten Schritt Hover-Umschaltmodus als bevorzugten Standard, Halten als Option, später Einstellungen speichern. Bis zur Zustimmung keine Implementierung.
 
