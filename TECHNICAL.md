@@ -3,7 +3,7 @@
 **Dokumentstatus:** Konsolidierter Abschlussstand 3.22  
 **Stand:** 16. November 2026  
 **Branch:** `develop`  
-**Letzter lokal getesteter Code:** [`18f92a965810763b552bd96649607c112f966238`](https://github.com/ChristianEngel19820128/SonecBot/commit/18f92a965810763b552bd96649607c112f966238)  
+**Historische lokal akzeptierte Walker-Code-Referenz:** [`18f92a965810763b552bd96649607c112f966238`](https://github.com/ChristianEngel19820128/SonecBot/commit/18f92a965810763b552bd96649607c112f966238)  
 **Status:** **Alpha-Walker abgeschlossen. Nächster Auftrag: HTML5-Pre-Alpha-Deployment.**
 
 > [HANDOFF.md](HANDOFF.md) ist der direkte Chat-Einstieg. Dieses Dokument konsolidiert den aktuellen Stand; die vollständige datierte Entwicklungshistorie ist [im vorherigen TECHNICAL-Stand](https://github.com/ChristianEngel19820128/SonecBot/blob/18f92a965810763b552bd96649607c112f966238/TECHNICAL.md) und in Git erhalten. Historische „Test offen“-Abschnitte beschreiben frühere Stände, nicht automatisch neue Entwicklungsaufträge.
@@ -183,13 +183,23 @@ Vorher wurden nur Orb-Kollisionen implementiert, wobei `PlasmaBlitzCollideOrbs()
 
 **Nachweisstatus:** GitHub-Code überprüft, aber **noch kein eigener AGK-Compile und kein Entwickler-Nachtest** dieses neuen Pfads. Prüfen: Windows-Build und HTML5, rot blinkender Walker-Turm, Zerstörung bei ausreichend Treffern, alte Orb/Mine/Kiste-Kollisionen weiterhin wirksam; zeitliche Trefferwirkung und visuelle Rückmeldung. Nach erfolgreichem Test bleiben Granatenaufprall und Explosion als offene Walker-Trefferpfade.
 
-### Direkter Granatenaufprall → Walker (16. November 2026; Test offen)
+### Direkter Granatenaufprall → Walker (16. November 2026; lokaler Volltreffer positiv)
 
 **Blitz-Abschluss:** Entwickler bestätigt den zuvor eingebauten Plasma-Blitz→Walker-Trefferpfad mit „gut das funktioniert =)“. Keine Detailmessung oder präzise Browserzuordnung für diesen einzelnen Test; der Test ist Entwicklerbefund, nicht Assistenten-Compile.
 
 **Neu:** `GrenadeCollideWalkers()` in `grenade.agc` in den `GameDo()`-Aufrufen nach Kisten und vor Plattform eingebunden. Ein aktives Granatenobjekt gegen einen aktiven Walker mit `BoxInBox` an der etablierten Turm-AABB. Direkter `Grenade.BulletData.Damage`-Health-Abzug; bestehender `HitFlashUntil`/rote Turmfarbe; anschließend `GrenadeDestroy()` für reguläre Explosion und Entfernung der Granate. Ein aktives Granatenobjekt wird nach dem Treffer nicht erneut gegen weitere Walker ausgewertet. Die eigene Explosion-Walker-Kollisionsroutine ist weiterhin **nicht** vorhanden: Der neue Schritt erzeugt keinen zusätzlichen Explosionsschaden am Walker.
 
 **Nachweisstatus:** Nur GitHub-Quellprüfung. Entwickler soll den aktuellen Stand in AGK unter Windows und danach HTML5 testen; insbesondere Turmaufprall, Trigger/Explosion, mögliche Zerstörung und Regression gegen Orb/Mine/Kiste/Plattform. Explosion → Walker ist der **nächste getrennt zu entscheidende** Kollisionspfad, einschließlich Überlegungen zu Doppelschaden bei direktem Treffer und nachfolgender Druckwelle. Keine neuen Schadensarten oder Balancewerte.
+
+### Direkter Granatenaufprall: bestätigter Entwicklertest und noch offene Explosionswirkung
+
+**Entwicklermeldung, 16. November 2026:** Volltreffer direkt auf Walker-Turm, Reaktion „alles wie erwartet“. Der zuvor eingebaute `GrenadeCollideWalkers()`-Aufprall gilt als lokal positiv; das genaue Laufzeitsystem (Windows/HTML5) für diesen einzelnen Versuch und der exportierte Code-SHA wurden nicht ausdrücklich genannt. Keine unabhängige Prüfung von Flash-/Drop-Einzelereignissen oder Walker-Zerstörung nach mehreren Granaten.
+
+**Spielmechanik laut Entwickler:** Granatenrückstoß kann Sonec zurückversetzen; geworfene/abgeschossene Granate fliegt in einem nach unten gekrümmten Bogen, kann auf langen Distanzen Plattformboden treffen und dort explodieren. Jeder Abschuss kostet Granatenmunition (vom Entwickler als „Plasmagranaten“ bezeichnet). Beobachtungen bewahren, nicht nebenbei Flugbahn, Schaden oder Munitionsverbrauch umstellen.
+
+**Nächste begrenzte Untersuchung:** `ExplosionCollideWalkers()` ist noch nicht implementiert. Vor Ergänzung vorhandene `ExplosionCollideSonec/Chest/Orb/Mine`-Schadensintervalle und die Reihenfolge von `GrenadeDestroy()`/Explosion gegen direkten Aufprall prüfen. Der Aufprall kann Schaden auslösen, die nachfolgende Explosion würde zusätzlich Schaden verursachen; über kumulierte Wirkung und Timing gemeinsam entscheiden. Keine automatische Explosion-/Panzerungs-Balancereform.
+
+**Hash-Klarstellung:** `18f92a9` in der Kopfzeile bezeichnet ausdrücklich den historischen Abschluss des Alpha-Walkers. Vorliegende Kollisionsänderungen wurden danach auf `develop` committet und anschließend lokal getestet; der SHA des konkret exportierten und getesteten Binär-Builds ist nicht separat protokolliert. Tatsächlichen HEAD jeweils frisch lesen.
 
 ## 7. Übergabe und Historie
 
