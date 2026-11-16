@@ -1,6 +1,6 @@
 # SonecBot – Aktuelle Aufgaben und Meilensteine
 
-**Dokumentstatus:** Version 5.0 – Back nur aus Pause und Pausenhinweise ergänzt; Hover-Befund offen  
+**Dokumentstatus:** Version 5.1 – Hover-Halteverhalten minimal korrigiert, Laufzeittest offen  
 **Stand:** 16. November 2026  
 **Branch:** `develop`  
 **Aktuelles Ziel:** Funktionierende HTML5-Pre-Alpha auf itch.io im **Draft per Secret URL** für eingeladene Community-Tester bereitstellen, Feedback sammeln. **Nicht auf Published umstellen**; den einmaligen öffentlichen Index-Push für einen späteren, noch nicht beschlossenen Release bewahren. Keine Deadline.
@@ -52,6 +52,12 @@
 **Schritt 5 vom Entwickler erfolgreich getestet:** AGK-Compile und sechs Bewegungstests einschließlich Stick, D-Pad und Trigger bestanden (Entwicklerbericht). Keine neue HTML5-Bestätigung.
 
 **Schritt 6a vollständig vom Entwickler bestätigt:** AGK-Compile erfolgreich, Enter und Gamepad-Start/A im Intro, Enter und Gamepad-Start zum Pausieren/Fortsetzen, keine unbeabsichtigte Sofortpause, keine weiteren Auffälligkeiten (sechs Prüfpunkte bestanden).
+
+**Schritt 6b vom Entwickler vollständig bestätigt:** AGK-Compile und alle 8 Prüfpunkte bestanden: Backspace/Select im laufenden Spiel wirkungslos; aus Pause Rückkehr zum Menü; Enter/Start fortsetzen; Neustart und zwei Pausenhinweise funktionieren. Keine Auffälligkeiten.
+
+**Hover-Diagnose 6c – Entwicklerbefund:** A+Ctrl und D+Ctrl bremsen das Fallen; Ctrl loslassen bei weiter gehaltenem A lässt normal fallen; A loslassen bei weiter gehaltenem Ctrl lässt Sonec ungefähr auf Höhe; S bewirkt während des schwebenden Zustands keine erkennbare Änderung. Im Code war `Sonec.State.Hover` nur innerhalb aktiver Links-/Rechtszweige gesetzt und wurde ohne Seitwärtsbewegung nicht aktualisiert; bei Hover wird `MoveSpeed.y` mit 0.20 multipliziert. Das ist eine plausible Erklärung der Symptome, nicht der Beweis aller Ursachen.
+
+**Minimaler Hover-Fix implementiert, noch nicht kompiliert/getestet:** Vereinbartes Halteverhalten: solange Hover gedrückt = langsames Fallen, nach Loslassen = normales Fallen, auch ohne Seitwärtsbewegung. In `SonecInput()` werden die zwei bisherigen Hover-Setzer in Links-/Rechtszweigen durch genau eine Abfrage `Sonec.State.Hover = InputActionState(Keys,JoystickIndex,ACTION_HOVER)` pro fälligem Input-Timer ersetzt. Defaultbelegung bleibt **Ctrl und Gamepad Button 9**; keine Änderung der vertikalen Physik (0.20), sonstiger Bewegung oder Waffen. **Nächster Test:** AGK-Compile; mit A/D+Ctrl, Loslassen beider und einzeln, freier Fall nur mit Ctrl, Button 9 und normalem Fallen nach Loslassen. Space/Shift und ergonomischere Gamepad-Taste später separat entscheiden.
 
 **Schritt 6b implementiert, AGK-Compile und Funktionstest offen:** Die alte `GetJoyPressed(...JoystickButtonBack)`-Abfrage in `GameInput()`, die direkt aus dem laufenden Spiel zum Intro führte, ist entfernt. In `main.agc` wird `InputActionPressed(Keys,Game.JoystickIndex,ACTION_BACK)` nur bei `Game.IsPause = TRUE` ausgewertet. Backspace/Select setzt dann `Game.IsLost = TRUE` und `Game.IsPause = FALSE`; im selben Durchlauf werden keine Game-Updates/Draws ausgeführt. Back hat Vorrang vor gleichzeitigem Start. Unter PAUSE stehen jetzt die Zeilen `ENTER / START - RESUME` und `BACKSPACE / SELECT - MAIN MENU`. Restliche Menü-/Hover-/Action-Logik nicht geändert. **Nächster Schritt:** AGK-Compile und Test: Backspace und Gamepad-Select im aktiven Spiel ohne Wirkung; beide aus Pause führen zum Menü; Enter/Start pausieren und setzen weiter fort; Menü-Neustart funktioniert, Hinweise lesbar. Nicht als bereits getestet markieren.
 
