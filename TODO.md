@@ -1,6 +1,6 @@
 # SonecBot – Aktuelle Aufgaben und Meilensteine
 
-**Dokumentstatus:** Version 4.4 – Eingabestrukturen angelegt, Laufzeit-Anbindung offen  
+**Dokumentstatus:** Version 4.5 – Eingabe-Standardwerte initialisiert, noch ohne aktive Anbindung  
 **Stand:** 16. November 2026  
 **Branch:** `develop`  
 **Aktuelles Ziel:** Funktionierende HTML5-Pre-Alpha auf itch.io im **Draft per Secret URL** für eingeladene Community-Tester bereitstellen, Feedback sammeln. **Nicht auf Published umstellen**; den einmaligen öffentlichen Index-Push für einen späteren, noch nicht beschlossenen Release bewahren. Keine Deadline.
@@ -40,6 +40,10 @@
 - **Minen-Frameratenabhängigkeit und Gruppenwahrnehmung:** untersucht, für die Pre-Alpha unverändert akzeptiert.
 
 ## 3. Erstes Community-Feedback und Post-Pre-Alpha-Patchplanung (16.11.2026, Abend)
+
+**Schritt 1 lokal bestätigt:** Der Entwickler hat `def_input.agc` erfolgreich in AGK Studio kompiliert (Parse Time 61,70 ms, 11.920 Zeilen, 76.514 Tokens); dies bestätigt Syntax/Include, kein neuer Eingabe-Laufzeittest.
+
+**Schritt 2 implementiert, Compile offen:** `source/sonec/input.agc` enthält `InputSetDefaultBindings(Keys ref as TKeys)` und initialisiert alle 15 Einträge auf Standardwerte (zuerst nullen). Links W/S/A/D/Q/E, rechts J (MG), K (Granate), L (Flamme), I (Plasma), U (Energie), O (Schild), zusätzlich Ctrl (Hover), Enter (Start) und Backspace (Back). Für Gamepad: D-Pad-Richtungen sowie bisheriges A/B/X/Y/LB/RB/Start/Back; Analogsticks und Trigger bleiben im alten Code, L3/Hover bleibt unzugewiesen bis Geräte-/Browser-Test. `main.agc` bindet `input.agc` ein und initialisiert ein noch nicht von der Spiellogik verwendetes lokales `TKeys`. Kein Rebinding, Cookie, Optionsmenü oder geänderte Eingabeabfrage. **Nächster Schritt: AGK-Compile durch Entwickler.**
 
 **Neuer Implementierungsschritt (16.11.2026):** Auf `develop` wurde `source/sonec/def_input.agc` angelegt und unmittelbar nach `def_keys.agc` in `main.agc` eingebunden. Enthalten: 15 Aktionskonstanten (6 Bewegung, 6 Aktionen, Hover, Start, Back), `TActionBinding` mit `Key`/`PadButton`, `TKeys` mit Versionsnummer und festem Bindings-Array `[14]`. **Nur Strukturen; noch keine Standardbelegung, keine Umstellung der Abfragen, kein Optionsmenü, kein Cookie und kein Test durch AGK Studio.** Die sechs plus sechs Hauptaktionen, zusätzlich Hover (Gamepad-L3 als unbestätigter Kandidat), Enter/Start, Backspace/Select und Back zum Menü nur aus der Pause sind die vereinbarten Designziele. Gamepad-Remapping und Maus später. **Nächster kleiner Schritt:** die Datenstruktur lokal kompilieren, bevor wir Standardbelegungen initialisieren. Das aktuelle Gamepad-Verhalten wurde nicht absichtlich geändert.
 
