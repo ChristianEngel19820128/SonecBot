@@ -183,6 +183,14 @@
 
 **Wichtig für den Nachtest:** `SonecHealthRegenerate()` behandelt Overload weiterhin als gesundheitsschädlich (`Overload/100` pro Gesundheitsregenerationstakt, multipliziert mit `COSTOVERLOAD`). Die rote Reserve kann daher beim Spielen verschwinden bzw. Lebenspunkte kosten; idealerweise unmittelbar nach dem Start einen Screenshot machen, auch Verbrauch und eventuellen Overload-Gesundheitseffekt beobachten. **Nur GitHub-Code geprüft; lokaler Windows-/HTML5-Test noch offen.** Erst nach Entwicklerbefund den HUD-Schritt abhaken. Bildreferenz vom Entwickler im laufenden Chat, nicht als Datei im Repository behaupten.
 
+## Aktueller HUD-Sichttest: Overload-Skala 1500 und Alpha 170 (16.11.2026)
+
+**Freigegeben und in `source/sonec/gui.agc` implementiert, Entwickler-Nachtest offen:** Nach dem Screenshot des 4000+500-Tests meldet der Entwickler, dass kurzer Jetpack-Flug rund drei der sieben roten HUD-Segmente verbrauchte. Deshalb ist der **rote Anzeigemaßstab** von 500 auf **1500 zusätzliche Energiepunkte für sieben Segmente** erweitert. `Sonec.Energy.StateMax = 4000` und `Sonec.Energy.State = 4500` beim Start/Neustart bleiben unverändert. Bei Start mit +500 werden rechnerisch `ceil(500*7/1500)=3` rote Segmente angezeigt, nicht mehr sieben. Der verbleibende Overload-Bereich ist eine *Anzeigereserve*, kein zusätzlich gewährter Energievorrat. Keine Änderung an echter Überladungsschwelle, Energieverbrauch, Jetpack, Regeneration oder Gesundheitsschaden.
+
+**Zweiter ausdrücklich gewünschter Sichttest:** Alle **zehn** `ColorSet(Data.Color,...)`-Aufrufe in `GuiEnergyDraw()` verwenden Alpha **170 statt 255**: HP normal/kritisch, Schild (inkl. roter Schadensspur), Energie grün, Overload rot, MG-Munition und Granatenmunition. Andere Sprites, Hintergrund, Partikel und Spielcode sind unverändert. Dies ist *globale HUD-Balkentransparenz*, nicht globaler Sprite-Alpha-Wert.
+
+**Nachtest:** Neu kompilierter Windows-/HTML5-Build: beim Start volle 43 grüne und ungefähr drei rote Energiebalken, Transparenz 170 auf allen HUD-Balken, lesbare rote Schildspur und kritische Anzeigen, proportionaler Verbrauch. Overload von 1500 würde sieben Slots füllen; normale Startenergie bleibt 4500. Screenshot und optisches Urteil des Entwicklers abwarten. **Nur statische GitHub-Codeprüfung erfolgt, kein eigener Laufzeittest.** itch.io bleibt Draft; Secret-URL-Test weiterhin offen.
+
 ## 1. Sofortiger Einstieg im neuen Chat
 
 1. `AGENTS.md`, diese Datei, `PROJECT.md`, die aktuelle `TODO.md` und den aktuellen Status/Übergabeabschnitt in `TECHNICAL.md` lesen. Alte datierte Technikabschnitte sind Historie, keine neue Aufgabenfreigabe.
