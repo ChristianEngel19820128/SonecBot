@@ -177,6 +177,12 @@ Vorher wurden nur Orb-Kollisionen implementiert, wobei `PlasmaBlitzCollideOrbs()
 
 **Browser-Debugging:** F-/Debugtasten aktivieren laut Entwickler im HTML5-Browser Browseraktionen; Windows-Diagnose ist für den Pre-Alpha-Test ausreichend. Spätere Eingabeüberarbeitung möglich, kein aktueller Releaseblocker. Für Knowledge Base ggf. als platformspezifische Eingabe-/Browser-Shortcuts-Besonderheit prüfen.
 
+### Plasma-Blitz → Alpha-Walker (16. November 2026; Browser-Test offen)
+
+`PlasmaBlitzCollideWalkers()` implementiert in `plasmablitz.agc`, Aufruf in `GameDo()` nach Orb-, Mine- und Kistenprüfung und vor `PlasmaBlitzCollisionTimerReset()`. Benutzt `BoxInBox` mit der vorhandenen `WalkerCollisionData.Tower`-AABB als bestätigtem Trefferbereich, zieht den vorhandenen `PlasmaBlitz.BulletData.Damage` von Walker-Health ab, setzt `HitFlashUntil=Now+150` und färbt den Turm rot. Die Entladung wird beim Treffer nicht gelöscht; das gemeinsame bestehende 50-ms-Intervall gilt für alle vier Ziele. Keine neuen Schadensklassen, Multiplikatoren oder Energie-/Walker-Anpassungen.
+
+**Nachweisstatus:** GitHub-Code überprüft, aber **noch kein eigener AGK-Compile und kein Entwickler-Nachtest** dieses neuen Pfads. Prüfen: Windows-Build und HTML5, rot blinkender Walker-Turm, Zerstörung bei ausreichend Treffern, alte Orb/Mine/Kiste-Kollisionen weiterhin wirksam; zeitliche Trefferwirkung und visuelle Rückmeldung. Nach erfolgreichem Test bleiben Granatenaufprall und Explosion als offene Walker-Trefferpfade.
+
 ## 7. Übergabe und Historie
 
 [HANDOFF.md](HANDOFF.md) enthält getesteten Referenzcommit, exakte Parameter, Release-Gates, offene Entscheidungen und einen direkten Starttext. Tatsächlichen develop-HEAD neu abfragen, lokale Nutzerdateien/alte Anhänge nicht voraussetzen.
