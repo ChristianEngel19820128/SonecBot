@@ -15,6 +15,14 @@
 > **Arbeitsweise:** In kleinen gemeinsam freigegebenen Schritten vorgehen. Nutzer exportiert/kompiliert in lokalem AGK Studio, testet mit lokalem Apache im Browser/Gamepad und pflegt itch.io; Assistent prüft GitHub-Quellen und dokumentiert präzise, ohne lokale Tests zu behaupten. Besonderheiten mit Nachweisstatus festhalten, aktuellen Schritt beenden, erst danach über Folgearbeit bzw. Knowledge-Base-Eintrag entscheiden. Crystals 1.0 ist die bewährte Prozesserfahrung. GitHub-HEAD bei jedem Einstieg neu lesen; Snapshot vor dieser Dokumentationsänderung: `3840bfa545aeec6df6902180415d22efdd58f3ba`.
 > **Prüfkandidat, noch kein bestätigter Bug:** Spawn-Zufallsentscheidungen liegen in `GameDo()` und könnten pro Frame statt pro Zeit erfolgen. Vor jeder Änderung tatsächliche Frequenzen/Spielwirkung bewerten; keine pauschale Balancingmaßnahme.
 
+## Post-Pre-Alpha: Schritt 4 erste aktive Action-Migration (16.11.2026, Abend)
+
+**Schritt 3 vom Entwickler erfolgreich kompiliert:** `Compilation finished successfully.` Die beiden Funktionen `InputActionState` und `InputActionPressed` sind vom AGK-Compiler akzeptiert.
+
+**Schritt 4 auf `develop` umgesetzt, derzeit noch NICHT vom Entwickler kompiliert/gespielt:** Die sechs Kampf-/Energieaktionen in `source/sonec/sonec.agc` verwenden jetzt `InputActionState(Keys,JoystickIndex,ACTION_FIRE_*)` für MG, Granatwerfer, Flamme, Plasma und `InputActionPressed(...ACTION_SHIELD/ACTION_ATTRACT_ENERGY)` für Schild und Energieanziehung. Bestehende MG-Burst-, Energie-/Munitions- und Timing-Bedingungen wurden beibehalten. `GameActionInput(Game,Keys,Now)` reicht die bereits initialisierten `TKeys` weiter, `main.agc` ruft diese Funktion mit `Keys` auf. Tastaturstandard J MG / K Granate / L Flamme / I Plasma / U Energie anziehen / O Schild. Gamepad A/B/X/Y/LB/RB soll weiterhin funktionieren. **Alle Bewegungs-/Hover-/Start-/Back-/Pause-/Menü-Routinen sind unverändert.** Keine Cookies, kein Optionsmenü, kein Speichern, keine Maus. Nur Quelltextverifikation durch Assistenten, kein AGK-/Browserlauf.
+
+**Nächster Schritt:** aktuelles `develop` in AGK Studio kompilieren, anschließend Windows-Gameplay mit sechs Tastaturaktionen einzeln und parallel Gamepad; Shield/Attract je zweimal drücken (an/aus), MG/Plasma beim Gedrückthalten prüfen. Bei Problemen Fehlermeldung oder reproduzierbares Verhalten besprechen, nicht blind weiterpatchen. Referenz `Crystals` bleibt unverändert; itch.io Draft bleibt unveröffentlicht.
+
 ## Post-Pre-Alpha: Schritt 3 digitale Action-Abfragen (16.11.2026, Abend)
 
 **Schritt 2 vom Entwickler erfolgreich kompiliert:** `Compilation finished successfully.` Die Standards in `input.agc` und ihre Initialisierung in `main.agc` sind syntaktisch akzeptiert.
