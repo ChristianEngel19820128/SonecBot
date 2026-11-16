@@ -294,6 +294,7 @@ function GameDo(Game ref as TGame,Now as integer)
 	PlasmaBlitzCollideOrbs(Game.PlasmaBlitzList,Game.OrbList,Now)
 	PlasmaBlitzCollideMine(Game.PlasmaBlitzList,Game.MineList,Now)
 	PlasmaBlitzCollideChest(Game.PlasmaBlitzList,Game.ChestList,Now)
+	PlasmaBlitzCollideWalkers(Game.PlasmaBlitzList,Game.WalkerList,Now)
 	PlasmaBlitzCollisionTimerReset(Game.PlasmaBlitzList,Now)
 	
 	SonecRefreshAnimations(Game.Sonec,Game.PlasmaBlitzList,Game.FlashList,Game.World)
