@@ -15,6 +15,14 @@
 > **Arbeitsweise:** In kleinen gemeinsam freigegebenen Schritten vorgehen. Nutzer exportiert/kompiliert in lokalem AGK Studio, testet mit lokalem Apache im Browser/Gamepad und pflegt itch.io; Assistent prüft GitHub-Quellen und dokumentiert präzise, ohne lokale Tests zu behaupten. Besonderheiten mit Nachweisstatus festhalten, aktuellen Schritt beenden, erst danach über Folgearbeit bzw. Knowledge-Base-Eintrag entscheiden. Crystals 1.0 ist die bewährte Prozesserfahrung. GitHub-HEAD bei jedem Einstieg neu lesen; Snapshot vor dieser Dokumentationsänderung: `3840bfa545aeec6df6902180415d22efdd58f3ba`.
 > **Prüfkandidat, noch kein bestätigter Bug:** Spawn-Zufallsentscheidungen liegen in `GameDo()` und könnten pro Frame statt pro Zeit erfolgen. Vor jeder Änderung tatsächliche Frequenzen/Spielwirkung bewerten; keine pauschale Balancingmaßnahme.
 
+## Aktuelle Priorität nach TODO-Konsolidierung (16. November 2026)
+
+Die [aktive Aufgabenliste](TODO.md) wurde nach den gemeinsamen Tests bereinigt; **sie ist jetzt die verbindliche Reihenfolge**, nicht die älteren datierten Zwischenstands-Abschnitte weiter unten. **Keine weiteren Spielcodeänderungen ohne konkreten neuen Fehler.**
+
+**Abgeschlossen/akzeptiert:** Alpha-Walker und erste Waffen-Kollisionsmatrix, Schildabsorption gegen Walker-Bullets, Walker-Stopp vor Sonec (Sonecs eigenes Hineinspringen separat bekannt), Gamepad/Spielrunde/Pause/Tod/Mehrfachneustart in einer HTML5-Sitzung, HUD-Skala 43+7/Overload-Anzeigebereich 1500 und vom Entwickler visuell ausgewähltes `HUD_BAR_ALPHA=100`. Normalenergie `4000`, Start `4500` als derzeitige Testwerte. **Minenspawn rein aus dem Code untersucht; für die Pre-Alpha ausdrücklich keine Änderung.** `GameDo()` würfelt pro Frame, aber ein erfolgreicher `MineAdd()` setzt 1000-ms-Timer zurück, sodass die Mehrfachversuchsschleife kein sofortiges Rudel erzeugt. Ein späterer, bewusst regelbasierter Gruppen-/Rudelspawn ist eine Zukunftsdesignidee, erst nach externem Feedback.
+
+**Jetzt nächster konkreter Schritt:** README und englischen itch.io-Draft-Text auf den inzwischen tatsächlich getesteten Stand bringen; vorher gegebenenfalls den frischen HTML5-Export/Screenshots als Basis verifizieren. Danach manuell auf bestehende itch.io-Seite im **Draft** hochladen und über deren Secret URL testen; **niemals Published aktivieren**. Beim nächsten Export den genauen `develop`-Codecommit notieren. Weitere Themen (Sound-Funktionen, Avatarwarnung, Sprung-Körperkontakt, Balancing, Knowledge Base, GifCam, vollständige Tastatur) sind keine aktuellen Freigaben. Frühere Tests/Entscheidungen weiter unten sind historisch und können überholte Aufgabenformulierungen enthalten.
+
 ## Aktueller HTML5-Testbefund (Entwicklermeldung, 16. November 2026)
 
 - **Bestanden:** HTML5-Export mit lokalem AGK Studio; Browserstart über lokalen Apache/XAMPP im gemeinsam entwickelten Frame mit Run-Knopf (vergleichbar mit der geplanten itch.io-Einbettung). Spiel startet.
