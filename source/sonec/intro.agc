@@ -249,6 +249,27 @@ function IntroKeyboardKeyName(KeyCode as integer)
 	if KeyCode = KEY_CONTROL then Result = "CTRL"
 endfunction Result
 
+// Detect duplicate nonzero keyboard assignments across all 15 actions.
+// A conflict is visual only: both bindings remain valid and unchanged.
+function IntroKeyboardKeyConflict(Keys ref as TKeys,Action as integer)
+	local Other as integer
+	local KeyCode as integer
+	local Conflict as integer
+
+	if Action < 0 or Action > ACTION_LAST then exitfunction 0
+	KeyCode = Keys.Binding[Action].Key
+	if KeyCode = 0 then exitfunction 0
+
+	for Other = 0 to ACTION_LAST
+		if Other <> Action
+			if Keys.Binding[Other].Key = KeyCode
+				Conflict = 1
+				exitfunction Conflict
+			endif
+		endif
+	next Other
+endfunction Conflict
+
 // Render one of two non-scrolling keyboard categories.
 function IntroKeyboardTableUpdate(Intro ref as TIntro,Keys ref as TKeys)
 	local Row as integer
@@ -276,6 +297,7 @@ function IntroKeyboardTableUpdate(Intro ref as TIntro,Keys ref as TKeys)
 		RowY = RowStart + Row*20
 		if Row >= Count-2 then RowY = RowY + NavigationGap
 		IsNavigation = FALSE
+		Index = -1 // navigation entries never represent a key binding
 		Label = ""
 		KeyValue = ""
 		if Row < Count
@@ -368,6 +390,12 @@ function IntroKeyboardTableUpdate(Intro ref as TIntro,Keys ref as TKeys)
 			SetTextSize(Intro.TextKeyboardKey[Row],19)
 			SetTextColor(Intro.TextKeyboardLabel[Row],0,255,255,222)
 			SetTextColor(Intro.TextKeyboardKey[Row],0,255,255,222)
+		endif
+		// Keep selected action labels cyan; only conflicting key values turn red.
+		if Index >= 0
+			if IntroKeyboardKeyConflict(Keys,Index) = 1
+				SetTextColor(Intro.TextKeyboardKey[Row],255,65,65,222)
+			endif
 		endif
 	next Row
 endfunction
