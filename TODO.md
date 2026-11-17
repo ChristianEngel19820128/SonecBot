@@ -1,6 +1,6 @@
 # SonecBot – Aktuelle Aufgaben und Meilensteine
 
-**Dokumentstatus:** Version 8.4 – Keyboard-Schritt 3 Windows 8/8 und HTML5 11/11 bestanden; abgeschlossen  
+**Dokumentstatus:** Version 8.5 – Keyboard-Schritt 4 RESTORE DEFAULTS implementiert; Windows-/HTML5-Test offen  
 **Stand:** 16. November 2026  
 **Branch:** `develop`  
 **Aktuelles Ziel:** Funktionierende HTML5-Pre-Alpha auf itch.io im **Draft per Secret URL** für eingeladene Community-Tester bereitstellen, Feedback sammeln. **Nicht auf Published umstellen**; den einmaligen öffentlichen Index-Push für einen späteren, noch nicht beschlossenen Release bewahren. Keine Deadline.
@@ -8,6 +8,8 @@
 > Bei Chatwechsel zuerst [HANDOFF.md](HANDOFF.md) und den echten `develop`-HEAD lesen. Historische Arbeits- und Testdetails stehen in [TECHNICAL.md](TECHNICAL.md), in [dieser ausführlichen TODO-Version vor der Konsolidierung](https://github.com/ChristianEngel19820128/SonecBot/blob/b1d7da8f4bad6255e612948e833a39ab60a48243/TODO.md) und in Git. Datierte ältere „offen“-Einträge bezeichnen frühere Zwischenstände, **nicht** die heutige Aufgabenpriorität.
 
 **Aktueller Arbeitswunsch:** **Keyboard-Pre-Alpha-Patch noch in diesem Chat fortsetzen**, konkret `OPTIONS > CONTROLS > KEYBOARD`; genaue Erfassungs-/Konflikt-/Reset-Regeln vor Codefreigabe klären. Tastatur-Promobild erst am Ende. Das frühere Problem beim Auffinden von Columns war ausschließlich der falsche angenommene Repo-Name; richtig ist `Crystals` und die eigenständige TODO wurde bereits angelegt.
+
+**Keyboard-Schritt 4 implementiert, Test offen:** RESTORE DEFAULTS direkt unter KEYBOARD im CONTROLS-Menü, eigener Dialog RESTORE KEYBOARD DEFAULTS? mit RESET/CANCEL, CANCEL vorausgewählt; Backspace/Pad-Select/Y brechen ab. RESET setzt nur die 15 Keyboard-Keys auf die vorhandenen Defaults, bewahrt alle PadButtons und GameOptions und speichert die Bindings. Rückkehr zu CONTROLS in beiden Fällen. Änderung nur an `intro.agc`; **nächster Schritt Windows-Compile und Funktionsprüfung**, danach HTML5/Apache. Gamepad-Reset/Binding später separat.
 
 **Keyboard-Schritt 3 VOLLSTÄNDIG ABGESCHLOSSEN (Entwicklertests):** Windows-Korrekturtest **8/8** und finaler HTML5-Test über Apache **11/11 bestanden**, jeweils ohne Auffälligkeiten/offene Punkte. HTML5 bestätigt lokale Konflikte auf MOVEMENT/ACTIONS sowie seitenübergreifende rote Tastenwerte, türkis bleibende Aktionsnamen, Konfliktauflösung, festes W/S/Pfeil-Menü trotz `MOVE UP = UP` / `MOVE DOWN = UP`, unabhängige Hauptmenü-/Seiten-Navigation, Capture/Backspace/Speichern, Browser-Reload-Persistenz und D-Pad/Stick/Gameplay-Regression. Historische vorangegangene 8/9 Fehlermeldung wurde durch festen Menü-Input behoben; beide Nachtests bestanden. **Nächster Schritt: RESTORE DEFAULTS getrennt besprechen und separat freigeben.** Kein weiterer Code zur Testabnahme geändert; itch.io-Embed für Keyboard-Patch noch nicht eigens getestet.
 
