@@ -1,6 +1,6 @@
 # SonecBot – Aktuelle Aufgaben und Meilensteine
 
-**Dokumentstatus:** Version 5.9 – OPTIONS-Bold-Sichttest 5/6 bestätigt; Checklisten-Konvention dokumentiert  
+**Dokumentstatus:** Version 6.0 – OPTIONS-Auswahl 7c eingebaut, AGK-/Sichttest offen  
 **Stand:** 16. November 2026  
 **Branch:** `develop`  
 **Aktuelles Ziel:** Funktionierende HTML5-Pre-Alpha auf itch.io im **Draft per Secret URL** für eingeladene Community-Tester bereitstellen, Feedback sammeln. **Nicht auf Published umstellen**; den einmaligen öffentlichen Index-Push für einen späteren, noch nicht beschlossenen Release bewahren. Keine Deadline.
@@ -66,6 +66,12 @@
 **Schritte 7a und 7a.1 vollständig vom Entwickler bestanden:** 7a-Tastaturprüfung (AGK-Compile, W/S, Pfeiltasten, Umlauf, Enter-Start) bestanden; Gamepad-Steuerkreuz und Start/A vom Entwickler ausdrücklich funktionsfähig bestätigt. Der fehlende Analogstick wurde anschließend in 7a.1 nachgerüstet; **alle 10/10 Checks** erfolgreich: Compile, einzelne Schritte hoch/runter, Halten ohne Wiederholung, Neutralstellung und erneute Auslenkung, Menüumlauf, D-Pad, Tastatur, Enter/Start/A und normaler Spielstart. Keine Auffälligkeiten. **Schritt abgeschlossen.** Kein neuer HTML5-Export oder itch.io-Test damit behauptet.
 
 **Schritt 7b vom Entwickler vollständig bestanden:** AGK-Compile und 9/9 Prüfpunkte erfolgreich: OPTIONS per Enter/Start/A öffnen, eigener Bildschirm mit Hinweisen sichtbar, Bestätigung im Untermenü startet kein Spiel, Backspace/Select führt ins Hauptmenü, erneutes Öffnen und START funktionieren. Keine Auffälligkeiten.
+
+**Nachtrag Bold-Test:** Entwickler hat den bisher offenen sechsten Prüfpunkt `START startet anschließend weiterhin das Spiel` ausdrücklich als korrekt bestätigt. Damit **6/6 bestanden**. Der nachgereichte Screenshot zeigt die fetten, weiterhin zentrierten OPTIONS-Zeilen auf der pixeligen Hintergrundgrafik; Nutzer wünscht nun Auswahlmarkierung mit Schriftgrößenverhältnis wie im Hauptmenü.
+
+**Schritt 7c vom Entwickler freigegeben und auf `develop` implementiert, AGK-/Sichttest noch offen:** In `TIntro` gibt es `OptionSelectionPos`; Initialwert 1 bei `IntroCreate()` und jedem Öffnen von OPTIONS. Im OPTIONS-Unterbildschirm navigieren W/S, Pfeile, Gamepad-D-Pad und der linke Analogstick (ein Schritt pro Auslenkung, Neutralstellung zum erneuten Schritt) über drei Zeilen: Hover-Platzhalter, Keyboard-Bindings-Platzhalter und BACK. Aktuelle Zeile wird cyan/alpha222 und Größe 22 dargestellt; die anderen Zeilen weiß/alpha111 und Größe 19, entsprechend ungefähr Hauptmenü 32:28. Bold und die vorhandenen Positionen bleiben erhalten. Enter/Gamepad-Start/A löst **nur bei ausgewähltem BACK** die Rückkehr aus; auf den zwei Platzhaltern keine Aktion. Backspace/Gamepad-Select führt weiterhin jederzeit im Unterbildschirm zurück. Hauptmenü, Jetpack, Hover, Gameplay und Persistenz ansonsten unverändert. **Nächster Test:** AGK-Compile, Navigation und Hervorhebung aller drei OPTIONS-Zeilen, Textüberlappung/Lesbarkeit, Analog-Neutralstellung, Back-Taste sowie selektiertes BACK mit Enter/A/Start, Platzhalter-Bestätigung tut nichts, danach normaler Spielstart.
+
+**Neue getrennte Designüberlegung, nicht Teil von 7c:** Nutzer schlägt vor, auch **Energieanziehung** wählbar zu machen, da sie Energie kostet und Minen mit anzieht. Aktueller Code in `SonecInenergieInput()` nutzt bereits `InputActionPressed(...ACTION_ATTRACT_ENERGY)` zum Umschalten von `Inenergie.Enabled`; gesondert besprechen, ob zukünftig **Umschalten/Halten** konfigurierbar sein soll. Keine Änderung oder automatische Optionserweiterung ohne Freigabe.
 
 **Bold-Lesbarkeitstest – Entwicklerbericht ausgewertet:** Gesamturteil `Bestanden`; 5/6 einzeln bestätigt: AGK-Compile, drei OPTIONS-Texte fett, bessere Lesbarkeit, kein Layout-Konflikt, Backspace/Select zurück. **Nicht erneut bestätigt, aber auch kein Fehler berichtet:** START nach Rückkehr ins Hauptmenü funktioniert weiter (sechster Check blieb offen). Den visuellen Änderungszweck als erfolgreich getestet behandeln, ohne eine vollständige 6/6-Regression zu behaupten.
 
