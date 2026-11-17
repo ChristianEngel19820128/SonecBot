@@ -1,6 +1,6 @@
 # SonecBot – Aktuelle Aufgaben und Meilensteine
 
-**Dokumentstatus:** Version 8.0 – Keyboard-Schritt 2 Windows 10/10 und HTML5 12/12 bestanden; Schritt 3 Doppelbelegungsanzeige zur Planung  
+**Dokumentstatus:** Version 8.1 – Keyboard-Schritt 3 rote Doppelbelegungsanzeige implementiert; Windows-/HTML5-Test offen  
 **Stand:** 16. November 2026  
 **Branch:** `develop`  
 **Aktuelles Ziel:** Funktionierende HTML5-Pre-Alpha auf itch.io im **Draft per Secret URL** für eingeladene Community-Tester bereitstellen, Feedback sammeln. **Nicht auf Published umstellen**; den einmaligen öffentlichen Index-Push für einen späteren, noch nicht beschlossenen Release bewahren. Keine Deadline.
@@ -8,6 +8,8 @@
 > Bei Chatwechsel zuerst [HANDOFF.md](HANDOFF.md) und den echten `develop`-HEAD lesen. Historische Arbeits- und Testdetails stehen in [TECHNICAL.md](TECHNICAL.md), in [dieser ausführlichen TODO-Version vor der Konsolidierung](https://github.com/ChristianEngel19820128/SonecBot/blob/b1d7da8f4bad6255e612948e833a39ab60a48243/TODO.md) und in Git. Datierte ältere „offen“-Einträge bezeichnen frühere Zwischenstände, **nicht** die heutige Aufgabenpriorität.
 
 **Aktueller Arbeitswunsch:** **Keyboard-Pre-Alpha-Patch noch in diesem Chat fortsetzen**, konkret `OPTIONS > CONTROLS > KEYBOARD`; genaue Erfassungs-/Konflikt-/Reset-Regeln vor Codefreigabe klären. Tastatur-Promobild erst am Ende. Das frühere Problem beim Auffinden von Columns war ausschließlich der falsche angenommene Repo-Name; richtig ist `Crystals` und die eigenständige TODO wurde bereits angelegt.
+
+**Keyboard-Schritt 3 implementiert (Test offen):** Entwickler hat reine Rotmarkierung kollidierender Tastencodes freigegeben. In `intro.agc` prüft `IntroKeyboardKeyConflict` alle 15 Aktionen, ignoriert Key=0 und die eigene Aktion. Nur die Tastenwerte kollidierender Einträge werden rot, auch bei seitenübergreifenden Duplikaten; Aktionstitel/Selektion bleiben wie zuvor. Keine Konfliktsperre, kein Rebinding-/Speicher-/Gamepad-Umbau. **Nächster Schritt:** Windows-Compile und gezielte Konflikt-/Auflösen-/Regressionstests, danach HTML5. `RESTORE DEFAULTS` separat.
 
 **Keyboard-Schritt 2 ABGESCHLOSSEN (Entwicklertest):** Windows 10/10 bestanden. Dreizeilige Capture-Überschrift nach Windows-Screenshot optisch akzeptiert. HTML5-Export und lokaler Apache-Test 12/12 bestanden, ohne offene Punkte/Beobachtungen: Dialog, Capture, Abbruch, 41er-Whitelist, Modifiersperre, Zeilenauswahl, Browser-Reload-Persistenz und Gamepad-Regressionsprüfung. itch.io-Embed für diesen Patch noch nicht separat geprüft. **Nächster Schritt 3:** Rote Kennzeichnung aller Doppelbelegungen (auch MOVEMENT/ACTIONS-übergreifend) besprechen und separat freigeben; Konflikte bleiben erlaubt, Restore Defaults separat. Ältere Zwischenstände unten sind historisch.
 
