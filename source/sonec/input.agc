@@ -10,6 +10,59 @@ function InputSetDefaultGameOptions(Options ref as TGameOptions)
     Options.HoverMode = HOVER_MODE_TOGGLE
 endfunction
 
+// One compact, versioned GameOptions record. Key bindings use a separate
+// persistence group in a later step; do not create one cookie per option.
+// v1 payloads: "1|0" (HOLD) and "1|1" (TOGGLE).
+function GameOptionsLoad(Options ref as TGameOptions)
+    local Data as string
+    local FileID as integer
+
+    // The caller already applied safe defaults. Only known v1 values load.
+    Data = ""
+    if GetDeviceBaseName() = "html5"
+        Data = LoadSharedVariable("sonec_game_options","")
+    else
+        if GetFileExists("sonec_game_options.dat") = 1
+            FileID = OpenToRead("sonec_game_options.dat")
+            if FileID > 0
+                Data = ReadLine(FileID)
+                CloseFile(FileID)
+            endif
+        endif
+    endif
+
+    if Data = "1|0"
+        Options.HoverMode = HOVER_MODE_HOLD
+    endif
+    if Data = "1|1"
+        Options.HoverMode = HOVER_MODE_TOGGLE
+    endif
+endfunction
+
+function GameOptionsSave(Options ref as TGameOptions)
+    local Data as string
+    local FileID as integer
+
+    // Never write malformed or unsupported preferences.
+    if Options.Version <> GAME_OPTIONS_VERSION
+        exitfunction
+    endif
+    if Options.HoverMode <> HOVER_MODE_HOLD and Options.HoverMode <> HOVER_MODE_TOGGLE
+        exitfunction
+    endif
+
+    Data = Str(Options.Version)+"|"+Str(Options.HoverMode)
+    if GetDeviceBaseName() = "html5"
+        SaveSharedVariable("sonec_game_options",Data)
+    else
+        FileID = OpenToWrite("sonec_game_options.dat")
+        if FileID > 0
+            WriteLine(FileID,Data)
+            CloseFile(FileID)
+        endif
+    endif
+endfunction
+
 function InputSetDefaultBindings(Keys ref as TKeys)
 
     local i as integer
