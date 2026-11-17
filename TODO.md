@@ -7,6 +7,8 @@
 
 > Bei Chatwechsel zuerst [HANDOFF.md](HANDOFF.md) und den echten `develop`-HEAD lesen. Historische Arbeits- und Testdetails stehen in [TECHNICAL.md](TECHNICAL.md), in [dieser ausführlichen TODO-Version vor der Konsolidierung](https://github.com/ChristianEngel19820128/SonecBot/blob/b1d7da8f4bad6255e612948e833a39ab60a48243/TODO.md) und in Git. Datierte ältere „offen“-Einträge bezeichnen frühere Zwischenstände, **nicht** die heutige Aufgabenpriorität.
 
+**Aktueller Arbeitswunsch:** **Keyboard-Pre-Alpha-Patch noch in diesem Chat fortsetzen**, konkret `OPTIONS > CONTROLS > KEYBOARD`; genaue Erfassungs-/Konflikt-/Reset-Regeln vor Codefreigabe klären. Tastatur-Promobild erst am Ende. Das frühere Problem beim Auffinden von Columns war ausschließlich der falsche angenommene Repo-Name; richtig ist `Crystals` und die eigenständige TODO wurde bereits angelegt.
+
 ## AKTUELLER FOKUS (17.11.2026): Keyboard-Patch vor Real Alpha
 
 **Neue ausführliche Roadmap:** [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROADMAP.md). **Im nächsten Chat vorrangig lesen**, nach `AGENTS.md` und zusammen mit aktueller `HANDOFF.md`. Die Real Alpha hat **genau drei vereinbarte Primärfeatures**: (1) intelligente Einzelminen plus einfache nicht verfolgende Minenfelder/-rudel, (2) von links nach rechts schwebende Drohnen, (3) Top-/Avatar-Warnsystem mit `MINEFIELD DETECTED` als Ausgangspunkt. Weitere Ideen sind nachgeordnet; keine sofortige Implementierungsfreigabe.
@@ -18,7 +20,7 @@
 - [ ] **ERST AM ENDE des Pre-Alpha-Patches** ein kleines Tastatur-Promobild ähnlich dem bestehenden SonecBot-Cover erstellen (gesonderter Auftrag).
 - [ ] **Danach Real Alpha:** Kernfeatures nacheinander planen, freigeben, AGK-/HTML5-testen, abnehmen; Testerfeedback zu Fairness, Physik, HUD, Tod und Waffen als Ermittlungsaufträge, nicht automatisch als Bugs behandeln.
 - [ ] **itch.io SonecBot & Columns:** später englische Markdown-Bereiche `COMING SOON` und `TIPS & TRICKS` planen; SonecBot itch.io bleibt Draft/Secret.
-- [ ] **Columns – separates Projekt, ohne Priorität für 1.1:** TODO-Datei bei Zugang prüfen/ggf. neu anlegen, `AGENTS.md` später überarbeiten, zwei Theme-Tracks planen/erstellen. **Columns aktuell über GitHub-Connector nicht erreichbar**: kein Columns-TODO erstellt, keine Columns-Schreibaktion. Infos für später in `REAL_ALPHA_ROADMAP.md` und `HANDOFF.md` gesichert.
+- [x] **Crystal Columns / `Crystals` – separate Projekt-TODO erstellt:** Richtiges Repository [`ChristianEngel19820128/Crystals`](https://github.com/ChristianEngel19820128/Crystals) identifiziert, vorhandene `AGENTS.md` geprüft, fehlende [`TODO.md`](https://github.com/ChristianEngel19820128/Crystals/blob/main/TODO.md) auf `Crystals/main` neu angelegt (`935fde8`). **Columns 1.1 ohne Priorität**; `AGENTS.md` später verbessern, zwei Theme-Tracks und itch.io-Bereiche planen. Keine weiteren Crystals-Änderungen.
 - [ ] **Separate HTML5-Audio-Frage:** überlagerte Sounds können kratzen, als Knowledge-Base-Kandidat dokumentiert; kein Soundcode geändert.
 
 ### Externes Feedback (für Real Alpha, nicht sofortiger Bugfix)
