@@ -28,6 +28,16 @@
 #constant ACTION_LAST           14
 #constant INPUT_BINDINGS_VERSION 1
 
+// Gameplay preferences are separate from remappable key bindings.
+#constant HOVER_MODE_HOLD 0
+#constant HOVER_MODE_TOGGLE 1
+#constant GAME_OPTIONS_VERSION 1
+
+type TGameOptions
+    Version as integer
+    HoverMode as integer
+endtype
+
 type TActionBinding
     Key as integer
     PadButton as integer
