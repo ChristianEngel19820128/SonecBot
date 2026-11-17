@@ -64,7 +64,7 @@ function IntroCreate(Intro ref as TIntro,vx as integer,vy as integer,Now as inte
 	SetTextBold(Intro.TextOptionsTitle,1)
 	SetTextColor(Intro.TextOptionsTitle,0,255,255,222)
 
-	Intro.TextOptionsHover = CreateText("HOVER MODE - COMING LATER")
+	Intro.TextOptionsHover = CreateText("HOVER MODE - TOGGLE")
 	SetTextAlignment(Intro.TextOptionsHover,1)
 	SetTextPosition(Intro.TextOptionsHover,vx/2,vy/2-20)
 	SetTextSize(Intro.TextOptionsHover,19)
@@ -158,7 +158,7 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,JoystickIndex as integer,Now as integer)
+function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Options ref as TGameOptions,JoystickIndex as integer,Now as integer)
 	
 	local Value as integer
 	local AnalogStep as integer
@@ -189,6 +189,11 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Joyst
 	endif
 	
 	if Intro.IsOption = TRUE
+		if Options.HoverMode = HOVER_MODE_TOGGLE
+			SetTextString(Intro.TextOptionsHover,"HOVER MODE - TOGGLE")
+		else
+			SetTextString(Intro.TextOptionsHover,"HOVER MODE - HOLD")
+		endif
 		if InputActionPressed(Keys,JoystickIndex,ACTION_MOVE_UP) = 1 or GetKeyPressed(KEY_UP) = 1 or AnalogStep = -1
 			if Intro.OptionSelectionPos <= 1
 				Intro.OptionSelectionPos = 3
@@ -228,13 +233,22 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Joyst
 			endcase
 		endselect
 
-		// Backspace/Select always goes back. Enter/Start/A only confirms BACK.
+		// Backspace/Select always goes back; confirm edits Hover or selects BACK.
 		if InputActionPressed(Keys,JoystickIndex,ACTION_BACK) = 1
 			Intro.IsOption = FALSE
 			PlaySound(Sound.SelectSound)
 		else
-			if (InputActionPressed(Keys,JoystickIndex,ACTION_START) = 1 or GetJoyPressed(JoystickIndex,joystickButtonA) = 1) and Intro.OptionSelectionPos = 3
-				Intro.IsOption = FALSE
+			if InputActionPressed(Keys,JoystickIndex,ACTION_START) = 1 or GetJoyPressed(JoystickIndex,joystickButtonA) = 1
+				select Intro.OptionSelectionPos
+					case 1
+						if Options.HoverMode = HOVER_MODE_TOGGLE
+							Options.HoverMode = HOVER_MODE_HOLD
+						else
+							Options.HoverMode = HOVER_MODE_TOGGLE
+						endif
+					case 3
+						Intro.IsOption = FALSE
+				endselect
 				PlaySound(Sound.SelectSound)
 			endif
 		endif
