@@ -144,6 +144,10 @@ SetTextSize(PauseHintBack,16)
 local Keys as TKeys
 InputSetDefaultBindings(Keys)
 
+// Grouped gameplay preferences (separate from key bindings for step 7e).
+local Options as TGameOptions
+InputSetDefaultGameOptions(Options)
+
 local Intro as TIntro
 local Game as TGame
 
@@ -235,7 +239,7 @@ repeat
 	endif
 
 	if Game.IsLost = TRUE
-		if IntroDo(Intro,Game.Sound,Keys,Game.JoystickIndex,CurrentNow) = TRUE
+		if IntroDo(Intro,Game.Sound,Keys,Options,Game.JoystickIndex,CurrentNow) = TRUE
 			GameInit(Game,CurrentNow)
 		endif
 		IntroDraw(Intro)
@@ -253,7 +257,7 @@ repeat
 				endif
 			endif
 			if Game.IsPause = FALSE
-				GameInput(Game,Keys,CurrentNow)
+				GameInput(Game,Keys,Options,CurrentNow)
 				GameActionInput(Game,Keys,CurrentNow)
 				GameDo(Game,CurrentNow)		
 				GameAnimate(Game,CurrentNow)
