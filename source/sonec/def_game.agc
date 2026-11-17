@@ -780,11 +780,13 @@ type TIntro
 	TextEnd as integer
 	TextHelp as integer
 	TextOptionsTitle as integer
-	TextOptionsHover as integer
-	TextOptionsBindings as integer
-	TextOptionsBack as integer
+	TextOptionsEntry1 as integer
+	TextOptionsEntry2 as integer
+	TextOptionsEntry3 as integer
+	TextOptionsEntry4 as integer
 	SelctionPos as integer
 	OptionSelectionPos as integer
+	OptionPage as integer
 	AnalogMenuHeld as integer
 	IsOption as integer
 	IsQuit as integer
