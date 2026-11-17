@@ -247,7 +247,7 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Joyst
 			PlaySound(Sound.MenuSound)
 		endif
 		
-			if InputActionPressed(Keys,JoystickIndex,ACTION_MOVE_DOWN) = 1 or GetKeyPressed(KEY_DOWN) = 1 or AnalogStep = 1
+		if InputActionPressed(Keys,JoystickIndex,ACTION_MOVE_DOWN) = 1 or GetKeyPressed(KEY_DOWN) = 1 or AnalogStep = 1
 			if Intro.SelctionPos >= 3
 				Intro.SelctionPos = 1
 			else
@@ -291,7 +291,7 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Joyst
 				endcase
 				case 2
 					Intro.IsOption = TRUE
-				Intro.OptionSelectionPos = 1
+					Intro.OptionSelectionPos = 1
 				endcase
 				case 3
 					Intro.IsQuit = TRUE
