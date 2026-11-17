@@ -1,6 +1,6 @@
 # SonecBot – Aktuelle Aufgaben und Meilensteine
 
-**Dokumentstatus:** Version 7.2 – 7e.2 10/10 bestätigt, Keyboard-Patch als Nächstes; Real-Alpha-Roadmap angelegt  
+**Dokumentstatus:** Version 7.3 – Keyboard-Übersicht MOVEMENT/ACTIONS auf develop, AGK-Test offen  
 **Stand:** 16. November 2026  
 **Branch:** `develop`  
 **Aktuelles Ziel:** Funktionierende HTML5-Pre-Alpha auf itch.io im **Draft per Secret URL** für eingeladene Community-Tester bereitstellen, Feedback sammeln. **Nicht auf Published umstellen**; den einmaligen öffentlichen Index-Push für einen späteren, noch nicht beschlossenen Release bewahren. Keine Deadline.
@@ -8,6 +8,8 @@
 > Bei Chatwechsel zuerst [HANDOFF.md](HANDOFF.md) und den echten `develop`-HEAD lesen. Historische Arbeits- und Testdetails stehen in [TECHNICAL.md](TECHNICAL.md), in [dieser ausführlichen TODO-Version vor der Konsolidierung](https://github.com/ChristianEngel19820128/SonecBot/blob/b1d7da8f4bad6255e612948e833a39ab60a48243/TODO.md) und in Git. Datierte ältere „offen“-Einträge bezeichnen frühere Zwischenstände, **nicht** die heutige Aufgabenpriorität.
 
 **Aktueller Arbeitswunsch:** **Keyboard-Pre-Alpha-Patch noch in diesem Chat fortsetzen**, konkret `OPTIONS > CONTROLS > KEYBOARD`; genaue Erfassungs-/Konflikt-/Reset-Regeln vor Codefreigabe klären. Tastatur-Promobild erst am Ende. Das frühere Problem beim Auffinden von Columns war ausschließlich der falsche angenommene Repo-Name; richtig ist `Crystals` und die eigenständige TODO wurde bereits angelegt.
+
+**Keyboard-Patch, Schritt 1 (freigegeben und umgesetzt, Test ausstehend):** In `source/sonec/def_game.agc` feste AGK-Textarrays für 11 kompakte Tastatur-Tabellenzeilen; in `source/sonec/intro.agc` zwei feste Unterseiten `KEYBOARD - MOVEMENT` (6 Tasten-Aktionen + `ACTIONS >` + BACK) und `KEYBOARD - ACTIONS` (9 Aktionen inkl. HOVER/START/BACK + `< MOVEMENT` + BACK). Anzeige als eng nebeneinanderliegende Typ-/Tastenspalten; aktueller Wert aus bereits geladenem `Keys.Binding[i].Key`. Navigation inkl. Wrap mit W/S/Pfeilen/Pad/Stick und Backspace/Select/Y; ausgewähltes BACK in CONTROLS. **Noch keine Tastenerfassung und keine KeyBindingsSave-Aufrufe**, kein Rebinding trotz Enter auf Action-Zeile. **Statisch geprüft:** select/endselect und case/endcase ausgeglichen; AGK-Compile, Layout und Runtime **noch nicht geprüft**. Nächster Schritt: Entwickler testet zuerst Übersicht, Zeilenhöhe, Hilfe, BACK, Seitenwechsel, Datenanzeige und bestehende Steuerung. Erst nach Test die sichere Eingabe von neuer Taste umsetzen; Doppelbelegungen sind vereinbarungsgemäß **erlaubt**, später beide Einträge rot markieren; fester BACKSPACE-Abbruch im Capturing, da HTML5 ESC nicht zuverlässig ist; Restore Defaults separat. Kein Scrollen.
 
 ## AKTUELLER FOKUS (17.11.2026): Keyboard-Patch vor Real Alpha
 
