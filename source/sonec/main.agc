@@ -147,6 +147,7 @@ InputSetDefaultBindings(Keys)
 // Grouped gameplay preferences (separate from key bindings for step 7e).
 local Options as TGameOptions
 InputSetDefaultGameOptions(Options)
+GameOptionsLoad(Options)
 
 local Intro as TIntro
 local Game as TGame
