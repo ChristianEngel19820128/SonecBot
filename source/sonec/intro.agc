@@ -23,7 +23,8 @@ endfunction
 //----------------------------------------------------------------------
 
 function IntroCreate(Intro ref as TIntro,vx as integer,vy as integer,Now as integer)
-	
+	local k as integer
+
 	IntroProtoLoad(Intro)
 	
 	
@@ -90,7 +91,6 @@ function IntroCreate(Intro ref as TIntro,vx as integer,vy as integer,Now as inte
 
 	// Two compact keyboard tables share eleven fixed rows (no scrolling).
 	// Labels are right aligned, key values left aligned, close to the centre.
-	local k as integer
 	for k = 0 to 10
 		Intro.TextKeyboardLabel[k] = CreateText("")
 		SetTextAlignment(Intro.TextKeyboardLabel[k],2)
@@ -336,6 +336,8 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Optio
 		if Intro.OptionPage = 4
 			OptionCount = 1
 		endif
+		if Intro.OptionPage = 5 then OptionCount = 8
+		if Intro.OptionPage = 6 then OptionCount = 11
 
 		if InputActionPressed(Keys,JoystickIndex,ACTION_MOVE_UP) = 1 or GetKeyPressed(KEY_UP) = 1 or AnalogStep = -1
 			if Intro.OptionSelectionPos <= 1
@@ -359,8 +361,13 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Optio
 			if Intro.OptionPage = 1
 				Intro.IsOption = FALSE
 			else
-				Intro.OptionSelectionPos = Intro.OptionPage - 1
-				Intro.OptionPage = 1
+				if Intro.OptionPage = 5 or Intro.OptionPage = 6
+					Intro.OptionPage = 3
+					Intro.OptionSelectionPos = 1
+				else
+					Intro.OptionSelectionPos = Intro.OptionPage - 1
+					Intro.OptionPage = 1
+				endif
 			endif
 			PlaySound(Sound.SelectSound)
 		else
@@ -405,6 +412,11 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Optio
 						endselect
 					endcase
 					case 3
+						if Intro.OptionSelectionPos = 1
+							Intro.OptionPage = 5
+							Intro.OptionSelectionPos = 1
+							PlaySound(Sound.SelectSound)
+						endif
 						if Intro.OptionSelectionPos = 3
 							Intro.OptionPage = 1
 							Intro.OptionSelectionPos = 2
@@ -415,6 +427,31 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Optio
 						Intro.OptionPage = 1
 						Intro.OptionSelectionPos = 3
 						PlaySound(Sound.SelectSound)
+					endcase
+					case 5
+						// Step 1 only: category navigation; key entries are read-only.
+						if Intro.OptionSelectionPos = 7
+							Intro.OptionPage = 6
+							Intro.OptionSelectionPos = 1
+							PlaySound(Sound.SelectSound)
+						endif
+						if Intro.OptionSelectionPos = 8
+							Intro.OptionPage = 3
+							Intro.OptionSelectionPos = 1
+							PlaySound(Sound.SelectSound)
+						endif
+					endcase
+					case 6
+						if Intro.OptionSelectionPos = 10
+							Intro.OptionPage = 5
+							Intro.OptionSelectionPos = 1
+							PlaySound(Sound.SelectSound)
+						endif
+						if Intro.OptionSelectionPos = 11
+							Intro.OptionPage = 3
+							Intro.OptionSelectionPos = 1
+							PlaySound(Sound.SelectSound)
+						endif
 					endcase
 				endselect
 			endif
@@ -441,13 +478,21 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Optio
 			endcase
 			case 3
 				SetTextString(Intro.TextOptionsTitle,"CONTROLS")
-				SetTextString(Intro.TextOptionsEntry1,"KEYBOARD - COMING LATER")
+				SetTextString(Intro.TextOptionsEntry1,"KEYBOARD")
 				SetTextString(Intro.TextOptionsEntry2,"GAMEPAD - COMING LATER")
 				SetTextString(Intro.TextOptionsEntry3,"BACK")
 			endcase
 			case 4
 				SetTextString(Intro.TextOptionsTitle,"AUDIO")
 				SetTextString(Intro.TextOptionsEntry1,"BACK")
+			endcase
+			case 5
+				SetTextString(Intro.TextOptionsTitle,"KEYBOARD - MOVEMENT")
+				IntroKeyboardTableUpdate(Intro,Keys)
+			endcase
+			case 6
+				SetTextString(Intro.TextOptionsTitle,"KEYBOARD - ACTIONS")
+				IntroKeyboardTableUpdate(Intro,Keys)
 			endcase
 		endselect
 
@@ -553,18 +598,26 @@ endfunction Value
 //----------------------------------------------------------------------
 
 function IntroDraw(Intro ref as TIntro)
+	local k as integer
 
 	SpriteDraw(Intro.ProtoBackground.Sprite,Intro.Background.SpriteData)
 	
 	if Intro.IsOption = TRUE
 		Drawtext(Intro.TextOptionsTitle)
-		Drawtext(Intro.TextOptionsEntry1)
-		if Intro.OptionPage <> 4
-			Drawtext(Intro.TextOptionsEntry2)
-			Drawtext(Intro.TextOptionsEntry3)
-		endif
-		if Intro.OptionPage = 1
-			Drawtext(Intro.TextOptionsEntry4)
+		if Intro.OptionPage = 5 or Intro.OptionPage = 6
+			for k = 0 to 10
+				Drawtext(Intro.TextKeyboardLabel[k])
+				Drawtext(Intro.TextKeyboardKey[k])
+			next k
+		else
+			Drawtext(Intro.TextOptionsEntry1)
+			if Intro.OptionPage <> 4
+				Drawtext(Intro.TextOptionsEntry2)
+				Drawtext(Intro.TextOptionsEntry3)
+			endif
+			if Intro.OptionPage = 1
+				Drawtext(Intro.TextOptionsEntry4)
+			endif
 		endif
 	else
 		Drawtext(Intro.TextStart)
