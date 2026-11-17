@@ -118,6 +118,120 @@ function InputSetDefaultBindings(Keys ref as TKeys)
 endfunction
 
 //----------------------------------------------------------------------
+// Versioned KeyBindings persistence (step 7e.2).
+// One compact record for all 15 actions, not a cookie per binding.
+// Format: version|key0|pad0|...|key14|pad14 (31 tokens for v1).
+// No rebinding UI yet: create the default record only when none exists.
+//----------------------------------------------------------------------
+
+function KeyBindingsSerialize(Keys ref as TKeys)
+    local Data as string
+    local i as integer
+
+    Data = Str(Keys.Version)
+    for i = 0 to ACTION_LAST
+        Data = Data+"|"+Str(Keys.Binding[i].Key)+"|"+Str(Keys.Binding[i].PadButton)
+    next i
+
+endfunction Data
+
+function KeyBindingsSave(Keys ref as TKeys)
+    local FileID as integer
+    local Data as string
+    local i as integer
+
+    if Keys.Version <> INPUT_BINDINGS_VERSION
+        exitfunction
+    endif
+    for i = 0 to ACTION_LAST
+        if Keys.Binding[i].Key < 0 or Keys.Binding[i].Key > 255
+            exitfunction
+        endif
+        if Keys.Binding[i].PadButton < 0 or Keys.Binding[i].PadButton > 255
+            exitfunction
+        endif
+    next i
+
+    Data = KeyBindingsSerialize(Keys)
+    if GetDeviceBaseName() = "html5"
+        SaveSharedVariable("sonec_key_bindings",Data)
+    else
+        FileID = OpenToWrite("/sonec_key_bindings.dat")
+        if FileID > 0
+            WriteLine(FileID,Data)
+            CloseFile(FileID)
+        endif
+    endif
+endfunction
+
+function KeyBindingsLoad(Keys ref as TKeys)
+    local Data as string
+    local FileID as integer
+    local Candidate as TKeys
+    local i as integer
+    local KeyText as string
+    local PadText as string
+    local KeyCode as integer
+    local PadCode as integer
+
+    // Caller has already installed the complete fallback defaults.
+    Data = ""
+    if GetDeviceBaseName() = "html5"
+        Data = LoadSharedVariable("sonec_key_bindings","")
+    else
+        if GetFileExists("/sonec_key_bindings.dat") = 1
+            FileID = OpenToRead("/sonec_key_bindings.dat")
+            if FileID > 0
+                Data = ReadLine(FileID)
+                CloseFile(FileID)
+            endif
+        endif
+    endif
+
+    // A missing record is initialized once. Never overwrite damaged data
+    // or records from a future version automatically.
+    if Data = ""
+        KeyBindingsSave(Keys)
+        exitfunction
+    endif
+
+    if CountStringTokens(Data,"|") <> 1+(ACTION_LAST+1)*2
+        exitfunction
+    endif
+    if GetStringToken(Data,"|",1) <> Str(INPUT_BINDINGS_VERSION)
+        exitfunction
+    endif
+
+    Candidate.Version = INPUT_BINDINGS_VERSION
+    for i = 0 to ACTION_LAST
+        KeyText = GetStringToken(Data,"|",2+i*2)
+        PadText = GetStringToken(Data,"|",3+i*2)
+        KeyCode = Val(KeyText)
+        PadCode = Val(PadText)
+        if KeyCode < 0 or KeyCode > 255 or PadCode < 0 or PadCode > 255
+            exitfunction
+        endif
+        // Reject malformed numeric tokens, e.g. non-numeric or whitespace.
+        if KeyText <> Str(KeyCode) or PadText <> Str(PadCode)
+            exitfunction
+        endif
+        Candidate.Binding[i].Key = KeyCode
+        Candidate.Binding[i].PadButton = PadCode
+    next i
+
+    // Reject extra separators or tokens discarded by the token parser.
+    // Do not partially apply a corrupted record.
+    if Data <> KeyBindingsSerialize(Candidate)
+        exitfunction
+    endif
+
+    for i = 0 to ACTION_LAST
+        Keys.Binding[i].Key = Candidate.Binding[i].Key
+        Keys.Binding[i].PadButton = Candidate.Binding[i].PadButton
+    next i
+endfunction
+
+//----------------------------------------------------------------------
 // Digital action queries. Return 1 if either assigned device is active.
 // No axis/trigger mapping yet: existing movement code still owns those.
 // Invalid action indices and unassigned (0) buttons never generate input.
