@@ -152,6 +152,14 @@ function KeyBindingsSave(Keys ref as TKeys)
         endif
     next i
 
+    // Match the loader's safeguard for essential menu controls.
+    if Keys.Binding[ACTION_START].Key = 0 and Keys.Binding[ACTION_START].PadButton = 0
+        exitfunction
+    endif
+    if Keys.Binding[ACTION_BACK].Key = 0 and Keys.Binding[ACTION_BACK].PadButton = 0
+        exitfunction
+    endif
+
     Data = KeyBindingsSerialize(Keys)
     if GetDeviceBaseName() = "html5"
         SaveSharedVariable("sonec_key_bindings",Data)
