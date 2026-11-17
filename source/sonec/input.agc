@@ -225,6 +225,14 @@ function KeyBindingsLoad(Keys ref as TKeys)
         exitfunction
     endif
 
+    // Keep at least one usable input for essential Start/Back actions.
+    if Candidate.Binding[ACTION_START].Key = 0 and Candidate.Binding[ACTION_START].PadButton = 0
+        exitfunction
+    endif
+    if Candidate.Binding[ACTION_BACK].Key = 0 and Candidate.Binding[ACTION_BACK].PadButton = 0
+        exitfunction
+    endif
+
     for i = 0 to ACTION_LAST
         Keys.Binding[i].Key = Candidate.Binding[i].Key
         Keys.Binding[i].PadButton = Candidate.Binding[i].PadButton
