@@ -15,6 +15,16 @@
 > **Arbeitsweise:** In kleinen gemeinsam freigegebenen Schritten vorgehen. Nutzer exportiert/kompiliert in lokalem AGK Studio, testet mit lokalem Apache im Browser/Gamepad und pflegt itch.io; Assistent prüft GitHub-Quellen und dokumentiert präzise, ohne lokale Tests zu behaupten. Besonderheiten mit Nachweisstatus festhalten, aktuellen Schritt beenden, erst danach über Folgearbeit bzw. Knowledge-Base-Eintrag entscheiden. Crystals 1.0 ist die bewährte Prozesserfahrung. GitHub-HEAD bei jedem Einstieg neu lesen; Snapshot vor dieser Dokumentationsänderung: `3840bfa545aeec6df6902180415d22efdd58f3ba`.
 > **Prüfkandidat, noch kein bestätigter Bug:** Spawn-Zufallsentscheidungen liegen in `GameDo()` und könnten pro Frame statt pro Zeit erfolgen. Vor jeder Änderung tatsächliche Frequenzen/Spielwirkung bewerten; keine pauschale Balancingmaßnahme.
 
+## OPTIONS-Bold-Sichttest und Testbericht-Konvention (17.11.2026)
+
+**Entwicklerbericht – Bold-Lesbarkeitstest:** Insgesamt vom Entwickler als `Bestanden` gemeldet, **5 von 6 Prüfpunkten bestätigt**: AGK-Compile erfolgreich, alle drei neuen OPTIONS-Hinweiszeilen fett, Lesbarkeit gegenüber vorher besser, keine Textüberlappungen, Backspace und Gamepad-Select führen weiterhin zurück. **Noch offen/nicht erneut geprüft:** `START startet anschließend weiterhin das Spiel`. Keine konkrete Fehlfunktion gemeldet; dieser Punkt darf nicht als fehlgeschlagener Test oder bestätigt gezählt werden. Schritt des visuellen Bold-Vergleichs ist bestanden, vollständige sechste Regression bleibt offen. Weiterer Gameplay-Patch noch nicht freigegeben.
+
+**Neue ausdrücklich gewünschte Repo-Konvention:** Der Entwickler möchte das erfolgreich genutzte interaktive Testprotokoll chatübergreifend festhalten. Das verbindliche Muster steht jetzt in `AGENTS.md`, Abschnitt `Reusable interactive test-report format (SonecBot)`: kleine konkrete Checkboxen und Zähler, getrenntes Ergebnis (offen/bestanden/Fehler), mehrzeiliges **optionales** Beobachtungsfeld, **genau ein** bewusster `Testergebnis senden`-Button (Checkboxen senden niemals selbst); gesendeter Bericht nennt `Bestätigt`, `Offen`, `Beobachtungen`. Auch unvollständige Berichte richtig einordnen; Assistenten-Quelltextprüfung nie als Nutzer-Runtime-Test bezeichnen. In neuen Chats bitte direkt wieder so anbieten.
+
+**Bildhinweis:** Entwickler erwähnt ein beigefügtes Bild beim Bericht; in der aktuellen Gesprächsdateiliste ist kein neuer Bildanhang zu diesem Nutzerturn auffindbar. Bild daher nicht visuell beurteilt; bei Bedarf erneut anhängen.
+
+**Nächster Schritt:** Den noch offenen START-Nachtest nur bei Gelegenheit ergänzen; danach gemeinsam einen eng begrenzten nächsten Optionsmenü-Schritt (Hover-Toggle als bevorzugter Standard, Hold als Alternative) besprechen, aber ohne automatische Implementierung. `main`, itch.io und Knowledge Base unangetastet.
+
 ## Post-Pre-Alpha: 7b bestätigt; Bold-Lesbarkeitstest der OPTIONS-Texte (17.11.2026)
 
 **7b vom Entwickler vollständig abgenommen:** AGK-Compile und 9/9 Testpunkte bestanden: OPTIONS per Enter bzw. Start/A öffnen; vier Texte sichtbar; Bestätigen in Options startet kein Spiel; Backspace/Select zurück; erneutes Öffnen und normaler START. Keine Auffälligkeiten.
