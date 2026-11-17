@@ -106,7 +106,7 @@ function IntroCreate(Intro ref as TIntro,vx as integer,vy as integer,Now as inte
 
 	Intro.SelctionPos = 1
 	Intro.OptionSelectionPos = 1
-	Intro.OptionPage = 1 // 1=OPTIONS, 2=GAMEPLAY, 3=CONTROLS, 4=AUDIO
+	Intro.OptionPage = 1 // 1=OPTIONS, 2=GAMEPLAY, 3=CONTROLS, 4=AUDIO, 5=MOVEMENT, 6=ACTIONS
 	Intro.IsOption = FALSE
 	Intro.AnalogMenuHeld = FALSE
 	Intro.IsQuit = FALSE
@@ -455,6 +455,13 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Optio
 					endcase
 				endselect
 			endif
+		endif
+
+		// The dense keyboard tables need their title above the first row.
+		if Intro.OptionPage = 5 or Intro.OptionPage = 6
+			SetTextPosition(Intro.TextOptionsTitle,450,100)
+		else
+			SetTextPosition(Intro.TextOptionsTitle,450,135)
 		endif
 
 		// Reuse these four rows across all pages, including their alpha and bold.
