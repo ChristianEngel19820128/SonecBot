@@ -22,8 +22,8 @@ function GameOptionsLoad(Options ref as TGameOptions)
     if GetDeviceBaseName() = "html5"
         Data = LoadSharedVariable("sonec_game_options","")
     else
-        if GetFileExists("sonec_game_options.dat") = 1
-            FileID = OpenToRead("sonec_game_options.dat")
+        if GetFileExists("/sonec_game_options.dat") = 1
+            FileID = OpenToRead("/sonec_game_options.dat")
             if FileID > 0
                 Data = ReadLine(FileID)
                 CloseFile(FileID)
@@ -55,7 +55,7 @@ function GameOptionsSave(Options ref as TGameOptions)
     if GetDeviceBaseName() = "html5"
         SaveSharedVariable("sonec_game_options",Data)
     else
-        FileID = OpenToWrite("sonec_game_options.dat")
+        FileID = OpenToWrite("/sonec_game_options.dat")
         if FileID > 0
             WriteLine(FileID,Data)
             CloseFile(FileID)
