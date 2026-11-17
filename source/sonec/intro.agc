@@ -233,8 +233,9 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Optio
 			endcase
 		endselect
 
-		// Backspace/Select always goes back; confirm edits Hover or selects BACK.
-		if InputActionPressed(Keys,JoystickIndex,ACTION_BACK) = 1
+		// Backspace/Select or gamepad Y goes back only from OPTIONS.
+		// Y remains assigned to plasma during gameplay.
+		if InputActionPressed(Keys,JoystickIndex,ACTION_BACK) = 1 or GetJoyPressed(JoystickIndex,JoystickButtonY) = 1
 			Intro.IsOption = FALSE
 			PlaySound(Sound.SelectSound)
 		else
