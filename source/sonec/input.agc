@@ -4,6 +4,12 @@
 // Gameplay still uses its existing input until a separate migration step.
 //----------------------------------------------------------------------
 
+// Defaults for grouped gameplay preferences; persistence comes in step 7e.
+function InputSetDefaultGameOptions(Options ref as TGameOptions)
+    Options.Version = GAME_OPTIONS_VERSION
+    Options.HoverMode = HOVER_MODE_TOGGLE
+endfunction
+
 function InputSetDefaultBindings(Keys ref as TKeys)
 
     local i as integer
