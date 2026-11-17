@@ -182,6 +182,12 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Joyst
 		endif
 	endif
 	
+	// Keep the existing rotating help text running on both menu screens.
+	if TimeGet(Intro.TimerHelp,Now) > 0
+		IntroGambleHelp(Intro)
+		TimeReset(Intro.TimerHelp,Now)
+	endif
+	
 	if Intro.IsOption = TRUE
 		if InputActionPressed(Keys,JoystickIndex,ACTION_MOVE_UP) = 1 or GetKeyPressed(KEY_UP) = 1 or AnalogStep = -1
 			if Intro.OptionSelectionPos <= 1
@@ -233,11 +239,6 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Joyst
 			endif
 		endif
 	else
-		if TimeGet(Intro.TimerHelp,Now) > 0
-			IntroGambleHelp(Intro)
-			TimeReset(Intro.TimerHelp,Now)
-		endif
-		
 		if InputActionPressed(Keys,JoystickIndex,ACTION_MOVE_UP) = 1 or GetKeyPressed(KEY_UP) = 1 or AnalogStep = -1
 			if Intro.SelctionPos <= 1
 				Intro.SelctionPos = 3
@@ -324,8 +325,9 @@ function IntroDraw(Intro ref as TIntro)
 		Drawtext(Intro.TextStart)
 		Drawtext(Intro.TextOption)
 		Drawtext(Intro.TextEnd)
-		Drawtext(Intro.TextHelp)
 	endif
+	// Shared help string stays visible on the main and options screens.
+	Drawtext(Intro.TextHelp)
 	
 endfunction
 
