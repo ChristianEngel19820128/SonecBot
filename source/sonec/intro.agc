@@ -470,7 +470,7 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Optio
 		if Intro.OptionPage = 5 then OptionCount = 8
 		if Intro.OptionPage = 6 then OptionCount = 11
 
-		if InputActionPressed(Keys,JoystickIndex,ACTION_MOVE_UP) = 1 or GetKeyPressed(KEY_UP) = 1 or AnalogStep = -1
+		if GetKeyPressed(KEY_W) = 1 or GetKeyPressed(KEY_UP) = 1 or GetJoyPressed(JoystickIndex,JoystickButtonCrossUp) = 1 or AnalogStep = -1
 			if Intro.OptionSelectionPos <= 1
 				Intro.OptionSelectionPos = OptionCount
 			else
@@ -478,7 +478,7 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Optio
 			endif
 			PlaySound(Sound.MenuSound)
 		endif
-		if InputActionPressed(Keys,JoystickIndex,ACTION_MOVE_DOWN) = 1 or GetKeyPressed(KEY_DOWN) = 1 or AnalogStep = 1
+		if GetKeyPressed(KEY_S) = 1 or GetKeyPressed(KEY_DOWN) = 1 or GetJoyPressed(JoystickIndex,JoystickButtonCrossDown) = 1 or AnalogStep = 1
 			if Intro.OptionSelectionPos >= OptionCount
 				Intro.OptionSelectionPos = 1
 			else
@@ -681,7 +681,7 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Optio
 			endcase
 		endselect
 	else
-		if InputActionPressed(Keys,JoystickIndex,ACTION_MOVE_UP) = 1 or GetKeyPressed(KEY_UP) = 1 or AnalogStep = -1
+		if GetKeyPressed(KEY_W) = 1 or GetKeyPressed(KEY_UP) = 1 or GetJoyPressed(JoystickIndex,JoystickButtonCrossUp) = 1 or AnalogStep = -1
 			if Intro.SelctionPos <= 1
 				Intro.SelctionPos = 3
 			else
@@ -690,7 +690,7 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Optio
 			PlaySound(Sound.MenuSound)
 		endif
 		
-		if InputActionPressed(Keys,JoystickIndex,ACTION_MOVE_DOWN) = 1 or GetKeyPressed(KEY_DOWN) = 1 or AnalogStep = 1
+		if GetKeyPressed(KEY_S) = 1 or GetKeyPressed(KEY_DOWN) = 1 or GetJoyPressed(JoystickIndex,JoystickButtonCrossDown) = 1 or AnalogStep = 1
 			if Intro.SelctionPos >= 3
 				Intro.SelctionPos = 1
 			else
