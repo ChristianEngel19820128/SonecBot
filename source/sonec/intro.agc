@@ -91,15 +91,17 @@ function IntroCreate(Intro ref as TIntro,vx as integer,vy as integer,Now as inte
 
 	// Two compact keyboard tables share eleven fixed rows (no scrolling).
 	// Labels are right aligned, key values left aligned, close to the centre.
+	Intro.KeyboardCenterX = vx/2
+	Intro.KeyboardCenterY = vy/2
 	for k = 0 to 10
 		Intro.TextKeyboardLabel[k] = CreateText("")
 		SetTextAlignment(Intro.TextKeyboardLabel[k],2)
-		SetTextPosition(Intro.TextKeyboardLabel[k],vx/2-9,vy/2-80+k*23)
+		SetTextPosition(Intro.TextKeyboardLabel[k],Intro.KeyboardCenterX-9,Intro.KeyboardCenterY)
 		SetTextSize(Intro.TextKeyboardLabel[k],17)
 		SetTextBold(Intro.TextKeyboardLabel[k],1)
 		Intro.TextKeyboardKey[k] = CreateText("")
 		SetTextAlignment(Intro.TextKeyboardKey[k],0)
-		SetTextPosition(Intro.TextKeyboardKey[k],vx/2+9,vy/2-80+k*23)
+		SetTextPosition(Intro.TextKeyboardKey[k],Intro.KeyboardCenterX+9,Intro.KeyboardCenterY)
 		SetTextSize(Intro.TextKeyboardKey[k],17)
 		SetTextBold(Intro.TextKeyboardKey[k],1)
 	next k
@@ -206,11 +208,21 @@ function IntroKeyboardTableUpdate(Intro ref as TIntro,Keys ref as TKeys)
 	local Index as integer
 	local Label as string
 	local KeyValue as string
+	local RowStart as integer
+	local RowY as integer
+	local IsNavigation as integer
 
 	Count = 8 // MOVEMENT: six actions + NEXT + BACK
 	if Intro.OptionPage = 6 then Count = 11 // ACTIONS: nine actions + MOVEMENT + BACK
 
+	// Same font sizes and 20-pixel spacing on both pages. Centre the full
+	// title + table block vertically instead of anchoring it at the bottom.
+	RowStart = Intro.KeyboardCenterY - ((Count-1)*20+62)/2+44
+	SetTextPosition(Intro.TextOptionsTitle,Intro.KeyboardCenterX,RowStart-44)
+
 	for Row = 0 to 10
+		RowY = RowStart + Row*20
+		IsNavigation = FALSE
 		Label = ""
 		KeyValue = ""
 		if Row < Count
@@ -239,6 +251,7 @@ function IntroKeyboardTableUpdate(Intro ref as TIntro,Keys ref as TKeys)
 					endselect
 					KeyValue = IntroKeyboardKeyName(Keys.Binding[Index].Key)
 				else
+					IsNavigation = TRUE
 					if Row = 6 then Label = "ACTIONS  >"
 					if Row = 7 then Label = "BACK"
 				endif
@@ -276,11 +289,21 @@ function IntroKeyboardTableUpdate(Intro ref as TIntro,Keys ref as TKeys)
 					endselect
 					KeyValue = IntroKeyboardKeyName(Keys.Binding[Index].Key)
 				else
+					IsNavigation = TRUE
 					if Row = 9 then Label = "< MOVEMENT"
 					if Row = 10 then Label = "BACK"
 				endif
 			endif
 		endif
+		// Navigation entries belong to the whole screen, not the key column.
+		if IsNavigation = TRUE
+			SetTextAlignment(Intro.TextKeyboardLabel[Row],1)
+			SetTextPosition(Intro.TextKeyboardLabel[Row],Intro.KeyboardCenterX,RowY)
+		else
+			SetTextAlignment(Intro.TextKeyboardLabel[Row],2)
+			SetTextPosition(Intro.TextKeyboardLabel[Row],Intro.KeyboardCenterX-9,RowY)
+		endif
+		SetTextPosition(Intro.TextKeyboardKey[Row],Intro.KeyboardCenterX+9,RowY)
 		SetTextString(Intro.TextKeyboardLabel[Row],Label)
 		SetTextString(Intro.TextKeyboardKey[Row],KeyValue)
 		SetTextSize(Intro.TextKeyboardLabel[Row],17)
@@ -457,11 +480,10 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Optio
 			endif
 		endif
 
-		// The dense keyboard tables need their title above the first row.
-		if Intro.OptionPage = 5 or Intro.OptionPage = 6
-			SetTextPosition(Intro.TextOptionsTitle,450,100)
-		else
-			SetTextPosition(Intro.TextOptionsTitle,450,135)
+		// Keyboard pages position their title together with their centred table.
+		// All other OPTIONS pages retain their original title placement.
+		if Intro.OptionPage <> 5 and Intro.OptionPage <> 6
+			SetTextPosition(Intro.TextOptionsTitle,Intro.KeyboardCenterX,Intro.KeyboardCenterY-90)
 		endif
 
 		// Reuse these four rows across all pages, including their alpha and bold.
