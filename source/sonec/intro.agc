@@ -216,11 +216,12 @@ function IntroKeyboardTableUpdate(Intro ref as TIntro,Keys ref as TKeys)
 	Count = 8 // MOVEMENT: six actions + NEXT + BACK
 	if Intro.OptionPage = 6 then Count = 11 // ACTIONS: nine actions + MOVEMENT + BACK
 
-	// Same type sizes on both pages. A 12-pixel break separates the
-	// navigation pair from the action table without splitting that pair.
-	// Include the break when vertically centering title and full contents.
+	// Same title and first action height on both keyboard pages.
+	// Use the taller ACTIONS page (11 rows) to anchor both tables;
+	// MOVEMENT then has more free space below its shorter list.
+	// Keep the 12-pixel break before each two-row navigation pair.
 	NavigationGap = 12
-	RowStart = Intro.KeyboardCenterY - ((Count-1)*20+NavigationGap+62)/2+44
+	RowStart = Intro.KeyboardCenterY - ((11-1)*20+NavigationGap+62)/2+44
 	SetTextPosition(Intro.TextOptionsTitle,Intro.KeyboardCenterX,RowStart-44)
 
 	for Row = 0 to 10
