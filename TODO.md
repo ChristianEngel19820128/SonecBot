@@ -1,6 +1,6 @@
 # SonecBot – Aktuelle Aufgaben und Meilensteine
 
-**Dokumentstatus:** Version 6.3 – 7d CASE/ENDCASE-Syntaxfehler korrigiert, AGK-Retest offen  
+**Dokumentstatus:** Version 6.4 – 7d 12/12 bestanden; Joy-Y als OPTIONS-Back eingebaut, Test offen  
 **Stand:** 16. November 2026  
 **Branch:** `develop`  
 **Aktuelles Ziel:** Funktionierende HTML5-Pre-Alpha auf itch.io im **Draft per Secret URL** für eingeladene Community-Tester bereitstellen, Feedback sammeln. **Nicht auf Published umstellen**; den einmaligen öffentlichen Index-Push für einen späteren, noch nicht beschlossenen Release bewahren. Keine Deadline.
@@ -72,6 +72,12 @@
 **Schritt 7c vom Entwickler vollständig bestätigt:** AGK-Compile und **11/11 Testpunkte bestanden**: drei größer/cyan markierbare OPTIONS-Zeilen ohne Layoutprobleme, W/S, Pfeile, D-Pad, Analogstick mit Neutralstellung und Wrap, Platzhalter bleiben funktionslos, BACK über Enter/Start/A und jederzeit Backspace/Select, normaler START. Transparenz gefällt dem Entwickler; bei späterem Optionsausbau verfügbaren Bildschirmplatz beachten.
 
 **Schritt 7c.1 vom Entwickler vollständig bestätigt:** AGK-Compile, Hilfe in Hauptmenü und OPTIONS, 11-Sekunden-Wechsel in OPTIONS, Lesbarkeit/Position/Transparenz, keine Überlappung, Tastatur-/Gamepad-Navigation, Backspace/Select und normaler START – **9/9** bestanden, keine Auffälligkeiten.
+
+**Schritt 7d vollständig vom Entwickler bestanden:** Nach `endcase`-Fix AGK-Compile und **12/12** Runtime-/Menü-Prüfpunkte erfolgreich, keine offenen Punkte: TOGGLE-Default, Space/Button 9 Toggle ohne Wiederholung bei Halten, Wechsel zu HOLD mit korrektem Halteverhalten, Jetpack-Vorrang, Pause, Neustart ohne Hover-Aktivierung aber mit beibehaltenem Modus, OPTIONS/BACK/START und KEY-BINDINGS-Platzhalter. Es wurden keine Fehler mehr gemeldet.
+
+**Kleine neue Menüergänzung des Entwicklers nach 7d, umgesetzt, AGK-Test offen:** `GetJoyPressed(JoystickIndex,JoystickButtonY)` wird **nur bei `Intro.IsOption = TRUE`** als alternativer Rückweg ins Hauptmenü behandelt, ergänzend zu Backspace/Gamepad-Select. Der Gamepad-Y-Knopf bleibt im **Gameplay** für die Plasma-Waffe belegt; die globalen `TKeys`-Bindings werden nicht verändert. Kein Y-Back im Hauptmenü oder Gameplay; dadurch kein versehentliches Quit/Plasma. Bestehendes BACK-Menülabel bleibt aus Platzgründen unverändert. **Nächster Miniretest:** AGK-Compile, Y führt in OPTIONS zurück auch wenn Hover/Key Bindings gewählt ist, Y im laufenden Spiel löst weiterhin Plasma aus, A/Start bei Hover und BACK sowie bestehende Rückwege funktionieren.
+
+**Schritt 7e anschließende getrennte Umsetzung (vorbereitet, noch nicht umgesetzt):** Zwei logisch getrennte, versionierte Gruppen für persistente `GameOptions` und `KeyBindings`; **kein Cookie pro Feld**. Version/Format und sichere Defaults bei fehlenden/korrupten Daten. Zuerst genauer AGK-/HTML5-Speichermechanismus und lesbar/versionierbar serialisierte Gruppen klären; Key Binding UI ist weiterhin nur Platzhalter. Repo-GitHub-Code-Suche nach `SaveSharedVariable`/`LoadSharedVariable` ergab keine Fundstelle (indexbedingt nicht abschließend). Keine implizite Browsercookie-Zusage, keinen fremden Shared-Speicher überschreiben. Erst nach Miniretest den genauen Speicherpatch festlegen.
 
 **7d Compiler-Fehlerbericht und gezielter Fix:** Entwickler meldet `intro.agc:243:Error: CASE statement does not have a matching ENDCASE`. **Keiner** der zwölf Tests konnte damit als bestanden gelten (Compile eingeschlossen); Testlauf blockiert. Tatsächlich fehlten in `IntroDo()` innerhalb `select Intro.OptionSelectionPos` die zwei `endcase`-Abschlüsse für `case 1` und `case 3` (Hover-Wechsel / BACK). Beide ergänzt, keine andere Spiel-/Menülogik geändert; per Quelltext statisch geprüft, **AGK-Neucompile noch offen**. Erneut kompilieren und danach ursprüngliche 7d-Checkliste prüfen. Keine 7e-Implementierung vor erfolgreichem Test.
 
