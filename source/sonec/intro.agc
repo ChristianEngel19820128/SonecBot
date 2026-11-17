@@ -106,6 +106,22 @@ function IntroCreate(Intro ref as TIntro,vx as integer,vy as integer,Now as inte
 		SetTextBold(Intro.TextKeyboardKey[k],1)
 	next k
 
+	Intro.TextCapturePrompt = CreateText("PRESS NEW KEY")
+	SetTextAlignment(Intro.TextCapturePrompt,1)
+	SetTextPosition(Intro.TextCapturePrompt,Intro.KeyboardCenterX,Intro.KeyboardCenterY-15)
+	SetTextSize(Intro.TextCapturePrompt,28)
+	SetTextBold(Intro.TextCapturePrompt,1)
+	SetTextColor(Intro.TextCapturePrompt,0,255,255,222)
+	Intro.TextCaptureCancel = CreateText("BACKSPACE - CANCEL")
+	SetTextAlignment(Intro.TextCaptureCancel,1)
+	SetTextPosition(Intro.TextCaptureCancel,Intro.KeyboardCenterX,Intro.KeyboardCenterY+25)
+	SetTextSize(Intro.TextCaptureCancel,18)
+	SetTextBold(Intro.TextCaptureCancel,1)
+	SetTextColor(Intro.TextCaptureCancel,255,255,255,222)
+	Intro.KeyboardCapture = FALSE
+	Intro.KeyboardCaptureArmed = FALSE
+	Intro.KeyboardCaptureAction = 0
+
 	Intro.SelctionPos = 1
 	Intro.OptionSelectionPos = 1
 	Intro.OptionPage = 1 // 1=OPTIONS, 2=GAMEPLAY, 3=CONTROLS, 4=AUDIO, 5=MOVEMENT, 6=ACTIONS
@@ -182,7 +198,39 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-// Display only; keyboard capture and rebinding arrive in the next step.
+// Keyboard capture accepts exactly SPACE, arrows, digits and A-Z.
+function IntroKeyboardAllowed(KeyCode as integer)
+	local Allowed as integer
+	if KeyCode = KEY_SPACE then Allowed = 1
+	if KeyCode >= KEY_LEFT and KeyCode <= KEY_DOWN then Allowed = 1
+	if KeyCode >= KEY_0 and KeyCode <= KEY_9 then Allowed = 1
+	if KeyCode >= KEY_A and KeyCode <= KEY_Z then Allowed = 1
+endfunction Allowed
+
+// Prevent Ctrl/Alt/Win shortcuts from becoming a binding.
+function IntroKeyboardModifierHeld()
+	local Held as integer
+	if GetKeyState(KEY_CONTROL) = 1 then Held = 1
+	if GetKeyState(18) = 1 then Held = 1 // Alt
+	if GetKeyState(91) = 1 or GetKeyState(92) = 1 or GetKeyState(93) = 1 then Held = 1 // OS keys
+endfunction Held
+
+// The pressed scan is restricted to our 41-key whitelist.
+function IntroKeyboardFindPressed()
+	local KeyCode as integer
+	local Result as integer
+	if IntroKeyboardModifierHeld() = 1 then exitfunction 0
+	for KeyCode = KEY_SPACE to KEY_Z
+		if IntroKeyboardAllowed(KeyCode) = 1
+			if GetKeyPressed(KeyCode) = 1
+				Result = KeyCode
+				exitfunction Result
+			endif
+		endif
+	next KeyCode
+endfunction Result
+
+// Show the capture prompt in place of the table without changing its layout.
 function IntroKeyboardKeyName(KeyCode as integer)
 	local Result as string
 	Result = Str(KeyCode)
@@ -330,6 +378,33 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Optio
 	local AnalogStep as integer
 	local AnalogY as float
 	local OptionCount as integer
+	local CapturedKey as integer
+	
+	// Capture is modal: no navigation, page changes or gameplay keys run.
+	if Intro.KeyboardCapture = TRUE
+		if GetKeyPressed(KEY_BACK) = 1
+			Intro.KeyboardCapture = FALSE
+			Intro.KeyboardCaptureArmed = FALSE
+			PlaySound(Sound.SelectSound)
+		else
+			// Do not capture the Enter/A press that opened the prompt.
+			if Intro.KeyboardCaptureArmed = FALSE
+				if GetKeyState(KEY_ENTER) = 0 and GetJoyState(JoystickIndex,JoystickButtonA) = 0
+					Intro.KeyboardCaptureArmed = TRUE
+				endif
+			else
+				CapturedKey = IntroKeyboardFindPressed()
+				if CapturedKey > 0
+					Keys.Binding[Intro.KeyboardCaptureAction].Key = CapturedKey
+					KeyBindingsSave(Keys)
+					Intro.KeyboardCapture = FALSE
+					Intro.KeyboardCaptureArmed = FALSE
+					PlaySound(Sound.SelectSound)
+				endif
+			endif
+		endif
+		exitfunction Value
+	endif
 	
 	// Analog menu navigation works in both the main and options screens.
 	// One step per deflection, then rearm only when the stick returns to neutral.
@@ -385,7 +460,7 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Optio
 		endif
 
 		// Backspace/Select/Y navigate one page back; only root exits to main.
-		if InputActionPressed(Keys,JoystickIndex,ACTION_BACK) = 1 or GetJoyPressed(JoystickIndex,JoystickButtonY) = 1
+		if GetKeyPressed(KEY_BACK) = 1 or GetJoyPressed(JoystickIndex,JoystickButtonBack) = 1 or GetJoyPressed(JoystickIndex,JoystickButtonY) = 1
 			if Intro.OptionPage = 1
 				Intro.IsOption = FALSE
 			else
@@ -399,7 +474,7 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Optio
 			endif
 			PlaySound(Sound.SelectSound)
 		else
-			if InputActionPressed(Keys,JoystickIndex,ACTION_START) = 1 or GetJoyPressed(JoystickIndex,joystickButtonA) = 1
+			if GetKeyPressed(KEY_ENTER) = 1 or GetJoyPressed(JoystickIndex,joystickButtonA) = 1
 				select Intro.OptionPage
 					case 1
 						select Intro.OptionSelectionPos
@@ -457,7 +532,12 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Optio
 						PlaySound(Sound.SelectSound)
 					endcase
 					case 5
-						// Step 1 only: category navigation; key entries are read-only.
+						if Intro.OptionSelectionPos >= 1 and Intro.OptionSelectionPos <= 6
+							Intro.KeyboardCaptureAction = Intro.OptionSelectionPos-1
+							Intro.KeyboardCapture = TRUE
+							Intro.KeyboardCaptureArmed = FALSE
+							PlaySound(Sound.SelectSound)
+						endif
 						if Intro.OptionSelectionPos = 7
 							Intro.OptionPage = 6
 							Intro.OptionSelectionPos = 1
@@ -470,6 +550,12 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Optio
 						endif
 					endcase
 					case 6
+						if Intro.OptionSelectionPos >= 1 and Intro.OptionSelectionPos <= 9
+							Intro.KeyboardCaptureAction = Intro.OptionSelectionPos+5
+							Intro.KeyboardCapture = TRUE
+							Intro.KeyboardCaptureArmed = FALSE
+							PlaySound(Sound.SelectSound)
+						endif
 						if Intro.OptionSelectionPos = 10
 							Intro.OptionPage = 5
 							Intro.OptionSelectionPos = 1
@@ -603,7 +689,7 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Optio
 			endcase
 		endselect
 		
-		if InputActionPressed(Keys,JoystickIndex,ACTION_START) = 1 or GetJoyPressed(JoystickIndex,joystickButtonA) = 1
+		if GetKeyPressed(KEY_ENTER) = 1 or GetJoyPressed(JoystickIndex,joystickButtonA) = 1
 			select Intro.SelctionPos
 				case 1
 					Value = TRUE
@@ -639,10 +725,15 @@ function IntroDraw(Intro ref as TIntro)
 	if Intro.IsOption = TRUE
 		Drawtext(Intro.TextOptionsTitle)
 		if Intro.OptionPage = 5 or Intro.OptionPage = 6
-			for k = 0 to 10
-				Drawtext(Intro.TextKeyboardLabel[k])
-				Drawtext(Intro.TextKeyboardKey[k])
-			next k
+			if Intro.KeyboardCapture = TRUE
+				Drawtext(Intro.TextCapturePrompt)
+				Drawtext(Intro.TextCaptureCancel)
+			else
+				for k = 0 to 10
+					Drawtext(Intro.TextKeyboardLabel[k])
+					Drawtext(Intro.TextKeyboardKey[k])
+				next k
+			endif
 		else
 			Drawtext(Intro.TextOptionsEntry1)
 			if Intro.OptionPage <> 4
