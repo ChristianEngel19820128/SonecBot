@@ -612,13 +612,25 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function SonecInput(Sonec ref as TSonec,JetfireList ref as TJetfireList,ProtoJetfire ref as TProtoJetfire,World ref as TWorld,Keys ref as TKeys,JoystickIndex as integer,Now as integer)
+function SonecInput(Sonec ref as TSonec,JetfireList ref as TJetfireList,ProtoJetfire ref as TProtoJetfire,World ref as TWorld,Keys ref as TKeys,Options ref as TGameOptions,JoystickIndex as integer,Now as integer)
 	
 	local Position as TPosition
 	
-	if TimeGet(Sonec.InputTimer,Now) > 0
-		// Hover follows the held binding independently of horizontal movement.
+	// Toggle on a fresh press, including short taps between movement timer ticks.
+	// Hold mode follows the current key/button state, as in step 6c.
+	if Options.HoverMode = HOVER_MODE_TOGGLE
+		if InputActionPressed(Keys,JoystickIndex,ACTION_HOVER) = 1
+			if Sonec.State.Hover = TRUE
+				Sonec.State.Hover = FALSE
+			else
+				Sonec.State.Hover = TRUE
+			endif
+		endif
+	else
 		Sonec.State.Hover = InputActionState(Keys,JoystickIndex,ACTION_HOVER)
+	endif
+
+	if TimeGet(Sonec.InputTimer,Now) > 0
 		
 		Position.y = Sonec.ObjectData.Position.y -10
 		if Sonec.State.LookAlignment = LOOKLEFT
