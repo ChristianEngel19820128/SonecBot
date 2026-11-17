@@ -56,35 +56,41 @@ function IntroCreate(Intro ref as TIntro,vx as integer,vy as integer,Now as inte
 	SetTextBold(Intro.TextHelp,1)
 	SetTextColor(Intro.TextHelp,255,255,255,222)
 	
-	// Options screen is display-only in this step; settings are not editable yet.
+	// Reusable options rows: root categories and compact submenu screens.
 	Intro.TextOptionsTitle = CreateText("OPTIONS")
 	SetTextAlignment(Intro.TextOptionsTitle,1)
-	SetTextPosition(Intro.TextOptionsTitle,vx/2,vy/2-75)
+	SetTextPosition(Intro.TextOptionsTitle,vx/2,vy/2-90)
 	SetTextSize(Intro.TextOptionsTitle,30)
 	SetTextBold(Intro.TextOptionsTitle,1)
 	SetTextColor(Intro.TextOptionsTitle,0,255,255,222)
 
-	Intro.TextOptionsHover = CreateText("HOVER MODE - TOGGLE")
-	SetTextAlignment(Intro.TextOptionsHover,1)
-	SetTextPosition(Intro.TextOptionsHover,vx/2,vy/2-20)
-	SetTextSize(Intro.TextOptionsHover,19)
-	SetTextBold(Intro.TextOptionsHover,1)
+	Intro.TextOptionsEntry1 = CreateText("GAMEPLAY")
+	SetTextAlignment(Intro.TextOptionsEntry1,1)
+	SetTextPosition(Intro.TextOptionsEntry1,vx/2,vy/2-35)
+	SetTextSize(Intro.TextOptionsEntry1,19)
+	SetTextBold(Intro.TextOptionsEntry1,1)
 
-	Intro.TextOptionsBindings = CreateText("KEY BINDINGS - COMING LATER")
-	SetTextAlignment(Intro.TextOptionsBindings,1)
-	SetTextPosition(Intro.TextOptionsBindings,vx/2,vy/2+15)
-	SetTextSize(Intro.TextOptionsBindings,19)
-	SetTextBold(Intro.TextOptionsBindings,1)
+	Intro.TextOptionsEntry2 = CreateText("CONTROLS")
+	SetTextAlignment(Intro.TextOptionsEntry2,1)
+	SetTextPosition(Intro.TextOptionsEntry2,vx/2,vy/2)
+	SetTextSize(Intro.TextOptionsEntry2,19)
+	SetTextBold(Intro.TextOptionsEntry2,1)
 
-	Intro.TextOptionsBack = CreateText("BACKSPACE / SELECT - BACK")
-	SetTextAlignment(Intro.TextOptionsBack,1)
-	SetTextPosition(Intro.TextOptionsBack,vx/2,vy/2+75)
-	SetTextSize(Intro.TextOptionsBack,19)
-	SetTextBold(Intro.TextOptionsBack,1)
-	SetTextColor(Intro.TextOptionsBack,0,255,255,222)
+	Intro.TextOptionsEntry3 = CreateText("AUDIO")
+	SetTextAlignment(Intro.TextOptionsEntry3,1)
+	SetTextPosition(Intro.TextOptionsEntry3,vx/2,vy/2+35)
+	SetTextSize(Intro.TextOptionsEntry3,19)
+	SetTextBold(Intro.TextOptionsEntry3,1)
+
+	Intro.TextOptionsEntry4 = CreateText("BACK")
+	SetTextAlignment(Intro.TextOptionsEntry4,1)
+	SetTextPosition(Intro.TextOptionsEntry4,vx/2,vy/2+70)
+	SetTextSize(Intro.TextOptionsEntry4,19)
+	SetTextBold(Intro.TextOptionsEntry4,1)
 
 	Intro.SelctionPos = 1
 	Intro.OptionSelectionPos = 1
+	Intro.OptionPage = 1 // 1=OPTIONS, 2=GAMEPLAY, 3=CONTROLS, 4=AUDIO
 	Intro.IsOption = FALSE
 	Intro.AnalogMenuHeld = FALSE
 	Intro.IsQuit = FALSE
@@ -189,21 +195,26 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Optio
 	endif
 	
 	if Intro.IsOption = TRUE
-		if Options.HoverMode = HOVER_MODE_TOGGLE
-			SetTextString(Intro.TextOptionsHover,"HOVER MODE - TOGGLE")
-		else
-			SetTextString(Intro.TextOptionsHover,"HOVER MODE - HOLD")
+		// Page 1=OPTIONS, 2=GAMEPLAY, 3=CONTROLS, 4=AUDIO.
+		local OptionCount as integer
+		OptionCount = 3
+		if Intro.OptionPage = 1
+			OptionCount = 4
 		endif
+		if Intro.OptionPage = 4
+			OptionCount = 1
+		endif
+
 		if InputActionPressed(Keys,JoystickIndex,ACTION_MOVE_UP) = 1 or GetKeyPressed(KEY_UP) = 1 or AnalogStep = -1
 			if Intro.OptionSelectionPos <= 1
-				Intro.OptionSelectionPos = 3
+				Intro.OptionSelectionPos = OptionCount
 			else
 				dec Intro.OptionSelectionPos
 			endif
 			PlaySound(Sound.MenuSound)
 		endif
 		if InputActionPressed(Keys,JoystickIndex,ACTION_MOVE_DOWN) = 1 or GetKeyPressed(KEY_DOWN) = 1 or AnalogStep = 1
-			if Intro.OptionSelectionPos >= 3
+			if Intro.OptionSelectionPos >= OptionCount
 				Intro.OptionSelectionPos = 1
 			else
 				inc Intro.OptionSelectionPos
@@ -211,50 +222,128 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Optio
 			PlaySound(Sound.MenuSound)
 		endif
 
-		// Same 22:19 selected/unselected ratio as the main menu's 32:28.
-		SetTextSize(Intro.TextOptionsHover,19)
-		SetTextSize(Intro.TextOptionsBindings,19)
-		SetTextSize(Intro.TextOptionsBack,19)
-		SetTextColor(Intro.TextOptionsHover,255,255,255,111)
-		SetTextColor(Intro.TextOptionsBindings,255,255,255,111)
-		SetTextColor(Intro.TextOptionsBack,255,255,255,111)
-		select Intro.OptionSelectionPos
-			case 1
-				SetTextSize(Intro.TextOptionsHover,22)
-				SetTextColor(Intro.TextOptionsHover,0,255,255,222)
-			endcase
-			case 2
-				SetTextSize(Intro.TextOptionsBindings,22)
-				SetTextColor(Intro.TextOptionsBindings,0,255,255,222)
-			endcase
-			case 3
-				SetTextSize(Intro.TextOptionsBack,22)
-				SetTextColor(Intro.TextOptionsBack,0,255,255,222)
-			endcase
-		endselect
-
-		// Backspace/Select or gamepad Y goes back only from OPTIONS.
-		// Y remains assigned to plasma during gameplay.
+		// Backspace/Select/Y navigate one page back; only root exits to main.
 		if InputActionPressed(Keys,JoystickIndex,ACTION_BACK) = 1 or GetJoyPressed(JoystickIndex,JoystickButtonY) = 1
-			Intro.IsOption = FALSE
+			if Intro.OptionPage = 1
+				Intro.IsOption = FALSE
+			else
+				Intro.OptionSelectionPos = Intro.OptionPage - 1
+				Intro.OptionPage = 1
+			endif
 			PlaySound(Sound.SelectSound)
 		else
 			if InputActionPressed(Keys,JoystickIndex,ACTION_START) = 1 or GetJoyPressed(JoystickIndex,joystickButtonA) = 1
-				select Intro.OptionSelectionPos
+				select Intro.OptionPage
 					case 1
-						if Options.HoverMode = HOVER_MODE_TOGGLE
-							Options.HoverMode = HOVER_MODE_HOLD
-						else
-							Options.HoverMode = HOVER_MODE_TOGGLE
-						endif
+						select Intro.OptionSelectionPos
+							case 1
+								Intro.OptionPage = 2
+								Intro.OptionSelectionPos = 1
+							endcase
+							case 2
+								Intro.OptionPage = 3
+								Intro.OptionSelectionPos = 1
+							endcase
+							case 3
+								Intro.OptionPage = 4
+								Intro.OptionSelectionPos = 1
+							endcase
+							case 4
+								Intro.IsOption = FALSE
+							endcase
+						endselect
+						PlaySound(Sound.SelectSound)
+					endcase
+					case 2
+						select Intro.OptionSelectionPos
+							case 1
+								if Options.HoverMode = HOVER_MODE_TOGGLE
+									Options.HoverMode = HOVER_MODE_HOLD
+								else
+									Options.HoverMode = HOVER_MODE_TOGGLE
+								endif
+								PlaySound(Sound.SelectSound)
+							endcase
+							case 3
+								Intro.OptionPage = 1
+								Intro.OptionSelectionPos = 1
+								PlaySound(Sound.SelectSound)
+							endcase
+						endselect
 					endcase
 					case 3
-						Intro.IsOption = FALSE
+						if Intro.OptionSelectionPos = 3
+							Intro.OptionPage = 1
+							Intro.OptionSelectionPos = 2
+							PlaySound(Sound.SelectSound)
+						endif
+					endcase
+					case 4
+						Intro.OptionPage = 1
+						Intro.OptionSelectionPos = 3
+						PlaySound(Sound.SelectSound)
 					endcase
 				endselect
-				PlaySound(Sound.SelectSound)
 			endif
 		endif
+
+		// Reuse these four rows across all pages, including their alpha and bold.
+		select Intro.OptionPage
+			case 1
+				SetTextString(Intro.TextOptionsTitle,"OPTIONS")
+				SetTextString(Intro.TextOptionsEntry1,"GAMEPLAY")
+				SetTextString(Intro.TextOptionsEntry2,"CONTROLS")
+				SetTextString(Intro.TextOptionsEntry3,"AUDIO")
+				SetTextString(Intro.TextOptionsEntry4,"BACK")
+			endcase
+			case 2
+				SetTextString(Intro.TextOptionsTitle,"GAMEPLAY")
+				if Options.HoverMode = HOVER_MODE_TOGGLE
+					SetTextString(Intro.TextOptionsEntry1,"HOVER MODE - TOGGLE")
+				else
+					SetTextString(Intro.TextOptionsEntry1,"HOVER MODE - HOLD")
+				endif
+				SetTextString(Intro.TextOptionsEntry2,"ENERGY ATTRACT - COMING LATER")
+				SetTextString(Intro.TextOptionsEntry3,"BACK")
+			endcase
+			case 3
+				SetTextString(Intro.TextOptionsTitle,"CONTROLS")
+				SetTextString(Intro.TextOptionsEntry1,"KEYBOARD - COMING LATER")
+				SetTextString(Intro.TextOptionsEntry2,"GAMEPAD - COMING LATER")
+				SetTextString(Intro.TextOptionsEntry3,"BACK")
+			endcase
+			case 4
+				SetTextString(Intro.TextOptionsTitle,"AUDIO")
+				SetTextString(Intro.TextOptionsEntry1,"BACK")
+			endcase
+		endselect
+
+		SetTextSize(Intro.TextOptionsEntry1,19)
+		SetTextSize(Intro.TextOptionsEntry2,19)
+		SetTextSize(Intro.TextOptionsEntry3,19)
+		SetTextSize(Intro.TextOptionsEntry4,19)
+		SetTextColor(Intro.TextOptionsEntry1,255,255,255,111)
+		SetTextColor(Intro.TextOptionsEntry2,255,255,255,111)
+		SetTextColor(Intro.TextOptionsEntry3,255,255,255,111)
+		SetTextColor(Intro.TextOptionsEntry4,255,255,255,111)
+		select Intro.OptionSelectionPos
+			case 1
+				SetTextSize(Intro.TextOptionsEntry1,22)
+				SetTextColor(Intro.TextOptionsEntry1,0,255,255,222)
+			endcase
+			case 2
+				SetTextSize(Intro.TextOptionsEntry2,22)
+				SetTextColor(Intro.TextOptionsEntry2,0,255,255,222)
+			endcase
+			case 3
+				SetTextSize(Intro.TextOptionsEntry3,22)
+				SetTextColor(Intro.TextOptionsEntry3,0,255,255,222)
+			endcase
+			case 4
+				SetTextSize(Intro.TextOptionsEntry4,22)
+				SetTextColor(Intro.TextOptionsEntry4,0,255,255,222)
+			endcase
+		endselect
 	else
 		if InputActionPressed(Keys,JoystickIndex,ACTION_MOVE_UP) = 1 or GetKeyPressed(KEY_UP) = 1 or AnalogStep = -1
 			if Intro.SelctionPos <= 1
@@ -310,6 +399,7 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Optio
 				case 2
 					Intro.IsOption = TRUE
 					Intro.OptionSelectionPos = 1
+					Intro.OptionPage = 1
 				endcase
 				case 3
 					Intro.IsQuit = TRUE
@@ -335,9 +425,14 @@ function IntroDraw(Intro ref as TIntro)
 	
 	if Intro.IsOption = TRUE
 		Drawtext(Intro.TextOptionsTitle)
-		Drawtext(Intro.TextOptionsHover)
-		Drawtext(Intro.TextOptionsBindings)
-		Drawtext(Intro.TextOptionsBack)
+		Drawtext(Intro.TextOptionsEntry1)
+		if Intro.OptionPage <> 4
+			Drawtext(Intro.TextOptionsEntry2)
+			Drawtext(Intro.TextOptionsEntry3)
+		endif
+		if Intro.OptionPage = 1
+			Drawtext(Intro.TextOptionsEntry4)
+		endif
 	else
 		Drawtext(Intro.TextStart)
 		Drawtext(Intro.TextOption)
