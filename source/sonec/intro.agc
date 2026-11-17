@@ -88,6 +88,22 @@ function IntroCreate(Intro ref as TIntro,vx as integer,vy as integer,Now as inte
 	SetTextSize(Intro.TextOptionsEntry4,19)
 	SetTextBold(Intro.TextOptionsEntry4,1)
 
+	// Two compact keyboard tables share eleven fixed rows (no scrolling).
+	// Labels are right aligned, key values left aligned, close to the centre.
+	local k as integer
+	for k = 0 to 10
+		Intro.TextKeyboardLabel[k] = CreateText("")
+		SetTextAlignment(Intro.TextKeyboardLabel[k],2)
+		SetTextPosition(Intro.TextKeyboardLabel[k],vx/2-9,vy/2-80+k*23)
+		SetTextSize(Intro.TextKeyboardLabel[k],17)
+		SetTextBold(Intro.TextKeyboardLabel[k],1)
+		Intro.TextKeyboardKey[k] = CreateText("")
+		SetTextAlignment(Intro.TextKeyboardKey[k],0)
+		SetTextPosition(Intro.TextKeyboardKey[k],vx/2+9,vy/2-80+k*23)
+		SetTextSize(Intro.TextKeyboardKey[k],17)
+		SetTextBold(Intro.TextKeyboardKey[k],1)
+	next k
+
 	Intro.SelctionPos = 1
 	Intro.OptionSelectionPos = 1
 	Intro.OptionPage = 1 // 1=OPTIONS, 2=GAMEPLAY, 3=CONTROLS, 4=AUDIO
@@ -163,6 +179,122 @@ endfunction
 //----------------------------------------------------------------------
 // 
 //----------------------------------------------------------------------
+
+// Display only; keyboard capture and rebinding arrive in the next step.
+function IntroKeyboardKeyName(KeyCode as integer)
+	local Result as string
+	Result = Str(KeyCode)
+	if KeyCode = 0 then Result = "-"
+	if KeyCode >= 65 and KeyCode <= 90 then Result = Chr(KeyCode)
+	if KeyCode >= 48 and KeyCode <= 57 then Result = Chr(KeyCode)
+	if KeyCode = KEY_SPACE then Result = "SPACE"
+	if KeyCode = KEY_ENTER then Result = "ENTER"
+	if KeyCode = KEY_BACK then Result = "BACKSPACE"
+	if KeyCode = KEY_UP then Result = "UP"
+	if KeyCode = KEY_DOWN then Result = "DOWN"
+	if KeyCode = KEY_LEFT then Result = "LEFT"
+	if KeyCode = KEY_RIGHT then Result = "RIGHT"
+	if KeyCode = KEY_TAB then Result = "TAB"
+	if KeyCode = KEY_SHIFT then Result = "SHIFT"
+	if KeyCode = KEY_CONTROL then Result = "CTRL"
+endfunction Result
+
+// Render one of two non-scrolling keyboard categories.
+function IntroKeyboardTableUpdate(Intro ref as TIntro,Keys ref as TKeys)
+	local Row as integer
+	local Count as integer
+	local Index as integer
+	local Label as string
+	local KeyValue as string
+
+	Count = 8 // MOVEMENT: six actions + NEXT + BACK
+	if Intro.OptionPage = 6 then Count = 11 // ACTIONS: nine actions + MOVEMENT + BACK
+
+	for Row = 0 to 10
+		Label = ""
+		KeyValue = ""
+		if Row < Count
+			if Intro.OptionPage = 5
+				if Row < 6
+					Index = Row
+					select Row
+						case 0
+							Label = "MOVE UP"
+						endcase
+						case 1
+							Label = "MOVE DOWN"
+						endcase
+						case 2
+							Label = "MOVE LEFT"
+						endcase
+						case 3
+							Label = "MOVE RIGHT"
+						endcase
+						case 4
+							Label = "BACK LEFT"
+						endcase
+						case 5
+							Label = "BACK RIGHT"
+						endcase
+					endselect
+					KeyValue = IntroKeyboardKeyName(Keys.Binding[Index].Key)
+				else
+					if Row = 6 then Label = "ACTIONS  >"
+					if Row = 7 then Label = "BACK"
+				endif
+			else
+				if Row < 9
+					Index = Row+6
+					select Row
+						case 0
+							Label = "MACHINE GUN"
+						endcase
+						case 1
+							Label = "GRENADE"
+						endcase
+						case 2
+							Label = "FLAME"
+						endcase
+						case 3
+							Label = "PLASMA"
+						endcase
+						case 4
+							Label = "ATTRACT ENERGY"
+						endcase
+						case 5
+							Label = "SHIELD"
+						endcase
+						case 6
+							Label = "HOVER"
+						endcase
+						case 7
+							Label = "START"
+						endcase
+						case 8
+							Label = "BACK KEY"
+						endcase
+					endselect
+					KeyValue = IntroKeyboardKeyName(Keys.Binding[Index].Key)
+				else
+					if Row = 9 then Label = "< MOVEMENT"
+					if Row = 10 then Label = "BACK"
+				endif
+			endif
+		endif
+		SetTextString(Intro.TextKeyboardLabel[Row],Label)
+		SetTextString(Intro.TextKeyboardKey[Row],KeyValue)
+		SetTextSize(Intro.TextKeyboardLabel[Row],17)
+		SetTextSize(Intro.TextKeyboardKey[Row],17)
+		SetTextColor(Intro.TextKeyboardLabel[Row],255,255,255,170)
+		SetTextColor(Intro.TextKeyboardKey[Row],255,255,255,170)
+		if Row+1 = Intro.OptionSelectionPos
+			SetTextSize(Intro.TextKeyboardLabel[Row],19)
+			SetTextSize(Intro.TextKeyboardKey[Row],19)
+			SetTextColor(Intro.TextKeyboardLabel[Row],0,255,255,222)
+			SetTextColor(Intro.TextKeyboardKey[Row],0,255,255,222)
+		endif
+	next Row
+endfunction
 
 function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Options ref as TGameOptions,JoystickIndex as integer,Now as integer)
 	
