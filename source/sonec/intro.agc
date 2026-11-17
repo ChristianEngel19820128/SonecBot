@@ -768,6 +768,24 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Optio
 					Intro.IsOption = TRUE
 					Intro.OptionSelectionPos = 1
 					Intro.OptionPage = 1
+					// IntroDraw can render OPTIONS in this same frame.
+					// Initialize the correct title and highlight immediately,
+					// instead of displaying the previous page's stale colours.
+					SetTextString(Intro.TextOptionsTitle,"OPTIONS")
+					SetTextPosition(Intro.TextOptionsTitle,Intro.KeyboardCenterX,Intro.KeyboardCenterY-90)
+					SetTextSize(Intro.TextOptionsTitle,30)
+					SetTextString(Intro.TextOptionsEntry1,"GAMEPLAY")
+					SetTextString(Intro.TextOptionsEntry2,"CONTROLS")
+					SetTextString(Intro.TextOptionsEntry3,"AUDIO")
+					SetTextString(Intro.TextOptionsEntry4,"BACK")
+					SetTextSize(Intro.TextOptionsEntry1,22)
+					SetTextSize(Intro.TextOptionsEntry2,19)
+					SetTextSize(Intro.TextOptionsEntry3,19)
+					SetTextSize(Intro.TextOptionsEntry4,19)
+					SetTextColor(Intro.TextOptionsEntry1,0,255,255,222)
+					SetTextColor(Intro.TextOptionsEntry2,255,255,255,111)
+					SetTextColor(Intro.TextOptionsEntry3,255,255,255,111)
+					SetTextColor(Intro.TextOptionsEntry4,255,255,255,111)
 				endcase
 				case 3
 					Intro.IsQuit = TRUE
