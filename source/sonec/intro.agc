@@ -262,6 +262,7 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Optio
 								else
 									Options.HoverMode = HOVER_MODE_TOGGLE
 								endif
+								GameOptionsSave(Options)
 								PlaySound(Sound.SelectSound)
 							endcase
 							case 3
