@@ -784,6 +784,7 @@ type TIntro
 	TextOptionsBindings as integer
 	TextOptionsBack as integer
 	SelctionPos as integer
+	OptionSelectionPos as integer
 	AnalogMenuHeld as integer
 	IsOption as integer
 	IsQuit as integer
