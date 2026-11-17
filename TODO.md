@@ -1,6 +1,6 @@
 # SonecBot – Aktuelle Aufgaben und Meilensteine
 
-**Dokumentstatus:** Version 7.4 – Keyboard-Layout 1a zentriert/verdichtet; optischer AGK-Test offen  
+**Dokumentstatus:** Version 7.5 – Keyboard-Layout 1b Navigation abgesetzt, Pfeile entfernt; AGK-Test offen  
 **Stand:** 16. November 2026  
 **Branch:** `develop`  
 **Aktuelles Ziel:** Funktionierende HTML5-Pre-Alpha auf itch.io im **Draft per Secret URL** für eingeladene Community-Tester bereitstellen, Feedback sammeln. **Nicht auf Published umstellen**; den einmaligen öffentlichen Index-Push für einen späteren, noch nicht beschlossenen Release bewahren. Keine Deadline.
@@ -8,6 +8,8 @@
 > Bei Chatwechsel zuerst [HANDOFF.md](HANDOFF.md) und den echten `develop`-HEAD lesen. Historische Arbeits- und Testdetails stehen in [TECHNICAL.md](TECHNICAL.md), in [dieser ausführlichen TODO-Version vor der Konsolidierung](https://github.com/ChristianEngel19820128/SonecBot/blob/b1d7da8f4bad6255e612948e833a39ab60a48243/TODO.md) und in Git. Datierte ältere „offen“-Einträge bezeichnen frühere Zwischenstände, **nicht** die heutige Aufgabenpriorität.
 
 **Aktueller Arbeitswunsch:** **Keyboard-Pre-Alpha-Patch noch in diesem Chat fortsetzen**, konkret `OPTIONS > CONTROLS > KEYBOARD`; genaue Erfassungs-/Konflikt-/Reset-Regeln vor Codefreigabe klären. Tastatur-Promobild erst am Ende. Das frühere Problem beim Auffinden von Columns war ausschließlich der falsche angenommene Repo-Name; richtig ist `Crystals` und die eigenständige TODO wurde bereits angelegt.
+
+**Keyboard-Patch Schritt 1b (freigegeben, auf `develop`, optischer Test offen):** Entwickler-Screenshots nach 1a deutlich entspannter. `source/sonec/intro.agc` ausschließlich optisch angepasst: Seitenwechseltitel `ACTIONS` und `MOVEMENT` **ohne Richtungspfeile**; beide horizontal zentriert wie BACK. Die **letzten zwei Navigationszeilen** jeder Seite erhalten als Paar einen 12-px-Zusatzabstand zur Aktionsliste, behalten untereinander ihre bisherigen 20 px; die vertikale Block-Zentrierung berücksichtigt den Abstand. Kein Rebinding, keine Eingabe-/Navigations-/Speicheränderung. **Jetzt AGK kompilieren, beide Seiten ansehen, Screenshot/Abstände beurteilen und erst danach vollständigen Step-1-Navigationstest nachholen.**
 
 **Keyboard-Patch Schritt 1a, ausdrücklich freigegebene Layout-Korrektur:** Entwickler-Screenshots der ersten Version zeigten gute zweispaltige Action/Key-Tabelle, aber zu tiefe/volle ACTIONS-Seite. **Aktionsspalten unverändert lassen**; ACTIONS-/MOVEMENT-Wechsel und BACK als ganze Zeile **horizontal mittig**; beide Seiten als Block mit Titel **vertikal zentriert**; einheitliche Schriftgrößen auf beiden Seiten (17/19 für nicht ausgewählt/ausgewählt), Raster 20 px statt 23 px. Auf `develop` nur `def_game.agc` und `intro.agc` als Layout-Patch geändert; AGK-Compile/Anzeige noch nicht getestet. **Zuerst neue MOVEMENT-/ACTIONS-Screenshots und optische Prüfung, anschließend vollständigen Funktionstest von Schritt 1 wiederholen**. Keine Tastenerfassung oder Speicheränderung.
 
