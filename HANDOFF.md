@@ -15,6 +15,16 @@
 > **Arbeitsweise:** In kleinen gemeinsam freigegebenen Schritten vorgehen. Nutzer exportiert/kompiliert in lokalem AGK Studio, testet mit lokalem Apache im Browser/Gamepad und pflegt itch.io; Assistent prüft GitHub-Quellen und dokumentiert präzise, ohne lokale Tests zu behaupten. Besonderheiten mit Nachweisstatus festhalten, aktuellen Schritt beenden, erst danach über Folgearbeit bzw. Knowledge-Base-Eintrag entscheiden. Crystals 1.0 ist die bewährte Prozesserfahrung. GitHub-HEAD bei jedem Einstieg neu lesen; Snapshot vor dieser Dokumentationsänderung: `3840bfa545aeec6df6902180415d22efdd58f3ba`.
 > **Prüfkandidat, noch kein bestätigter Bug:** Spawn-Zufallsentscheidungen liegen in `GameDo()` und könnten pro Frame statt pro Zeit erfolgen. Vor jeder Änderung tatsächliche Frequenzen/Spielwirkung bewerten; keine pauschale Balancingmaßnahme.
 
+## Post-Pre-Alpha: Schritt 7c.1 gemeinsame Hilfe in OPTIONS (17.11.2026)
+
+**7c vollständig vom Entwickler bestanden:** AGK-Compile und **11/11** Testfälle: alle drei OPTIONS-Auswahlzeilen größer/cyan, gut lesbar ohne Überlappungen, W/S/Pfeile/D-Pad/Analogstick inkl. Neutralstellung und Wrap, Platzhalter ohne Aktion, BACK per Enter/Start/A und Backspace/Select, START danach regulär. Keine Auffälligkeiten. Spieler mag leicht transparenten Text; begrenzten Platz für spätere zusätzliche Optionen berücksichtigen.
+
+**7c.1 ausdrücklich freigegeben, auf `develop` umgesetzt, AGK-Compile/Sichttest ausstehend:** Nur `source/sonec/intro.agc` geändert. `Intro.TextHelp` wird in `IntroDraw()` sowohl für Hauptmenü als auch OPTIONS nach dem Anzeigezweig gezeichnet. `TimeGet(Intro.TimerHelp,Now)`/`IntroGambleHelp()`/`TimeReset()` in `IntroDo()` sind vor den Zweig mit `Intro.IsOption` verschoben, damit die Rotation alle 11 Sekunden **auch in OPTIONS** weiterläuft. Bisherige Strings, Textgröße 18, Bold, Transparenz, Position am unteren Rand unverändert; keine zusätzlichen Textobjekte, kein Options- oder Gameplay-Verhalten geändert.
+
+**Separate künftig zu besprechende Hilfe-Erweiterung:** Entwickler schlägt neue/aktualisierte Hilfestrings vor, eventuell Auslagerung der Strings in JSON. Erst nach 7c.1-Test die AGK- und HTML5-Dateiformate, Lesepfade und Fallbacks prüfen; nicht mit diesem Patch vermischen. Energieanziehung als spätere wählbare Option weiter im Blick behalten; Bildschirmfläche für weitere Optionen sparsam nutzen.
+
+**Nächster Test:** Entwickler kompiliert neuen `develop`-HEAD; prüft Hilfe unten auf Hauptmenü und OPTIONS, periodischen Wechsel in OPTIONS, keine Layoutüberlappung, Bedienung W/S und Gamepad, Backspace/Select sowie normalen START. Testbericht über interaktive Checkliste mit optionalem mehrzeiligem Feld und explizitem `Testergebnis senden`-Button. Erst bei positivem Ergebnis weiter.
+
 ## Post-Pre-Alpha: Schritt 7c OPTIONS-Auswahl hervorheben (17.11.2026)
 
 **Nachtrag Entwickler zum Bold-Test:** Auch der sechste Test `START nach Rückkehr ins Hauptmenü` funktioniert; damit **6/6 erfolgreich bestätigt**. Der Screenshot mit den fett dargestellten OPTIONS-Zeilen wurde nun in der Unterhaltung empfangen. Die längeren Texte wirken gut, sollen aber beim Auswählen dieselbe relative Vergrößerung wie das Hauptmenü erhalten.
