@@ -84,6 +84,7 @@ function IntroCreate(Intro ref as TIntro,vx as integer,vy as integer,Now as inte
 	SetTextColor(Intro.TextOptionsBack,0,255,255,222)
 
 	Intro.SelctionPos = 1
+	Intro.OptionSelectionPos = 1
 	Intro.IsOption = FALSE
 	Intro.AnalogMenuHeld = FALSE
 	Intro.IsQuit = FALSE
@@ -163,30 +164,75 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Joyst
 	local AnalogStep as integer
 	local AnalogY as float
 	
+	// Analog menu navigation works in both the main and options screens.
+	// One step per deflection, then rearm only when the stick returns to neutral.
+	AnalogY = GetJoyY(JoystickIndex)
+	if AnalogY > -0.3 and AnalogY < 0.3
+		Intro.AnalogMenuHeld = FALSE
+	else
+		if Intro.AnalogMenuHeld = FALSE
+			if AnalogY < -0.5
+				AnalogStep = -1
+				Intro.AnalogMenuHeld = TRUE
+			endif
+			if AnalogY > 0.5
+				AnalogStep = 1
+				Intro.AnalogMenuHeld = TRUE
+			endif
+		endif
+	endif
+	
 	if Intro.IsOption = TRUE
-		// Back closes this screen; no selection or gameplay changes here.
+		if InputActionPressed(Keys,JoystickIndex,ACTION_MOVE_UP) = 1 or GetKeyPressed(KEY_UP) = 1 or AnalogStep = -1
+			if Intro.OptionSelectionPos <= 1
+				Intro.OptionSelectionPos = 3
+			else
+				dec Intro.OptionSelectionPos
+			endif
+			PlaySound(Sound.MenuSound)
+		endif
+		if InputActionPressed(Keys,JoystickIndex,ACTION_MOVE_DOWN) = 1 or GetKeyPressed(KEY_DOWN) = 1 or AnalogStep = 1
+			if Intro.OptionSelectionPos >= 3
+				Intro.OptionSelectionPos = 1
+			else
+				inc Intro.OptionSelectionPos
+			endif
+			PlaySound(Sound.MenuSound)
+		endif
+
+		// Same 22:19 selected/unselected ratio as the main menu's 32:28.
+		SetTextSize(Intro.TextOptionsHover,19)
+		SetTextSize(Intro.TextOptionsBindings,19)
+		SetTextSize(Intro.TextOptionsBack,19)
+		SetTextColor(Intro.TextOptionsHover,255,255,255,111)
+		SetTextColor(Intro.TextOptionsBindings,255,255,255,111)
+		SetTextColor(Intro.TextOptionsBack,255,255,255,111)
+		select Intro.OptionSelectionPos
+			case 1
+				SetTextSize(Intro.TextOptionsHover,22)
+				SetTextColor(Intro.TextOptionsHover,0,255,255,222)
+			endcase
+			case 2
+				SetTextSize(Intro.TextOptionsBindings,22)
+				SetTextColor(Intro.TextOptionsBindings,0,255,255,222)
+			endcase
+			case 3
+				SetTextSize(Intro.TextOptionsBack,22)
+				SetTextColor(Intro.TextOptionsBack,0,255,255,222)
+			endcase
+		endselect
+
+		// Backspace/Select always goes back. Enter/Start/A only confirms BACK.
 		if InputActionPressed(Keys,JoystickIndex,ACTION_BACK) = 1
 			Intro.IsOption = FALSE
 			PlaySound(Sound.SelectSound)
-		endif
-	else
-		// Analog menu navigation: one step per stick deflection, rearmed at neutral.
-		AnalogY = GetJoyY(JoystickIndex)
-		if AnalogY > -0.3 and AnalogY < 0.3
-			Intro.AnalogMenuHeld = FALSE
 		else
-			if Intro.AnalogMenuHeld = FALSE
-				if AnalogY < -0.5
-					AnalogStep = -1
-					Intro.AnalogMenuHeld = TRUE
-				endif
-				if AnalogY > 0.5
-					AnalogStep = 1
-					Intro.AnalogMenuHeld = TRUE
-				endif
+			if (InputActionPressed(Keys,JoystickIndex,ACTION_START) = 1 or GetJoyPressed(JoystickIndex,joystickButtonA) = 1) and Intro.OptionSelectionPos = 3
+				Intro.IsOption = FALSE
+				PlaySound(Sound.SelectSound)
 			endif
 		endif
-		
+	else
 		if TimeGet(Intro.TimerHelp,Now) > 0
 			IntroGambleHelp(Intro)
 			TimeReset(Intro.TimerHelp,Now)
@@ -245,6 +291,7 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Joyst
 				endcase
 				case 2
 					Intro.IsOption = TRUE
+				Intro.OptionSelectionPos = 1
 				endcase
 				case 3
 					Intro.IsQuit = TRUE
