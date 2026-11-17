@@ -1,6 +1,6 @@
 # SonecBot – Aktuelle Aufgaben und Meilensteine
 
-**Dokumentstatus:** Version 5.8 – Options-Texte fett für Lesbarkeitstest, AGK-Test offen  
+**Dokumentstatus:** Version 5.9 – OPTIONS-Bold-Sichttest 5/6 bestätigt; Checklisten-Konvention dokumentiert  
 **Stand:** 16. November 2026  
 **Branch:** `develop`  
 **Aktuelles Ziel:** Funktionierende HTML5-Pre-Alpha auf itch.io im **Draft per Secret URL** für eingeladene Community-Tester bereitstellen, Feedback sammeln. **Nicht auf Published umstellen**; den einmaligen öffentlichen Index-Push für einen späteren, noch nicht beschlossenen Release bewahren. Keine Deadline.
@@ -66,6 +66,10 @@
 **Schritte 7a und 7a.1 vollständig vom Entwickler bestanden:** 7a-Tastaturprüfung (AGK-Compile, W/S, Pfeiltasten, Umlauf, Enter-Start) bestanden; Gamepad-Steuerkreuz und Start/A vom Entwickler ausdrücklich funktionsfähig bestätigt. Der fehlende Analogstick wurde anschließend in 7a.1 nachgerüstet; **alle 10/10 Checks** erfolgreich: Compile, einzelne Schritte hoch/runter, Halten ohne Wiederholung, Neutralstellung und erneute Auslenkung, Menüumlauf, D-Pad, Tastatur, Enter/Start/A und normaler Spielstart. Keine Auffälligkeiten. **Schritt abgeschlossen.** Kein neuer HTML5-Export oder itch.io-Test damit behauptet.
 
 **Schritt 7b vom Entwickler vollständig bestanden:** AGK-Compile und 9/9 Prüfpunkte erfolgreich: OPTIONS per Enter/Start/A öffnen, eigener Bildschirm mit Hinweisen sichtbar, Bestätigung im Untermenü startet kein Spiel, Backspace/Select führt ins Hauptmenü, erneutes Öffnen und START funktionieren. Keine Auffälligkeiten.
+
+**Bold-Lesbarkeitstest – Entwicklerbericht ausgewertet:** Gesamturteil `Bestanden`; 5/6 einzeln bestätigt: AGK-Compile, drei OPTIONS-Texte fett, bessere Lesbarkeit, kein Layout-Konflikt, Backspace/Select zurück. **Nicht erneut bestätigt, aber auch kein Fehler berichtet:** START nach Rückkehr ins Hauptmenü funktioniert weiter (sechster Check blieb offen). Den visuellen Änderungszweck als erfolgreich getestet behandeln, ohne eine vollständige 6/6-Regression zu behaupten.
+
+**Gemeinsames interaktives Testformat dauerhaft in `AGENTS.md` festgehalten:** Fortschrittszähler, konkrete Checkboxen, separate Gesamtergebnis-Auswahl, optionales mehrzeiliges Beobachtungsfeld, ausschließlich expliziter `Testergebnis senden`-Button; Häkchen allein senden nie. Berichte mit `Bestätigt`, `Offen`, `Beobachtungen`; nicht markiert bedeutet ungeprüft und nicht automatisch fehlgeschlagen. Für neue Chats `AGENTS.md` lesen und genauso fortsetzen. Ein erwähntes neues Bild war in der verfügbaren Gesprächsdateiliste nicht sichtbar und ist nicht ausgewertet. **Nächster Code-Schritt Hover-Option Toggle/Hold noch nicht freigegeben.**
 
 **Kleiner Lesbarkeitstest nach 7b, implementiert, Compile/Sichttest ausstehend:** Nutzer meldet die drei neuen OPTIONS-Texte als etwas schwer lesbar und schlägt Bold vor. In `source/sonec/intro.agc` wurde nur `SetTextBold(...,1)` für `TextOptionsHover`, `TextOptionsBindings` und `TextOptionsBack` ergänzt. OPTIONS-Titel war schon bold. Größe 19, Farbe, Position, Text und Menüsteuerung unverändert; Hover-Optionsfunktion weiterhin nicht eingebaut. **Nächster Test:** AGK-Compile und Sichtvergleich der drei Zeilen, weiterhin Backspace/Select und START prüfen. Bei schlechterer Lesbarkeit erst Testergebnis auswerten, nicht weitere Styles automatisch ändern.
 
