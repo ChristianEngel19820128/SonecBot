@@ -463,7 +463,7 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Optio
 	if Intro.IsOption = TRUE
 		// Page 1=OPTIONS, 2=GAMEPLAY, 3=CONTROLS, 4=AUDIO.
 		OptionCount = 3
-		if Intro.OptionPage = 1
+		if Intro.OptionPage = 1 or Intro.OptionPage = 3
 			OptionCount = 4
 		endif
 		if Intro.OptionPage = 4
