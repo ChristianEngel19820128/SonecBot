@@ -246,8 +246,10 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Optio
 						else
 							Options.HoverMode = HOVER_MODE_TOGGLE
 						endif
+					endcase
 					case 3
 						Intro.IsOption = FALSE
+					endcase
 				endselect
 				PlaySound(Sound.SelectSound)
 			endif
