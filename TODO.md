@@ -1,6 +1,6 @@
 # SonecBot – Aktuelle Aufgaben und Meilensteine
 
-**Dokumentstatus:** Version 6.4 – 7d 12/12 bestanden; Joy-Y als OPTIONS-Back eingebaut, Test offen  
+**Dokumentstatus:** Version 6.5 – Joy-Y-BACK 7/7 bestanden; 7e für später vorgemerkt  
 **Stand:** 16. November 2026  
 **Branch:** `develop`  
 **Aktuelles Ziel:** Funktionierende HTML5-Pre-Alpha auf itch.io im **Draft per Secret URL** für eingeladene Community-Tester bereitstellen, Feedback sammeln. **Nicht auf Published umstellen**; den einmaligen öffentlichen Index-Push für einen späteren, noch nicht beschlossenen Release bewahren. Keine Deadline.
@@ -72,6 +72,8 @@
 **Schritt 7c vom Entwickler vollständig bestätigt:** AGK-Compile und **11/11 Testpunkte bestanden**: drei größer/cyan markierbare OPTIONS-Zeilen ohne Layoutprobleme, W/S, Pfeile, D-Pad, Analogstick mit Neutralstellung und Wrap, Platzhalter bleiben funktionslos, BACK über Enter/Start/A und jederzeit Backspace/Select, normaler START. Transparenz gefällt dem Entwickler; bei späterem Optionsausbau verfügbaren Bildschirmplatz beachten.
 
 **Schritt 7c.1 vom Entwickler vollständig bestätigt:** AGK-Compile, Hilfe in Hauptmenü und OPTIONS, 11-Sekunden-Wechsel in OPTIONS, Lesbarkeit/Position/Transparenz, keine Überlappung, Tastatur-/Gamepad-Navigation, Backspace/Select und normaler START – **9/9** bestanden, keine Auffälligkeiten.
+
+**Nachtrag Joy-Y-BACK:** Entwickler bestätigt AGK-Compile und **7/7 Tests bestanden**: Y von Hover, KEY BINDINGS und BACK führt ins Hauptmenü; Backspace/Select/BACK-Bestätigung bleiben funktionsfähig; im Spiel feuert Y weiterhin Plasma; START startet nach Rückkehr. **Keine offenen Probleme.** 7d ebenfalls bereits 12/12 bestanden. **Nächste Aufgabe 7e ausdrücklich auf später verschoben:** Besitzer geht jetzt und meldet sich zur Fortsetzung. Keine Speicherung ohne erneute Abstimmung. Zwei getrennte gruppierte, versionierte Speicherblöcke `GameOptions` und `KeyBindings` (nicht je Option ein Cookie), Speichermechanismus AGK/HTML5, Defaults, Format und Testscope vor Umsetzung klären.
 
 **Schritt 7d vollständig vom Entwickler bestanden:** Nach `endcase`-Fix AGK-Compile und **12/12** Runtime-/Menü-Prüfpunkte erfolgreich, keine offenen Punkte: TOGGLE-Default, Space/Button 9 Toggle ohne Wiederholung bei Halten, Wechsel zu HOLD mit korrektem Halteverhalten, Jetpack-Vorrang, Pause, Neustart ohne Hover-Aktivierung aber mit beibehaltenem Modus, OPTIONS/BACK/START und KEY-BINDINGS-Platzhalter. Es wurden keine Fehler mehr gemeldet.
 
