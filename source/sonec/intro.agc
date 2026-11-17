@@ -211,17 +211,21 @@ function IntroKeyboardTableUpdate(Intro ref as TIntro,Keys ref as TKeys)
 	local RowStart as integer
 	local RowY as integer
 	local IsNavigation as integer
+	local NavigationGap as integer
 
 	Count = 8 // MOVEMENT: six actions + NEXT + BACK
 	if Intro.OptionPage = 6 then Count = 11 // ACTIONS: nine actions + MOVEMENT + BACK
 
-	// Same font sizes and 20-pixel spacing on both pages. Centre the full
-	// title + table block vertically instead of anchoring it at the bottom.
-	RowStart = Intro.KeyboardCenterY - ((Count-1)*20+62)/2+44
+	// Same type sizes on both pages. A 12-pixel break separates the
+	// navigation pair from the action table without splitting that pair.
+	// Include the break when vertically centering title and full contents.
+	NavigationGap = 12
+	RowStart = Intro.KeyboardCenterY - ((Count-1)*20+NavigationGap+62)/2+44
 	SetTextPosition(Intro.TextOptionsTitle,Intro.KeyboardCenterX,RowStart-44)
 
 	for Row = 0 to 10
 		RowY = RowStart + Row*20
+		if Row >= Count-2 then RowY = RowY + NavigationGap
 		IsNavigation = FALSE
 		Label = ""
 		KeyValue = ""
@@ -252,7 +256,7 @@ function IntroKeyboardTableUpdate(Intro ref as TIntro,Keys ref as TKeys)
 					KeyValue = IntroKeyboardKeyName(Keys.Binding[Index].Key)
 				else
 					IsNavigation = TRUE
-					if Row = 6 then Label = "ACTIONS  >"
+					if Row = 6 then Label = "ACTIONS"
 					if Row = 7 then Label = "BACK"
 				endif
 			else
@@ -290,7 +294,7 @@ function IntroKeyboardTableUpdate(Intro ref as TIntro,Keys ref as TKeys)
 					KeyValue = IntroKeyboardKeyName(Keys.Binding[Index].Key)
 				else
 					IsNavigation = TRUE
-					if Row = 9 then Label = "< MOVEMENT"
+					if Row = 9 then Label = "MOVEMENT"
 					if Row = 10 then Label = "BACK"
 				endif
 			endif
