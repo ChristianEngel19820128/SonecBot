@@ -143,6 +143,7 @@ SetTextSize(PauseHintBack,16)
 // Start/Pause and paused-only Back use actions; Hover remains unchanged.
 local Keys as TKeys
 InputSetDefaultBindings(Keys)
+KeyBindingsLoad(Keys)
 
 // Grouped gameplay preferences (separate from key bindings for step 7e).
 local Options as TGameOptions
