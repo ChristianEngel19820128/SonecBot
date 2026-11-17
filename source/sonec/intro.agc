@@ -169,6 +169,7 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Optio
 	local Value as integer
 	local AnalogStep as integer
 	local AnalogY as float
+	local OptionCount as integer
 	
 	// Analog menu navigation works in both the main and options screens.
 	// One step per deflection, then rearm only when the stick returns to neutral.
@@ -196,7 +197,6 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Optio
 	
 	if Intro.IsOption = TRUE
 		// Page 1=OPTIONS, 2=GAMEPLAY, 3=CONTROLS, 4=AUDIO.
-		local OptionCount as integer
 		OptionCount = 3
 		if Intro.OptionPage = 1
 			OptionCount = 4
