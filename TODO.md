@@ -1,6 +1,6 @@
 # SonecBot – Aktuelle Aufgaben und Meilensteine
 
-**Dokumentstatus:** Version 7.8 – Keyboard-Schritt 2 implementiert; AGK-/HTML5-Test ausstehend  
+**Dokumentstatus:** Version 7.9 – Keyboard-Schritt 2 Windows 10/10 bestanden; Capture-Überschrift und HTML5-Test offen  
 **Stand:** 16. November 2026  
 **Branch:** `develop`  
 **Aktuelles Ziel:** Funktionierende HTML5-Pre-Alpha auf itch.io im **Draft per Secret URL** für eingeladene Community-Tester bereitstellen, Feedback sammeln. **Nicht auf Published umstellen**; den einmaligen öffentlichen Index-Push für einen späteren, noch nicht beschlossenen Release bewahren. Keine Deadline.
@@ -8,6 +8,8 @@
 > Bei Chatwechsel zuerst [HANDOFF.md](HANDOFF.md) und den echten `develop`-HEAD lesen. Historische Arbeits- und Testdetails stehen in [TECHNICAL.md](TECHNICAL.md), in [dieser ausführlichen TODO-Version vor der Konsolidierung](https://github.com/ChristianEngel19820128/SonecBot/blob/b1d7da8f4bad6255e612948e833a39ab60a48243/TODO.md) und in Git. Datierte ältere „offen“-Einträge bezeichnen frühere Zwischenstände, **nicht** die heutige Aufgabenpriorität.
 
 **Aktueller Arbeitswunsch:** **Keyboard-Pre-Alpha-Patch noch in diesem Chat fortsetzen**, konkret `OPTIONS > CONTROLS > KEYBOARD`; genaue Erfassungs-/Konflikt-/Reset-Regeln vor Codefreigabe klären. Tastatur-Promobild erst am Ende. Das frühere Problem beim Auffinden von Columns war ausschließlich der falsche angenommene Repo-Name; richtig ist `Crystals` und die eigenständige TODO wurde bereits angelegt.
+
+**Keyboard-Schritt 2 Windows-Test:** Entwickler bestätigt 10/10 Punkte für den ersten Capture-Code (Compile, Rebinding/Cancel, Sperren, Persistenz, Menü/Gamepad), keine Fehler. **Danach** ist auf Wunsch die dreizeilige Capturedarstellung `CHANGE KEY - [ACTION]` / `PRESS NEW KEY` / `BACKSPACE - CANCEL` in `intro.agc` optisch ergänzt worden. Diese letzte Änderung ist noch nicht lokal kompiliert/angesehen. Nächster Schritt: Windows-Compile + Anzeige auf MOVEMENT und ACTIONS, dann HTML5-Test. Keine rote Konfliktmarkierung und kein Reset.
 
 **Keyboard-Patch Schritt 1 – Entwicklerabnahme vollständig bestanden (12/12, keine offenen Punkte):** getesteter Code-HEAD `b696e4ca81d3f9f609cfe0ee4a067d72d6b26ba4`. AGK-Compile erfolgreich; `OPTIONS > CONTROLS > KEYBOARD` öffnet MOVEMENT mit sechs korrekten Actions/gespeicherten Keys, ACTIONS zeigt neun; W/S/Pfeile, Gamepad-D-Pad/Stick, Wrap und Seitenwechsel, gewähltes BACK und Backspace/Select/Y zu CONTROLS funktionieren. Enter/A auf einem Binding hat absichtlich noch keine Wirkung. Rotierende Hilfe, Hover-Speicherung, START und Plasma-Y im Spiel regressionsfrei. Layout 1c (gleiche Starthöhe) per Vollbild-Screenshots ausdrücklich optisch akzeptiert; 80/20-Regel, **keine weiteren Layoutänderungen**.
 
