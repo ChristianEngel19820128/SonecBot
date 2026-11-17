@@ -124,7 +124,7 @@ function IntroCreate(Intro ref as TIntro,vx as integer,vy as integer,Now as inte
 
 	Intro.SelctionPos = 1
 	Intro.OptionSelectionPos = 1
-	Intro.OptionPage = 1 // 1=OPTIONS, 2=GAMEPLAY, 3=CONTROLS, 4=AUDIO, 5=MOVEMENT, 6=ACTIONS
+	Intro.OptionPage = 1 // 1=OPTIONS, 2=GAMEPLAY, 3=CONTROLS, 4=AUDIO, 5=MOVEMENT, 6=ACTIONS, 7=RESTORE CONFIRM
 	Intro.IsOption = FALSE
 	Intro.AnalogMenuHeld = FALSE
 	Intro.IsQuit = FALSE
@@ -407,6 +407,8 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Optio
 	local AnalogY as float
 	local OptionCount as integer
 	local CapturedKey as integer
+	local DefaultKeys as TKeys
+	local BindingIndex as integer
 	
 	// Capture is modal: no navigation, page changes or gameplay keys run.
 	if Intro.KeyboardCapture = TRUE
@@ -467,6 +469,7 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Optio
 		if Intro.OptionPage = 4
 			OptionCount = 1
 		endif
+		if Intro.OptionPage = 7 then OptionCount = 2
 		if Intro.OptionPage = 5 then OptionCount = 8
 		if Intro.OptionPage = 6 then OptionCount = 11
 
@@ -496,8 +499,13 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Optio
 					Intro.OptionPage = 3
 					Intro.OptionSelectionPos = 1
 				else
-					Intro.OptionSelectionPos = Intro.OptionPage - 1
-					Intro.OptionPage = 1
+					if Intro.OptionPage = 7
+						Intro.OptionPage = 3
+						Intro.OptionSelectionPos = 2
+					else
+						Intro.OptionSelectionPos = Intro.OptionPage - 1
+						Intro.OptionPage = 1
+					endif
 				endif
 			endif
 			PlaySound(Sound.SelectSound)
@@ -548,7 +556,12 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Optio
 							Intro.OptionSelectionPos = 1
 							PlaySound(Sound.SelectSound)
 						endif
-						if Intro.OptionSelectionPos = 3
+						if Intro.OptionSelectionPos = 2
+							Intro.OptionPage = 7
+							Intro.OptionSelectionPos = 2 // CANCEL is the safe default
+							PlaySound(Sound.SelectSound)
+						endif
+						if Intro.OptionSelectionPos = 4
 							Intro.OptionPage = 1
 							Intro.OptionSelectionPos = 2
 							PlaySound(Sound.SelectSound)
@@ -576,6 +589,19 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Optio
 							Intro.OptionSelectionPos = 1
 							PlaySound(Sound.SelectSound)
 						endif
+					endcase
+					case 7
+						if Intro.OptionSelectionPos = 1
+							// Take keyboard defaults only; preserve all current pad bindings.
+							InputSetDefaultBindings(DefaultKeys)
+							for BindingIndex = 0 to ACTION_LAST
+								Keys.Binding[BindingIndex].Key = DefaultKeys.Binding[BindingIndex].Key
+							next BindingIndex
+							KeyBindingsSave(Keys)
+						endif
+						Intro.OptionPage = 3
+						Intro.OptionSelectionPos = 2
+						PlaySound(Sound.SelectSound)
 					endcase
 					case 6
 						if Intro.OptionSelectionPos >= 1 and Intro.OptionSelectionPos <= 9
@@ -627,8 +653,9 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Optio
 			case 3
 				SetTextString(Intro.TextOptionsTitle,"CONTROLS")
 				SetTextString(Intro.TextOptionsEntry1,"KEYBOARD")
-				SetTextString(Intro.TextOptionsEntry2,"GAMEPAD - COMING LATER")
-				SetTextString(Intro.TextOptionsEntry3,"BACK")
+				SetTextString(Intro.TextOptionsEntry2,"RESTORE DEFAULTS")
+				SetTextString(Intro.TextOptionsEntry3,"GAMEPAD - COMING LATER")
+				SetTextString(Intro.TextOptionsEntry4,"BACK")
 			endcase
 			case 4
 				SetTextString(Intro.TextOptionsTitle,"AUDIO")
@@ -641,6 +668,11 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Optio
 			case 6
 				SetTextString(Intro.TextOptionsTitle,"KEYBOARD - ACTIONS")
 				IntroKeyboardTableUpdate(Intro,Keys)
+			endcase
+			case 7
+				SetTextString(Intro.TextOptionsTitle,"RESTORE KEYBOARD DEFAULTS?")
+				SetTextString(Intro.TextOptionsEntry1,"RESET")
+				SetTextString(Intro.TextOptionsEntry2,"CANCEL")
 			endcase
 		endselect
 
@@ -776,9 +808,11 @@ function IntroDraw(Intro ref as TIntro)
 			Drawtext(Intro.TextOptionsEntry1)
 			if Intro.OptionPage <> 4
 				Drawtext(Intro.TextOptionsEntry2)
-				Drawtext(Intro.TextOptionsEntry3)
+				if Intro.OptionPage <> 7
+					Drawtext(Intro.TextOptionsEntry3)
+				endif
 			endif
-			if Intro.OptionPage = 1
+			if Intro.OptionPage = 1 or Intro.OptionPage = 3
 				Drawtext(Intro.TextOptionsEntry4)
 			endif
 		endif
