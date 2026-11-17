@@ -1,6 +1,6 @@
 # SonecBot – Aktuelle Aufgaben und Meilensteine
 
-**Dokumentstatus:** Version 8.2 – Keyboard-Schritt 3 Windows 8/9, Menüregression korrigiert; Nachtest offen  
+**Dokumentstatus:** Version 8.3 – Keyboard-Schritt 3 Windows-Korrekturtest 8/8 bestanden; HTML5-Test offen  
 **Stand:** 16. November 2026  
 **Branch:** `develop`  
 **Aktuelles Ziel:** Funktionierende HTML5-Pre-Alpha auf itch.io im **Draft per Secret URL** für eingeladene Community-Tester bereitstellen, Feedback sammeln. **Nicht auf Published umstellen**; den einmaligen öffentlichen Index-Push für einen späteren, noch nicht beschlossenen Release bewahren. Keine Deadline.
@@ -8,6 +8,8 @@
 > Bei Chatwechsel zuerst [HANDOFF.md](HANDOFF.md) und den echten `develop`-HEAD lesen. Historische Arbeits- und Testdetails stehen in [TECHNICAL.md](TECHNICAL.md), in [dieser ausführlichen TODO-Version vor der Konsolidierung](https://github.com/ChristianEngel19820128/SonecBot/blob/b1d7da8f4bad6255e612948e833a39ab60a48243/TODO.md) und in Git. Datierte ältere „offen“-Einträge bezeichnen frühere Zwischenstände, **nicht** die heutige Aufgabenpriorität.
 
 **Aktueller Arbeitswunsch:** **Keyboard-Pre-Alpha-Patch noch in diesem Chat fortsetzen**, konkret `OPTIONS > CONTROLS > KEYBOARD`; genaue Erfassungs-/Konflikt-/Reset-Regeln vor Codefreigabe klären. Tastatur-Promobild erst am Ende. Das frühere Problem beim Auffinden von Columns war ausschließlich der falsche angenommene Repo-Name; richtig ist `Crystals` und die eigenständige TODO wurde bereits angelegt.
+
+**Keyboard-Schritt 3 Windows-Fix abgenommen:** Entwickler bestätigt erneuten AGK-Compile und **8/8 Windows-Korrekturtests bestanden**, keinerlei offene Punkte oder Beobachtungen. Auch mit MOVE UP = UP und MOVE DOWN = UP funktioniert das Menü über feste W/S/Pfeile. MOVEMENT/ACTIONS, D-Pad/Analogstick, Capture, Backspace-Abbruch, Speichern, rote Dopplungen und Konfliktauflösung funktionieren. Ursprüngliche Menüregression unter Windows behoben; vorherige acht bestätigte Konflikttests behalten Gültigkeit. **Nächster Schritt: HTML5-Nachtest über Apache; itch.io-Embed für Schritt 3 nicht getestet.** Danach Schritt 3 abschließen und Restore Defaults separat besprechen.
 
 **Keyboard-Schritt 3 Windows-Zwischenstand und Korrektur:** Compile und 8/9 Tests bestanden; Menüregression bei MOVE UP = UP / MOVE DOWN = UP reproduzierbar berichtet. Ursache: Beide InputActionPressed-Menürichtungen reagieren auf denselben frei belegten Key und heben ihre Bewegungen auf. **Freigegebener Patch auf develop:** Hauptmenü und Optionen nutzen nun feste W/UP und S/DOWN; Gamepad-D-Pad UP/DOWN und Analogstick bleiben erhalten. Capture, Gameplay und rote Konfliktprüfung unverändert. **Neuer Windows-Compile/Regressionstest noch offen**, danach HTML5, dann erst Restore Defaults.
 
