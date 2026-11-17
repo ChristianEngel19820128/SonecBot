@@ -137,9 +137,9 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function GameInput(Game ref as TGame,Keys ref as TKeys,Now as integer)
+function GameInput(Game ref as TGame,Keys ref as TKeys,Options ref as TGameOptions,Now as integer)
 
-	SonecInput(Game.Sonec,Game.JetfireList,Game.ProtoJetfire,Game.World,Keys,Game.JoystickIndex,Now)
+	SonecInput(Game.Sonec,Game.JetfireList,Game.ProtoJetfire,Game.World,Keys,Options,Game.JoystickIndex,Now)
 	// Back/Select is handled only while paused in main.agc.
 
 endfunction
