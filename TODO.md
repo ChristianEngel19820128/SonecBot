@@ -1,6 +1,6 @@
 # SonecBot – Aktuelle Aufgaben und Meilensteine
 
-**Dokumentstatus:** Version 7.0 – 7e.2 KeyBindings-Speichergruppe implementiert; AGK/HTML5-Test offen  
+**Dokumentstatus:** Version 7.1 – 7e.2 8/10 bestätigt, zwei Datei-Nachtests offen; spätere Themen vorgemerkt  
 **Stand:** 16. November 2026  
 **Branch:** `develop`  
 **Aktuelles Ziel:** Funktionierende HTML5-Pre-Alpha auf itch.io im **Draft per Secret URL** für eingeladene Community-Tester bereitstellen, Feedback sammeln. **Nicht auf Published umstellen**; den einmaligen öffentlichen Index-Push für einen späteren, noch nicht beschlossenen Release bewahren. Keine Deadline.
@@ -74,6 +74,10 @@
 **Schritt 7c.1 vom Entwickler vollständig bestätigt:** AGK-Compile, Hilfe in Hauptmenü und OPTIONS, 11-Sekunden-Wechsel in OPTIONS, Lesbarkeit/Position/Transparenz, keine Überlappung, Tastatur-/Gamepad-Navigation, Backspace/Select und normaler START – **9/9** bestanden, keine Auffälligkeiten.
 
 **Knowledge-Base-Kandidat (Art & Sound, kein KB-Repo-Commit):** `Soundloop Creation and Implementation`. Nutzererfahrung: MIDI-Sounds/Events **linksbündig am Loop-Anfang** ausrichten und **rechts am Ende einen Takt Pause** einplanen; wichtig für flüssige Loops, hat einen Abend Fehlersuche gekostet. Details, Tool, Audioexport, Abspielpfad und Reproduzierbarkeit später prüfen; vollständigere Kandidatenbeschreibung und Nachweisgrenzen in `HANDOFF.md`. Separates `agk-knowledge-base`-Repository bleibt unberührt. Nächster aktiver Projektschritt weiterhin **7e, später**.
+
+**Schritt 7e.2 Zwischenstand vom Entwickler:** 8/10 bestanden: AGK-Compile, Windows-Datei und 15 Key/Pad-Paare, Neustart mit Standardbelegung, HTML5-Export/Apache und gespeicherter eigener KeyBindings-Wert nach Reload, unabhängige GameOptions-Hover-Speicherung sowie Menü-/Gamepad-Regression. **Zwei Tests nicht durchgeführt, weil Zahlen für manuelle Dateiänderung unklar waren; bislang kein Codefehler belegt.** Bei geschlossenem Programm Datei sichern. Gültiges v1-Load: zweite Zahl nach Version, `1|87|14|...` (W=87) auf `1|38|14|...` (Pfeil-hoch=38) ändern; Neustart und Bewegung **im Gameplay** prüfen. Ungültiger v2-Fallback: nach erfolgreicher Änderung Version 1→2, `2|38|14|...`; Neustart sollte Standard-W statt geänderter Pfeiltaste verwenden. Danach ursprüngliche Datei wiederherstellen. Die beiden Tests bleiben offen, 7e.2 nicht abgeschlossen; keine Input-Codeänderungen.
+
+**Neue vorgemerkte Themen, separat von 7e.2:** `Einstellungen zurücksetzen` für GameOptions/KeyBindings als spätere UI-/Persistenzfunktion (Umfang und Bestätigung gemeinsam klären); vom Entwickler erhaltenes externes Feedback erst nach Vorlage des konkreten Inhalts auswerten; neue gemeinsame itch.io-Dokumentationsidee für **SonecBot und Columns** (Inhalt noch nicht mitgeteilt); eigenes **Columns-TODO** auf späteren separaten Auftrag vormerken, **nicht im Columns-Repository angelegt**. Kein Zugriff auf fremde Projekt-Dateien und keine Änderung an itch.io ohne Freigabe.
 
 **Ergänzung zu 7e.1:** Entwickler hat zusätzlich die Windows-Datei für GameOptions selbst geprüft, **Dateiinhalt korrekt**; die vollständige 12/12-Abnahme bleibt bestehen.
 
