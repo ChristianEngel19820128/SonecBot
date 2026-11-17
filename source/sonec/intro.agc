@@ -616,6 +616,16 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Optio
 			endcase
 		endselect
 
+		// During capture, the existing title identifies the selected action.
+		// The action row text is already populated by IntroKeyboardTableUpdate.
+		if Intro.KeyboardCapture = TRUE
+			SetTextString(Intro.TextOptionsTitle,"CHANGE KEY - "+GetTextString(Intro.TextKeyboardLabel[Intro.OptionSelectionPos-1]))
+			SetTextPosition(Intro.TextOptionsTitle,Intro.KeyboardCenterX,Intro.KeyboardCenterY-70)
+			SetTextSize(Intro.TextOptionsTitle,20)
+		else
+			SetTextSize(Intro.TextOptionsTitle,30)
+		endif
+
 		SetTextSize(Intro.TextOptionsEntry1,19)
 		SetTextSize(Intro.TextOptionsEntry2,19)
 		SetTextSize(Intro.TextOptionsEntry3,19)
