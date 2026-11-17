@@ -68,16 +68,19 @@ function IntroCreate(Intro ref as TIntro,vx as integer,vy as integer,Now as inte
 	SetTextAlignment(Intro.TextOptionsHover,1)
 	SetTextPosition(Intro.TextOptionsHover,vx/2,vy/2-20)
 	SetTextSize(Intro.TextOptionsHover,19)
+	SetTextBold(Intro.TextOptionsHover,1)
 
 	Intro.TextOptionsBindings = CreateText("KEY BINDINGS - COMING LATER")
 	SetTextAlignment(Intro.TextOptionsBindings,1)
 	SetTextPosition(Intro.TextOptionsBindings,vx/2,vy/2+15)
 	SetTextSize(Intro.TextOptionsBindings,19)
+	SetTextBold(Intro.TextOptionsBindings,1)
 
 	Intro.TextOptionsBack = CreateText("BACKSPACE / SELECT - BACK")
 	SetTextAlignment(Intro.TextOptionsBack,1)
 	SetTextPosition(Intro.TextOptionsBack,vx/2,vy/2+75)
 	SetTextSize(Intro.TextOptionsBack,19)
+	SetTextBold(Intro.TextOptionsBack,1)
 	SetTextColor(Intro.TextOptionsBack,0,255,255,222)
 
 	Intro.SelctionPos = 1
