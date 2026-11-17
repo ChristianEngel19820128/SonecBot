@@ -784,6 +784,8 @@ type TIntro
 	TextOptionsEntry2 as integer
 	TextOptionsEntry3 as integer
 	TextOptionsEntry4 as integer
+	TextKeyboardLabel as integer[10]
+	TextKeyboardKey as integer[10]
 	SelctionPos as integer
 	OptionSelectionPos as integer
 	OptionPage as integer
