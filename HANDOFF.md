@@ -15,6 +15,12 @@
 > **Arbeitsweise:** In kleinen gemeinsam freigegebenen Schritten vorgehen. Nutzer exportiert/kompiliert in lokalem AGK Studio, testet mit lokalem Apache im Browser/Gamepad und pflegt itch.io; Assistent prüft GitHub-Quellen und dokumentiert präzise, ohne lokale Tests zu behaupten. Besonderheiten mit Nachweisstatus festhalten, aktuellen Schritt beenden, erst danach über Folgearbeit bzw. Knowledge-Base-Eintrag entscheiden. Crystals 1.0 ist die bewährte Prozesserfahrung. GitHub-HEAD bei jedem Einstieg neu lesen; Snapshot vor dieser Dokumentationsänderung: `3840bfa545aeec6df6902180415d22efdd58f3ba`.
 > **Prüfkandidat, noch kein bestätigter Bug:** Spawn-Zufallsentscheidungen liegen in `GameDo()` und könnten pro Frame statt pro Zeit erfolgen. Vor jeder Änderung tatsächliche Frequenzen/Spielwirkung bewerten; keine pauschale Balancingmaßnahme.
 
+## Schritt 7d – AGK-Compilerfehler korrigiert, erneuter Test ausstehend (17.11.2026)
+
+**Entwicklerbericht:** Das AGK-Compile des Hover-Modus-Patches scheitert mit `intro.agc:243:Error: CASE statement does not have a matching ENDCASE`. Teststatus `Auffälligkeiten / Fehler`; **0/12 Tests bestätigt**, alle offen, weil der Compile blockiert. `source/sonec/intro.agc` geprüft: In `IntroDo()` fehlten die beiden `endcase` nach `case 1` (Hover-Modus TOGGLE/HOLD) und `case 3` (BACK). Beide Abschlüsse in einem gezielten Patch ergänzt. **Nur statische Quelltextprüfung durchgeführt – kein tatsächliches AGK-Compile und keine Hover-Laufzeitbestätigung.** Weder die Hover-Logik noch Menü-Rendering oder Speicherung wurden verändert.
+
+**Nächster Schritt:** Entwickler zieht neuen `develop`-HEAD, führt AGK-Compile erneut durch und testet erst bei Erfolg die ursprüngliche 7d-Matrix (Toggle default, Space/Button 9, Hold, W+Hover, Pause, Neustart, Menü/BACK/START). Ergebnis über interaktive Checkliste mit explizitem Senden-Button. 7e (zwei gruppierte, versionierte Speicherbereiche für GameOptions bzw. KeyBindings) bleibt **nur geplant**, keine Cookies schreiben. Nicht vorschnell weitere Syntax-/Gameplayänderungen einführen.
+
 ## Post-Pre-Alpha: 7c.1 bestanden, Schritt 7d Hover-Modus (17.11.2026)
 
 **7c.1 vollständig vom Entwickler abgenommen:** AGK-Compile und **9/9** Testpunkte bestanden: wiederverwendete 11-Sekunden-Hilfe sichtbar in Hauptmenü und OPTIONS, keine Überlappung, passende Transparenz, Menübedienung über Tastatur/Gamepad, Backspace/Select und normaler START. Keine Auffälligkeiten.
