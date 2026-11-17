@@ -786,6 +786,11 @@ type TIntro
 	TextOptionsEntry4 as integer
 	TextKeyboardLabel as integer[10]
 	TextKeyboardKey as integer[10]
+	TextCapturePrompt as integer
+	TextCaptureCancel as integer
+	KeyboardCapture as integer
+	KeyboardCaptureArmed as integer
+	KeyboardCaptureAction as integer
 	KeyboardCenterX as integer
 	KeyboardCenterY as integer
 	SelctionPos as integer
