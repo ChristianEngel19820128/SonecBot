@@ -1,6 +1,14 @@
-# Übergabe: Pre-Alpha abgeschlossen → Real-Alpha-Minen S3
+# Übergabe: Pre-Alpha abgeschlossen → Real-Alpha-Minen S3 abgenommen
 
-## S3 – wiederkehrender Minenfeldspawn implementiert, Entwickler-Test offen (18.11.2026)
+## AKTUELL – S3 abgenommen, weitere Real-Alpha-Planung (18.11.2026)
+
+**S3-Abnahme nach Entwicklerbericht:** **12/12 Prüfpunkte bestätigt**, AGK Studio/Windows und lokales HTML5 erfolgreich. Erster Windows-Bericht enthielt 11/12 Punkte; anschließend wurde der zunächst ausstehende **HTML5-Erfolg gesondert nachgemeldet**. Keine Fehler oder weitere offene Prüfpunkte. Getesteter Entwicklungsstand laut Gespräch: `develop` `2ba518bd4a5f55dd12f0b4fd8df9ff39355661b5` (kein unabhängiger Nachweis des exportierten Build-SHA). **Kein eigener AGK-/Browser-Lauf durch den Assistenten.**
+
+**S3-Funktion:** Wiederkehrende komplette diagonale Dreierformationen, zeitgesteuerte Spawnversuche im zufälligen Intervall **18–30 s aktiver Spielzeit**, maximal **6 gleichzeitig aktive einfache Minen**, zufällige sichere vertikale Lage, keine Nachholspawns bei voller Kapazität, pausensichere Uhr und Neustart-Reset. Bestehende intelligente Minen und Waffen-/Explosionspfade laut Entwickler unverändert. Farbe bleibt **RGB 32/125/55 (Alpha 255)**; der Entwickler findet die Minen optisch erkennbar und gefährlich. Beobachtete Durchflugzeit ca. **10–12 s**; die Verzögerung zwischen Feldern ist gegenwärtig erwünscht und **noch kein Balancing-Mangel**.
+
+**Nächste Entscheidung, noch ohne Codefreigabe:** weitere Grundformation (Keil oder vertikale Staffelung) gegen kleines Top-Warnsystem `MINEFIELD DETECTED` abwägen. Für die Real Alpha sind wenige abwechslungsreiche Minenformationen vorgesehen (bewährte 3er-Diagonale behalten; ggf. später 5/7 Minen und loses Rudel A). Langfristiges **Gefahrenbudget** berücksichtigt Spawnfrequenz, Gefährdungsdauer/-dichte und Überschneidungen mit Walker, Drohnen und weiteren Gegnertypen; **nicht implementiert**, kein globaler Spawnmanager, kein umfassendes Balancing beschlossen. Keine neuen Source-Änderungen, kein `main`-Merge oder itch.io-Publish aus dieser Dokumentation.
+
+## S3 – wiederkehrender Minenfeldspawn, historischer Implementierungsstand (18.11.2026)
 
 **Freigabe und Umfang:** Automatischer Spawnversuch alle **18–30 Sekunden aktiver Spielzeit**, maximal **6 gleichzeitig aktive einfache Minen**, Formationsgröße **3** (diagonal; 32 px X-/48 px Y-Abstand). Der einmalige S2-Spawn bei `GameInit` wurde entfernt. `SimpleMineNextSpawnMs` wird bei jedem `GameInit` neu gesetzt. `GameDo` nutzt bereits die **pausenbereinigte virtuelle Spielzeit** aus `main.agc`; es gibt keinen gesonderten Pausencode. Nach jedem *Versuch* wird der nächste Termin zufällig festgesetzt, auch wenn das Limit blockiert – **keine Nachhol-/Burst-Spawns**. Eine Formation entsteht nur bei mindestens drei freien Plätzen, niemals teilweise wegen des Limits. Spawn rechts außerhalb des sichtbaren Bildes; zufällige vertikale Mittellage mit Sicherheitsmarge für alle drei Minen. Schaden, Drift, dunkelgrüner Farbton und vorhandene Waffen-/Explosionstreffer bleiben unverändert. **Kein globaler Spawnmanager / Gefahrenbudget umgesetzt.** Gefahrenbudget und progressive Herausforderung bleiben Planungsziele.
 

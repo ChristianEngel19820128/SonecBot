@@ -43,6 +43,16 @@ Gemeinsame Einordnung des Entwicklers:
 
 ## 3. Real Alpha – Kernfeature 1: Minefields und intelligente Minen
 
+### Real-Alpha-Minen: S3 abgenommen und nächster Schritt offen (18.11.2026)
+
+**S1 9/9, S2 10/10, S3 12/12** laut Entwickler unter AGK Studio/Windows und lokalem HTML5 bestanden. S3-Stand `2ba518bd4a5f55dd12f0b4fd8df9ff39355661b5`: regelmäßige vollständige 3er-Diagonalformationen, 18–30 s pro Spawnversuch aktiver Spielzeit, maximal 6 aktive einfache Minen, variable sichere Spawnhöhe und keine Nachholspawns. Die bestehende Intelligenz-Mine und Trefferpfade wurden laut Test nicht beeinträchtigt. **Dunkelgrün RGB 32/125/55, Alpha 255 wird beibehalten.** Beobachtete Durchflugzeit ca. 10–12 s; erster praktischer Balancing-Hinweis, keine bestätigte Notwendigkeit zur Intervalländerung.
+
+**Gestaltungsentscheidungen:** Bewährte diagonale Dreierformation dauerhaft behalten. Später wenige weitere Muster (Keil, vertikale Staffelung, unregelmäßiges Rudel A) ermöglichen; 5er-/7er-Versionen nur wo spielerisch fair. Steigende Schwierigkeit bevorzugt durch Formationswahl, Dichte, Häufigkeit und Kombinationen, **nicht durch pauschalen Schadensanstieg**. Langfristiges **Gefahrenbudget** als gemeinsame Richtgröße für intelligente/einfache Minen, Walker, Drohnen und spätere Feinde: Spawnhäufigkeit, Gefahrendauer und -dichte berücksichtigen; noch keine globale Steuerung oder verbindliche Zahlen.
+
+**Nächste Designentscheidung:** zusätzliche Grundformation oder kleines `MINEFIELD DETECTED`-Topwarnsystem. Beides **nicht implementiert und nicht zur Implementierung freigegeben**. Der bereits laufende Spawn darf bei einer Warnung nicht ohne Vorlauf als sicher angekündigt gelten; Timing und Fairness vor Umsetzung klären.
+
+
+
 **S3 implementiert, Entwicklertest offen (18.11.2026):** Spawnversuche im zufälligen Abstand von **18–30 Sekunden aktiver Spielzeit**, maximal **6 aktive einfache Minen**. Jede vollständige Formation hat 3 Minen; bei weniger als 3 freien Plätzen wird der Versuch ohne Nachholen übersprungen. Variierende sichere Bildschirmhöhe, rechts außerhalb des sichtbaren Bildes, Initialisierung bei Neustart, Pause über bestehende virtuelle Uhr. **S2 vom Entwickler 10/10 unter AGK/Windows und lokalem HTML5 abgenommen;** Dunkelgrün beibehalten. Globale Gefahrenbudget-Planung für spätere Gegner: Schwierigkeit durch Dichte, Muster und Kombinationen statt pauschaler Schadenssteigerung; **nicht Teil von S3**. 
 
 **S1 abgenommen (18.11.2026):** einfache gezackte 11×11-Mine mit separater Liste/Proto und Linksdrift; keine Verfolgung, keine Energieanziehungsreaktion. **Entwickler meldet AGK/Windows und lokales HTML5 9/9 bestanden**, ohne offene Punkte; kein eigener Assistenten-Laufzeittest. **S2 implementiert, Test offen:** eine diagonale **Dreierformation** pro `GameInit`, Positionen durch Anzahl und Abstände berechnet (initial 32 px horizontal, 48 px vertikal), einheitliche Linksdriftgeschwindigkeit; Weißgrafik wird per Code dunkelgrün (RGB 32/125/55, Alpha 255). **Diagonale bleibt Grundformation**, Keil und Vertikalstaffelung sowie 5/7 Minen mögliche spätere Muster; unregelmäßiges **Rudel A später als Anordnungsvariation** desselben einfachen Minentyps. Keine zufälligen Felder, Warnungen oder Balancing in S2.
