@@ -10,6 +10,7 @@
 #constant SIMPLE_MINE_MAX_ACTIVE 6
 #constant SIMPLE_MINE_MIN_SPAWN_MS 18000
 #constant SIMPLE_MINE_MAX_SPAWN_MS 30000
+#constant SIMPLE_MINE_WORLD_MARGIN_Y 50
 
 function SimpleMineNew(Mine ref as TMine,ProtoMine ref as TProtoMine,World ref as TWorld,y as integer,Now as integer)
     // Reuse the existing mine dimensions, health, collision box and sprite setup.
@@ -93,11 +94,12 @@ function SimpleMineSpawnDo(Game ref as TGame,Now as integer)
 
         ActiveCount = MineCountAll(Game.SimpleMineList)
         if ActiveCount + SIMPLE_MINE_FORMATION_COUNT <= SIMPLE_MINE_MAX_ACTIVE
-            // Account for the upper and lower diagonal members and sprite radius,
-            // with extra screen margin. Never place mines at the viewport edge.
-            SafeHalfHeight = ((SIMPLE_MINE_FORMATION_COUNT-1)*SIMPLE_MINE_FORMATION_SPACING_Y)/2 + 24
-            if Game.Screen.Height > SafeHalfHeight*2
-                CenterY = random(SafeHalfHeight,Game.Screen.Height-SafeHalfHeight)
+            // Use the entire world's vertical range, not the 450 px viewport.
+            // Preserve at least 50 px from both world edges for every mine
+            // in the formation, including its half-height (11 px art).
+            SafeHalfHeight = ((SIMPLE_MINE_FORMATION_COUNT-1)*SIMPLE_MINE_FORMATION_SPACING_Y)/2 + SIMPLE_MINE_WORLD_MARGIN_Y + floor((GetImageHeight(Game.ProtoSimpleMine.AnimMine.Image.ID)+1)*0.5)
+            if Game.World.Size.Height > SafeHalfHeight*2
+                CenterY = random(SafeHalfHeight,Game.World.Size.Height-SafeHalfHeight)
                 SimpleMineFormationAdd(Game.SimpleMineList,Game.ProtoSimpleMine,Game.World,CenterY,SIMPLE_MINE_FORMATION_COUNT,SIMPLE_MINE_FORMATION_SPACING_X,SIMPLE_MINE_FORMATION_SPACING_Y,Now)
                 // Warn only for an actually spawned formation, never for a blocked attempt.
                 WarningShow(Game.Warning,"MINEFIELD DETECTED",1,3000,Now)

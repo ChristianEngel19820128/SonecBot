@@ -94,6 +94,10 @@ Ein neuer, zunächst **einfacher fliegender Gegner**, der sich **von links nach 
 
 Drohnen schweben verlässlich auf der festgelegten Route, sind sichtbar und fair, Treffer/Schaden sind erkennbar, keine Kollisionseffekte auf Walker/Plattformen, stabile Windows-/HTML5-Läufe.
 
+### Korrektur nach S4-Entwicklertest: Spawn-Y in Weltkoordinaten (18.11.2026)
+
+S4-Warnmeldung nach `Message`-Compilerfix auf Windows/AGK und lokalem HTML5 laut Entwickler sichtbar/funktional. Zusätzlicher S3-Befund: Minenfeld-Y wurde mit `Game.Screen.Height` (Viewport) statt `Game.World.Size.Height` (Hintergrund/Welt) ausgelost. Enger Korrekturpatch verwendet die gesamte Welthöhe mit **50 px Mindestabstand der äußeren Formationsminen zu den Weltgrenzen**, inklusive halber Spritehöhe; **AGK-/HTML5-Nachtest offen**. Warnung, 18–30-s-Intervall, Sechs-Minen-Limit und übriges Gameplay unverändert.
+
 ## 5. Real Alpha – Kernfeature 3: Top-Warnungen / Avatar-Unterstützung
 
 ### S4 – Warnsystem implementiert, Entwicklertest offen (18.11.2026)

@@ -1,6 +1,14 @@
-# Übergabe: Pre-Alpha abgeschlossen → Real-Alpha-Warnsystem S4
+# Übergabe: Pre-Alpha abgeschlossen → Real-Alpha-Warnsystem S4 und Spawn-Y-Fix
 
-## S4 – wiederverwendbares Warnsystem implementiert, Entwickler-Tests offen (18.11.2026)
+## AKTUELL – S4 getestet; vertikale Minenfeld-Spawnhöhe korrigiert, Nachtest offen (18.11.2026)
+
+**Entwicklerbericht S4:** Nach der AGK-Compilerkorrektur des reservierten Bezeichners `Message` zu `MessageString` (Commit `cc44f54`) wurden lokale Windows-/AGK- und HTML5-Version erneut kompiliert/getestet. **Warnmeldung auf beiden Plattformen sichtbar und funktional laut Entwickler.** Ein Screenshot belegt die Anzeige von dunklem transparentem Balken, rotem Warndreieck und fettem rotem `MINEFIELD DETECTED`. Nicht alle Einzelkriterien (3-s-Ablauf, Pausenrestzeit, Limit-Fehlalarme) wurden separat berichtet; daher nicht pauschal `11/11` behaupten. Kein eigener Assistenten-Lauf.
+
+**Beobachtung/Fix:** Die einfachen Minenfelder erschienen bevorzugt im oberen Bereich der ca. 1280 px hohen Welt. Codebefund: `SimpleMineSpawnDo()` verwendete bei der zufälligen Y-Spawnhöhe `Game.Screen.Height` statt der bereits von `WorldInit()` gesetzten `Game.World.Size.Height` (Hintergrund-Spritehöhe). Enger Korrekturpatch in `simplemine.agc`: zufällige Formations-Mittelhöhe über **volle Welthöhe**, pro äußerer Mine ca. **50 px Mindestabstand** zum oberen/unteren Weltrand, inklusive Formationsversatz und halber Minenhöhe. Gleiche 3er-Diagonale, Warntrigger, 18–30-s-Spawnintervall, maximal 6 aktive einfache Minen und restliche Mechanik. **Windows-/HTML5-Nachtest dieser Korrektur offen.**
+
+**Nächster Schritt:** Entwickler testet mehrere Minenfeldspawns bei verschiedenen Kamerahöhen, inklusive Nähe oberer/unterer Weltgrenze, und prüft Warnung/alte Kollisionen auf Regression. Kein weiteres Gameplay-Feature oder `main`-Merge ohne eigene Freigabe.
+
+## S4 – wiederverwendbares Warnsystem, historischer Implementierungsstand (18.11.2026)
 
 **S4-Freigabe:** Top-Warnsystem mit eigener `warning.agc`, gemeinsamem `TWarning`-Zustand (Text, Priorität, Endzeit), fünf Funktionen für Erzeugen/Reset/Anfordern/Ablauf/Zeichnen. Das bereits übertragene Entwickler-Asset `source/sonec/media/gfx/effects/warning.png` (Commit `1a1295b`) wird als weißes Proto-Bild geladen und per Code rot eingefärbt. Hintergrund als separates **dunkles halbtransparentes 440×58-px-Sprite** (Alpha 180), rotes Dreieck, **roter fetter Text** der Größe 23, oben mittig. `GameDraw()` zeichnet es in genau dieser Reihenfolge über dem Spiel, vor `Swap()`.
 
