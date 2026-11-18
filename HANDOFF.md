@@ -1,4 +1,15 @@
-# Übergabe: Alpha-Walker abgeschlossen → HTML5-Pre-Alpha
+# Übergabe: Pre-Alpha abgeschlossen → Real-Alpha-Planung
+
+## AKTUELLER WIEDEREINSTIEG – 18. November 2026
+
+- **Verifizierter GitHub-Ausgangspunkt vor dieser Dokumentationskorrektur:** `develop` `eb05db5ca505958ad3d1a28d02721cee38152143`; `main` `0ee67107641f7eeb5f4471241bc0ac145fd0e41c`. Die Branch-HEADs vor weiteren Schritten erneut prüfen.
+- **Pre-Alpha abgeschlossen laut Entwickler:** Alpha-Walker abgenommen, Keyboard-Rebinding (Schritte 1–4) mit RESTORE DEFAULTS auf `develop`, lokaler HTML5-/Apache-Abschlusstest 13/13 und aktualisierter itch.io-Draft-Embed-Smoke-Test **12/12 bestanden** (18.11.). Windows wurde vor dem letzten optischen Mini-Fix 12/12 geprüft; ein eigener Windows-Nachtest danach ist nicht dokumentiert. Keine unabhängigen Assistenten-Laufzeittests.
+- **Aktueller gemeinsam vereinbarter Arbeitsablauf:** zuerst ausschließlich Projekt-Dokumentation korrigieren; danach den Pre-Alpha-Merge `develop` → `main` mit aktuellem Diff prüfen und **gesonderte Freigabe für den Merge einholen**. Diese Dokumentationsfreigabe umfasst ausdrücklich **keinen Merge**.
+- **Danach Real Alpha, in dieser Reihenfolge:** (1) intelligente Einzelminen plus einfache Minenfelder, (2) von links nach rechts schwebende Drohnen, (3) Top-Warnungen / spätere Avatar-Unterstützung. **Minenentscheidung Variante B:** einfache Minen verfolgen Sonec nicht und reagieren auch nicht auf Energieanziehung; bestehende intelligente Einzelminen unverändert. Linksdrift ist ein Entwurf, Gruppengröße/Spawn/Visuals noch offen. Der erste Minenschritt ist zunächst Spezifikation, **keine Implementierungsfreigabe**.
+- **Schutzgrenzen:** itch.io bleibt **Draft / Secret URL**; kein Publish, kein Gameplay-Code, keine AGK-Knowledge-Base- oder Spielerfeedback-Arbeit im Real-Alpha-Roadmap-Chat. Alte „nächster Schritt“-Einträge weiter unten sind historische Testchronik, keine aktuell offenen Aufträge.
+
+### Historische Übergabe (16.–18. November 2026)
+
 
 **Stand:** 16. November 2026  
 **Ziel:** HTML5-Pre-Alpha kontrolliert testen und ausgewählten Personen über itch.io-Draft/Secret-URL zugänglich machen; öffentliche Veröffentlichung später entscheiden  

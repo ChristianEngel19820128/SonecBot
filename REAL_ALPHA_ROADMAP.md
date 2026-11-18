@@ -1,6 +1,6 @@
 # SonecBot – Real Alpha Roadmap
 
-**Stand:** 17. November 2026  
+**Stand:** 18. November 2026 (Pre-Alpha-Abgleich und Minenentscheidung)  
 **Status:** gemeinsam vereinbarte Entwicklungsrichtung; **Planung, keine Freigabe zur Implementierung einzelner Gameplay-Funktionen**  
 **Branch:** `develop`  
 **Verwandte Dokumente:** [HANDOFF.md](HANDOFF.md) · [TODO.md](TODO.md) · [PROJECT.md](PROJECT.md) · [TECHNICAL.md](TECHNICAL.md)  
@@ -10,7 +10,7 @@
 
 SonecBot soll von einer spielbaren HTML5-Pre-Alpha zu einer **verständlich spielbaren Real Alpha** wachsen. Die drei gemeinsam **priorisierten und überschaubar gehaltenen Kernfeatures** sind:
 
-1. **Minenvarianten:** intelligente/verfolgende Minen bleiben einzeln; einfache, nicht verfolgende Minen treten in **Feldern/Rudeln** auf.
+1. **Minenvarianten:** intelligente/verfolgende Minen bleiben einzeln; einfache Minen verfolgen Sonec **nicht** und reagieren **nicht** auf seine Energieanziehung (gemeinsam entschiedene Variante B). Sie sollen später in **Feldern/Rudeln** auftreten.
 2. **Drohnen:** neue, zunächst einfache Gegner, die **von links nach rechts schweben**.
 3. **Warn-/Avatar-Hilfesystem:** kurze, kontextbezogene Hinweise **oben im laufenden Spiel**, als Ausbau des bereits angedachten `MINEFIELD DETECTED`-Ansatzes.
 
@@ -28,40 +28,30 @@ Gemeinsame Einordnung des Entwicklers:
 - **Rifle:** rotes Treffer-Aufleuchten existiert bereits, kann aber zu wenig sein; Projektile und Kollisionsflächen prüfen. **Walker ist derzeit vor allem am Turm empfindlich**, Erweiterung der verwundbaren Zonen für später erwünscht; keine voreilige Behauptung, dass alle Projektile durchfliegen.
 - Diese Themen gehören überwiegend zur **Real Alpha**, nicht zum aktuell klein gehaltenen Keyboard-/Pre-Alpha-Patch.
 
-## 2. Vorbedingung: Pre-Alpha-/Keyboard-Patch abschließen
+## 2. Pre-Alpha-/Keyboard-Patch abgeschlossen (Stand 18. November 2026)
 
-**Diese Phase ist vor jeder Real-Alpha-Featureimplementierung abzuschließen.**
+**Die frühere Vorbedingung ist erfüllt; die vorherigen offenen Keyboard-Aufträge in dieser Roadmap sind historisch und nicht erneut auszuführen.**
 
-### Stand der Persistenz
+- **Alpha-Walker** ist vom Entwickler abgenommen; keine weitere Walker-Politur ohne gesonderten Auftrag oder bestätigten Blocker.
+- **Keyboard-Patch Schritte 1–4** auf `develop` abgeschlossen: `CONTROLS > KEYBOARD` mit MOVEMENT/ACTIONS, Tastenerfassung, Persistenz, roter Doppelbelegungsanzeige und `RESTORE DEFAULTS` (RESET/CANCEL). Gamepad-Rebinding gehört ausdrücklich nicht zum abgeschlossenen Patch.
+- **Windows/AGK und lokales HTML5/Apache:** die vereinbarten Tests wurden laut Entwickler erfolgreich durchgeführt. Nach dem letzten optischen OPTIONS-Mini-Fix ist ein separater Windows-Nachtest nicht dokumentiert; der anschließende HTML5-/Apache-Test war **13/13 bestanden**.
+- **Aktualisierter itch.io-Draft-Embed:** Entwickler meldete am 18.11.2026 **12/12 Smoke-Testpunkte bestanden**, einschließlich Rebinding/Reset, persistierter Tastenbelegung nach Reload, Gamepad, Walker und Tod/Neustart. Dies ist ein **Entwicklerbericht**, kein unabhängiger Assistenten-Laufzeittest.
+- Neues Keyboard-Promobild, aktualisierte englische itch.io-Beschreibung und README wurden laut Übergabe bereits übernommen. **itch.io bleibt Draft / Secret URL**, nicht Published.
+- **Nächster Release-Gate:** Dokumentation auf `develop` abgleichen, danach die Pre-Alpha-Übernahme nach `main` anhand aktueller Branch-Differenzen prüfen und **nur mit gesonderter Merge-Freigabe** durchführen. Die Roadmap allein gibt weder Merge noch Publish frei.
 
-- OPTIONS-Untermenüs `GAMEPLAY / CONTROLS / AUDIO / BACK` durch Entwickler **14/14 bestanden**.
-- Schritt **7e.1**: `GameOptions`-Hover-Modus für Windows und lokales HTML5 gespeichert, **12/12 bestanden**, Windows-Datei vom Entwickler zusätzlich geöffnet und geprüft.
-- Schritt **7e.2**: separater, versionierter `KeyBindings`-Datensatz (15 Keyboard/Gamepad-Paare) auf `develop`, alle **10/10 Funktionschecks durch Entwickler bestätigt**. Test A: Gültige Datei, Key0 `87` (W) → `38` (Pfeil hoch), geänderte Bindung wird geladen. Test B: Versionsnummer auf `2` setzen; unbekannte Version führt zur **Standardbelegung**. **Wichtig:** anfängliche Aussage, die Datei sei beim Versionswechsel automatisch überschrieben worden, war **ein Beobachtungsfehler des Entwicklers**; er hatte Zahlen verwechselt. Der ursprüngliche Codevertrag bleibt gültig: Daten mit unbekannter Version werden nicht automatisch überschrieben. Keine Fehlerbehebung nötig.
-- `CONTROLS` ist weiterhin ein **Platzhalter**, keine interaktive Remapping-Oberfläche. Speichercode ist vorbereitet; neue Belegungen wurden bisher nur manuell in der Datei getestet.
-
-### Konkreter nächster Arbeitsabschnitt: Keyboard-Patch
-
-1. Gemeinsam **engen UI-Umfang des Rebinding-Patches freigeben**, bevor Source verändert wird: Keyboard-Belegung unter `CONTROLS > KEYBOARD`; Gamepad-Umbelegung nicht stillschweigend mitbauen.
-2. Sichere Steuerung beim Belegungsdialog: Auswahl, Tastenerkennung, Konflikte/Doppelbelegung, reservierte Tasten und garantierte Rückkehr (START/BACK nicht verlieren) vor Implementierung entscheiden. Gamepad-Y bleibt Menü-BACK, im Spiel Plasma.
-3. Neue Belegungen über bestehende **eine** `KeyBindings`-Speichergruppe persistieren; `GameOptions` bleibt getrennt.
-4. Eine **„RESTORE DEFAULTS“**-Funktion wurde vorgemerkt. Umfang und Platzierung (nur Keyboard, ganze Controls, Gameplay getrennt) sowie Bestätigungsdialog **vor Implementierung besprechen**; keine automatische ungefragte Löschung der gespeicherten Daten.
-5. Nach jedem kleinen Schritt AGK-Compile, Windows- und ggf. lokaler Apache-/HTML5-Test mit Regression der bisherigen Gamepad-, Menü- und Gameplay-Steuerung. Fehler vor neuer Arbeit eingrenzen.
-6. **Ganz am Ende des Pre-Alpha-Patches**, und erst mit gesondertem Bildauftrag: ein **kleines Tastatur-/Keyboard-Patch-Promobild**, gestalterisch verwandt mit dem bestehenden Cover. Jetzt weder Artwork generieren noch itch.io hochladen.
-7. itch.io-Seite bleibt Draft, keine automatische Aktualisierung oder Veröffentlichung.
-
-**Wiedereinstieg im neuen Chat:** `AGENTS.md`, `HANDOFF.md`, diese `REAL_ALPHA_ROADMAP.md`, `TODO.md` und tatsächlichen `develop`-HEAD prüfen; **als erstes Keyboard-Rebinding-Patch eng spezifizieren/freigeben**. Keine Real-Alpha-Feinde parallel implementieren.
+**Danach:** Real Alpha schrittweise beginnen. Kernfeature 1 sind die Minenvarianten; zunächst vorhandene intelligente Einzelminen schützen und die einfache Mine eindeutig spezifizieren. Entscheidungen zu Gruppenspawn, Anzahl, Abständen und Warnsystem folgen separat.
 
 ## 3. Real Alpha – Kernfeature 1: Minefields und intelligente Minen
 
 ### Spielidee
 
-Bisherige intelligente Minen weiterhin **einzeln** und mit vorhandener Bewegung/Annäherung an Sonec. Zusätzlich ein **einfacher Minentyp** für erkennbare **Minenfelder bzw. Rudel**, ohne aktive Verfolgung von Sonec. So entstehen zwei deutlich unterscheidbare Gefahren: gezielte Bedrohung versus Raumkontrolle.
+Bisherige intelligente Minen weiterhin **einzeln** und mit vorhandener Bewegung/Annäherung an Sonec. Zusätzlich ein **einfacher Minentyp** für erkennbare **Minenfelder bzw. Rudel**. **Entschieden (Variante B):** Einfache Minen verfolgen Sonec nicht und reagieren auch nicht auf aktive Energieanziehung. Als erster Bewegungsentwurf driften sie unabhängig von Sonec nach links; genaue Bewegung und Gruppenregeln werden vor Implementierung separat freigegeben. So entstehen zwei deutlich unterscheidbare Gefahren: gezielte Bedrohung versus Raumkontrolle.
 
 ### Entwurfsfragen vor Code
 
 - Eindeutige visuelle Unterscheidung der Minentypen (Form, Farbe, Bewegung).
 - Regel für Gruppengröße, Abstand, Spawnregion, Lebensdauer, maximale gleichzeitige Minenzahl und Performance.
-- Wie bewegen sich einfache Minen in der Welt, wenn sie Sonec **nicht verfolgen**? „Nicht verfolgen“ heißt nicht automatisch vollkommen statisch.
+- Festgelegt: keine Sonec-Verfolgung und **keine Reaktion auf Energieanziehung** bei einfachen Minen. Vorgeschlagene Linksdrift und genaue Geschwindigkeit/Bewegung noch vor Code abstimmen; intelligente Minen behalten ihr jetziges Verhalten.
 - Spawn-Fairness: niemals unangekündigt direkt in Sonec oder an Stellen, aus denen man nicht ausweichen kann; Mindestabstände und Sichtbarkeit.
 - Zusammenhang mit der Warnung `MINEFIELD DETECTED`: Warnung früh genug, aber keine ständigen Spams.
 - Bestehende Minen/Explosions-Kettenreaktionen und Energieanziehung beachten; diese zieht bereits Minen an.
@@ -69,7 +59,7 @@ Bisherige intelligente Minen weiterhin **einzeln** und mit vorhandener Bewegung/
 
 ### Akzeptanzkriterien (Entwurf)
 
-Intelligente Einzelminen verhalten sich wie bisher; einfache Minen verfolgen Sonec nicht; Minenfelder sind sichtbar unterscheidbar, beherrschbar, nicht unfair bei Spawn/Bewegung und verursachen keine ungewollten Performance-/Kollisionseffekte. Gamepad, Waffen, Explosionsreaktionen und HTML5 bleiben funktional.
+Intelligente Einzelminen verhalten sich wie bisher; einfache Minen verfolgen Sonec nicht und reagieren nicht auf Energieanziehung; Minenfelder sind sichtbar unterscheidbar, beherrschbar, nicht unfair bei Spawn/Bewegung und verursachen keine ungewollten Performance-/Kollisionseffekte. Gamepad, Waffen, Explosionsreaktionen und HTML5 bleiben funktional.
 
 ## 4. Real Alpha – Kernfeature 2: Schwebende Drohnen
 
@@ -170,6 +160,6 @@ Der Entwickler hat folgende Arbeiten für **Columns** genannt:
 - Keine generelle automatische „Fehlerbereinigung“ und keine Balanceänderung nur aufgrund eines Kommentars.
 - Bei Chatwechsel: dieses Dokument und die frisch ergänzte Top-Sektion in `HANDOFF.md` sind die **aktuelle Richtung**. Ältere anderslautende offene Einträge sind Projektgeschichte.
 
-## 10. Ein Satz für den nächsten Chat
+## 10. Aktueller Wiedereinstieg
 
-> **SonecBot weiter auf `develop`. 7e.1 bestanden, 7e.2 mit 10/10 Funktionschecks bestanden (Datei-Neuschreiben bei ungültiger Version war ein Beobachtungsfehler). Jetzt zuerst Keyboard-Rebinding-/Reset-Umfang eng abstimmen und Pre-Alpha-Patch fertigstellen. Tastatur-Patchbild erst ganz am Ende. Danach Real Alpha mit genau drei priorisierten Kernfeatures: Minenfelder plus intelligente Einzelminen, links-nach-rechts schwebende Drohnen und Top-/Avatar-Warnsystem. Feedback zu Plattform-Fairness, Beschleunigung, HUD, Tod und Rifle als Untersuchungs-/Qualitätsthemen erhalten. Crystal Columns (`Crystals`) 1.1 ohne Priorität; eigenes TODO ist angelegt, AGENTS.md und zwei Theme-Tracks später separat. itch.io für beide Spiele später mit COMING SOON und TIPS & TRICKS verbessern; nicht publishen.**
+> **SonecBot auf `develop`: Alpha-Walker, Keyboard-Rebinding einschließlich Restore Defaults und der aktualisierte itch.io-Draft-Embed-Test (12/12 laut Entwickler am 18.11.2026) sind abgeschlossen. Jetzt zuerst die Dokumentation angleichen und die geprüfte Pre-Alpha-Übernahme nach `main` separat freigeben. Anschließend Real Alpha mit genau drei Kernfeatures: (1) intelligente Einzelminen plus einfache Minenfelder – einfache Minen verfolgen Sonec nicht und reagieren nicht auf Energieanziehung (Variante B), (2) von links nach rechts schwebende Drohnen, (3) Top-Warnungen und spätere Avatar-Unterstützung. Keine Codeänderung ohne eng umrissene Zustimmung; AGK-/HTML5-Laufzeittests durch den Entwickler. itch.io bleibt Draft / Secret URL, kein Publish ohne gesonderte Freigabe.**

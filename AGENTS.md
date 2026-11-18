@@ -9,7 +9,7 @@
 - **Reference branch:** `main`
 - **Historical source:** `source/legacy/`
 - **Current handoff:** `HANDOFF.md`
-- **Current milestone:** Alpha-Walker complete and locally accepted; HTML5 pre-alpha deployment next.
+- **Current milestone:** HTML5 pre-alpha including Alpha-Walker and keyboard rebinding/restore defaults completed and developer-tested; updated itch.io Draft embed smoke test 12/12 reported passed (18 November 2026). Next: review documentation, obtain separate approval for a `develop` → `main` pre-alpha merge, then plan Real Alpha mine variants.
 
 SonecBot is an independently developed side-scrolling action game featuring platforming, weapons, energy management and enemy encounters.
 
@@ -170,7 +170,7 @@ Do not silently overwrite existing documentation or contradict established proje
 
 When new findings conflict with documentation, report the discrepancy instead of independently deciding which source is correct.
 
-**Chatwechsel / Kontextgrenzen:** Do not assume automatic chat/history/attachment transfer. Start by reading AGENTS.md and HANDOFF.md, then current PROJECT.md, TODO.md and TECHNICAL.md. Query the real develop HEAD and relevant source files again. HANDOFF.md is the canonical current transition; pinned older documents are history, not instructions to repeat completed work. The owner has explicitly closed the Alpha-Walker task after the final turret-recoil test. Preserve the accepted IK, pivots, artwork/prototypes, aim and recoil; the next task is HTML5 export/browser verification/deployment. Do not reopen Walker polishing without a specific owner request or demonstrated release blocker. Local developer tests, translated simulations, actual AGK compiles and actual browser tests must remain distinct.
+**Chatwechsel / Kontextgrenzen:** Do not assume automatic chat/history/attachment transfer. Start by reading AGENTS.md and HANDOFF.md, then current PROJECT.md, TODO.md and TECHNICAL.md. Query the real develop HEAD and relevant source files again. HANDOFF.md is the canonical current transition; pinned older documents are history, not instructions to repeat completed work. The owner has explicitly closed the Alpha-Walker task after the final turret-recoil test. Preserve the accepted IK, pivots, artwork/prototypes, aim and recoil; the HTML5 pre-alpha and keyboard Draft embed verification are completed according to developer reports (12/12 on 18 November 2026). The next gate is a separately approved pre-alpha merge to `main`, followed by Real Alpha mine planning (simple mines do not track Sonec and do not respond to energy attraction). Do not reopen Walker polishing without a specific owner request or demonstrated release blocker. Local developer tests, translated simulations, actual AGK compiles and actual browser tests must remain distinct.
 
 ## Reusable interactive test-report format (SonecBot)
 
