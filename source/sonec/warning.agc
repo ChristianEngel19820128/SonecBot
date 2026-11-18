@@ -38,7 +38,7 @@ function WarningCreate(Warning ref as TWarning,Screen as TSize)
     SetTextColor(Warning.TextID,255,100,100,255)
 
     Warning.Active = FALSE
-    Warning.Message = ""
+    Warning.MessageString = ""
     Warning.Priority = 0
     Warning.UntilMs = 0
 endfunction
@@ -47,20 +47,20 @@ function WarningReset(Warning ref as TWarning)
     Warning.Active = FALSE
     Warning.Priority = 0
     Warning.UntilMs = 0
-    Warning.Message = ""
+    Warning.MessageString = ""
     SetTextString(Warning.TextID,"")
 endfunction
 
 // Equal or higher-priority messages may replace the active one.
 // A queue and additional message sources are outside S4.
-function WarningShow(Warning ref as TWarning,Message as string,Priority as integer,DurationMs as integer,Now as integer)
+function WarningShow(Warning ref as TWarning,MessageString as string,Priority as integer,DurationMs as integer,Now as integer)
     if DurationMs > 0
         if Warning.Active = FALSE or Priority >= Warning.Priority or Now >= Warning.UntilMs
             Warning.Active = TRUE
-            Warning.Message = Message
+            Warning.MessageString = MessageString
             Warning.Priority = Priority
             Warning.UntilMs = Now + DurationMs
-            SetTextString(Warning.TextID,Message)
+            SetTextString(Warning.TextID,MessageString)
         endif
     endif
 endfunction

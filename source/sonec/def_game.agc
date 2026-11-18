@@ -717,7 +717,7 @@ endtype
 // S4: one shared top warning with future message priority support.
 type TWarning
     Active as integer
-    Message as string
+    MessageString as string
     Priority as integer
     UntilMs as integer
     TextID as integer
