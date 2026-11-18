@@ -10,7 +10,7 @@ SonecBot is a reworking of a game originally written in **BlitzBasic Plus**. A l
 
 **18 November 2026 — Four-step keyboard controls update completed and developer-tested on Windows and local HTML5/Apache.**
 
-**The updated HTML5 build has been uploaded to the itch.io Draft and the developer reports that it loads.** The final **itch.io embedded gameplay smoke test remains pending** for this keyboard-enabled update. The refreshed itch.io description now introduces the keyboard controls and upcoming Real Alpha goals. The following earlier embed results apply to the previous pre-alpha build.
+**The updated keyboard-enabled HTML5 build is now running in the itch.io Draft embed, with a developer-reported 12/12 embedded smoke test passed and no outstanding findings.** The test covered keyboard movement and combat, remapping, duplicate highlighting, restore defaults, persistence after full browser reload, gamepad gameplay, Alpha-Walker combat, death and restart. The refreshed itch.io description introduces keyboard support and the path toward Real Alpha, alongside updated keyboard-themed cover art. The following earlier deployment results remain as historical context.
 
 For the earlier pre-alpha deployment, the developer compiled and exported HTML5, tested it locally through Apache/XAMPP, uploaded the ZIP, and confirmed that the game started inside the itch.io embed. The embedded test verified controller detection, movement (including backward movement and flight), all four weapons, shield, energy attraction, pause, and death by energy depletion/falling. ESC and the quit action are intentionally unavailable in the HTML5 player. No visible tearing was reported in the local browser test; performance on other devices has not yet been established.
 
@@ -103,7 +103,7 @@ We are interested in practical feedback from invited players, especially:
 - Can you pause, die and restart without getting stuck?
 - Did you encounter a repeatable bug? Please include browser, operating system, input device (keyboard or controller) and the steps that caused it.
 
-Local developer tests and the earlier itch.io embedded playtest have been positive. **The updated keyboard-enabled itch.io embed still requires its own smoke test**, and external browser/device compatibility remains to be established.
+Local developer tests and the **updated keyboard-enabled itch.io embedded smoke test (12/12 passed)** have been positive. Independent player feedback and external browser/device compatibility remain to be established.
 
 ## Development and project notes
 
