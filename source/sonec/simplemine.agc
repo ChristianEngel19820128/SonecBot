@@ -1,11 +1,15 @@
-// S1: independent simple mine, one manual test spawn per GameInit.
-// It never reads Sonec or Inenergie; the existing intelligent mines remain unchanged.
+// S2: independent simple mines with one three-mine diagonal test formation.
+// Future formations can reuse the same minelist; no auto-spawn or tracking.
+// Simple mines never read Sonec or Inenergie; intelligent mines are unchanged.
+#constant SIMPLE_MINE_COLOR_R 32
+#constant SIMPLE_MINE_COLOR_G 125
+#constant SIMPLE_MINE_COLOR_B 55
 
 function SimpleMineNew(Mine ref as TMine,ProtoMine ref as TProtoMine,World ref as TWorld,y as integer,Now as integer)
     // Reuse the existing mine dimensions, health, collision box and sprite setup.
     MineNew(Mine,ProtoMine,World,y,Now)
-    // The supplied 11x11 sprite is white with transparent background.
-    ColorSet(Mine.SpriteData.Color,255,255,255,255)
+    // The white 11x11 source sprite takes its opaque dark-green tint from code.
+    ColorSet(Mine.SpriteData.Color,SIMPLE_MINE_COLOR_R,SIMPLE_MINE_COLOR_G,SIMPLE_MINE_COLOR_B,255)
 endfunction
 
 function SimpleMineAdd(MineList ref as TMineList,ProtoMine ref as TProtoMine,World ref as TWorld,y as integer,Now as integer)
@@ -37,6 +41,34 @@ function SimpleMineAdd(MineList ref as TMineList,ProtoMine ref as TProtoMine,Wor
         Value = i
     endif
 endfunction Value
+
+
+// S2: Reusable diagonal placement, initially tested with exactly three mines.
+// Geometry is based on the index, not on three special-case coordinates.
+// All mines use the same initial speed to preserve their relative positions.
+// This creates only one formation during GameInit, never per GameDo frame.
+function SimpleMineFormationAdd(MineList ref as TMineList,ProtoMine ref as TProtoMine,World ref as TWorld,CenterY as integer,MineCount as integer,SpacingX as integer,SpacingY as integer,Now as integer)
+    local i as integer
+    local Index as integer
+    local FirstY as integer
+    local DriftSpeed as float
+
+    if MineCount <= 0 then exitfunction
+
+    FirstY = CenterY - (MineCount-1)*SpacingY/2
+    DriftSpeed = random(35,100)*0.001
+
+    for i = 0 to MineCount-1
+        Index = SimpleMineAdd(MineList,ProtoMine,World,FirstY+i*SpacingY,Now)
+        if Index >= 0
+            MineList.Mine[Index].ObjectData.Position.x = MineList.Mine[Index].ObjectData.Position.x + i*SpacingX
+            MineList.Mine[Index].ObjectData.MoveSpeed.x = DriftSpeed
+            SpritePositionCalc(MineList.Mine[Index].SpriteData.Position,MineList.Mine[Index].ObjectData.Position,World.Position)
+            MineList.Mine[Index].CollisionData.Position1.x = MineList.Mine[Index].ObjectData.Position.x - MineList.Mine[Index].ObjectData.Size.Width*0.5
+            MineList.Mine[Index].CollisionData.Position2.x = MineList.Mine[Index].ObjectData.Position.x + MineList.Mine[Index].ObjectData.Size.Width*0.5
+        endif
+    next i
+endfunction
 
 function SimpleMineMove(Mine ref as TMine,World ref as TWorld,Now as integer)
     local r as float
@@ -75,11 +107,11 @@ function SimpleMineHealthRegenerate(MineList ref as TMineList,Game ref as TGame,
     local Position as TPosition
 
     // Keep existing hit-flash and destruction/bubble mechanics but restore
-    // this mine's own white opaque color instead of the smart mine's green alpha.
+    // this mine's own opaque dark-green color instead of the smart mine's green alpha.
     for i = 0 to MineList.Mine.Length
         if MineList.Mine[i].Enabled = TRUE
             if TimeGet(MineList.Mine[i].Health.RegenerationTimer,Now) > 0
-                ColorSet(MineList.Mine[i].SpriteData.Color,255,255,255,255)
+                ColorSet(MineList.Mine[i].SpriteData.Color,SIMPLE_MINE_COLOR_R,SIMPLE_MINE_COLOR_G,SIMPLE_MINE_COLOR_B,255)
                 if MineList.Mine[i].Health.State + REGHEALTH <= MineList.Mine[i].Health.StateMax
                     MineList.Mine[i].Health.State = MineList.Mine[i].Health.State + REGHEALTH
                 else

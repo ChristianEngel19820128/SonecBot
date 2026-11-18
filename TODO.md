@@ -1,13 +1,13 @@
 # SonecBot – Aktuelle Aufgaben und Meilensteine
 
-**Dokumentstatus:** Version 9.0 – Pre-Alpha-Merge PR #2 abgeschlossen; Real Alpha S1 implementiert, Runtime-Test offen  
+**Dokumentstatus:** Version 9.1 – S1 vom Entwickler 9/9 abgenommen; S2-Dreierformation implementiert, Runtime-Test offen  
 **Stand:** 18. November 2026  
 **Branch:** `develop`  
-**Aktuelles Ziel:** PR #2 hat den Pre-Alpha-Keyboard-Stand nach `main` gemergt; Real Alpha auf `develop` beginnt mit **S1: einfache Einzelmine**. Entwickler-Windows-/HTML5-Test für S1 noch offen. Danach Formation B getrennt planen; Rudel A später. itch.io bleibt **Draft / Secret URL**, kein Publish, keine Deadline.
+**Aktuelles Ziel:** Real Alpha S1 9/9 unter AGK/Windows und lokalem HTML5 vom Entwickler bestätigt; S2 setzt eine diagonal versetzte Dreierformation mit dunkler Code-Farbgebung um. **S2-AGK-/HTML5-Test noch offen.** Keil, vertikale Staffelung und Rudel A sind spätere getrennte Schritte. itch.io bleibt **Draft / Secret URL**, kein Publish, keine Deadline.
 
 > Bei Chatwechsel zuerst [HANDOFF.md](HANDOFF.md) und den echten `develop`-HEAD lesen. Historische Arbeits- und Testdetails stehen in [TECHNICAL.md](TECHNICAL.md), in [dieser ausführlichen TODO-Version vor der Konsolidierung](https://github.com/ChristianEngel19820128/SonecBot/blob/b1d7da8f4bad6255e612948e833a39ab60a48243/TODO.md) und in Git. Datierte ältere „offen“-Einträge bezeichnen frühere Zwischenstände, **nicht** die heutige Aufgabenpriorität.
 
-**Aktueller Arbeitswunsch (18.11.2026):** **S1 implementiert – lokaler AGK-/HTML5-Test durch Entwickler ausstehend.** Eine weiße 11×11-Pixel-Testmine pro Start, separate MineList und Proto, Linksdrift ohne Tracking/Energieanziehungsreaktion. Keine Formationen oder Automatikspawns; zunächst S1 abnehmen. Ältere Schrittaufträge unten sind historische Testchronik.
+**Aktueller Arbeitswunsch (18.11.2026):** **S2 implementiert – Windows-/HTML5-Test durch Entwickler ausstehend.** Eine diagonale Dreierformation pro Neustart; geometrisch berechnete Positionen (32 px X, 48 px Y), gemeinsame Driftgeschwindigkeit, dunkelgrüne Code-Einfärbung RGB 32/125/55 bei Alpha 255. S1 9/9 abgenommen. Keine Automatikspawns oder weiteren Muster. Ältere Schrittaufträge unten sind historische Testchronik.
 
 **ITCH.IO-DRAFT-DEPLOYMENT ABGESCHLOSSEN (Entwicklerbericht):** aktualisierte HTML5-Version auf itch.io mit Keyboard-Support, überarbeitetem englischem Beschreibungstext und neuem Cover; **12/12 echte Embed-Smoke-Tests bestanden**, keinerlei offene Punkte/Beobachtungen. Bestätigt: Start, Menüs flackerfrei, Keyboard Bewegung/Waffen, Rebinding/Duplikate/Reset, gespeicherte Belegungen nach Browser-Reload, Gamepad, Schild/Energie/Pause, Alpha-Walker, Tod und Neustart. **Draft / Secret URL bleibt unveröffentlicht**, Link wird vom Entwickler an Tester erneut verteilt. **Nächster vereinbarter Block:** Dokumentationsabgleich, separate Merge-Entscheidung und danach Minenplanung; Spielerfeedback wird in einem anderen Chat bearbeitet.
 

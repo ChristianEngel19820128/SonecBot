@@ -1,6 +1,14 @@
-# Übergabe: Pre-Alpha abgeschlossen → Real-Alpha-Minen S1
+# Übergabe: Pre-Alpha abgeschlossen → Real-Alpha-Minen S2
 
-## S1 – einfache Einzelmine implementiert, Entwickler-Test offen (18.11.2026)
+## S2 – diagonale Dreierformation implementiert; Entwicklertest offen (18.11.2026)
+
+**Entwicklerabnahme S1:** 9/9 bestätigt (AGK Studio/Windows und lokales HTML5): Sprite sichtbar, genau eine Mine/Neustart, Linksdrift, keine Verfolgung/keine Energieanziehungsreaktion, bestehende intelligente Minen unverändert, Kontakt/Waffen/Explosionen funktionsfähig. Keine offenen Punkte oder Beobachtungen. Dies ist ein **Entwicklerbericht**, kein eigener Laufzeittest des Assistenten. Getesteter Stand: `aa2ed8c9c8e9dd9c7399fc9cde66ecd0fa67839a`.
+
+**Freigegebenes S2:** Die S1-Testmine wurde durch **eine diagonale Dreierformation pro `GameInit`** ersetzt. `SimpleMineFormationAdd` berechnet Minenpositionen aus Anzahl und horizontalem/vertikalem Abstand (initial **3 / 32 px / 48 px**). Alle drei Minen erhalten die gleiche zufällig zu Beginn der Formation gewählte Linksdriftgeschwindigkeit. Die 11×11-px-Weißgrafik wird über `ColorSet` dunkelgrün getönt (**RGB 32/125/55, Alpha 255**, vorläufiger Testwert); rot bleibt die Trefferfarbe, die Gesundheitsroutine stellt Dunkelgrün wieder her. Vorhandene S1- und intelligente-Minen-Kollisionen bleiben unverändert. **Keine automatischen Spawns, kein Keil, keine Vertikalstaffelung, kein Rudel A, keine Top-Warnungen.** Weitere Formationsmuster (auch 5/7 Minen) später gesondert spezifizieren.
+
+**Nachweisstatus:** statische Quellprüfung, **noch keine AGK-/HTML5-Laufzeittests für S2**. Einziger nächster Schritt: Entwickler-AGK-Compile und Windows-Sicht-/Gameplay-Test, danach lokaler HTML5-Test der Dreierformation (Anzahl, Drift, Abstand, Farbe, Waffen und S1-Regression); Befund auswerten, erst danach weitere Entwicklung.
+
+## S1 – einfache Einzelmine implementiert, historischer Zwischenstand (18.11.2026)
 
 **Ausgangs-HEAD:** `develop` `3f15556cdb3b2c565fb08b52da9ec339c833e768` (vor S1); `main` ist mit PR #2 auf dem Pre-Alpha-Stand gemergt. **S1 nur auf `develop`**, kein erneuter Merge oder itch.io-Publish.
 

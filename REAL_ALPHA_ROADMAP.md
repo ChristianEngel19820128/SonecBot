@@ -43,7 +43,7 @@ Gemeinsame Einordnung des Entwicklers:
 
 ## 3. Real Alpha – Kernfeature 1: Minefields und intelligente Minen
 
-**S1 – schmaler Implementierungsstand (18.11.2026):** einfache weiße, gezackte 11×11-Mine mit separater Liste/Proto und Linksdrift; nur eine Testmine pro `GameInit`, ohne Sonec-Verfolgung und ohne Energieanziehungsreaktion. Statische Quellprüfung, **AGK-/HTML5-Entwicklertest noch offen**. Vorhandene Minen bleiben separat. **Formation B zuerst**, unregelmäßiges **Rudel A später als Anordnungsvariation** desselben einfachen Minentyps. Gruppenspawns, Warnungen und Balancing nicht Teil S1.
+**S1 abgenommen (18.11.2026):** einfache gezackte 11×11-Mine mit separater Liste/Proto und Linksdrift; keine Verfolgung, keine Energieanziehungsreaktion. **Entwickler meldet AGK/Windows und lokales HTML5 9/9 bestanden**, ohne offene Punkte; kein eigener Assistenten-Laufzeittest. **S2 implementiert, Test offen:** eine diagonale **Dreierformation** pro `GameInit`, Positionen durch Anzahl und Abstände berechnet (initial 32 px horizontal, 48 px vertikal), einheitliche Linksdriftgeschwindigkeit; Weißgrafik wird per Code dunkelgrün (RGB 32/125/55, Alpha 255). **Diagonale bleibt Grundformation**, Keil und Vertikalstaffelung sowie 5/7 Minen mögliche spätere Muster; unregelmäßiges **Rudel A später als Anordnungsvariation** desselben einfachen Minentyps. Keine zufälligen Felder, Warnungen oder Balancing in S2.
 
 
 ### Spielidee

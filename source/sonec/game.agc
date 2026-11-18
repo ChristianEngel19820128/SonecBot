@@ -124,8 +124,9 @@ function GameInit(Game ref as TGame,Now as integer)
 	OrbInit(Game.OrbList)
 	MineInit(Game.MineList)
 	MineInit(Game.SimpleMineList)
-	// S1 visual/gameplay probe: exactly one simple mine per game initialization.
-	SimpleMineAdd(Game.SimpleMineList,Game.ProtoSimpleMine,Game.World,floor(Game.Screen.Height*0.5),Now)
+	// S2 visual/gameplay probe: one diagonal formation of 3 simple mines per GameInit.
+	// Fixed 32 px horizontal and 48 px vertical offsets; no random field spawning.
+	SimpleMineFormationAdd(Game.SimpleMineList,Game.ProtoSimpleMine,Game.World,floor(Game.Screen.Height*0.5),3,32,48,Now)
 	WalkerInit(Game.WalkerList)
 	ExplosionInit(Game.ExplosionList)
 	FlashInit(Game.FlashList)
