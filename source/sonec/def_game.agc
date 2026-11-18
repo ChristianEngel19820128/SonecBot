@@ -748,6 +748,7 @@ type TGame
 	OrbList as TOrbList
 	MineList as TMineList
 	SimpleMineList as TMineList
+	SimpleMineNextSpawnMs as integer
 	Shield as TShield
 	Inenergie as TInenergie
 	Sonec as TSonec

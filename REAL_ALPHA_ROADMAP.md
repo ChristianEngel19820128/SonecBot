@@ -43,6 +43,8 @@ Gemeinsame Einordnung des Entwicklers:
 
 ## 3. Real Alpha – Kernfeature 1: Minefields und intelligente Minen
 
+**S3 implementiert, Entwicklertest offen (18.11.2026):** Spawnversuche im zufälligen Abstand von **18–30 Sekunden aktiver Spielzeit**, maximal **6 aktive einfache Minen**. Jede vollständige Formation hat 3 Minen; bei weniger als 3 freien Plätzen wird der Versuch ohne Nachholen übersprungen. Variierende sichere Bildschirmhöhe, rechts außerhalb des sichtbaren Bildes, Initialisierung bei Neustart, Pause über bestehende virtuelle Uhr. **S2 vom Entwickler 10/10 unter AGK/Windows und lokalem HTML5 abgenommen;** Dunkelgrün beibehalten. Globale Gefahrenbudget-Planung für spätere Gegner: Schwierigkeit durch Dichte, Muster und Kombinationen statt pauschaler Schadenssteigerung; **nicht Teil von S3**. 
+
 **S1 abgenommen (18.11.2026):** einfache gezackte 11×11-Mine mit separater Liste/Proto und Linksdrift; keine Verfolgung, keine Energieanziehungsreaktion. **Entwickler meldet AGK/Windows und lokales HTML5 9/9 bestanden**, ohne offene Punkte; kein eigener Assistenten-Laufzeittest. **S2 implementiert, Test offen:** eine diagonale **Dreierformation** pro `GameInit`, Positionen durch Anzahl und Abstände berechnet (initial 32 px horizontal, 48 px vertikal), einheitliche Linksdriftgeschwindigkeit; Weißgrafik wird per Code dunkelgrün (RGB 32/125/55, Alpha 255). **Diagonale bleibt Grundformation**, Keil und Vertikalstaffelung sowie 5/7 Minen mögliche spätere Muster; unregelmäßiges **Rudel A später als Anordnungsvariation** desselben einfachen Minentyps. Keine zufälligen Felder, Warnungen oder Balancing in S2.
 
 

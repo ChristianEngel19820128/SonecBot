@@ -1,6 +1,14 @@
-# Übergabe: Pre-Alpha abgeschlossen → Real-Alpha-Minen S2
+# Übergabe: Pre-Alpha abgeschlossen → Real-Alpha-Minen S3
 
-## S2 – diagonale Dreierformation implementiert; Entwicklertest offen (18.11.2026)
+## S3 – wiederkehrender Minenfeldspawn implementiert, Entwickler-Test offen (18.11.2026)
+
+**Freigabe und Umfang:** Automatischer Spawnversuch alle **18–30 Sekunden aktiver Spielzeit**, maximal **6 gleichzeitig aktive einfache Minen**, Formationsgröße **3** (diagonal; 32 px X-/48 px Y-Abstand). Der einmalige S2-Spawn bei `GameInit` wurde entfernt. `SimpleMineNextSpawnMs` wird bei jedem `GameInit` neu gesetzt. `GameDo` nutzt bereits die **pausenbereinigte virtuelle Spielzeit** aus `main.agc`; es gibt keinen gesonderten Pausencode. Nach jedem *Versuch* wird der nächste Termin zufällig festgesetzt, auch wenn das Limit blockiert – **keine Nachhol-/Burst-Spawns**. Eine Formation entsteht nur bei mindestens drei freien Plätzen, niemals teilweise wegen des Limits. Spawn rechts außerhalb des sichtbaren Bildes; zufällige vertikale Mittellage mit Sicherheitsmarge für alle drei Minen. Schaden, Drift, dunkelgrüner Farbton und vorhandene Waffen-/Explosionstreffer bleiben unverändert. **Kein globaler Spawnmanager / Gefahrenbudget umgesetzt.** Gefahrenbudget und progressive Herausforderung bleiben Planungsziele.
+
+**S2-Abnahme (Entwicklerbericht):** **10/10 bestanden** in AGK Studio/Windows und lokalem HTML5 für `7d8b9aab1ca37df5a0bac5ddfa6d9efe35b59e09`; 3er-Diagonale, gemeinsame Drift/Abstände, Dunkelgrün, keine Tracking-/Energieanziehungsreaktion, Treffer sowie intelligente-Minen-Regression bestätigt. Screenshot zeigt erkennbare, aber relativ unauffällige Gefahren auf violettem Hintergrund. Farbe **RGB 32/125/55, Alpha 255** wird bewusst beibehalten. Keine offenen Tests/Fehler bei S2; keine eigenständigen Assistenten-Laufzeittests.
+
+**S3-Nachweisstatus:** statische Quell- und Git-Prüfung; **AGK-Compile und Windows-/HTML5-Tests durch Entwickler ausstehend.** Test: vor 18 s kein einfacher Minenspawn, wiederkehrende vollständige 3er-Felder mit 18–30 s Abstand der *Spawnversuche*; maximal 6 aktiv; Versuche bei Limit übersprungen; vertikale Lage sicher/variabel; Pause friert Uhr ein; Neustart setzt Timer/Mineliste zurück; Waffen-/Explosionen und intelligente Minen unverändert. Achtung: In Intervallen mit vollem Limit können sichtbare Formationen entsprechend später erscheinen. **Nächster Schritt ist S3-Testabnahme, nicht S4.**
+
+## S2 – diagonale Dreierformation, historischer Implementierungsstand (18.11.2026)
 
 **Entwicklerabnahme S1:** 9/9 bestätigt (AGK Studio/Windows und lokales HTML5): Sprite sichtbar, genau eine Mine/Neustart, Linksdrift, keine Verfolgung/keine Energieanziehungsreaktion, bestehende intelligente Minen unverändert, Kontakt/Waffen/Explosionen funktionsfähig. Keine offenen Punkte oder Beobachtungen. Dies ist ein **Entwicklerbericht**, kein eigener Laufzeittest des Assistenten. Getesteter Stand: `aa2ed8c9c8e9dd9c7399fc9cde66ecd0fa67839a`.
 

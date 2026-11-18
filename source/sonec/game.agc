@@ -124,9 +124,8 @@ function GameInit(Game ref as TGame,Now as integer)
 	OrbInit(Game.OrbList)
 	MineInit(Game.MineList)
 	MineInit(Game.SimpleMineList)
-	// S2 visual/gameplay probe: one diagonal formation of 3 simple mines per GameInit.
-	// Fixed 32 px horizontal and 48 px vertical offsets; no random field spawning.
-	SimpleMineFormationAdd(Game.SimpleMineList,Game.ProtoSimpleMine,Game.World,floor(Game.Screen.Height*0.5),3,32,48,Now)
+	// S3: first automatic spawn attempt occurs after 18-30 seconds of active game time.
+	SimpleMineSpawnInit(Game,Now)
 	WalkerInit(Game.WalkerList)
 	ExplosionInit(Game.ExplosionList)
 	FlashInit(Game.FlashList)
@@ -223,6 +222,9 @@ function GameDo(Game ref as TGame,Now as integer)
 			OrbAdd(Game.OrbList,Game.ProtoOrb,Game.World,Now)
 		endif
 	endif
+	
+	// S3 simple formations run on the pause-aware virtual game clock.
+	SimpleMineSpawnDo(Game,Now)
 	
 	if MineCountAll(Game.MineList) < 15
 		if random(0,10000) < 5

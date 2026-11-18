@@ -1,9 +1,15 @@
-// S2: independent simple mines with one three-mine diagonal test formation.
-// Future formations can reuse the same minelist; no auto-spawn or tracking.
+// S3: timed automatic diagonal three-mine formations (18-30 s, maximum 6 active).
+// No catch-up spawning; use the virtual gameplay clock so pause stops the schedule.
 // Simple mines never read Sonec or Inenergie; intelligent mines are unchanged.
 #constant SIMPLE_MINE_COLOR_R 32
 #constant SIMPLE_MINE_COLOR_G 125
 #constant SIMPLE_MINE_COLOR_B 55
+#constant SIMPLE_MINE_FORMATION_COUNT 3
+#constant SIMPLE_MINE_FORMATION_SPACING_X 32
+#constant SIMPLE_MINE_FORMATION_SPACING_Y 48
+#constant SIMPLE_MINE_MAX_ACTIVE 6
+#constant SIMPLE_MINE_MIN_SPAWN_MS 18000
+#constant SIMPLE_MINE_MAX_SPAWN_MS 30000
 
 function SimpleMineNew(Mine ref as TMine,ProtoMine ref as TProtoMine,World ref as TWorld,y as integer,Now as integer)
     // Reuse the existing mine dimensions, health, collision box and sprite setup.
@@ -43,10 +49,9 @@ function SimpleMineAdd(MineList ref as TMineList,ProtoMine ref as TProtoMine,Wor
 endfunction Value
 
 
-// S2: Reusable diagonal placement, initially tested with exactly three mines.
-// Geometry is based on the index, not on three special-case coordinates.
-// All mines use the same initial speed to preserve their relative positions.
-// This creates only one formation during GameInit, never per GameDo frame.
+// Shared diagonal formation placement, currently used for groups of exactly 3.
+// Geometry depends on index rather than special-case positions.
+// All mines share initial drift speed to preserve their relative positions.
 function SimpleMineFormationAdd(MineList ref as TMineList,ProtoMine ref as TProtoMine,World ref as TWorld,CenterY as integer,MineCount as integer,SpacingX as integer,SpacingY as integer,Now as integer)
     local i as integer
     local Index as integer
@@ -68,6 +73,35 @@ function SimpleMineFormationAdd(MineList ref as TMineList,ProtoMine ref as TProt
             MineList.Mine[Index].CollisionData.Position2.x = MineList.Mine[Index].ObjectData.Position.x + MineList.Mine[Index].ObjectData.Size.Width*0.5
         endif
     next i
+endfunction
+
+
+// S3: Schedule one attempt at a time. Both initialization and update use the
+// same pause-aware virtual timestamp already passed to GameInit and GameDo.
+function SimpleMineSpawnInit(Game ref as TGame,Now as integer)
+    Game.SimpleMineNextSpawnMs = Now + random(SIMPLE_MINE_MIN_SPAWN_MS,SIMPLE_MINE_MAX_SPAWN_MS)
+endfunction
+
+function SimpleMineSpawnDo(Game ref as TGame,Now as integer)
+    local CenterY as integer
+    local ActiveCount as integer
+    local SafeHalfHeight as integer
+
+    if Now >= Game.SimpleMineNextSpawnMs
+        // Always reschedule, even if capacity blocks the attempt; no backlog.
+        Game.SimpleMineNextSpawnMs = Now + random(SIMPLE_MINE_MIN_SPAWN_MS,SIMPLE_MINE_MAX_SPAWN_MS)
+
+        ActiveCount = MineCountAll(Game.SimpleMineList)
+        if ActiveCount + SIMPLE_MINE_FORMATION_COUNT <= SIMPLE_MINE_MAX_ACTIVE
+            // Account for the upper and lower diagonal members and sprite radius,
+            // with extra screen margin. Never place mines at the viewport edge.
+            SafeHalfHeight = ((SIMPLE_MINE_FORMATION_COUNT-1)*SIMPLE_MINE_FORMATION_SPACING_Y)/2 + 24
+            if Game.Screen.Height > SafeHalfHeight*2
+                CenterY = random(SafeHalfHeight,Game.Screen.Height-SafeHalfHeight)
+                SimpleMineFormationAdd(Game.SimpleMineList,Game.ProtoSimpleMine,Game.World,CenterY,SIMPLE_MINE_FORMATION_COUNT,SIMPLE_MINE_FORMATION_SPACING_X,SIMPLE_MINE_FORMATION_SPACING_Y,Now)
+            endif
+        endif
+    endif
 endfunction
 
 function SimpleMineMove(Mine ref as TMine,World ref as TWorld,Now as integer)
