@@ -1,6 +1,14 @@
-# Übergabe: Pre-Alpha abgeschlossen → Real-Alpha-Minen S3 abgenommen
+# Übergabe: Pre-Alpha abgeschlossen → Real-Alpha-Warnsystem S4
 
-## AKTUELL – S3 abgenommen, weitere Real-Alpha-Planung (18.11.2026)
+## S4 – wiederverwendbares Warnsystem implementiert, Entwickler-Tests offen (18.11.2026)
+
+**S4-Freigabe:** Top-Warnsystem mit eigener `warning.agc`, gemeinsamem `TWarning`-Zustand (Text, Priorität, Endzeit), fünf Funktionen für Erzeugen/Reset/Anfordern/Ablauf/Zeichnen. Das bereits übertragene Entwickler-Asset `source/sonec/media/gfx/effects/warning.png` (Commit `1a1295b`) wird als weißes Proto-Bild geladen und per Code rot eingefärbt. Hintergrund als separates **dunkles halbtransparentes 440×58-px-Sprite** (Alpha 180), rotes Dreieck, **roter fetter Text** der Größe 23, oben mittig. `GameDraw()` zeichnet es in genau dieser Reihenfolge über dem Spiel, vor `Swap()`.
+
+**Erste Warnquelle:** `MINEFIELD DETECTED` für **3000 ms**, nur im tatsächlich ausgeführten erfolgreichen Dreierformationsspawn, nicht bei Limitblockade. Virtuelle Spielzeit aus `GameDo` hält die Ablaufzeit während Pause an, `GameInit` setzt die Warnung zurück. Spätere Warntexte/Prioritäten technisch vorgesehen, keine Warteschlange, kein Avatar/Sound. **Kein echter Vorwarnzeitpunkt**, Warnung erscheint beim Erzeugen der Minen. Die S1–S3-Minenmechanik, 18–30-s-Spawnintervalle, sechs-Minen-Limit und Gefahrenbudgetplanung bleiben unverändert.
+
+**Nachweisstatus:** Commit und Quellcode statisch kontrollieren; **AGK-Studio-/Windows- und lokaler HTML5-Test durch Entwickler noch offen**. Insbesondere Warnbild laden, Balken-Transparenz, 3-s-Dauer, Schriftposition/Größe, Pause/Reset, keine Fehlalarme und keine Regression prüfen. Kein Assistenten-AGK-Lauf.
+
+## AKTUELL – S3 abgenommen, historische Planungsnotiz (18.11.2026)
 
 **S3-Abnahme nach Entwicklerbericht:** **12/12 Prüfpunkte bestätigt**, AGK Studio/Windows und lokales HTML5 erfolgreich. Erster Windows-Bericht enthielt 11/12 Punkte; anschließend wurde der zunächst ausstehende **HTML5-Erfolg gesondert nachgemeldet**. Keine Fehler oder weitere offene Prüfpunkte. Getesteter Entwicklungsstand laut Gespräch: `develop` `2ba518bd4a5f55dd12f0b4fd8df9ff39355661b5` (kein unabhängiger Nachweis des exportierten Build-SHA). **Kein eigener AGK-/Browser-Lauf durch den Assistenten.**
 

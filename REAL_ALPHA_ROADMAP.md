@@ -96,6 +96,12 @@ Drohnen schweben verlässlich auf der festgelegten Route, sind sichtbar und fair
 
 ## 5. Real Alpha – Kernfeature 3: Top-Warnungen / Avatar-Unterstützung
 
+### S4 – Warnsystem implementiert, Entwicklertest offen (18.11.2026)
+
+Zentraler Warnzustand `TWarning`, neue `warning.agc`, 440×58-px halbtransparenter Balken (Alpha 180), eingebundenes weißes Entwickler-Warnsymbol `warning.png` aus `/media/gfx/effects` per Code rot gefärbt, roter fetter Text (Größe 23). Overlay-Zeichnung in `GameDraw()` **vor `Swap()`**. Bei erfolgreichem Minenfeldspawn `MINEFIELD DETECTED` für **3000 ms**; kein Trigger bei voller Kapazität, kein Vorwarn-Timer. Ablauf und Neustart basieren auf vorhandener virtueller Spieluhr. Prioritäten und andere Texte sind vorbereitete Schnittstellen; weitere Ereignisse, Sounds und Avatar bewusst noch nicht umgesetzt. **Windows-/AGK- und HTML5-Laufzeittests ausstehend.**
+
+
+
 ### Spielidee
 
 Die angedachte Meldung **`MINEFIELD DETECTED` oben im laufenden Spiel** wird zu einem **kleinen wiederverwendbaren Hinweis-/Warnsystem** ausgebaut. Langfristig hilft der Avatar; sein tatsächlicher Darstellungs-/Audioanteil ist erst zu entwerfen. Keine Annahme, dass es bereits ein fertiges Hilfesystem gibt.

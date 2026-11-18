@@ -106,6 +106,7 @@ UseNewDefaultFonts(1)
 #include "orb.agc"
 #include "mine.agc"
 #include "simplemine.agc"
+#include "warning.agc"
 #include "explosion.agc"
 #include "world.agc"
 #include "gui.agc"

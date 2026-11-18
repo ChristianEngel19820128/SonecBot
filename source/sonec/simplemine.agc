@@ -99,6 +99,8 @@ function SimpleMineSpawnDo(Game ref as TGame,Now as integer)
             if Game.Screen.Height > SafeHalfHeight*2
                 CenterY = random(SafeHalfHeight,Game.Screen.Height-SafeHalfHeight)
                 SimpleMineFormationAdd(Game.SimpleMineList,Game.ProtoSimpleMine,Game.World,CenterY,SIMPLE_MINE_FORMATION_COUNT,SIMPLE_MINE_FORMATION_SPACING_X,SIMPLE_MINE_FORMATION_SPACING_Y,Now)
+                // Warn only for an actually spawned formation, never for a blocked attempt.
+                WarningShow(Game.Warning,"MINEFIELD DETECTED",1,3000,Now)
             endif
         endif
     endif

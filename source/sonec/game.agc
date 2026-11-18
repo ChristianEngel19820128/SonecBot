@@ -9,6 +9,7 @@ function GameCreate(Game ref as TGame,vx as integer,vy as integer)
 	Game.Screen.Height = vy
 	
 	GameProtoLoad(Game)
+	WarningCreate(Game.Warning,Game.Screen)
 	
 	SetJoystickIndex(Game)
 	
@@ -126,6 +127,7 @@ function GameInit(Game ref as TGame,Now as integer)
 	MineInit(Game.SimpleMineList)
 	// S3: first automatic spawn attempt occurs after 18-30 seconds of active game time.
 	SimpleMineSpawnInit(Game,Now)
+	WarningReset(Game.Warning)
 	WalkerInit(Game.WalkerList)
 	ExplosionInit(Game.ExplosionList)
 	FlashInit(Game.FlashList)
@@ -225,6 +227,7 @@ function GameDo(Game ref as TGame,Now as integer)
 	
 	// S3 simple formations run on the pause-aware virtual game clock.
 	SimpleMineSpawnDo(Game,Now)
+	WarningUpdate(Game.Warning,Now)
 	
 	if MineCountAll(Game.MineList) < 15
 		if random(0,10000) < 5
@@ -373,6 +376,8 @@ function GameDraw(Game ref as TGame)
 	CloudDrawAll(Game.CloudList,Game.ProtoCloud,1,1.75)
 
 	GuiEnergyDraw(Game.Gui,Game.Sonec,Game.Screen,GetMilliseconds())
+	// S4: top warning overlay draws above gameplay and before main.agc Swap().
+	WarningDraw(Game.Warning)
 	// F2 compares one platform and one visible skyscraper without affecting movement.
 	PlateDebugDrawAll(Game.PlateList,Game.TowerList)
 	if SHIELD_SHAPE_TEST = 1 and Device$ = "windows"

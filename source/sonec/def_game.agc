@@ -714,6 +714,18 @@ type TSound
 	ExplosionSound as integer
 endtype
 
+// S4: one shared top warning with future message priority support.
+type TWarning
+    Active as integer
+    Message as string
+    Priority as integer
+    UntilMs as integer
+    TextID as integer
+    BarSpriteID as integer
+    Icon as TProtoData
+    IconData as TSpriteData
+endtype
+
 type TGame
 	DebugText as integer[-1]
 	
@@ -772,6 +784,7 @@ type TGame
 	IsLost as integer
 	
 	Gui as TGui
+	Warning as TWarning
 	
 endtype
 
