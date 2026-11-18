@@ -76,8 +76,10 @@ UseNewDefaultFonts(1)
 
 #include "def_joypad.agc"
 #include "def_keys.agc"
+#include "def_input.agc"
 #include "def_game.agc"
 #include "controls.agc"
+#include "input.agc"
 #include "math.agc"
 #include "collision.agc"
 #include "color.agc"
@@ -122,6 +124,31 @@ SetTextBold(Pause,1)
 SetTextColor(Pause,0,255,255,222)
 SetTextPosition(Pause,vx/2,vy/2)
 SetTextSize(Pause,30)
+
+local PauseHintResume as integer
+PauseHintResume = CreateText("ENTER / START - RESUME")
+SetTextAlignment(PauseHintResume,1)
+SetTextColor(PauseHintResume,0,255,255,222)
+SetTextPosition(PauseHintResume,vx/2,vy/2+40)
+SetTextSize(PauseHintResume,16)
+
+local PauseHintBack as integer
+PauseHintBack = CreateText("BACKSPACE / SELECT - MAIN MENU")
+SetTextAlignment(PauseHintBack,1)
+SetTextColor(PauseHintBack,0,255,255,222)
+SetTextPosition(PauseHintBack,vx/2,vy/2+62)
+SetTextSize(PauseHintBack,16)
+
+// Prepared binding data now used by the six combat/energy and six movement actions.
+// Start/Pause and paused-only Back use actions; Hover remains unchanged.
+local Keys as TKeys
+InputSetDefaultBindings(Keys)
+KeyBindingsLoad(Keys)
+
+// Grouped gameplay preferences (separate from key bindings for step 7e).
+local Options as TGameOptions
+InputSetDefaultGameOptions(Options)
+GameOptionsLoad(Options)
 
 local Intro as TIntro
 local Game as TGame
@@ -214,27 +241,35 @@ repeat
 	endif
 
 	if Game.IsLost = TRUE
-		if IntroDo(Intro,Game.Sound,Game.JoystickIndex,CurrentNow) = TRUE
+		if IntroDo(Intro,Game.Sound,Keys,Options,Game.JoystickIndex,CurrentNow) = TRUE
 			GameInit(Game,CurrentNow)
 		endif
 		IntroDraw(Intro)
 	else
-		if GetJoyPressed(Game.JoystickIndex,joystickButtonStart) = 1
-			if Game.IsPause = FALSE
-				Game.IsPause = TRUE
-			else
-				Game.IsPause = FALSE
+		// Back works only while paused; Back takes priority over Start.
+		if Game.IsPause = TRUE and InputActionPressed(Keys,Game.JoystickIndex,ACTION_BACK) = 1
+			Game.IsLost = TRUE
+			Game.IsPause = FALSE
+		else
+			if InputActionPressed(Keys,Game.JoystickIndex,ACTION_START) = 1
+				if Game.IsPause = FALSE
+					Game.IsPause = TRUE
+				else
+					Game.IsPause = FALSE
+				endif
 			endif
-		endif
-		if Game.IsPause = FALSE
-			GameInput(Game,CurrentNow)
-			GameActionInput(Game,CurrentNow)
-			GameDo(Game,CurrentNow)		
-			GameAnimate(Game,CurrentNow)
-		endif		
-		GameDraw(Game)
-		if Game.IsPause = TRUE
-			Drawtext(Pause)
+			if Game.IsPause = FALSE
+				GameInput(Game,Keys,Options,CurrentNow)
+				GameActionInput(Game,Keys,CurrentNow)
+				GameDo(Game,CurrentNow)		
+				GameAnimate(Game,CurrentNow)
+			endif		
+			GameDraw(Game)
+			if Game.IsPause = TRUE
+				Drawtext(Pause)
+				Drawtext(PauseHintResume)
+				Drawtext(PauseHintBack)
+			endif
 		endif
 	endif	
 	

@@ -9,7 +9,7 @@
 - **Reference branch:** `main`
 - **Historical source:** `source/legacy/`
 - **Current handoff:** `HANDOFF.md`
-- **Current milestone:** Alpha-Walker complete and locally accepted; HTML5 pre-alpha deployment next.
+- **Current milestone:** HTML5 pre-alpha including Alpha-Walker and keyboard rebinding/restore defaults completed and developer-tested; updated itch.io Draft embed smoke test 12/12 reported passed (18 November 2026). Next: review documentation, obtain separate approval for a `develop` → `main` pre-alpha merge, then plan Real Alpha mine variants.
 
 SonecBot is an independently developed side-scrolling action game featuring platforming, weapons, energy management and enemy encounters.
 
@@ -170,7 +170,22 @@ Do not silently overwrite existing documentation or contradict established proje
 
 When new findings conflict with documentation, report the discrepancy instead of independently deciding which source is correct.
 
-**Chatwechsel / Kontextgrenzen:** Do not assume automatic chat/history/attachment transfer. Start by reading AGENTS.md and HANDOFF.md, then current PROJECT.md, TODO.md and TECHNICAL.md. Query the real develop HEAD and relevant source files again. HANDOFF.md is the canonical current transition; pinned older documents are history, not instructions to repeat completed work. The owner has explicitly closed the Alpha-Walker task after the final turret-recoil test. Preserve the accepted IK, pivots, artwork/prototypes, aim and recoil; the next task is HTML5 export/browser verification/deployment. Do not reopen Walker polishing without a specific owner request or demonstrated release blocker. Local developer tests, translated simulations, actual AGK compiles and actual browser tests must remain distinct.
+**Chatwechsel / Kontextgrenzen:** Do not assume automatic chat/history/attachment transfer. Start by reading AGENTS.md and HANDOFF.md, then current PROJECT.md, TODO.md and TECHNICAL.md. Query the real develop HEAD and relevant source files again. HANDOFF.md is the canonical current transition; pinned older documents are history, not instructions to repeat completed work. The owner has explicitly closed the Alpha-Walker task after the final turret-recoil test. Preserve the accepted IK, pivots, artwork/prototypes, aim and recoil; the HTML5 pre-alpha and keyboard Draft embed verification are completed according to developer reports (12/12 on 18 November 2026). The next gate is a separately approved pre-alpha merge to `main`, followed by Real Alpha mine planning (simple mines do not track Sonec and do not respond to energy attraction). Do not reopen Walker polishing without a specific owner request or demonstrated release blocker. Local developer tests, translated simulations, actual AGK compiles and actual browser tests must remain distinct.
+
+## Reusable interactive test-report format (SonecBot)
+
+For each small implementation or visual check, present an **interactive, optional/partially completable test checklist** in the chat after the code review. This project convention should survive chat changes:
+
+1. Title with the exact step (for example `Schritt 7b – Testprotokoll`) and a counter `x / n bestätigt`.
+2. One checkbox per specific observable test point, including AGK compile where appropriate; a checked box means **confirmed passed**, not merely attempted. Leave unverified points unchecked.
+3. One separate radio choice for overall result: **Noch nicht vollständig getestet**, **Bestanden**, **Auffälligkeiten / Fehler**. Never infer all checks passed solely from this choice, or rewrite a user-selected result.
+4. A **multiline optional free-text field** for observations, unexpected behavior, screenshots or reproducibility notes. Partial reports and failures are valid.
+5. Exactly one explicit **`Testergebnis senden`** button using the host's normal submit-new-turn action. Checking a box, switching the radio or typing must **never** submit automatically.
+6. Submit a compact report including step name, overall result, **Bestätigt** (checked), **Offen** (unchecked) and **Beobachtungen** (actual free text or `Keine Angaben`). Treat a box left unchecked as **not verified**, not automatically as a failure; explicitly distinguish additional design observations from proven defects.
+7. On receipt, evaluate **actual developer-reported compile/runtime evidence** separately from assistant static source review; if any point is open or a defect is reported, investigate the narrow issue before advancing. Do not claim a full pass or implement further gameplay changes without explicit approval.
+8. Use the current chat's supported interactive controls for the checklist, result selector, multiline input and explicit send action. If unavailable, offer the same structured fields as copyable text, without pretending there is a working button.
+
+This is a **response and test-reporting convention**, not a requirement to implement test forms inside the AGK game. Keep it compatible with current UI capabilities; avoid relying on hidden chat state or automatic memory.
 
 ## 10. Working principles
 

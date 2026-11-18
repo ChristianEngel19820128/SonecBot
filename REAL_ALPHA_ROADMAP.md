@@ -1,0 +1,165 @@
+# SonecBot – Real Alpha Roadmap
+
+**Stand:** 18. November 2026 (Pre-Alpha-Abgleich und Minenentscheidung)  
+**Status:** gemeinsam vereinbarte Entwicklungsrichtung; **Planung, keine Freigabe zur Implementierung einzelner Gameplay-Funktionen**  
+**Branch:** `develop`  
+**Verwandte Dokumente:** [HANDOFF.md](HANDOFF.md) · [TODO.md](TODO.md) · [PROJECT.md](PROJECT.md) · [TECHNICAL.md](TECHNICAL.md)  
+**Wichtig:** Die öffentlich sichtbare itch.io-Seite bleibt bis zu einer gesonderten Entscheidung im **Draft/Secret-URL-Modus**. Kein `main`-Merge oder Publish aufgrund dieses Dokuments.
+
+## 1. Zielbild und bewusst begrenzter Umfang
+
+SonecBot soll von einer spielbaren HTML5-Pre-Alpha zu einer **verständlich spielbaren Real Alpha** wachsen. Die drei gemeinsam **priorisierten und überschaubar gehaltenen Kernfeatures** sind:
+
+1. **Minenvarianten:** intelligente/verfolgende Minen bleiben einzeln; einfache Minen verfolgen Sonec **nicht** und reagieren **nicht** auf seine Energieanziehung (gemeinsam entschiedene Variante B). Sie sollen später in **Feldern/Rudeln** auftreten.
+2. **Drohnen:** neue, zunächst einfache Gegner, die **von links nach rechts schweben**.
+3. **Warn-/Avatar-Hilfesystem:** kurze, kontextbezogene Hinweise **oben im laufenden Spiel**, als Ausbau des bereits angedachten `MINEFIELD DETECTED`-Ansatzes.
+
+**Nicht gleichzeitig anfangen.** Die drei Features einzeln konkretisieren, schmal implementieren, lokal mit AGK Studio / HTML5 testen und ausdrücklich abnehmen. Entscheidend sind Lesbarkeit, Fairness, kontrollierbarer Schwierigkeitsanstieg und ein übersichtlicher Entwicklungsumfang – nicht möglichst viele neue Gegner.
+
+### Grundgedanke aus dem ersten Community-Feedback
+
+Erstes externes Feedback (17.11.2026): Grundidee und Animationen gefallen; Spieler meldet gelegentliches Durchfallen durch Plattformen, als sehr stark empfundene Beschleunigung, unklare linke Anzeigen, unverständliche plötzliche Todesfälle und scheinbar wirkungslose Rifle. **Dies sind Spielerbeobachtungen, keine automatisch bestätigten Bugs.**
+
+Gemeinsame Einordnung des Entwicklers:
+- **Schnelles Durchfallen** ist grundsätzlich als Spielmechanik geplant: „it's not a bug, it's a feature“. Dennoch **Fairness und erkennbare Ursache** prüfen; nicht ohne Abstimmung die Mechanik abschaffen.
+- **Beschleunigung:** physikalisches Verhalten und tatsächlichen Bewegungs-/Bremsweg prüfen, bei Bedarf später anhand messbarer Vergleichstests anpassen.
+- **HUD:** Erklärung der linken Anzeigen; vertikal gesetzter Text wäre bei Platzmangel möglich, rotierende/kontextuelle Hilfe ebenfalls.
+- **Tod/Schaden:** vor allem fehlendes akustisches Feedback bei Bullet-Treffern; Avatar soll helfen. Vorhandene Idee für eine **Top-Warnmeldung** im Spiel eignet sich als Einstieg. Ursache und Anzeige von Minen, Überladung, Schild, Schaden unterscheiden.
+- **Rifle:** rotes Treffer-Aufleuchten existiert bereits, kann aber zu wenig sein; Projektile und Kollisionsflächen prüfen. **Walker ist derzeit vor allem am Turm empfindlich**, Erweiterung der verwundbaren Zonen für später erwünscht; keine voreilige Behauptung, dass alle Projektile durchfliegen.
+- Diese Themen gehören überwiegend zur **Real Alpha**, nicht zum aktuell klein gehaltenen Keyboard-/Pre-Alpha-Patch.
+
+## 2. Pre-Alpha-/Keyboard-Patch abgeschlossen (Stand 18. November 2026)
+
+**Die frühere Vorbedingung ist erfüllt; die vorherigen offenen Keyboard-Aufträge in dieser Roadmap sind historisch und nicht erneut auszuführen.**
+
+- **Alpha-Walker** ist vom Entwickler abgenommen; keine weitere Walker-Politur ohne gesonderten Auftrag oder bestätigten Blocker.
+- **Keyboard-Patch Schritte 1–4** auf `develop` abgeschlossen: `CONTROLS > KEYBOARD` mit MOVEMENT/ACTIONS, Tastenerfassung, Persistenz, roter Doppelbelegungsanzeige und `RESTORE DEFAULTS` (RESET/CANCEL). Gamepad-Rebinding gehört ausdrücklich nicht zum abgeschlossenen Patch.
+- **Windows/AGK und lokales HTML5/Apache:** die vereinbarten Tests wurden laut Entwickler erfolgreich durchgeführt. Nach dem letzten optischen OPTIONS-Mini-Fix ist ein separater Windows-Nachtest nicht dokumentiert; der anschließende HTML5-/Apache-Test war **13/13 bestanden**.
+- **Aktualisierter itch.io-Draft-Embed:** Entwickler meldete am 18.11.2026 **12/12 Smoke-Testpunkte bestanden**, einschließlich Rebinding/Reset, persistierter Tastenbelegung nach Reload, Gamepad, Walker und Tod/Neustart. Dies ist ein **Entwicklerbericht**, kein unabhängiger Assistenten-Laufzeittest.
+- Neues Keyboard-Promobild, aktualisierte englische itch.io-Beschreibung und README wurden laut Übergabe bereits übernommen. **itch.io bleibt Draft / Secret URL**, nicht Published.
+- **Nächster Release-Gate:** Dokumentation auf `develop` abgleichen, danach die Pre-Alpha-Übernahme nach `main` anhand aktueller Branch-Differenzen prüfen und **nur mit gesonderter Merge-Freigabe** durchführen. Die Roadmap allein gibt weder Merge noch Publish frei.
+
+**Danach:** Real Alpha schrittweise beginnen. Kernfeature 1 sind die Minenvarianten; zunächst vorhandene intelligente Einzelminen schützen und die einfache Mine eindeutig spezifizieren. Entscheidungen zu Gruppenspawn, Anzahl, Abständen und Warnsystem folgen separat.
+
+## 3. Real Alpha – Kernfeature 1: Minefields und intelligente Minen
+
+### Spielidee
+
+Bisherige intelligente Minen weiterhin **einzeln** und mit vorhandener Bewegung/Annäherung an Sonec. Zusätzlich ein **einfacher Minentyp** für erkennbare **Minenfelder bzw. Rudel**. **Entschieden (Variante B):** Einfache Minen verfolgen Sonec nicht und reagieren auch nicht auf aktive Energieanziehung. Als erster Bewegungsentwurf driften sie unabhängig von Sonec nach links; genaue Bewegung und Gruppenregeln werden vor Implementierung separat freigegeben. So entstehen zwei deutlich unterscheidbare Gefahren: gezielte Bedrohung versus Raumkontrolle.
+
+### Entwurfsfragen vor Code
+
+- Eindeutige visuelle Unterscheidung der Minentypen (Form, Farbe, Bewegung).
+- Regel für Gruppengröße, Abstand, Spawnregion, Lebensdauer, maximale gleichzeitige Minenzahl und Performance.
+- Festgelegt: keine Sonec-Verfolgung und **keine Reaktion auf Energieanziehung** bei einfachen Minen. Vorgeschlagene Linksdrift und genaue Geschwindigkeit/Bewegung noch vor Code abstimmen; intelligente Minen behalten ihr jetziges Verhalten.
+- Spawn-Fairness: niemals unangekündigt direkt in Sonec oder an Stellen, aus denen man nicht ausweichen kann; Mindestabstände und Sichtbarkeit.
+- Zusammenhang mit der Warnung `MINEFIELD DETECTED`: Warnung früh genug, aber keine ständigen Spams.
+- Bestehende Minen/Explosions-Kettenreaktionen und Energieanziehung beachten; diese zieht bereits Minen an.
+- Bestehende frameabhängige Zufalls-Spawns sind **als Beobachtung dokumentiert**, nicht pauschal umzubauen; auf tatsächliche Dichte und Frame-Rate prüfen.
+
+### Akzeptanzkriterien (Entwurf)
+
+Intelligente Einzelminen verhalten sich wie bisher; einfache Minen verfolgen Sonec nicht und reagieren nicht auf Energieanziehung; Minenfelder sind sichtbar unterscheidbar, beherrschbar, nicht unfair bei Spawn/Bewegung und verursachen keine ungewollten Performance-/Kollisionseffekte. Gamepad, Waffen, Explosionsreaktionen und HTML5 bleiben funktional.
+
+## 4. Real Alpha – Kernfeature 2: Schwebende Drohnen
+
+### Spielidee
+
+Ein neuer, zunächst **einfacher fliegender Gegner**, der sich **von links nach rechts** durchs Bild beziehungsweise den sichtbaren Weltbereich bewegt. Nicht von Anfang an komplexe KI oder Angriffssysteme voraussetzen. Drohnen schaffen eine eigene vertikale Gefahr und nachvollziehbare Ziele für Waffen.
+
+### Entwurfsfragen vor Code
+
+- Höhe, Geschwindigkeit, Eintritt/Austritt, Sichtbarkeit, Maximalzahl, Spawnabstand und Rücksicht auf Kamera/Plattformen.
+- Kollisionshülle, Gesundheit, Trefferbereiche, Projektilreaktionen, Explosion und Sound.
+- Muss die erste Drohne angreifen oder reicht vorerst Überflug/Kontaktgefahr? **Noch offen**.
+- Trefferklarheit und Feedback: besonders MG/Rifle und Plasma; sichtbare Trefferwirkungen bestätigen.
+- Basisgrafik vorhanden? **Für Drohnen noch nicht bestätigt**, vor Artwork-Bau prüfen.
+
+### Akzeptanzkriterien (Entwurf)
+
+Drohnen schweben verlässlich auf der festgelegten Route, sind sichtbar und fair, Treffer/Schaden sind erkennbar, keine Kollisionseffekte auf Walker/Plattformen, stabile Windows-/HTML5-Läufe.
+
+## 5. Real Alpha – Kernfeature 3: Top-Warnungen / Avatar-Unterstützung
+
+### Spielidee
+
+Die angedachte Meldung **`MINEFIELD DETECTED` oben im laufenden Spiel** wird zu einem **kleinen wiederverwendbaren Hinweis-/Warnsystem** ausgebaut. Langfristig hilft der Avatar; sein tatsächlicher Darstellungs-/Audioanteil ist erst zu entwerfen. Keine Annahme, dass es bereits ein fertiges Hilfesystem gibt.
+
+### Vorschläge für Warnfälle (noch nicht endgültig)
+
+- `MINEFIELD DETECTED` – räumliche Gefahr, abgestimmt auf Minenfeldspawn.
+- `ENERGY OVERLOAD` – erklärt, dass Überladung gesundheitsschädlich sein kann.
+- `SHIELD DOWN` / `LOW ENERGY` – Schutz-/Energiereserven.
+- `CRITICAL DAMAGE` – gefährlicher Gesundheitsschaden.
+- Spätere Gegner: `BOMBER APPROACHING`, `MISSILE LOCK` erst, **wenn** diese Mechaniken existieren.
+
+### Gestaltung und Architektur
+
+- Kurzer Text **oben**, damit HUD links und Action-Fokus erhalten bleiben.
+- Priorität bei konkurrierenden Meldungen, Cooldown, Mindest-/Maximaldauer, keine Textüberflutung.
+- Unterschied zwischen Warnung, kurzer Anleitung und Todesursache. Nicht jeden Spielzustand als Alarm ausgeben.
+- Farbigkeit/Transparenz im bestehenden Cyan-/HUD-Stil testen, gute Lesbarkeit auf HTML5 und kleinen Screens.
+- Warnungen können später mit einfachen Sounds/Avatar kombiniert werden, aber **Sound und Instanzlogik** separat testen.
+- Gegebenenfalls Hilfetext-Definitionen später strukturiert/extern, z. B. JSON; aktuell nur Zukunftsidee und kein automatischer Umbau.
+
+### Akzeptanzkriterien (Entwurf)
+
+Warnungen erscheinen im richtigen Moment, bleiben ausreichend lang, stören weder Gameplay noch Menüsteuerung, erscheinen nicht ständig wiederholt und erklären mindestens eine zuvor unverständliche Gefahr; lokaler AGK-/HTML5-Test mit Entwicklerabnahme.
+
+## 6. Weitere Real-Alpha-Kandidaten – bewusst nachrangig
+
+Diese Ideen sind **nicht Bestandteil der drei vorrangigen Kernfeatures**. Nur später gezielt priorisieren:
+
+| Kandidat | Aktueller Stand | Besonderheit |
+|---|---|---|
+| **Bomber** | Vorversion der Grafiken laut Entwickler vorhanden | Hoher Überflug, mehrere Bomben in Salven; Warnzeit, Fallbahn, faire Ausweichmöglichkeit, Kamera |
+| **Flarakstellung** | Vorversion der Grafiken laut Entwickler vorhanden | Fährt aus dem Boden, feuert mehrere zielgesteuerte Raketen; komplexere Zustands-/Ziel-/Projektil-Logik |
+| **MG/Rifle-Trefferfeedback und Hitboxen** | Rotes Aufleuchten existiert, frühere Trefferchecks erfolgreich; neuer Spieler unsicher | Walker ist aktuell vor allem am **Turm** verletzbar; weitere empfindliche Bereiche prüfen, keine Trefferprobleme unbelegt behaupten |
+| **Bewegungsphysik und Fall-Fairness** | Community-Spieler meldet „Raketenbeschleunigung“ und Plattformdurchfall | Schnelles Durchfallen ist **bewusst vorgesehen**, aber auf Fairness/physikalische Plausibilität testen |
+| **Schaden-/Tod-Erklärung** | Spieler versteht Ursachen teilweise nicht | Bullet-Soundfeedback fehlt laut Entwickler, mögliche Warn-/Avatar-Anbindung, Overload und Tod durch Weltgrenze beachten |
+| **HUD-Beschriftung/Tutorial** | Linke Balken unverständlich für Erstspieler | Gesundheit/Schild, Energie/Overload, MG-/Granatenmunition; vertikaler Text möglich, kontextbezogene Hilfe bevorzugt ausprobieren |
+| **Kleines Missions-/Überlebensziel** | Reiner Vorschlag, nicht beschlossen | Orientierung geben ohne großes Missionssystem |
+| **Phasen-/Wellensteuerung** | Reiner Vorschlag, nicht beschlossen | Erst nach vorhandenen Gegnern; aktuelle Spawnlogik nicht beiläufig ersetzen |
+| **HTML5-Sound-Überlagerung** | Entwickler beobachtet Kratzen bei überlappenden SFX | Separater **Knowledge-Base-Kandidat**; Soundinstanzen, Summenpegel/Clipping und Absenkung laufender Instanzen **erst reproduzieren**, kein bestätigter Fix |
+
+### Reihenfolge innerhalb der Real Alpha
+
+- **Kernentwicklung:** (1) Minenvarianten, (2) Drohnen, (3) Warnsystem – Warnsystem darf konzeptionell parallel geplant werden, nicht ungeprüft in fremde Features eingreifen.
+- **Qualität/Verständlichkeit:** Kollisions-/Physik-Fairness, Treffer-/Todesfeedback, HUD/Anleitung passend zu Testerbefunden in kleinen Einzelprüfungen.
+- **Optional danach:** Bomber, Flarakstellung, einfache Ziele, Wellenlogik – nur wenn Umfang und Testaufwand vertretbar sind.
+
+Keine feste Deadline oder Release-Versprechen.
+
+## 7. itch.io-Plan für beide Spiele – Inhalt zunächst vorbereiten
+
+Die folgende **gemeinsame Inhaltsidee gilt für SonecBot und Columns**, aber Änderungen an beiden itch.io-Seiten bleiben manuell und nur nach Freigabe:
+
+- **COMING SOON** – kurze, realistische Vorschau auf tatsächlich geplante Features; klar von verfügbaren Features unterscheiden. Bei SonecBot ggf. drei Kernfeatures und später Bomber/Flarak **als Pläne**, nicht als bereits spielbar ausgeben.
+- **TIPS & TRICKS** – verständliche Bedienungs- und Spielhinweise, möglichst aus Nutzerfragen/Feedback: Schild/Energie/Overload, Gefahr durch Minen, Bewegung, Waffen/Verwundbarkeit; für Columns später entsprechend eigenständig ausarbeiten.
+- Englisches Markdown für itch.io vorbereiten, keine neuen Termine, keine unbestätigten technischen Behauptungen, keine automatische Umstellung auf Published.
+- **Pre-Alpha-Abschluss-Promobild mit Keyboard** für SonecBot erst **am Ende** des Keyboard-Patches, als eigener freigegebener Gestaltungsauftrag.
+
+## 8. Columns – nur projektübergreifende Übergabe, keine Änderungen im anderen Repo
+
+Der Entwickler hat folgende Arbeiten für **Columns** genannt:
+
+- **Columns 1.1 hat vorerst keine Priorität.**
+- **Eigenes TODO-Dokument** im Columns-Repository erstellen, **nur sofern dort noch keines existiert**; vorhandene TODO nicht überschreiben und zuerst die aktuelle Projektlage/Branch-Regeln prüfen.
+- `AGENTS.md` für Columns ist eine **Baustelle** und soll später gesondert überarbeitet werden.
+- **Zwei Theme-Tracks** für Columns sollen später entstehen (Kompositions-/Lizenz-/Format- und Looppunkte vorher besprechen).
+- itch.io-Seite später mit **COMING SOON** und **TIPS & TRICKS** verbessern, im gleichen Arbeitsgang wie SonecBot oder besser im separaten Columns-Chat. Inhalte/Releaseplan für Columns nicht aus SonecBot ableiten.
+
+**Repository nun verifiziert (17.11.2026):** Das Projekt heißt **Crystal Columns**, das GitHub-Repository ist **[`ChristianEngel19820128/Crystals`](https://github.com/ChristianEngel19820128/Crystals)** (nicht `/Columns`). Vorhandene `AGENTS.md` geprüft, `TODO.md` fehlte und wurde nach ausdrücklicher Zustimmung des Entwicklers auf `Crystals/main` **neu angelegt**: [`Crystals/TODO.md`](https://github.com/ChristianEngel19820128/Crystals/blob/main/TODO.md), Commit `935fde8`. Enthält die zurückgestellten Themen **1.1 ohne Priorität**, `AGENTS.md` verbessern, zwei Theme-Tracks und itch.io **COMING SOON/TIPS & TRICKS**. Keine Änderungen an Crystals-Quellcode, bestehenden Agent-Regeln oder itch.io. Die frühere Zugriffslücke betraf allein die Suche nach dem falschen Repositorynamen.
+
+## 9. Zusammenarbeit und Abnahme
+
+- In allen Folgeschritten zunächst `AGENTS.md` beachten: **read-only als Standard**, nur **eng vom Besitzer freigegebene** Änderungen.
+- `develop` ist der Arbeitsbranch; `main`, `source/legacy`, itch.io und das unabhängige AGK-Knowledge-Base-Repo bleiben ohne separate Freigabe unberührt.
+- Jede einzelne Änderung: GitHub-HEAD prüfen → genaue Quelllage verstehen → gewünschtes Verhalten vereinbaren → minimal ändern → statisch kontrollieren → Entwickler kompiliert/prüft Windows und HTML5 → Bericht auswerten → dokumentieren → erst dann nächster Schritt.
+- Prüfberichte präzise auseinanderhalten: **Spielerfeedback**, **Hypothese**, **Quellprüfung**, **lokaler AGK-Test** und **Browser-/itch.io-Test**.
+- Keine generelle automatische „Fehlerbereinigung“ und keine Balanceänderung nur aufgrund eines Kommentars.
+- Bei Chatwechsel: dieses Dokument und die frisch ergänzte Top-Sektion in `HANDOFF.md` sind die **aktuelle Richtung**. Ältere anderslautende offene Einträge sind Projektgeschichte.
+
+## 10. Aktueller Wiedereinstieg
+
+> **SonecBot auf `develop`: Alpha-Walker, Keyboard-Rebinding einschließlich Restore Defaults und der aktualisierte itch.io-Draft-Embed-Test (12/12 laut Entwickler am 18.11.2026) sind abgeschlossen. Jetzt zuerst die Dokumentation angleichen und die geprüfte Pre-Alpha-Übernahme nach `main` separat freigeben. Anschließend Real Alpha mit genau drei Kernfeatures: (1) intelligente Einzelminen plus einfache Minenfelder – einfache Minen verfolgen Sonec nicht und reagieren nicht auf Energieanziehung (Variante B), (2) von links nach rechts schwebende Drohnen, (3) Top-Warnungen und spätere Avatar-Unterstützung. Keine Codeänderung ohne eng umrissene Zustimmung; AGK-/HTML5-Laufzeittests durch den Entwickler. itch.io bleibt Draft / Secret URL, kein Publish ohne gesonderte Freigabe.**
