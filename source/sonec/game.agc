@@ -125,7 +125,7 @@ function GameInit(Game ref as TGame,Now as integer)
 	MineInit(Game.MineList)
 	MineInit(Game.SimpleMineList)
 	// S1 visual/gameplay probe: exactly one simple mine per game initialization.
-	SimpleMineAdd(Game.SimpleMineList,Game.ProtoSimpleMine,Game.World,floor(Game.World.Size.Height*0.5),Now)
+	SimpleMineAdd(Game.SimpleMineList,Game.ProtoSimpleMine,Game.World,floor(Game.Screen.Height*0.5),Now)
 	WalkerInit(Game.WalkerList)
 	ExplosionInit(Game.ExplosionList)
 	FlashInit(Game.FlashList)
