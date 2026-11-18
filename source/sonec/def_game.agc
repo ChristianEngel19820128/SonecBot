@@ -741,11 +741,13 @@ type TGame
 	ProtoPlasmaBlitz as TProtoPlasmaBlitz
 	ProtoOrb as TProtoOrb
 	ProtoMine as TProtoMine
+	ProtoSimpleMine as TProtoMine
 	ProtoExplosion as TProtoExplosion
 	
 	WalkerList as TWalkerList
 	OrbList as TOrbList
 	MineList as TMineList
+	SimpleMineList as TMineList
 	Shield as TShield
 	Inenergie as TInenergie
 	Sonec as TSonec

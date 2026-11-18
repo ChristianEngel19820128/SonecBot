@@ -1,13 +1,13 @@
 # SonecBot – Aktuelle Aufgaben und Meilensteine
 
-**Dokumentstatus:** Version 8.9 – Pre-Alpha abgeschlossen; Dokumentationsabgleich und Real-Alpha-Planung; itch.io-Embed 12/12 laut Entwickler  
+**Dokumentstatus:** Version 9.0 – Pre-Alpha-Merge PR #2 abgeschlossen; Real Alpha S1 implementiert, Runtime-Test offen  
 **Stand:** 18. November 2026  
 **Branch:** `develop`  
-**Aktuelles Ziel:** Getesteten Pre-Alpha-Keyboard-Stand dokumentarisch abschließen, den Merge von `develop` nach `main` **separat prüfen und freigeben**, danach die drei Real-Alpha-Kernfeatures einzeln angehen; zuerst Minenvarianten. itch.io bleibt **Draft / Secret URL**; kein Publish, keine Deadline.
+**Aktuelles Ziel:** PR #2 hat den Pre-Alpha-Keyboard-Stand nach `main` gemergt; Real Alpha auf `develop` beginnt mit **S1: einfache Einzelmine**. Entwickler-Windows-/HTML5-Test für S1 noch offen. Danach Formation B getrennt planen; Rudel A später. itch.io bleibt **Draft / Secret URL**, kein Publish, keine Deadline.
 
 > Bei Chatwechsel zuerst [HANDOFF.md](HANDOFF.md) und den echten `develop`-HEAD lesen. Historische Arbeits- und Testdetails stehen in [TECHNICAL.md](TECHNICAL.md), in [dieser ausführlichen TODO-Version vor der Konsolidierung](https://github.com/ChristianEngel19820128/SonecBot/blob/b1d7da8f4bad6255e612948e833a39ab60a48243/TODO.md) und in Git. Datierte ältere „offen“-Einträge bezeichnen frühere Zwischenstände, **nicht** die heutige Aufgabenpriorität.
 
-**Aktueller Arbeitswunsch (18.11.2026):** Dokumentation konsolidieren; danach die Pre-Alpha-Übernahme nach `main` mit aktuellem Diff gesondert freigeben. Anschließend Real Alpha, beginnend mit der engen Spezifikation einfacher Minen (Variante B: **keine Sonec-Verfolgung und keine Energieanziehungsreaktion**). Kein Gameplay-Code ohne neue Zustimmung. Ältere Schrittaufträge unten sind historische Testchronik.
+**Aktueller Arbeitswunsch (18.11.2026):** **S1 implementiert – lokaler AGK-/HTML5-Test durch Entwickler ausstehend.** Eine weiße 11×11-Pixel-Testmine pro Start, separate MineList und Proto, Linksdrift ohne Tracking/Energieanziehungsreaktion. Keine Formationen oder Automatikspawns; zunächst S1 abnehmen. Ältere Schrittaufträge unten sind historische Testchronik.
 
 **ITCH.IO-DRAFT-DEPLOYMENT ABGESCHLOSSEN (Entwicklerbericht):** aktualisierte HTML5-Version auf itch.io mit Keyboard-Support, überarbeitetem englischem Beschreibungstext und neuem Cover; **12/12 echte Embed-Smoke-Tests bestanden**, keinerlei offene Punkte/Beobachtungen. Bestätigt: Start, Menüs flackerfrei, Keyboard Bewegung/Waffen, Rebinding/Duplikate/Reset, gespeicherte Belegungen nach Browser-Reload, Gamepad, Schild/Energie/Pause, Alpha-Walker, Tod und Neustart. **Draft / Secret URL bleibt unveröffentlicht**, Link wird vom Entwickler an Tester erneut verteilt. **Nächster vereinbarter Block:** Dokumentationsabgleich, separate Merge-Entscheidung und danach Minenplanung; Spielerfeedback wird in einem anderen Chat bearbeitet.
 

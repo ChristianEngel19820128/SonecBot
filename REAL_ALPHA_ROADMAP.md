@@ -43,6 +43,9 @@ Gemeinsame Einordnung des Entwicklers:
 
 ## 3. Real Alpha – Kernfeature 1: Minefields und intelligente Minen
 
+**S1 – schmaler Implementierungsstand (18.11.2026):** einfache weiße, gezackte 11×11-Mine mit separater Liste/Proto und Linksdrift; nur eine Testmine pro `GameInit`, ohne Sonec-Verfolgung und ohne Energieanziehungsreaktion. Statische Quellprüfung, **AGK-/HTML5-Entwicklertest noch offen**. Vorhandene Minen bleiben separat. **Formation B zuerst**, unregelmäßiges **Rudel A später als Anordnungsvariation** desselben einfachen Minentyps. Gruppenspawns, Warnungen und Balancing nicht Teil S1.
+
+
 ### Spielidee
 
 Bisherige intelligente Minen weiterhin **einzeln** und mit vorhandener Bewegung/Annäherung an Sonec. Zusätzlich ein **einfacher Minentyp** für erkennbare **Minenfelder bzw. Rudel**. **Entschieden (Variante B):** Einfache Minen verfolgen Sonec nicht und reagieren auch nicht auf aktive Energieanziehung. Als erster Bewegungsentwurf driften sie unabhängig von Sonec nach links; genaue Bewegung und Gruppenregeln werden vor Implementierung separat freigegeben. So entstehen zwei deutlich unterscheidbare Gefahren: gezielte Bedrohung versus Raumkontrolle.
