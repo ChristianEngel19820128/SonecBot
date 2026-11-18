@@ -1,6 +1,14 @@
-# Übergabe: Pre-Alpha abgeschlossen → Real-Alpha-Warnsystem S4 und Spawn-Y-Fix
+# Übergabe: Pre-Alpha abgeschlossen → Real Alpha Drohne D1
 
-## AKTUELL – S4 getestet; vertikale Minenfeld-Spawnhöhe korrigiert, Nachtest offen (18.11.2026)
+## AKTUELL – Drohne D1 implementiert, Entwicklertest offen (18.11.2026)
+
+**Freigabe D1:** Genau **eine** unbewaffnete, dauerhafte Testdrohne ab `GameInit`, mit drei identisch dimensionierten Entwicklerbildern (46×30 px) `drone_left.png`, `drone_center.png`, `drone_right.png` in `source/sonec/media/gfx/enemies/drone/`. Farbige Bilddaten werden im Normalzustand unverändert (weiße Code-Einfärbung) gerendert. `drone.agc` lädt die drei Ansichten, verwaltet Bewegung und zeichnet die jeweilige Ansicht. `TDrone`/`TProtoDrone` getrennt im Spielzustand, **keine Waffen, Treffer, zusätzliche Drohnen oder Spawns**.
+
+**Testbewegung:** Horizontal in Welt-X von **60 px bis Screen.Width–60 px**, mit ca. **0,10 px pro ms**, initial nach links; am Rand **200 ms Mittelansicht und Halt** vor Umkehr. Konstante Welt-Y-Höhe (anfangs sichtbare Bildschirmmitte), per **80 px Abstand zu oberer und unterer Weltgrenze** begrenzt. Die Kamera bewegt sich vertikal unabhängig, sodass die Drohne bei Höhenwechsel aus dem Bild kommen kann; sie selbst bleibt persistent. Pausen nutzen die virtuelle `CurrentNow` und `GameDo` läuft nur im aktiven Spiel. Reset bei neuem `GameInit`. Eine spätere kleine Y-Bewegung pro Wende ist ausdrücklich als *Idee*, nicht als Umsetzung vorgemerkt; ebenso richtungsabhängige Schusswaffe und gemeinsames Gefahrenbudget.
+
+**Vorheriger S4-/Minenstatus:** Warnung in AGK/Windows und HTML5 vom Entwickler getestet; korrigierte Minen-Y-Verteilung vom Entwickler positiv beobachtet, Weltrand-Einhaltung über längere Zeit nicht vollständig beobachtet, derzeit akzeptiert. S1–S3 abgenommen. **D1: nur statische Prüfung, AGK-Compile sowie Windows-/HTML5-Laufzeittests offen.** Besondere Tests: alle 3 PNGs laden, Sprite-Positionsstabilität beim Wechsel, Patrouille 60 px, Mittelbild/Halt an beiden Enden, konstante Y-Höhe bei Kamera-Scroll, Pause/Reset, keine Änderung der bisherigen Gegner und Warnungen.
+
+## S4 / Minen-Y-Fix – historischer Zwischenstand (18.11.2026)
 
 **Entwicklerbericht S4:** Nach der AGK-Compilerkorrektur des reservierten Bezeichners `Message` zu `MessageString` (Commit `cc44f54`) wurden lokale Windows-/AGK- und HTML5-Version erneut kompiliert/getestet. **Warnmeldung auf beiden Plattformen sichtbar und funktional laut Entwickler.** Ein Screenshot belegt die Anzeige von dunklem transparentem Balken, rotem Warndreieck und fettem rotem `MINEFIELD DETECTED`. Nicht alle Einzelkriterien (3-s-Ablauf, Pausenrestzeit, Limit-Fehlalarme) wurden separat berichtet; daher nicht pauschal `11/11` behaupten. Kein eigener Assistenten-Lauf.
 

@@ -89,6 +89,9 @@ function GameProtoLoad(Game ref as TGame)
 	File.Name = "protosimplemine.json"
 	ProtoMineLoad(Game.ProtoSimpleMine,File)
 	
+	// D1: three equally sized 46x30 px drone views, stored as colored art.
+	DroneProtoLoad(Game.ProtoDrone)
+	
 	File.Name = "protowalker.json"
 	ProtoWalkerLoad(Game.ProtoWalker,File)
 	
@@ -127,6 +130,7 @@ function GameInit(Game ref as TGame,Now as integer)
 	MineInit(Game.SimpleMineList)
 	// S3: first automatic spawn attempt occurs after 18-30 seconds of active game time.
 	SimpleMineSpawnInit(Game,Now)
+	DroneInit(Game.Drone,Game.Screen,Game.World,Now)
 	WarningReset(Game.Warning)
 	WalkerInit(Game.WalkerList)
 	ExplosionInit(Game.ExplosionList)
@@ -227,6 +231,7 @@ function GameDo(Game ref as TGame,Now as integer)
 	
 	// S3 simple formations run on the pause-aware virtual game clock.
 	SimpleMineSpawnDo(Game,Now)
+	DroneMove(Game.Drone,Game.Screen,Now)
 	WarningUpdate(Game.Warning,Now)
 	
 	if MineCountAll(Game.MineList) < 15
@@ -355,6 +360,7 @@ function GameDraw(Game ref as TGame)
 	OrbDrawAll(Game.OrbList,Game.ProtoOrb)
 	MineDrawAll(Game.MineList,Game.ProtoMine)
 	MineDrawAll(Game.SimpleMineList,Game.ProtoSimpleMine)
+	DroneDraw(Game.Drone,Game.ProtoDrone,Game.World)
 	WalkerDrawAll(Game.WalkerList,Game.ProtoWalker,Game.World)
 	
 	InenergieDraw(Game.Inenergie,Game.ProtoInenergie)

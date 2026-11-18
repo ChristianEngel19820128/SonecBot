@@ -726,6 +726,23 @@ type TWarning
     IconData as TSpriteData
 endtype
 
+// D1: one persistent unarmed hover drone; no collisions or attack logic yet.
+type TProtoDrone
+    Left as TProtoData
+    Center as TProtoData
+    Right as TProtoData
+endtype
+
+type TDrone
+    Enabled as integer
+    Direction as integer
+    IsTurning as integer
+    TurnUntilMs as integer
+    LastMoveMs as integer
+    Position as TPosition
+    SpriteData as TSpriteData
+endtype
+
 type TGame
 	DebugText as integer[-1]
 	
@@ -754,6 +771,7 @@ type TGame
 	ProtoOrb as TProtoOrb
 	ProtoMine as TProtoMine
 	ProtoSimpleMine as TProtoMine
+	ProtoDrone as TProtoDrone
 	ProtoExplosion as TProtoExplosion
 	
 	WalkerList as TWalkerList
@@ -761,6 +779,7 @@ type TGame
 	MineList as TMineList
 	SimpleMineList as TMineList
 	SimpleMineNextSpawnMs as integer
+	Drone as TDrone
 	Shield as TShield
 	Inenergie as TInenergie
 	Sonec as TSonec

@@ -78,6 +78,12 @@ Intelligente Einzelminen verhalten sich wie bisher; einfache Minen verfolgen Son
 
 ## 4. Real Alpha – Kernfeature 2: Schwebende Drohnen
 
+### D1 – erste unbewaffnete Patrouillendrohne (Implementierung, Entwicklertest offen)
+
+Drei vom Entwickler gezeichnete farbige 46×30-px-Ansichten: links, Mitte und rechts. Ein neues `drone.agc` lädt diese Sprites. Genau **eine** unbewaffnete Drohne pro `GameInit`, zunächst dauerhaft und ohne Kollision/Schaden. Start im sichtbaren Y-Bereich, feste Welt-Y-Höhe mit 80-px-Abstand zur oberen/unteren Weltgrenze. Horizontal zwischen X=60 und X=Bildschirmbreite–60, Testgeschwindigkeit ca. 0,10 px/ms. Je Umkehr 200 ms Stillstand und Mittelansicht, dann entgegengesetzte Flugansicht. Pause nutzt vorhandene virtuelle Uhr, Neustart setzt den Zustand zurück. **Spätere optionale Variante:** kleiner vertikaler Schritt pro Richtungswechsel; noch nicht umgesetzt. Bewaffnung in Flugrichtung erst nach D1-Abnahme, keine weiteren Drohnen, kein automatischer Spawn, kein Gefahrenbudget.
+
+
+
 ### Spielidee
 
 Ein neuer, zunächst **einfacher fliegender Gegner**, der sich **von links nach rechts** durchs Bild beziehungsweise den sichtbaren Weltbereich bewegt. Nicht von Anfang an komplexe KI oder Angriffssysteme voraussetzen. Drohnen schaffen eine eigene vertikale Gefahr und nachvollziehbare Ziele für Waffen.

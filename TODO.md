@@ -1,13 +1,13 @@
 # SonecBot – Aktuelle Aufgaben und Meilensteine
 
-**Dokumentstatus:** Version 9.5 – S4-Warnmeldung unter Windows/HTML5 bestätigt; vertikale Minen-Spawnhöhe korrigiert, Nachtest offen  
+**Dokumentstatus:** Version 9.6 – S1–S4 funktional bestätigt; Drohnenprototyp D1 implementiert, AGK-/HTML5-Test offen  
 **Stand:** 18. November 2026  
 **Branch:** `develop`  
-**Aktuelles Ziel:** S1–S3 vollständig abgenommen; S4-Warnmeldung nach Compilerfix laut Entwickler unter Windows und HTML5 sichtbar/funktional, aber nicht jede Detailprüfung einzeln protokolliert. **Korrektur Y-Spawnhöhe:** einfache Minenfelder nutzen jetzt die gesamte `Game.World.Size.Height` mit 50 px Weltrand-Marge für die äußeren Minen. **Windows-/HTML5-Nachtest offen.** Keine Änderungen am Gefahrenbudget. itch.io bleibt **Draft / Secret URL**.
+**Aktuelles Ziel:** S1–S3 vollständig abgenommen; S4-Warnmeldung in Windows/HTML5 vom Entwickler bestätigt. Minen-Spawn-Y verteilt sich laut Beobachtung über die gesamte Welt, langfristige Grenzbeobachtung offen und derzeit akzeptiert. **Drohne D1 implementiert, Entwickler-Test offen:** eine permanente unbewaffnete Drohne, 3 Ansichten, konstante Welt-Y-Höhe und horizontale 60-px-Patrouillenränder. Gefahrenbudget und Bewaffnung bleiben Zukunftskonzepte. itch.io bleibt **Draft / Secret URL**.
 
 > Bei Chatwechsel zuerst [HANDOFF.md](HANDOFF.md) und den echten `develop`-HEAD lesen. Historische Arbeits- und Testdetails stehen in [TECHNICAL.md](TECHNICAL.md), in [dieser ausführlichen TODO-Version vor der Konsolidierung](https://github.com/ChristianEngel19820128/SonecBot/blob/b1d7da8f4bad6255e612948e833a39ab60a48243/TODO.md) und in Git. Datierte ältere „offen“-Einträge bezeichnen frühere Zwischenstände, **nicht** die heutige Aufgabenpriorität.
 
-**Aktueller Arbeitswunsch (18.11.2026):** S4 nach Compilerfix in AGK/Windows und HTML5 mit sichtbarer Warnmeldung vom Entwickler bestätigt. Anschließend Beobachtung: Minenfelder verteilten sich nur im 450-px-Screen-Bereich statt über die ca. 1280 px hohe Welt. **Enger Spawn-Y-Fix in `simplemine.agc`; Nachtest offen**. Weltmarge 50 px zuzüglich Formationsversatz/halber Spritehöhe. Ältere Schrittaufträge unten sind historische Testchronik.
+**Aktueller Arbeitswunsch (18.11.2026):** **D1 – unbewaffnete Einzeldrohne** auf `develop` implementiert, Entwickler-Compile/Windows/HTML5 offen. Drei 46×30-px-Sprites (links/mitte/rechts), 60-px-X-Grenzen, 80-px-Y-Weltrand, konstante Höhe und 200-ms-Wendebild. Später Y-Variation an Wendepunkten separat prüfen. Ältere Schrittaufträge unten sind historische Testchronik.
 
 **ITCH.IO-DRAFT-DEPLOYMENT ABGESCHLOSSEN (Entwicklerbericht):** aktualisierte HTML5-Version auf itch.io mit Keyboard-Support, überarbeitetem englischem Beschreibungstext und neuem Cover; **12/12 echte Embed-Smoke-Tests bestanden**, keinerlei offene Punkte/Beobachtungen. Bestätigt: Start, Menüs flackerfrei, Keyboard Bewegung/Waffen, Rebinding/Duplikate/Reset, gespeicherte Belegungen nach Browser-Reload, Gamepad, Schild/Energie/Pause, Alpha-Walker, Tod und Neustart. **Draft / Secret URL bleibt unveröffentlicht**, Link wird vom Entwickler an Tester erneut verteilt. **Nächster vereinbarter Block:** Dokumentationsabgleich, separate Merge-Entscheidung und danach Minenplanung; Spielerfeedback wird in einem anderen Chat bearbeitet.
 
