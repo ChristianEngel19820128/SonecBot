@@ -1,6 +1,6 @@
 # SonecBot – Aktuelle Aufgaben und Meilensteine
 
-**Dokumentstatus:** Version 8.7 – Vier Schritte Keyboard-Patch abgeschlossen; Schritt 4 HTML5 13/13 bestanden  
+**Dokumentstatus:** Version 8.8 – Keyboard-Patch und itch.io-Draft-Deployment abgeschlossen; Embed 12/12 bestanden  
 **Stand:** 16. November 2026  
 **Branch:** `develop`  
 **Aktuelles Ziel:** Funktionierende HTML5-Pre-Alpha auf itch.io im **Draft per Secret URL** für eingeladene Community-Tester bereitstellen, Feedback sammeln. **Nicht auf Published umstellen**; den einmaligen öffentlichen Index-Push für einen späteren, noch nicht beschlossenen Release bewahren. Keine Deadline.
@@ -8,6 +8,8 @@
 > Bei Chatwechsel zuerst [HANDOFF.md](HANDOFF.md) und den echten `develop`-HEAD lesen. Historische Arbeits- und Testdetails stehen in [TECHNICAL.md](TECHNICAL.md), in [dieser ausführlichen TODO-Version vor der Konsolidierung](https://github.com/ChristianEngel19820128/SonecBot/blob/b1d7da8f4bad6255e612948e833a39ab60a48243/TODO.md) und in Git. Datierte ältere „offen“-Einträge bezeichnen frühere Zwischenstände, **nicht** die heutige Aufgabenpriorität.
 
 **Aktueller Arbeitswunsch:** **Keyboard-Pre-Alpha-Patch noch in diesem Chat fortsetzen**, konkret `OPTIONS > CONTROLS > KEYBOARD`; genaue Erfassungs-/Konflikt-/Reset-Regeln vor Codefreigabe klären. Tastatur-Promobild erst am Ende. Das frühere Problem beim Auffinden von Columns war ausschließlich der falsche angenommene Repo-Name; richtig ist `Crystals` und die eigenständige TODO wurde bereits angelegt.
+
+**ITCH.IO-DRAFT-DEPLOYMENT ABGESCHLOSSEN (Entwicklerbericht):** aktualisierte HTML5-Version auf itch.io mit Keyboard-Support, überarbeitetem englischem Beschreibungstext und neuem Cover; **12/12 echte Embed-Smoke-Tests bestanden**, keinerlei offene Punkte/Beobachtungen. Bestätigt: Start, Menüs flackerfrei, Keyboard Bewegung/Waffen, Rebinding/Duplikate/Reset, gespeicherte Belegungen nach Browser-Reload, Gamepad, Schild/Energie/Pause, Alpha-Walker, Tod und Neustart. **Draft / Secret URL bleibt unveröffentlicht**, Link wird vom Entwickler an Tester erneut verteilt. **Nächster Arbeitsblock nach Feierabend:** Testerfeedback und Real-Alpha-Roadmap, keine weitere Implementierung heute.
 
 **KEYBOARD-PATCH ABSCHLUSS (Schritte 1–4, Entwicklertests):** Schritt 1 Tabellen und Navigation 12/12; Schritt 2 Capture/Persistenz Windows 10/10, HTML5 12/12; Schritt 3 rote Doppelbelegungen + feste Menünavigation Windows-Korrekturtest 8/8, HTML5 11/11; Schritt 4 RESTORE DEFAULTS Windows vor Mini-Fix 12/12 und **finaler HTML5-/Apache-Test nach OPTIONS-Einstiegsflackerfix 13/13 bestanden**, keine offenen Punkte/Beobachtungen. HTML5 bestätigt flackerfreien OPTIONS-Einstieg, vier CONTROLS-Einträge, CANCEL/RESET/Abbruch, Wiederherstellung aller 15 Keyboard-Defaults, Konfliktauflösung, Persistenz nach Browser-Reload, erneute Capture- und rote Konfliktanzeige sowie Menü-/Gamepad-/Hover-Regression. Ein separater Windows-Test nach dem letzten optischen Mini-Fix ist nicht gemeldet. **Vierteiliges Keyboard-Feature auf develop abgenommen.** Nächste einzelne Entscheidung: getesteten HTML5-Build manuell im bestehenden itch.io-Draft integrieren und im Embed testen (noch offen); Draft nicht veröffentlichen. Gamepad-Rebinding später separat.
 
