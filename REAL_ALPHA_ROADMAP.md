@@ -6,6 +6,18 @@
 **Verwandte Dokumente:** [HANDOFF.md](HANDOFF.md) · [TODO.md](TODO.md) · [PROJECT.md](PROJECT.md) · [TECHNICAL.md](TECHNICAL.md)  
 **Wichtig:** Die öffentlich sichtbare itch.io-Seite bleibt bis zu einer gesonderten Entscheidung im **Draft/Secret-URL-Modus**. Kein `main`-Merge oder Publish aufgrund dieses Dokuments.
 
+## Verbindliche technische Alpha-Release-Gates (Entscheidung 19.11.2026)
+
+### M1 – Einheitliches Bewegungsmodell
+
+Die Bewegung kontinuierlich bewegter Objekte soll vor der Real Alpha auf einer einheitlichen, **pausierbaren zeitbasierten Berechnung** beruhen. Kandidat **Modus B (Delta-Time pro aktivem Update)** wird bevorzugt; Modus A (10-ms-Timer mit `CalcRange`) bleibt für reproduzierbare Vergleiche erhalten, bis die Migration getestet ist. Im aktuellen Quellcode unterscheiden sich Hochhausbewegung (B), Plattformen/Walker (A) und Drohne (B). `F5` vergleicht Hochhäuser, `F6` Plattformen mit Walker-Regression; `F4` testet davon unabhängig Render-Pixel-Snap. VSync/FPS-Limiter ebenfalls separat. Nicht blind den Walker umstellen: IK, Fußkontakte, Kollision und Schusszeitpunkte regressionsprüfen. Eine **Optionsmenü-Umschaltung ist noch nicht beschlossen**; nur bei belegbarem Nutzen, grafische Glättung/Snap separat bewerten. Beobachtung: Drohne bei 55–60 FPS im HTML5-Browser leicht ruckelig, Ursache offen.
+
+### K1 – Zuverlässige Gewehrprojektil-Treffer (hohe Priorität vor weiterer Drohnenbewaffnung)
+
+Entwickler beobachtet, dass Maschinengewehrkugeln vor allem kleine einfache Minen kaum treffen; zusätzlich passt älteres Spielerfeedback zu durchfliegenden Bullets. **Wahrgenommenes Problem bestätigt, konkrete Ursache noch zu isolieren.** Aus `bullet.agc`: Geschossgeschwindigkeit ca. 3 px/ms; `BulletMove()` bewegt pro fälligem Timer anhand der Zeitspanne; `BulletCollideMine()` testet anschließend **nur aktuelle Kugelposition** gegen Mine. Bei ca. 55–60 FPS sind etwa 50–55 px pro Frame rechnerisch möglich, gegenüber nur 11×11 px einfacher Mine. Plausible **Tunneling-Hypothese**, nicht als einziger Defekt bewiesen. Andere Bullet-Kollisionen nutzen momentane AABBs und benötigen ebenfalls Prüfung.
+
+**K1-Teststrategie:** Ein begrenzter erster Patch für von Spieler gefeuerten Bullet gegen **intelligente und einfache Minen** mittels *Swept Collision* (vorherige bis aktuelle Position + Dicke); frühesten gültigen Treffer identifizieren, keine unbeabsichtigten Mehrfachtreffer. Kein bloßes Vergrößern der Hitboxen, kein ungezielter Umbau sämtlicher Waffen. Mit AGK/Windows und lokalem HTML5 testen (55–60 FPS, zentrale und knappe Randtreffer, offensichtliche Fehlschüsse, zwei Minen hintereinander, beide Flugrichtungen) und danach Trefferpfade für Walker, Orb, Kiste und feindliche Bullets separat ausweiten. M1/K1 sind **verbindliche Release-Gates**, aber noch keine Freigabe für einen konkreten Quellcode-Patch; jede Umsetzung in kleinen getrennten Schritten.
+
 ## 1. Zielbild und bewusst begrenzter Umfang
 
 SonecBot soll von einer spielbaren HTML5-Pre-Alpha zu einer **verständlich spielbaren Real Alpha** wachsen. Die drei gemeinsam **priorisierten und überschaubar gehaltenen Kernfeatures** sind:
