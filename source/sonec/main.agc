@@ -202,33 +202,32 @@ repeat
 		// There is only one sample while paused; -1 means no paired read.
 		MotionDebugClockReadGapMs = -1
 	endif
-	// T compares drone A/B on Windows and HTML5 (browser F-keys are reserved).
-  if Game.IsLost = FALSE and GetKeyPressed(KEY_T) = 1
-      if DroneMotionUseGate = 0
-          DroneMotionUseGate = 1
-      else
-          DroneMotionUseGate = 0
-      endif
-  endif
-  // Windows diagnostics (also during pause): F1 Walker, F2 platforms.
-	// Only one topic is shown at a time to keep the virtual screen readable.
-	if Device$ = "windows" and Game.IsLost = FALSE
-		if GetKeyPressed(KEY_F1) = 1
+	// Debug keys 1-7 work in Windows and HTML5 (click the browser canvas first).
+	// 1 Walker, 2 platforms, 3 K1d outlines, 4 pixel snap,
+	// 5 tower A/B, 6 platform A/B, 7 drone A/B. 8-0 reserved.
+	if Game.IsLost = FALSE
+		if GetKeyPressed(KEY_7) = 1
+			if DroneMotionUseGate = 0
+				DroneMotionUseGate = 1
+			else
+				DroneMotionUseGate = 0
+			endif
+		endif
+		if GetKeyPressed(KEY_1) = 1
 			WalkerDebugToggle()
 			PlateDebugEnabled = 0
 			MotionRenderSnapEnabled = 0
 			TowerMotionEveryFrameEnabled = 1
 			PlateMotionEveryFrameEnabled = 0
 		endif
-		// F3 toggles only the K1d primitive outlines.
-		if GetKeyPressed(KEY_F3) = 1
+		if GetKeyPressed(KEY_3) = 1
 			if SonecCollisionDebugVisible = 0
 				SonecCollisionDebugVisible = 1
 			else
 				SonecCollisionDebugVisible = 0
 			endif
 		endif
-		if GetKeyPressed(KEY_F2) = 1
+		if GetKeyPressed(KEY_2) = 1
 			PlateDebugToggle()
 			WalkerDebugEnabled = 0
 			if PlateDebugEnabled = 0
@@ -237,24 +236,21 @@ repeat
 				PlateMotionEveryFrameEnabled = 0
 			endif
 		endif
-		// Only while F2 is visible: compare unchanged float drawing to a snapped copy.
-		if GetKeyPressed(KEY_F4) = 1 and PlateDebugEnabled = 1
+		if GetKeyPressed(KEY_4) = 1 and PlateDebugEnabled = 1
 			if MotionRenderSnapEnabled = 0
 				MotionRenderSnapEnabled = 1
 			else
 				MotionRenderSnapEnabled = 0
 			endif
 		endif
-		// F5 compares normal per-GameDo tower movement with the former 10-ms gate.
-		if GetKeyPressed(KEY_F5) = 1 and PlateDebugEnabled = 1
+		if GetKeyPressed(KEY_5) = 1 and PlateDebugEnabled = 1
 			if TowerMotionEveryFrameEnabled = 0
 				TowerMotionEveryFrameEnabled = 1
 			else
 				TowerMotionEveryFrameEnabled = 0
 			endif
 		endif
-		// F6: platform/chest/Walker regression test only; default stays gated.
-		if GetKeyPressed(KEY_F6) = 1 and PlateDebugEnabled = 1
+		if GetKeyPressed(KEY_6) = 1 and PlateDebugEnabled = 1
 			if PlateMotionEveryFrameEnabled = 0
 				PlateMotionEveryFrameEnabled = 1
 			else
