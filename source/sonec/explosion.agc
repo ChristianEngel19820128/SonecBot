@@ -109,6 +109,7 @@ function ExplosionNew(Explosion ref as TExplosion,ProtoExplosion ref as TProtoEx
 	Explosion.LastChestHitMs.Length = -1
 	Explosion.LastOrbHitMs.Length = -1
 	Explosion.LastMineHitMs.Length = -1
+	Explosion.LastSimpleMineHitMs.Length = -1
 	Explosion.LastWalkerHitMs.Length = -1
 	Explosion.MeasureChecks = 0
 	Explosion.MeasureHits = 0
@@ -345,11 +346,15 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function ExplosionCollideMine(ExplosionList ref as TExplosionList,MineList ref as TMineList)
-	
+// E1b: mine pools use independent per-explosion hit cooldowns.
+// IsSimpleMine = 0 for intelligent mines, 1 for simple mine formations.
+function ExplosionCollideMine(ExplosionList ref as TExplosionList,MineList ref as TMineList,IsSimpleMine as integer)
+
 	local i as integer
 	local k as integer
 	local Radius as float
+	local HitAllowed as integer
+	local HitNow as integer
 
 	for i = 0 to ExplosionList.Explosion.Length
 		if ExplosionList.Explosion[i].Enabled = TRUE
@@ -357,11 +362,26 @@ function ExplosionCollideMine(ExplosionList ref as TExplosionList,MineList ref a
 				if MineList.Mine[k].Enabled = TRUE
 					Radius = CalcRadius(ExplosionList.Explosion[i].ObjectData.Position,MineList.Mine[k].ObjectData.Position)
 					if Radius < ExplosionList.Explosion[i].ObjectData.Radius
-						if ExplosionList.Explosion[i].LastMineHitMs.Length < k
-							ExplosionList.Explosion[i].LastMineHitMs.Length = k
+						HitNow = GetMilliseconds()
+						HitAllowed = FALSE
+						if IsSimpleMine = 1
+							if ExplosionList.Explosion[i].LastSimpleMineHitMs.Length < k
+								ExplosionList.Explosion[i].LastSimpleMineHitMs.Length = k
+							endif
+							if EXPLOSION_TIMED_DAMAGE = 0 or ExplosionList.Explosion[i].LastSimpleMineHitMs[k] = 0 or HitNow-ExplosionList.Explosion[i].LastSimpleMineHitMs[k] >= EXPLOSION_DAMAGE_INTERVAL_MS
+								ExplosionList.Explosion[i].LastSimpleMineHitMs[k] = HitNow
+								HitAllowed = TRUE
+							endif
+						else
+							if ExplosionList.Explosion[i].LastMineHitMs.Length < k
+								ExplosionList.Explosion[i].LastMineHitMs.Length = k
+							endif
+							if EXPLOSION_TIMED_DAMAGE = 0 or ExplosionList.Explosion[i].LastMineHitMs[k] = 0 or HitNow-ExplosionList.Explosion[i].LastMineHitMs[k] >= EXPLOSION_DAMAGE_INTERVAL_MS
+								ExplosionList.Explosion[i].LastMineHitMs[k] = HitNow
+								HitAllowed = TRUE
+							endif
 						endif
-						if EXPLOSION_TIMED_DAMAGE = 0 or ExplosionList.Explosion[i].LastMineHitMs[k] = 0 or GetMilliseconds()-ExplosionList.Explosion[i].LastMineHitMs[k] >= EXPLOSION_DAMAGE_INTERVAL_MS
-							ExplosionList.Explosion[i].LastMineHitMs[k] = GetMilliseconds()
+						if HitAllowed = TRUE
 							ExplosionList.Explosion[i].MeasureMineHits = ExplosionList.Explosion[i].MeasureMineHits + 1
 							MineList.Mine[k].Health.State = MineList.Mine[k].Health.State - ExplosionList.Explosion[i].BulletData.Damage
 						endif
@@ -370,7 +390,7 @@ function ExplosionCollideMine(ExplosionList ref as TExplosionList,MineList ref a
 			next k
 		endif
 	next i
-	
+
 endfunction
 
 //----------------------------------------------------------------------

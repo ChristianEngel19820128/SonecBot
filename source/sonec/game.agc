@@ -264,8 +264,9 @@ function GameDo(Game ref as TGame,Now as integer)
 	ExplosionCollideSonec(Game.ExplosionList,Game.Sonec,Game.Shield,Now)
 	ExplosionCollideChest(Game.ExplosionList,Game.ChestList)
 	ExplosionCollideOrb(Game.ExplosionList,Game.OrbList)
-	ExplosionCollideMine(Game.ExplosionList,Game.MineList)
-	ExplosionCollideMine(Game.ExplosionList,Game.SimpleMineList)
+	// E1b: independent cooldowns for intelligent and simple mine pools.
+	ExplosionCollideMine(Game.ExplosionList,Game.MineList,0)
+	ExplosionCollideMine(Game.ExplosionList,Game.SimpleMineList,1)
 	ExplosionCollideWalkers(Game.ExplosionList,Game.WalkerList,Now)
 	
 	SonecEnergyRegenerate(Game.Sonec,Now)

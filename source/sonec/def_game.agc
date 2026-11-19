@@ -598,6 +598,8 @@ type TExplosion
 	LastChestHitMs as integer[-1]
 	LastOrbHitMs as integer[-1]
 	LastMineHitMs as integer[-1]
+	// E1b: simple mine pool uses independent indices and a separate cooldown.
+	LastSimpleMineHitMs as integer[-1]
 	LastWalkerHitMs as integer[-1]
 	MeasureStartMs as integer
 	MeasureChecks as integer
