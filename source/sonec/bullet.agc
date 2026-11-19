@@ -167,6 +167,8 @@ endfunction
 // K1d prototype: two simple body circles; diagnosis only, never changes damage.
 // Fractions are deliberately provisional until visually checked against the sprites.
 #constant SONEC_TWO_CIRCLE_TEST 1
+// Second duck circle sits 10 world pixels below the first.
+#constant SONEC_DUCK_SECOND_CIRCLE_Y 10
 global SonecTwoCircleChecks as integer
 global SonecTwoCircleBoth as integer
 global SonecTwoCircleOldOnly as integer
@@ -202,9 +204,10 @@ function BulletSweepHitsSonecTwoCircles(Bullet ref as TBullet,Sonec ref as TSone
     OffsetY = Sonec.ObjectData.Size.Height*0.18
     Hit = FALSE
     if Sonec.State.Stand = TRUE and Sonec.State.Duck = TRUE
-        // Provisional single centered circle for ducking, same sprite height.
+        // Provisional two circles for ducking: centered and 10 px lower.
         Radius = Sonec.ObjectData.Size.Width*0.32
         if BulletSweepHitsSonecCircle(Bullet,Sonec.ObjectData.Position.x,Sonec.ObjectData.Position.y,Radius) = TRUE then Hit = TRUE
+        if BulletSweepHitsSonecCircle(Bullet,Sonec.ObjectData.Position.x,Sonec.ObjectData.Position.y+SONEC_DUCK_SECOND_CIRCLE_Y,Radius) = TRUE then Hit = TRUE
     else
         if BulletSweepHitsSonecCircle(Bullet,Sonec.ObjectData.Position.x,Sonec.ObjectData.Position.y-OffsetY,Radius) = TRUE then Hit = TRUE
         if BulletSweepHitsSonecCircle(Bullet,Sonec.ObjectData.Position.x,Sonec.ObjectData.Position.y+OffsetY,Radius) = TRUE then Hit = TRUE

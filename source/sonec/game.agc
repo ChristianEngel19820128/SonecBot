@@ -393,6 +393,7 @@ function SonecCollisionDebugDraw(Sonec ref as TSonec,World ref as TWorld)
         OffsetY = Sonec.ObjectData.Size.Height*0.18
         if Sonec.State.Stand = TRUE and Sonec.State.Duck = TRUE
             SonecCollisionDebugCircle(Sonec.ObjectData.Position.x,Sonec.ObjectData.Position.y-World.Position.y,Sonec.ObjectData.Size.Width*0.32)
+            SonecCollisionDebugCircle(Sonec.ObjectData.Position.x,Sonec.ObjectData.Position.y-World.Position.y+SONEC_DUCK_SECOND_CIRCLE_Y,Sonec.ObjectData.Size.Width*0.32)
         else
             SonecCollisionDebugCircle(Sonec.ObjectData.Position.x,Sonec.ObjectData.Position.y-World.Position.y-OffsetY,Radius)
             SonecCollisionDebugCircle(Sonec.ObjectData.Position.x,Sonec.ObjectData.Position.y-World.Position.y+OffsetY,Radius)
