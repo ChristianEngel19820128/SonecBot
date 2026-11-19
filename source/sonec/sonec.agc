@@ -1056,6 +1056,15 @@ function SonecMove(Sonec ref as TSonec,World ref as TWorld,Screen as TSize,Now a
 			else
 				Sonec.ObjectData.MoveSpeed.x = Sonec.ObjectData.MoveSpeed.x + Sonec.ObjectData.MoveAcceleration.x * Sonec.ObjectData.MoveTimer.CalcRange
 			endif
+			// Limit powered ground running only; leave airborne thrust and recoil untouched.
+			if Sonec.State.Stand = TRUE
+				if Sonec.ObjectData.MoveSpeed.x > Sonec.ObjectData.MoveSpeedMax.x
+					Sonec.ObjectData.MoveSpeed.x = Sonec.ObjectData.MoveSpeedMax.x
+				endif
+				if Sonec.ObjectData.MoveSpeed.x < -Sonec.ObjectData.MoveSpeedMax.x
+					Sonec.ObjectData.MoveSpeed.x = -Sonec.ObjectData.MoveSpeedMax.x
+				endif
+			endif
 		else
 			if Sonec.State.Stand = TRUE
 				acc = 0.75
@@ -1065,8 +1074,14 @@ function SonecMove(Sonec ref as TSonec,World ref as TWorld,Screen as TSize,Now a
 			if abs(Sonec.ObjectData.MoveSpeed.x) > 0.25
 				if Sonec.ObjectData.MoveSpeed.x < 0
 					Sonec.ObjectData.MoveSpeed.x = Sonec.ObjectData.MoveSpeed.x + acc * Sonec.ObjectData.MoveAcceleration.x * Sonec.ObjectData.MoveTimer.CalcRange
-				else					
+					if Sonec.State.Stand = TRUE and Sonec.ObjectData.MoveSpeed.x > 0
+						Sonec.ObjectData.MoveSpeed.x = 0
+					endif
+				else
 					Sonec.ObjectData.MoveSpeed.x = Sonec.ObjectData.MoveSpeed.x - acc * Sonec.ObjectData.MoveAcceleration.x * Sonec.ObjectData.MoveTimer.CalcRange
+					if Sonec.State.Stand = TRUE and Sonec.ObjectData.MoveSpeed.x < 0
+						Sonec.ObjectData.MoveSpeed.x = 0
+					endif
 				endif
 			else
 				Sonec.ObjectData.MoveSpeed.x = 0
