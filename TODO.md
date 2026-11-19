@@ -1,13 +1,17 @@
 # SonecBot – Aktuelle Aufgaben und Meilensteine
 
-**Dokumentstatus:** Version 10.8 – K1c Sonec-Gegnerbullet-Sweep implementiert; Entwicklertest offen; K1b 12/12 bestanden  
+**Dokumentstatus:** Version 10.9 – K1c 12/12 abgenommen; Shape-Collision-Analyse als nächster Schritt; K1b 12/12 bestanden  
 **Stand:** 19. November 2026  
 **Branch:** `develop`  
 **Aktuelles Ziel:** **K1a: segmentbasierte Spieler-Bullet-Kollision für beide Minenarten, AGK-/Windows-/HTML5-Prüfung erfolgreich (10/12 bestätigt; 2 schwer durchführbare Anordnungsprüfungen offen).** S1–S3 abgenommen, S4-Warnung unter Windows/HTML5 bestätigt, D1 11/11 bestanden und 400-ms-Drehphase positiv bewertet. **Vor Real Alpha verbindlich:** M1 einheitliche zeitbasierte Bewegungslogik nach reproduzierbaren A/B-Tests (F5 Tower, F6 Plattformen, F4 Pixel-Snap separat), K1 zuverlässige Bullet-Kollision gegen Minen/Gegner (Tunneling-Verdacht durch Code + Spielerfeedback) mit Priorität vor Drohnenbewaffnung. Keine Gameplay-/Optionsmenü-Änderung zu M1/K1 implementiert. itch.io bleibt **Draft / Secret URL**.
 
 **K1b-Entwicklerabnahme (19.11.2026): 12/12 bestanden.** AGK Studio, Orb-Treffer auch bei schnellen Schüssen, Walker-Turm (Körper/Beine unverändert), Kisten, beide Minenarten, Randtreffer/Fehlschüsse, Orb-vor-Mine und Mine-vor-Orb, Kettenreaktion/E1b, Gegnergeschosse/übrige Waffen, Pause/Neustart, lokales HTML5 bestätigt. Trefferbild laut Entwickler eindeutig gut und fairer. K1b abgeschlossen.
 
-**K1c implementiert (19.11.2026), Entwicklertest offen:** `BulletSweepHitsSonec` testet gegnerische Bullet-Flugstrecke gegen **Sonecs unveränderten Kreisradius**, ohne Bullet-Radius-Erweiterung. Schildabsorption/Health-Schaden, Treffer-Löschen und alle anderen Waffen-/Zielpfade unverändert. **AGK-Compile, schnelle/knappe Treffer und Fehlschüsse, Schild/Health, Sonec-Bewegung, Pause/Neustart, HTML5 und K1b-Regression testen.** Shape Collision (Sonec-Körper; Schild Kreis), rotes Trefferfeedback, Walker-Beinkollision und Drohnen-Jet-Sprite bleiben getrennte Folgeideen. Kein eigener Laufzeittest.
+**K1c-Entwicklerabnahme (19.11.2026): 12/12 bestanden, keine Beobachtungen.** AGK-Compile, zuverlässige Treffer auf stehenden Sonec, schnelle Bullets ohne sichtbares Durchfliegen, knappe Fehlschüsse, beide Richtungen, Bewegung/Sprung, Schildabsorption und Health ohne Schild, kein Mehrfachtreffer, K1b-Spielerbullets, Pause/Neustart, lokales HTML5 bestätigt. **K1c abgeschlossen.**
+
+**Nächster Schritt (zunächst nur untersuchen):** Shape Collision für Sonecs Körper bei weiterhin kreisförmigem Schild; später ggf. Walker-Beine/Umgebungskollision. Tunneling-Schutz erhalten; Walker-Beine nicht ungefragt zu Gewehr-Schadenszonen machen. Rotes Trefferfeedback/giftgrüner Sonec, Schildfeedback und Drohnen-Jet-Sprite bleiben spätere getrennte Aufgaben. **M1 bleibt offen.**
+
+**K1c implementiert (historisch, vor Abnahme):** `BulletSweepHitsSonec` testet gegnerische Bullet-Flugstrecke gegen **Sonecs unveränderten Kreisradius**, ohne Bullet-Radius-Erweiterung. Schildabsorption/Health-Schaden, Treffer-Löschen und alle anderen Waffen-/Zielpfade unverändert. **AGK-Compile, schnelle/knappe Treffer und Fehlschüsse, Schild/Health, Sonec-Bewegung, Pause/Neustart, HTML5 und K1b-Regression testen.** Shape Collision (Sonec-Körper; Schild Kreis), rotes Trefferfeedback, Walker-Beinkollision und Drohnen-Jet-Sprite bleiben getrennte Folgeideen. Kein eigener Laufzeittest.
 
 **K1c – ursprüngliche Analyse (historisch, vor Patch):** Gegner-Bullets prüfen aktuell nur ihre Endposition gegen Sonecs Radius (ohne Kugelradius). `PreviousPosition` erlaubt Segment-Kreis-Sweep bei unverändertem Radius; der Entwickler findet den bisherigen Trefferkreis jedoch grob und schlägt perspektivisch eine **Shape Collision für Sonecs Körper** vor. Das **Schild bleibt kreisförmig**; Schutz-/Health-Schaden nicht unbedacht verändern. Körper- und Schildtreffer sowie Tunneling gesondert testen.
 
