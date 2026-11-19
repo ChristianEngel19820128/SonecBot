@@ -448,7 +448,7 @@ function GameDraw(Game ref as TGame)
 	if SHIELD_SHAPE_TEST = 1 and Device$ = "windows"
 		DrawText(Game.DebugText[0])
 	endif
-	if SONEC_TWO_CIRCLE_TEST = 1
+	if SONEC_TWO_CIRCLE_TEST = 1 and SonecCollisionDebugVisible = 1
 		SetTextString(Game.DebugText[1],"K1d checks "+Str(SonecTwoCircleChecks)+" both "+Str(SonecTwoCircleBoth)+" old-only "+Str(SonecTwoCircleOldOnly)+" new-only "+Str(SonecTwoCircleNewOnly))
 		DrawText(Game.DebugText[1])
 	endif
