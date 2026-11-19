@@ -1,3 +1,7 @@
+## M1 – Drone F7 A/B (19.11.2026; developer test pending)
+
+On `develop`, F7 toggles drone B (default, existing per-update dt) and A (standard 10-ms TimeGet gate) in Windows and HTML5. Both use elapsed milliseconds and unchanged speed, bounds, turn duration, sprites, and virtual clock. Mode changes reset movement timestamps. FPS label identifies `DRONE A 10ms` or `DRONE B dt`. No other object movement changed. Developer to compile and compare HTML5 under identical conditions; browser may intercept F7. Record motion smoothness, edge shimmer, frame rate, camera behavior. Knowledge Base remains unchanged until findings are collected. This is a diagnostic, not a new release default.
+
 ## Aktueller Stand 19.11.2026 – K1d und M1-Pruefauftrag
 
 **K1d:** Zwei-Kreis-Koerperkollision fuer gegnerische Bullets ist auf `develop` aktiv (Commit `cba3cc1`), mit Segment-Sweep gegen Tunneling und K1c-Rueckfalloption `SONEC_TWO_CIRCLE_DAMAGE=0`. Stehen/Bewegung/Flug: zwei Kreise; Ducken: zwei Kreise, zweiter 10 px tiefer; Waffe nicht kollidierbar. Entwickler bestaetigt AGK-Compile, sichtbare Geometrie, positives/faires Spielgefuehl und funktionierende F3-Umschaltung von Kollisionskreisen, K1d-Zaehlern und Schild-Debugtext (letzter Fix `39f2e0c`). **Keine vollstaendige neue HTML5-/Regressionstestmatrix fuer K1d gemeldet.** Aeltere Abschnitte zu K1d als reinem Diagnoseprototyp sind historisch.

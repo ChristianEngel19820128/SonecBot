@@ -7,6 +7,10 @@
 #constant DRONE_PATROL_SPEED 0.10
 #constant DRONE_TURN_MS 400
 
+global DroneMotionUseGate as integer
+global DroneMotionTimer as TTime
+global DroneMotionLastMode as integer
+
 function DroneProtoLoad(ProtoDrone ref as TProtoDrone)
     ProtoDrone.Left.Image.File.Path = "/media/gfx/enemies/drone"
     ProtoDrone.Left.Image.File.Name = "drone_left.png"
@@ -33,6 +37,9 @@ function DroneInit(Drone ref as TDrone,Screen as TSize,World ref as TWorld,Now a
     Drone.IsTurning = FALSE
     Drone.TurnUntilMs = 0
     Drone.LastMoveMs = Now
+    TimeSet(DroneMotionTimer,10,10)
+    TimeReset(DroneMotionTimer,Now)
+    DroneMotionLastMode = DroneMotionUseGate
 
     Drone.Position.x = Screen.Width - DRONE_PATROL_MARGIN_X
     Drone.Position.y = World.Position.y + Screen.Height*0.5
@@ -53,9 +60,24 @@ function DroneMove(Drone ref as TDrone,Screen as TSize,Now as integer)
     local DeltaMs as integer
 
     if Drone.Enabled = TRUE
+        if DroneMotionLastMode <> DroneMotionUseGate
+            Drone.LastMoveMs = Now
+            TimeReset(DroneMotionTimer,Now)
+            DroneMotionLastMode = DroneMotionUseGate
+        endif
         DeltaMs = Now-Drone.LastMoveMs
-        Drone.LastMoveMs = Now
         if DeltaMs < 0 then DeltaMs = 0
+        if DroneMotionUseGate = 1
+            if TimeGet(DroneMotionTimer,Now) > 0
+                DeltaMs = DroneMotionTimer.FullDifference
+                TimeReset(DroneMotionTimer,Now)
+            else
+                DeltaMs = 0
+            endif
+        endif
+        if DroneMotionUseGate = 0 or DeltaMs > 0
+            Drone.LastMoveMs = Now
+        endif
 
         if Drone.IsTurning = TRUE
             if Now >= Drone.TurnUntilMs

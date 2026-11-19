@@ -176,7 +176,11 @@ TowerMotionEveryFrameEnabled = 1
 
 repeat
 	
-	SetTextString(FPS,Str(Trunc(ScreenFPS())))
+	if DroneMotionUseGate = 1
+        SetTextString(FPS,Str(Trunc(ScreenFPS()))+"  DRONE A 10ms")
+    else
+        SetTextString(FPS,Str(Trunc(ScreenFPS()))+"  DRONE B dt")
+    endif
 	
 	// Capture the existing two time samples without changing their call order.
 	ClockPreviousNowMs = Now
@@ -198,7 +202,15 @@ repeat
 		// There is only one sample while paused; -1 means no paired read.
 		MotionDebugClockReadGapMs = -1
 	endif
-	// Windows diagnostics (also during pause): F1 Walker, F2 platforms.
+	// F7 compares drone A/B on Windows and HTML5.
+  if Game.IsLost = FALSE and GetKeyPressed(KEY_F7) = 1
+      if DroneMotionUseGate = 0
+          DroneMotionUseGate = 1
+      else
+          DroneMotionUseGate = 0
+      endif
+  endif
+  // Windows diagnostics (also during pause): F1 Walker, F2 platforms.
 	// Only one topic is shown at a time to keep the virtual screen readable.
 	if Device$ = "windows" and Game.IsLost = FALSE
 		if GetKeyPressed(KEY_F1) = 1
