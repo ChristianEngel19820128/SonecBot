@@ -1,3 +1,7 @@
+## HTML5 player help (19.11.2026; runtime test pending)
+
+Developer observation: keyboard input needs a click inside browser game canvas; gamepad activation needs first button press and takes approximately 3 seconds. Intro help initial HTML5 hint and rotating help tips now explain these behaviors. No input/gamepad initialization logic changed. Verify text width and behavior in HTML5. Drone T diagnostic remains under investigation; planned 1–0 debug remapping deferred until after drone A/B test.
+
 ## M1 – Drone T A/B (19.11.2026; developer test pending)
 
 On `develop`, T toggles drone B (default, existing per-update dt) and A (standard 10-ms TimeGet gate) in Windows and HTML5. Both use elapsed milliseconds and unchanged speed, bounds, turn duration, sprites, and virtual clock. Mode changes reset movement timestamps. FPS label identifies `DRONE A 10ms` or `DRONE B dt`. No other object movement changed. Developer to compile and compare HTML5 under identical conditions; T is not part of the default movement/weapon bindings; user-remapped controls could conflict. Record motion smoothness, edge shimmer, frame rate, camera behavior. Knowledge Base remains unchanged until findings are collected. This is a diagnostic, not a new release default.

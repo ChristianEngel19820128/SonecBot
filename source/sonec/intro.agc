@@ -51,6 +51,9 @@ function IntroCreate(Intro ref as TIntro,vx as integer,vy as integer,Now as inte
 	SetTextBold(Intro.TextEnd,1)
 	
 	Intro.TextHelp = CreateText("U need a Joypad")
+    if GetDeviceBaseName() = "html5"
+        SetTextString(Intro.TextHelp,"Click game window to enable keyboard")
+    endif
 	SetTextAlignment(Intro.TextHelp,1)
 	SetTextPosition(Intro.TextHelp,vx/2,vy-23)
 	SetTextSize(Intro.TextHelp,18)
@@ -142,7 +145,7 @@ function IntroGambleHelp(Intro ref as TIntro)
 
 	local i as integer
 	
-	i = random(0,14)
+	i = random(0,16)
 	
 	select i
 		case 0
