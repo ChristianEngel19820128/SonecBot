@@ -1,6 +1,12 @@
-# Übergabe: E1b Explosions-Minentimer getrennt – Entwicklertest offen
+# Übergabe: E1b vollständig abgenommen (9/9) – K1/M1 und Alpha-Polishing folgen
 
-## AKTUELL – E1b getrennter Explosions-Treffertimer für beide Minenpools (19.11.2026)
+## E1b – vom Entwickler vollständig abgenommen: 9/9 (19.11.2026)
+
+**Entwicklerbericht:** **9/9 bestanden, keine offenen oder fehlgeschlagenen Prüfungen.** AGK Studio kompiliert; gewollte Dreier-Minenkettenreaktionen weiterhin korrekt; Explosionsradius wirkt unverändert; intelligente und einfache Minen nehmen Explosionsschaden; **beide Minenarten im Radius derselben Explosion erhalten unabhängig Schaden** (entscheidende E1b-Prüfung); Explosionen gegen Sonec, Orbs, Kisten und Walker unverändert; Pause/Neustart und **lokales HTML5 erfolgreich**. Bemerkung des Entwicklers: „hatte alles dank kettenreaktionen funktioniert.“ Dies ist eine Entwickler-Laufzeitabnahme, kein eigenständiger AGK-/Browserlauf des Assistenten. **E1b abgeschlossen.** Vorherige Einträge mit „Nachtest offen“ sind historische Stände.
+
+**Unverändert / später:** Kreisprüfung während der Explosionslaufzeit, 100-ms-Schadenstakt, 30 Schaden, Radius und Kettenreaktionen beibehalten. Alpha-Soundoptimierung bleibt ausdrücklich vorgemerkt, weil in einer Dreier-Kette drei Explosionssounds fast gleichzeitig auftreten können. K1 für weitere Zielklassen und M1 bleiben eigenständige offene Alpha-Gates; keine weiteren Gameplay-Änderungen aus dieser Abnahme.
+
+## E1b – vorheriger Implementierungsstand (historisch, 19.11.2026)
 
 **E1b-Implementierung nach ausdrücklicher Freigabe:** In `TExplosion` existieren jetzt getrennt `LastMineHitMs` (intelligente Minen) und `LastSimpleMineHitMs` (einfache Minen). Beide Arrays werden bei `ExplosionNew()` zurückgesetzt. `ExplosionCollideMine(...,IsSimpleMine)` wählt passend zur übergebenen Minenliste den eigenen Timer; `GameDo` übergibt `0` für `Game.MineList` und `1` für `Game.SimpleMineList`. **Damit sperren identische Listenindizes der beiden Typen einander nicht mehr.** Weiterhin Kreisprüfung bei jedem aktiven Update, derselbe `EXPLOSION_DAMAGE_INTERVAL_MS=100` und `EXPLOSION_TIMED_DAMAGE_AMOUNT=30`; keine Änderung an Radius, Schaden, Minenformation, Zufallsspawn, visueller Animation oder Sound. `GetMilliseconds()` als bisherige Zeitquelle des Explosionsschadens bewusst unverändert, damit E1b eng bleibt. Ursprüngliches Fehlverhalten nicht unabhängig zur Laufzeit reproduziert; der kollidierende Arrayindex ist im Quellcode nachgewiesen.
 
