@@ -445,7 +445,7 @@ function GameDraw(Game ref as TGame)
 	// F2 compares one platform and one visible skyscraper without affecting movement.
 	PlateDebugDrawAll(Game.PlateList,Game.TowerList)
 	// Keep the existing shield debug in slot 0; K1d uses slot 1.
-	if SHIELD_SHAPE_TEST = 1 and Device$ = "windows"
+	if SHIELD_SHAPE_TEST = 1 and Device$ = "windows" and SonecCollisionDebugVisible = 1
 		DrawText(Game.DebugText[0])
 	endif
 	if SONEC_TWO_CIRCLE_TEST = 1 and SonecCollisionDebugVisible = 1
