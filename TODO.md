@@ -1,9 +1,11 @@
 # SonecBot – Aktuelle Aufgaben und Meilensteine
 
-**Dokumentstatus:** Version 9.8 – D1 11/11 abgenommen; 400-ms-Drehphase positiv beurteilt; M1/K1 als verbindliche Real-Alpha-Release-Aufgaben vorgemerkt  
-**Stand:** 18. November 2026  
+**Dokumentstatus:** Version 9.9 – M1/K1 Release-Gates; Drohnen-Art-Pass und offener Alpha-Gegnerumfang dokumentiert  
+**Stand:** 19. November 2026  
 **Branch:** `develop`  
 **Aktuelles Ziel:** S1–S3 abgenommen, S4-Warnung unter Windows/HTML5 bestätigt, D1 11/11 bestanden und 400-ms-Drehphase positiv bewertet. **Vor Real Alpha verbindlich:** M1 einheitliche zeitbasierte Bewegungslogik nach reproduzierbaren A/B-Tests (F5 Tower, F6 Plattformen, F4 Pixel-Snap separat), K1 zuverlässige Bullet-Kollision gegen Minen/Gegner (Tunneling-Verdacht durch Code + Spielerfeedback) mit Priorität vor Drohnenbewaffnung. Keine Gameplay-/Optionsmenü-Änderung zu M1/K1 implementiert. itch.io bleibt **Draft / Secret URL**.
+
+**Zusätzliche Alpha-Planung (19.11.2026):** Drohnen-Art-Pass als gesonderter späterer Schritt: vorhandene D1-Grafik als Ausgangsbasis behalten, Stil an übrige SonecBot-Grafik angleichen und Sensor als **eigenständiges Sprite/Bild** für Leucht-, Blink-, Warn- und Trefferanimationen auslagern. Noch **keine Asset-/Codefreigabe**. Anzahl und Auswahl weiterer Alpha-Gegnertypen bewusst offen; Entscheidungen nach fortlaufender Pre-Alpha-Feedbackauswertung, **kein Zeitdruck / keine neue Deadline**. Heute Abend als Erstes K1 in einem kleinen freizugebenden Schritt weiterverfolgen, M1 bleibt Release-Gate.
 
 > Bei Chatwechsel zuerst [HANDOFF.md](HANDOFF.md) und den echten `develop`-HEAD lesen. Historische Arbeits- und Testdetails stehen in [TECHNICAL.md](TECHNICAL.md), in [dieser ausführlichen TODO-Version vor der Konsolidierung](https://github.com/ChristianEngel19820128/SonecBot/blob/b1d7da8f4bad6255e612948e833a39ab60a48243/TODO.md) und in Git. Datierte ältere „offen“-Einträge bezeichnen frühere Zwischenstände, **nicht** die heutige Aufgabenpriorität.
 

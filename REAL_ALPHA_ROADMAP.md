@@ -1,6 +1,6 @@
 # SonecBot – Real Alpha Roadmap
 
-**Stand:** 18. November 2026 (Pre-Alpha-Abgleich und Minenentscheidung)  
+**Stand:** 19. November 2026 (Real-Alpha-Planung und Release-Gates)  
 **Status:** gemeinsam vereinbarte Entwicklungsrichtung; **Planung, keine Freigabe zur Implementierung einzelner Gameplay-Funktionen**  
 **Branch:** `develop`  
 **Verwandte Dokumente:** [HANDOFF.md](HANDOFF.md) · [TODO.md](TODO.md) · [PROJECT.md](PROJECT.md) · [TECHNICAL.md](TECHNICAL.md)  
@@ -89,6 +89,13 @@ Bisherige intelligente Minen weiterhin **einzeln** und mit vorhandener Bewegung/
 Intelligente Einzelminen verhalten sich wie bisher; einfache Minen verfolgen Sonec nicht und reagieren nicht auf Energieanziehung; Minenfelder sind sichtbar unterscheidbar, beherrschbar, nicht unfair bei Spawn/Bewegung und verursachen keine ungewollten Performance-/Kollisionseffekte. Gamepad, Waffen, Explosionsreaktionen und HTML5 bleiben funktional.
 
 ## 4. Real Alpha – Kernfeature 2: Schwebende Drohnen
+
+### Drohnen-Art-Pass – Alpha-Planung, noch nicht implementiert (19.11.2026)
+
+Die aktuelle farbige D1-Drohne hat sich als **funktionaler Prototyp** bewährt, passt aus Sicht des Entwicklers aber **noch nicht ausreichend zum gemeinsamen visuellen Stil** der übrigen SonecBot-Grafiken. Die drei bestehenden Drohnenansichten bleiben **Basis für die spätere Überarbeitung**, nicht Abfall. Der **Sensor soll ein eigenständiges Bild/Sprite** erhalten, unabhängig vom Körper steuerbar, damit Leuchten, Farbwechsel, Blinken, Warn-/Treffereffekte und ggf. weitere Richtungsanimationen möglich werden. Keine sofortige Grafik- oder Codeänderung, eigener späterer Design- und Testschritt.
+
+**Offener Umfang der Real Alpha:** Anzahl und Auswahl zusätzlicher Gegnertypen werden **im Entwicklungsverlauf** festgelegt, auch unter Berücksichtigung der noch laufenden **Pre-Alpha-Feedbackauswertung**. Keine Mindestzahl, keine feste Deadline oder voreilige Zusage weiterer Gegner; K1 und M1 haben als technische Release-Gates Vorrang. Feedbackauswertung wird weiterhin in eigenem Arbeitsstrang behandelt.
+
 
 **D1-Abnahme und kleiner Animationsfeinschliff (19.11.2026):** Der Entwickler meldet **11/11 bestandene Tests** in AGK/Windows und lokalem HTML5 für den unbewaffneten Patrouillenprototyp mit drei 46×30-px-Ansichten. Die Mittelansicht war in 200 ms kaum wahrnehmbar. Deshalb wurde **nur die Wendedauer auf 400 ms** erhöht (getesteter Ausgangsstand `86e3520`; dieser Feinschliff noch ungetestet). Später können vertikale Wanderung pro Wende, richtungsabhängige Waffe und Gefahrenbudget gesondert freigegeben werden.
 

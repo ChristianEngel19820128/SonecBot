@@ -1,5 +1,13 @@
 # Übergabe: Pre-Alpha abgeschlossen → Real Alpha Release-Gates M1 und K1
 
+## Vereinbarte Alpha-Art- und Umfangsplanung (19.11.2026)
+
+**Drohnen-Art-Pass (vor Real Alpha prüfen):** Die vorhandenen farbigen D1-Drohnenansichten sind eine funktionierende, akzeptierte **Prototypbasis**, passen laut Entwickler aber noch nicht vollständig zum einheitlichen grafischen Gesamtkonzept von SonecBot. Die bestehenden Bilder als **Grundlage** für eine spätere Stilangleichung nutzen, nicht verwerfen. **Sensor als separates Bild/Sprite** vorsehen, damit Farbe, Leuchten, Blink-/Warn-/Treffereffekte und spätere Animationen unabhängig vom Drohnenkörper steuerbar sind. Umsetzung und genaue Grafikentscheidung sind **noch nicht freigegeben**, D1 bleibt bis dahin unverändert.
+
+**Alpha-Umfang bewusst offen:** Wie viele und welche weiteren Gegnertypen bis zur Alpha ergänzt werden, entscheiden wir schrittweise nach Spielgefühl, Fortschritt und Auswertung des bereits laufenden **Pre-Alpha-Feedbacks**. **Kein Zeitdruck, keine künstliche Mindestzahl an Gegnertypen und keine neue Release-Deadline.** Feedbackauswertung erfolgt separat; hier nur die Auswirkungen auf die Real-Alpha-Planung festhalten.
+
+**Fortsetzung nach Arbeitspause:** Zuerst die separat geplante K1-Analyse/eng freizugebende Swept-Collision-Probe gegen einfache und intelligente Minen, danach AGK-/Windows- und HTML5-Test durch Entwickler. M1 einheitliche Bewegungsberechnung bleibt Release-Gate. Kein Programmcode oder neue Grafik in diesem Dokumentationsschritt geändert.
+
 ## AKTUELL – Alpha-Release-Gates M1 (Bewegung) und K1 (Bullet-Tunneling) (19.11.2026)
 
 **Vereinbarte Entscheidung / noch keine Code-Freigabe:** Vor einem Real-Alpha-Release muss **M1: einheitliches Bewegungsmodell** geprüft und schrittweise umgesetzt werden. Bevorzugter Kandidat ist zeitbasiertes kontinuierliches Delta-Time-Modell B; bestehendes Timer-Modell A bleibt bis zu reproduzierbaren A/B-Tests erhalten. Bereits vorhandene Windows-Diagnosen sind **F5 Hochhäuser (A/B)**, **F6 Plattformen/Walker-Regression (A/B)** und **F4 Float-Rendering vs Pixel-Snap**, nicht „zwei vollständige Walker-Modi“. VSync/FPS-Regelung ist nochmals getrennt. Gemeinsame pausierbare Zeitbasis und Gameplay-Reproduzierbarkeit; Walker-IK, Schritte, Kisten- und Plattformkontakte müssen separat regressionsgetestet werden. **Spieleroption für Bewegungsberechnung nicht vorab beschlossen**: nur bei nachgewiesenem Vorteil, bevorzugt eher Grafik-/Darstellungsoption separat prüfen. M1 ist vor Release als verbindliche Entscheidung und technische Aufgabe zu behandeln, ohne sofortiges Umbauen aller Bewegungsfunktionen.
