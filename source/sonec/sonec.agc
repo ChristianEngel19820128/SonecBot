@@ -48,6 +48,18 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
+global SonecHitFlashUntil as integer
+
+#constant SONEC_HIT_FLASH_MS 150
+
+function SonecVisualUpdate(Sonec ref as TSonec,Now as integer)
+	if Now < SonecHitFlashUntil
+		ColorSet(Sonec.SpriteData.Color,255,0,0,255)
+	else
+		ColorSet(Sonec.SpriteData.Color,80,232,80,255)
+	endif
+endfunction
+
 function SonecInit(Sonec ref as TSonec,ProtoSonec ref as TProtoSonec,World ref as TWorld,Screen as TSize,Now as integer)
 
 	TimeSet(Sonec.AnimationData.AnimTimer,50,1)
@@ -95,6 +107,8 @@ function SonecInit(Sonec ref as TSonec,ProtoSonec ref as TProtoSonec,World ref a
 	Sonec.SpriteData.Angle = 0
 	Sonec.SpriteData.Scale = 1
 	Sonec.SpriteData.Center = TRUE
+	SonecHitFlashUntil = 0
+	ColorSet(Sonec.SpriteData.Color,80,232,80,255)
 	
 	SpritePositionCalc(Sonec.SpriteData.Position,Sonec.ObjectData.Position,World.Position)
 	

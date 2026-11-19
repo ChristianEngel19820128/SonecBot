@@ -181,6 +181,8 @@ endfunction
 
 function GameDo(Game ref as TGame,Now as integer)
 
+	local SonecHealthBefore as integer
+	SonecHealthBefore = Game.Sonec.Health.State
 	local WalkerChance as integer
 	local Index as integer
 	local i as integer
@@ -273,6 +275,11 @@ function GameDo(Game ref as TGame,Now as integer)
 	ExplosionCollideMine(Game.ExplosionList,Game.SimpleMineList,1)
 	ExplosionCollideWalkers(Game.ExplosionList,Game.WalkerList,Now)
 	
+	// Flash only when health actually decreases; shield-only hits do not flash Sonec.
+	if Game.Sonec.Health.State < SonecHealthBefore
+		SonecHitFlashUntil = Now + SONEC_HIT_FLASH_MS
+	endif
+	SonecVisualUpdate(Game.Sonec,Now)
 	SonecEnergyRegenerate(Game.Sonec,Now)
 	SonecHealthRegenerate(Game.Sonec,Now)
 		
