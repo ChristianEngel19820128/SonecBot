@@ -164,6 +164,45 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
+// K1d prototype: two simple body circles; diagnosis only, never changes damage.
+// Fractions are deliberately provisional until visually checked against the sprites.
+#constant SONEC_TWO_CIRCLE_TEST 1
+global SonecTwoCircleChecks as integer
+global SonecTwoCircleBoth as integer
+global SonecTwoCircleOldOnly as integer
+global SonecTwoCircleNewOnly as integer
+
+function BulletSweepHitsSonecCircle(Bullet ref as TBullet,CenterX as float,CenterY as float,Radius as float)
+    local Dx as float
+    local Dy as float
+    local LengthSq as float
+    local Projection as float
+    local DeltaX as float
+    local DeltaY as float
+    Dx = Bullet.ObjectData.Position.x-Bullet.PreviousPosition.x
+    Dy = Bullet.ObjectData.Position.y-Bullet.PreviousPosition.y
+    LengthSq = Dx*Dx+Dy*Dy
+    Projection = 0
+    if LengthSq > 0
+        Projection = ((CenterX-Bullet.PreviousPosition.x)*Dx+(CenterY-Bullet.PreviousPosition.y)*Dy)/LengthSq
+        if Projection < 0 then Projection = 0
+        if Projection > 1 then Projection = 1
+    endif
+    DeltaX = Bullet.PreviousPosition.x+Projection*Dx-CenterX
+    DeltaY = Bullet.PreviousPosition.y+Projection*Dy-CenterY
+endfunction DeltaX*DeltaX+DeltaY*DeltaY < Radius*Radius
+
+function BulletSweepHitsSonecTwoCircles(Bullet ref as TBullet,Sonec ref as TSonec)
+    local Radius as float
+    local OffsetY as float
+    local Hit as integer
+    Radius = Sonec.ObjectData.Size.Width*0.30
+    OffsetY = Sonec.ObjectData.Size.Height*0.18
+    Hit = FALSE
+    if BulletSweepHitsSonecCircle(Bullet,Sonec.ObjectData.Position.x,Sonec.ObjectData.Position.y-OffsetY,Radius) = TRUE then Hit = TRUE
+    if BulletSweepHitsSonecCircle(Bullet,Sonec.ObjectData.Position.x,Sonec.ObjectData.Position.y+OffsetY,Radius) = TRUE then Hit = TRUE
+endfunction Hit
+
 // K1c: check the whole last movement segment of an enemy bullet against
 // Sonec's existing circle. Do not enlarge the hitbox by the bullet radius.
 // A zero-length step is checked at its current position.
@@ -204,6 +243,16 @@ function BulletCollide(BulletList ref as TBulletList,Sonec ref as TSonec,Shield 
     for i = 0 to BulletList.Bullet.Length
         if BulletList.Bullet[i].Enabled = TRUE
             if BulletList.Bullet[i].CollisionData.CollisionType = TYPEENEMY
+                if SONEC_TWO_CIRCLE_TEST = 1
+                    local OldHit as integer
+                    local NewHit as integer
+                    OldHit = BulletSweepHitsSonec(BulletList.Bullet[i],Sonec)
+                    NewHit = BulletSweepHitsSonecTwoCircles(BulletList.Bullet[i],Sonec)
+                    SonecTwoCircleChecks = SonecTwoCircleChecks+1
+                    if OldHit = TRUE and NewHit = TRUE then SonecTwoCircleBoth = SonecTwoCircleBoth+1
+                    if OldHit = TRUE and NewHit = FALSE then SonecTwoCircleOldOnly = SonecTwoCircleOldOnly+1
+                    if OldHit = FALSE and NewHit = TRUE then SonecTwoCircleNewOnly = SonecTwoCircleNewOnly+1
+                endif
                 if BulletSweepHitsSonec(BulletList.Bullet[i],Sonec) = TRUE
                     // Keep the established proportional shield protection and health damage.
                     Sonec.Health.State = Sonec.Health.State - (BulletList.Bullet[i].BulletData.Damage - ShieldAbsorbDamage(Shield,Sonec,BulletList.Bullet[i].BulletData.Damage,Now))

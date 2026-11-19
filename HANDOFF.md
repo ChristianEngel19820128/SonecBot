@@ -1,3 +1,7 @@
+# K1d – Zwei-Kreis-Diagnoseprototyp (Entwicklertest offen)
+
+**Branch:** develop. **Kein Gameplay-Switch.** Der bestehende K1c-Bullet-Sweep bleibt allein maßgeblich für Schild, Gesundheit und Bullet-Löschung. Bei gegnerischen Bullets werden zwei angenäherte Kreise zusätzlich nur vergleichend geprüft; Zähler erscheinen als Print-Diagnose: checks, both, old-only, new-only. Die beiden Kreise liegen vorläufig auf der vertikalen Sonec-Achse mit Mittelpunkten bei y ± 0.18 * Stand-Sprite-Höhe und Radius 0.30 * Stand-Sprite-Breite. **Diese Werte sind Schätzungen, nicht aus der neuen perlweißen Grafik gemessen; Ducken und Fliegen verwenden zunächst dieselben Werte.** Waffe ausdrücklich nicht Teil der Kollisionsform. Kein AGK-/HTML5-Test durch Assistenten; Entwickler soll Compile, Sichtbarkeit der Diagnose, Treffer bei Stehen/Ducken/Fliegen, schnelle Bullets, knappe Fehlschüsse, Schild/Health und HTML5 prüfen. Die Zahlen vergleichen nur die Flugsegmente aktiver Gegnerbullets pro Update, keine tatsächlichen Schadensereignisse; Zähler können über mehrere Frames pro Bullet steigen. Wenn die Diagnose stört, SONEC_TWO_CIRCLE_TEST auf 0 setzen; K1c bleibt unverändert. Vor Umstellung der Schadenslogik müssen Parameter und Posen geprüft werden.
+
 # Übergabe: K1c 12/12 abgenommen – Shape-Collision-Analyse folgt
 
 ## AKTUELL – K1c 12/12 Entwicklerabnahme bestanden (19.11.2026)

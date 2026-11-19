@@ -345,6 +345,10 @@ endfunction
 //----------------------------------------------------------------------
 
 function GameDraw(Game ref as TGame)
+    // K1d diagnostic overlay: counts since game start, no gameplay effect.
+    if SONEC_TWO_CIRCLE_TEST = 1
+        Print("K1d checks "+Str(SonecTwoCircleChecks)+" both "+Str(SonecTwoCircleBoth)+" old-only "+Str(SonecTwoCircleOldOnly)+" new-only "+Str(SonecTwoCircleNewOnly))
+    endif
 
 	BackgroundDraw(Game.Background,Game.ProtoBackground)
 	CloudDrawAll(Game.CloudList,Game.ProtoCloud,0.25,1)
