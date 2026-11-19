@@ -718,16 +718,24 @@ type TSound
 	ExplosionSound as integer
 endtype
 
-// S4: one shared top warning with future message priority support.
-type TWarning
-    Active as integer
+type TNotice
     MessageString as string
-    Priority as integer
+    Kind as integer
     UntilMs as integer
+    PreviewUntilMs as integer
     TextID as integer
     BarSpriteID as integer
+endtype
+
+type TWarning
+    Count as integer
+    Notice as TNotice[3]
     Icon as TProtoData
     IconData as TSpriteData
+    StarIcon as TProtoData
+    StarData as TSpriteData
+    CenterX as float
+    Now as integer
 endtype
 
 // D1: one persistent unarmed hover drone; no collisions or attack logic yet.

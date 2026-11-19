@@ -1,82 +1,135 @@
-// S4: reusable top warning. Render order: bar -> warning triangle -> bold text.
-// GameDo uses the existing pause-aware virtual game clock for expiration.
-
-#constant WARNING_BAR_WIDTH 440
-#constant WARNING_BAR_HEIGHT 58
-#constant WARNING_BAR_TOP 13
-#constant WARNING_TEXT_SIZE 23
+// FIFO message stack. Kind 0 = danger, kind 1 = positive.
+#constant NOTICE_WIDTH 440
+#constant NOTICE_HEIGHT 58
+#constant NOTICE_TOP 13
+#constant NOTICE_MAX 4
+#constant NOTICE_STEP 65
+#constant NOTICE_PREVIEW 650
 
 function WarningCreate(Warning ref as TWarning,Screen as TSize)
-    local CenterX as float
-    local CenterY as float
-
-    CenterX = Screen.Width*0.5
-    CenterY = WARNING_BAR_TOP + WARNING_BAR_HEIGHT*0.5
-
+    local i as integer
+    Warning.CenterX = Screen.Width*0.5
     Warning.Icon.Image.File.Path = "/media/gfx/effects"
     Warning.Icon.Image.File.Name = "warning.png"
     if ImageLoad(Warning.Icon.Image) = TRUE
         SpriteLoad(Warning.Icon)
     endif
-
     Warning.IconData.Center = TRUE
     Warning.IconData.Scale = 0.75
-    Warning.IconData.Position.x = CenterX - 171
-    Warning.IconData.Position.y = CenterY
+    Warning.IconData.Position.x = Warning.CenterX-171
     ColorSet(Warning.IconData.Color,255,104,104,255)
-
-    Warning.BarSpriteID = CreateSprite(0)
-    SetSpriteSize(Warning.BarSpriteID,WARNING_BAR_WIDTH,WARNING_BAR_HEIGHT)
-    SetSpriteColor(Warning.BarSpriteID,12,12,24,180)
-    SetSpritePosition(Warning.BarSpriteID,CenterX-WARNING_BAR_WIDTH*0.5,WARNING_BAR_TOP)
-
-    Warning.TextID = CreateText("")
-    SetTextAlignment(Warning.TextID,1)
-    SetTextPosition(Warning.TextID,CenterX+20,CenterY-WARNING_TEXT_SIZE*0.55)
-    SetTextSize(Warning.TextID,WARNING_TEXT_SIZE)
-    SetTextBold(Warning.TextID,1)
-    SetTextColor(Warning.TextID,255,100,100,255)
-
-    Warning.Active = FALSE
-    Warning.MessageString = ""
-    Warning.Priority = 0
-    Warning.UntilMs = 0
+    Warning.StarIcon.Image.File.Path = "/media/gfx/effects"
+    Warning.StarIcon.Image.File.Name = "star.png"
+    if ImageLoad(Warning.StarIcon.Image) = TRUE
+        SpriteLoad(Warning.StarIcon)
+    endif
+    Warning.StarData.Center = TRUE
+    Warning.StarData.Scale = 0.75
+    Warning.StarData.Position.x = Warning.CenterX-171
+    ColorSet(Warning.StarData.Color,140,230,173,255)
+    for i = 0 to NOTICE_MAX-1
+        Warning.Notice[i].BarSpriteID = CreateSprite(0)
+        Warning.Notice[i].TextID = CreateText("")
+        SetTextAlignment(Warning.Notice[i].TextID,1)
+        SetTextSize(Warning.Notice[i].TextID,23)
+        SetTextBold(Warning.Notice[i].TextID,1)
+    next i
+    WarningReset(Warning)
 endfunction
 
 function WarningReset(Warning ref as TWarning)
-    Warning.Active = FALSE
-    Warning.Priority = 0
-    Warning.UntilMs = 0
-    Warning.MessageString = ""
-    SetTextString(Warning.TextID,"")
-endfunction
-
-// Equal or higher-priority messages may replace the active one.
-// A queue and additional message sources are outside S4.
-function WarningShow(Warning ref as TWarning,MessageString as string,Priority as integer,DurationMs as integer,Now as integer)
-    if DurationMs > 0
-        if Warning.Active = FALSE or Priority >= Warning.Priority or Now >= Warning.UntilMs
-            Warning.Active = TRUE
-            Warning.MessageString = MessageString
-            Warning.Priority = Priority
-            Warning.UntilMs = Now + DurationMs
-            SetTextString(Warning.TextID,MessageString)
-        endif
-    endif
+    local i as integer
+    Warning.Count = 0
+    for i = 0 to NOTICE_MAX-1
+        Warning.Notice[i].MessageString = ""
+        Warning.Notice[i].UntilMs = 0
+        Warning.Notice[i].PreviewUntilMs = 0
+        SetTextString(Warning.Notice[i].TextID,"")
+    next i
 endfunction
 
 function WarningUpdate(Warning ref as TWarning,Now as integer)
-    if Warning.Active = TRUE
-        if Now >= Warning.UntilMs
-            WarningReset(Warning)
+    local i as integer
+    local k as integer
+    Warning.Now = Now
+    i = 0
+    while i < Warning.Count
+        if Now >= Warning.Notice[i].UntilMs
+            for k = i to Warning.Count-2
+                Warning.Notice[k].MessageString = Warning.Notice[k+1].MessageString
+                Warning.Notice[k].Kind = Warning.Notice[k+1].Kind
+                Warning.Notice[k].UntilMs = Warning.Notice[k+1].UntilMs
+                Warning.Notice[k].PreviewUntilMs = Warning.Notice[k+1].PreviewUntilMs
+            next k
+            Warning.Count = Warning.Count-1
+        else
+            i = i+1
+        endif
+    endwhile
+endfunction
+
+// Retain the original call signature for existing warning producers.
+function WarningShow(Warning ref as TWarning,MessageString as string,Priority as integer,DurationMs as integer,Now as integer)
+    WarningPush(Warning,MessageString,0,DurationMs,Now)
+endfunction
+
+function WarningShowPositive(Warning ref as TWarning,MessageString as string,DurationMs as integer,Now as integer)
+    WarningPush(Warning,MessageString,1,DurationMs,Now)
+endfunction
+
+function WarningPush(Warning ref as TWarning,MessageString as string,Kind as integer,DurationMs as integer,Now as integer)
+    local i as integer
+    if DurationMs > 0
+        WarningUpdate(Warning,Now)
+        if Warning.Count < NOTICE_MAX
+            i = Warning.Count
+            Warning.Notice[i].MessageString = MessageString
+            Warning.Notice[i].Kind = Kind
+            Warning.Notice[i].UntilMs = Now+DurationMs
+            Warning.Notice[i].PreviewUntilMs = Now+NOTICE_PREVIEW
+            Warning.Count = Warning.Count+1
         endif
     endif
 endfunction
 
 function WarningDraw(Warning ref as TWarning)
-    if Warning.Active = TRUE
-        DrawSprite(Warning.BarSpriteID)
-        SpriteDraw(Warning.Icon.Sprite,Warning.IconData)
-        DrawText(Warning.TextID)
-    endif
+    local i as integer
+    local y as float
+    local r as integer
+    local g as integer
+    local b as integer
+    for i = 0 to Warning.Count-1
+        y = NOTICE_TOP+i*NOTICE_STEP
+        if Warning.Notice[i].Kind = 1
+            r = 140
+            g = 230
+            b = 173
+        else
+            r = 255
+            g = 100
+            b = 100
+        endif
+        if i > 0 and Warning.Now >= Warning.Notice[i].PreviewUntilMs
+            SetSpriteSize(Warning.Notice[i].BarSpriteID,NOTICE_WIDTH,8)
+            SetSpriteColor(Warning.Notice[i].BarSpriteID,r,g,b,240)
+            SetSpritePosition(Warning.Notice[i].BarSpriteID,Warning.CenterX-NOTICE_WIDTH*0.5,y+25)
+            DrawSprite(Warning.Notice[i].BarSpriteID)
+        else
+            SetSpriteSize(Warning.Notice[i].BarSpriteID,NOTICE_WIDTH,NOTICE_HEIGHT)
+            SetSpriteColor(Warning.Notice[i].BarSpriteID,12,12,24,180)
+            SetSpritePosition(Warning.Notice[i].BarSpriteID,Warning.CenterX-NOTICE_WIDTH*0.5,y)
+            DrawSprite(Warning.Notice[i].BarSpriteID)
+            SetTextString(Warning.Notice[i].TextID,Warning.Notice[i].MessageString)
+            SetTextColor(Warning.Notice[i].TextID,r,g,b,255)
+            SetTextPosition(Warning.Notice[i].TextID,Warning.CenterX+20,y+NOTICE_HEIGHT*0.5-23*0.55)
+            if Warning.Notice[i].Kind = 1
+                Warning.StarData.Position.y = y+NOTICE_HEIGHT*0.5
+                SpriteDraw(Warning.StarIcon.Sprite,Warning.StarData)
+            else
+                Warning.IconData.Position.y = y+NOTICE_HEIGHT*0.5
+                SpriteDraw(Warning.Icon.Sprite,Warning.IconData)
+            endif
+            DrawText(Warning.Notice[i].TextID)
+        endif
+    next i
 endfunction

@@ -167,7 +167,7 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function EnergieCollect(EnergieList ref as TEnergieList,Sonec ref as TSonec)
+function EnergieCollect(EnergieList ref as TEnergieList,Sonec ref as TSonec,Warning ref as TWarning,Now as integer)
 	
 	local i as integer
 	local Radius as float
@@ -188,6 +188,7 @@ function EnergieCollect(EnergieList ref as TEnergieList,Sonec ref as TSonec)
 					case 1
 						if Sonec.Energy.RegRate > 200
 							Sonec.Energy.RegRate = Sonec.Energy.RegRate-1
+							WarningShowPositive(Warning,"ENERGY REGEN UPGRADE",2000,Now)
 						endif
 						TimeSet(Sonec.Energy.RegenerationTimer,Sonec.Energy.RegRate,1)
 					endcase
@@ -200,15 +201,20 @@ function EnergieCollect(EnergieList ref as TEnergieList,Sonec ref as TSonec)
 					case 3
 						if Sonec.Health.RegRate > 200
 							Sonec.Health.RegRate = Sonec.Health.RegRate-1
+							WarningShowPositive(Warning,"HEALTH REGEN UPGRADE",2000,Now)
 						endif
 						TimeSet(Sonec.Health.RegenerationTimer,Sonec.Health.RegRate,1)
 					endcase
 					case 4
 						if Sonec.MGun.FireRate > 400
 							Sonec.MGun.FireRate  = Sonec.MGun.FireRate -1
+							WarningShowPositive(Warning,"FIRE RATE UPGRADE",2000,Now)
 						endif
 						if Sonec.MGun.FireBurstRate > 120
 							Sonec.MGun.FireBurstRate  = Sonec.MGun.FireBurstRate -1
+							if Sonec.MGun.FireRate <= 400
+								WarningShowPositive(Warning,"FIRE RATE UPGRADE",2000,Now)
+							endif
 						endif
 						TimeSet(Sonec.MGun.FireTimer,Sonec.MGun.FireRate,1)
 						TimeSet(Sonec.MGun.FireBurstTimer,Sonec.MGun.FireBurstRate,1)
@@ -216,6 +222,7 @@ function EnergieCollect(EnergieList ref as TEnergieList,Sonec ref as TSonec)
 					case 5
 						if Sonec.MGun.FireBurstMax < Sonec.MGun.FireBurstLimit
 							Sonec.MGun.FireBurstMax  = Sonec.MGun.FireBurstMax +1
+							WarningShowPositive(Warning,"BURST UPGRADE",2000,Now)
 						endif
 					endcase
 					case 6

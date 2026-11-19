@@ -261,7 +261,7 @@ function GameDo(Game ref as TGame,Now as integer)
 	JetfireLifeCycle(Game.JetfireList,Now)
 	EnergieMoveAll(Game.EnergieList,Game.World,Now)
 	EnergieLifeCycle(Game.EnergieList,Now)
-	EnergieCollect(Game.EnergieList,Game.Sonec)
+	EnergieCollect(Game.EnergieList,Game.Sonec,Game.Warning,Now)
 	
 	ExplosionMoveAll(Game.ExplosionList,Game.World,Now)
 	ShieldShapeTest(Game.Shield,Game.ProtoShield,Game.ExplosionList,Game.ProtoExplosion,Game.DebugText[0])
