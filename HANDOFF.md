@@ -1,6 +1,12 @@
-# Übergabe: Pre-Alpha abgeschlossen → Real Alpha Drohne D1
+# Übergabe: Pre-Alpha abgeschlossen → Real Alpha Drohne D1 abgenommen
 
-## AKTUELL – Drohne D1 implementiert, Entwicklertest offen (18.11.2026)
+## AKTUELL – D1 11/11 vom Entwickler abgenommen; Drehphase auf 400 ms angepasst (19.11.2026)
+
+**D1-Entwicklertest:** **11/11 bestanden**, AGK-Studio-Compile, Windows und lokales HTML5 erfolgreich, alle drei Sprites geladen, ein persistenter unbewaffneter Testgegner, links/rechts Patrouille innerhalb der Ränder, Mittelansicht, konstante Welt-Y-Höhe, Pause/Neustart und Regression der Minen/Warnungen bestätigt. Der getestete Code war vor der Zeitkorrektur der Stand `86e35206308196b28028e5e7487243175142bf65`. Keine unabhängigen Assistenten-Laufzeittests.
+
+**Feinabstimmung:** Die 200-ms-Mittelansicht war dem Entwickler zu kurz. Die Drehpause in `source/sonec/drone.agc` wurde deshalb **nur von 200 auf 400 ms** erhöht; Geschwindigkeit, Bewegung, Sprites, Flughöhe und andere Spielmechaniken bleiben unverändert. Walker-Referenz: 300 ms gelten für Salven-Erholung/Rückstoßabschluss, 400 ms für Zielvorbereitung; Turmschwenkung derzeit 800 ms. **400-ms-Wende der Drohne benötigt noch AGK-/HTML5-Kurztest.** Optionaler späterer vertikaler Schritt pro Wende bleibt bloße Designidee, ebenso Bewaffnung in Flugrichtung und Gefahrenbudget.
+
+## Drohne D1 – historischer Implementierungsstand (18.11.2026)
 
 **Freigabe D1:** Genau **eine** unbewaffnete, dauerhafte Testdrohne ab `GameInit`, mit drei identisch dimensionierten Entwicklerbildern (46×30 px) `drone_left.png`, `drone_center.png`, `drone_right.png` in `source/sonec/media/gfx/enemies/drone/`. Farbige Bilddaten werden im Normalzustand unverändert (weiße Code-Einfärbung) gerendert. `drone.agc` lädt die drei Ansichten, verwaltet Bewegung und zeichnet die jeweilige Ansicht. `TDrone`/`TProtoDrone` getrennt im Spielzustand, **keine Waffen, Treffer, zusätzliche Drohnen oder Spawns**.
 

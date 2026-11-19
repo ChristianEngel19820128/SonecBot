@@ -5,7 +5,7 @@
 #constant DRONE_PATROL_MARGIN_X 60
 #constant DRONE_WORLD_MARGIN_Y 80
 #constant DRONE_PATROL_SPEED 0.10
-#constant DRONE_TURN_MS 200
+#constant DRONE_TURN_MS 400
 
 function DroneProtoLoad(ProtoDrone ref as TProtoDrone)
     ProtoDrone.Left.Image.File.Path = "/media/gfx/enemies/drone"
