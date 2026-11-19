@@ -164,9 +164,10 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-// K1d prototype: two simple body circles; diagnosis only, never changes damage.
-// Fractions are deliberately provisional until visually checked against the sprites.
+// K1d: two body circles are the active enemy-bullet hitbox.
+// Change the switch to 0 to restore the proven K1c single-circle damage path.
 #constant SONEC_TWO_CIRCLE_TEST 1
+#constant SONEC_TWO_CIRCLE_DAMAGE 1
 // Second duck circle sits 10 world pixels below the first.
 #constant SONEC_DUCK_SECOND_CIRCLE_Y 10
 global SonecTwoCircleChecks as integer
@@ -254,9 +255,13 @@ function BulletCollide(BulletList ref as TBulletList,Sonec ref as TSonec,Shield 
     for i = 0 to BulletList.Bullet.Length
         if BulletList.Bullet[i].Enabled = TRUE
             if BulletList.Bullet[i].CollisionData.CollisionType = TYPEENEMY
+                local OldHit as integer
+                local NewHit as integer
+                local DamageHit as integer
+                OldHit = FALSE
+                NewHit = FALSE
+                DamageHit = FALSE
                 if SONEC_TWO_CIRCLE_TEST = 1
-                    local OldHit as integer
-                    local NewHit as integer
                     OldHit = BulletSweepHitsSonec(BulletList.Bullet[i],Sonec)
                     NewHit = BulletSweepHitsSonecTwoCircles(BulletList.Bullet[i],Sonec)
                     SonecTwoCircleChecks = SonecTwoCircleChecks+1
@@ -264,7 +269,16 @@ function BulletCollide(BulletList ref as TBulletList,Sonec ref as TSonec,Shield 
                     if OldHit = TRUE and NewHit = FALSE then SonecTwoCircleOldOnly = SonecTwoCircleOldOnly+1
                     if OldHit = FALSE and NewHit = TRUE then SonecTwoCircleNewOnly = SonecTwoCircleNewOnly+1
                 endif
-                if BulletSweepHitsSonec(BulletList.Bullet[i],Sonec) = TRUE
+                if SONEC_TWO_CIRCLE_DAMAGE = 1 and SONEC_TWO_CIRCLE_TEST = 1
+                    DamageHit = NewHit
+                else
+                    if SONEC_TWO_CIRCLE_TEST = 1
+                        DamageHit = OldHit
+                    else
+                        DamageHit = BulletSweepHitsSonec(BulletList.Bullet[i],Sonec)
+                    endif
+                endif
+                if DamageHit = TRUE
                     // Keep the established proportional shield protection and health damage.
                     Sonec.Health.State = Sonec.Health.State - (BulletList.Bullet[i].BulletData.Damage - ShieldAbsorbDamage(Shield,Sonec,BulletList.Bullet[i].BulletData.Damage,Now))
                     BulletDelete(BulletList,i)
