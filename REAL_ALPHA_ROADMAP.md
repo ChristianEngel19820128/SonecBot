@@ -26,6 +26,12 @@ Entwickler beobachtet, dass Maschinengewehrkugeln vor allem kleine einfache Mine
 
 ### E1 – Explosionsradius und Minenkettenreaktion prüfen (Alpha-Qualität)
 
+**Ermittlung vom 19.11.2026 (Code und Originalbild geprüft):** `RedExplode/redexplode0004.png` (erstes Bild des Minenexplosionstyps 1) misst **175×175 px**. Daraus berechnet `ExplosionNew` den **Basisradius 87,5 px** und mit 75–125 % Zufallsskalierung einen **fixen Schadensradius zwischen 65,625 und 109,375 px** pro Explosion. Die Bildgröße/Radiusberechnung ändert sich während der Animationsframes nicht. Bei 32×48 px Versatz einer Dreierformation liegen benachbarte Minenmittelpunkte **57,69 px** auseinander und sind daher **bei jeder Skalierung direkt in Reichweite**; die äußeren Minen (115,38 px auseinander) sind **nicht direkt** im Maximalradius, können aber über die mittlere Mine kaskadieren. Zusammen mit 30 Schaden je 100-ms-Trefferintervall und 25 HP erklärt das den beobachteten vollständigen Feldzerfall **ohne Nachweis eines Radiusfehlers**. **E1 als Geometriefrage geklärt**, keine unmittelbare Änderung an Explosion oder Formation; weitere Formationsabstände später bewusst für unterschiedliche Kettenreaktionswahrscheinlichkeiten wählen.
+
+**E1b – separater Prüfpunkt zu gemischten Minenlisten:** `TExplosion.LastMineHitMs[k]` ist derzeit ein gemeinsam benutztes Zeitstempelarray für die beiden getrennten `MineList`-Aufrufe in `GameDo`. Haben intelligente und einfache Mine denselben Listenindex, kann die eine die 100-ms-Sperre der anderen beeinflussen. Ein echter möglicher Mehrziel-Timerfehler, **noch kein Laufzeittest**; bei Gelegenheit gezielt reproduzieren und getrennt korrigieren. Erwünschte kreisförmige Kollisionsprüfung pro Spielupdate und der 100-ms-Schadentakt bleiben bestehen.
+
+
+
 **Entwicklerpräzisierung (19.11.2026):** Kreisförmige Explosionskollision und wiederholte Schadensprüfung während der gesamten Explosion sind **absichtlich**. Im aktuellen Code erfolgen die Kollisionsabfragen pro aktivem `GameDo`-Update und die Schadensintervalle mindestens 100 ms auseinander, nicht ausschließlich einmal je neuem Animationsframe. Vor jeglicher Änderung zuerst Explosionsbildradius, zufällige Skalierung und Formationsabstände überprüfen; keine vorschnelle Fehlerannahme. Später **Formationsmuster mit bewusst unterschiedlichen Abständen** planen: Kettenreaktionen dürfen vorkommen, sollen aber **nicht zwangsläufig bei jedem Minenfeld** die gesamte Formation zerstören. Spielerische Abwägung/Fairness erst nach Radiusanalyse.
 
 
