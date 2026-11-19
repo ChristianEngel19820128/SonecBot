@@ -201,7 +201,7 @@ function EnergieCollect(EnergieList ref as TEnergieList,Sonec ref as TSonec)
 						if Sonec.Health.RegRate > 200
 							Sonec.Health.RegRate = Sonec.Health.RegRate-1
 						endif
-						TimeSet(Sonec.Energy.RegenerationTimer,Sonec.Health.RegRate,1)
+						TimeSet(Sonec.Health.RegenerationTimer,Sonec.Health.RegRate,1)
 					endcase
 					case 4
 						if Sonec.MGun.FireRate > 400
