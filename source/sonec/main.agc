@@ -202,8 +202,8 @@ repeat
 		// There is only one sample while paused; -1 means no paired read.
 		MotionDebugClockReadGapMs = -1
 	endif
-	// F7 compares drone A/B on Windows and HTML5.
-  if Game.IsLost = FALSE and GetKeyPressed(KEY_F7) = 1
+	// T compares drone A/B on Windows and HTML5 (browser F-keys are reserved).
+  if Game.IsLost = FALSE and GetKeyPressed(KEY_T) = 1
       if DroneMotionUseGate = 0
           DroneMotionUseGate = 1
       else

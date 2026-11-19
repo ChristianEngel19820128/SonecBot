@@ -1,6 +1,6 @@
-## M1 – Drone F7 A/B (19.11.2026; developer test pending)
+## M1 – Drone T A/B (19.11.2026; developer test pending)
 
-On `develop`, F7 toggles drone B (default, existing per-update dt) and A (standard 10-ms TimeGet gate) in Windows and HTML5. Both use elapsed milliseconds and unchanged speed, bounds, turn duration, sprites, and virtual clock. Mode changes reset movement timestamps. FPS label identifies `DRONE A 10ms` or `DRONE B dt`. No other object movement changed. Developer to compile and compare HTML5 under identical conditions; browser may intercept F7. Record motion smoothness, edge shimmer, frame rate, camera behavior. Knowledge Base remains unchanged until findings are collected. This is a diagnostic, not a new release default.
+On `develop`, T toggles drone B (default, existing per-update dt) and A (standard 10-ms TimeGet gate) in Windows and HTML5. Both use elapsed milliseconds and unchanged speed, bounds, turn duration, sprites, and virtual clock. Mode changes reset movement timestamps. FPS label identifies `DRONE A 10ms` or `DRONE B dt`. No other object movement changed. Developer to compile and compare HTML5 under identical conditions; T is not part of the default movement/weapon bindings; user-remapped controls could conflict. Record motion smoothness, edge shimmer, frame rate, camera behavior. Knowledge Base remains unchanged until findings are collected. This is a diagnostic, not a new release default.
 
 ## Aktueller Stand 19.11.2026 – K1d und M1-Pruefauftrag
 
