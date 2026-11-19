@@ -1,9 +1,11 @@
 # SonecBot – Aktuelle Aufgaben und Meilensteine
 
-**Dokumentstatus:** Version 10.5 – E1b vom Entwickler mit 9/9 bestanden abgenommen; K1/M1 und Sound-Polishing folgen  
+**Dokumentstatus:** Version 10.6 – K1b gemeinsame früheste Spielerprojektil-Kollision implementiert; Entwicklertest offen; E1b 9/9 bestanden  
 **Stand:** 19. November 2026  
 **Branch:** `develop`  
 **Aktuelles Ziel:** **K1a: segmentbasierte Spieler-Bullet-Kollision für beide Minenarten, AGK-/Windows-/HTML5-Prüfung erfolgreich (10/12 bestätigt; 2 schwer durchführbare Anordnungsprüfungen offen).** S1–S3 abgenommen, S4-Warnung unter Windows/HTML5 bestätigt, D1 11/11 bestanden und 400-ms-Drehphase positiv bewertet. **Vor Real Alpha verbindlich:** M1 einheitliche zeitbasierte Bewegungslogik nach reproduzierbaren A/B-Tests (F5 Tower, F6 Plattformen, F4 Pixel-Snap separat), K1 zuverlässige Bullet-Kollision gegen Minen/Gegner (Tunneling-Verdacht durch Code + Spielerfeedback) mit Priorität vor Drohnenbewaffnung. Keine Gameplay-/Optionsmenü-Änderung zu M1/K1 implementiert. itch.io bleibt **Draft / Secret URL**.
+
+**K1b implementiert (19.11.2026), Entwicklertest offen:** Player-Bullets wählen per Segment-Kollision das räumlich erste Ziel aus **Orb, Walker-Turm, intelligenter Mine, einfacher Mine oder Kiste**. Für Orbs/Walker-Turm/Kisten neuer segmentbasierter AABB-Test mit Kugelradius; für Minen unveränderter Kreis-Sweep. Ein Projektil trifft maximal ein Ziel, bisherige Schadens- und Rotblinkreaktionen bleiben. Gegnerbullets behalten ihre bisherigen Minen-/Kistenpfade, andere Waffen unverändert. **Testen:** AGK-Compile, schnelle/knappe Treffer und Fehlschüsse, Orb-vor-Mine **und** Mine-vor-Orb, Walker-Turm versus Körper/Beine, Kiste, Kettenreaktion/E1b, Pause/Neustart, lokales HTML5. Bei zufallsbedingt nicht erreichbaren Anordnungen offen lassen. Kein eigener Laufzeittest.
 
 **E1b-Entwicklerabnahme (19.11.2026): 9/9 bestanden, keine offenen Punkte.** AGK-Compile, normale Dreier-Kettenreaktion, unveränderter Explosionsradius, Explosionsschaden für intelligente und einfache Minen **unabhängig bei gemeinsamer Explosion**, weitere Ziele (Sonec/Orb/Kiste/Walker), Pause/Neustart sowie lokales HTML5 erfolgreich. Entwicklerbemerkung: „hatte alles dank kettenreaktionen funktioniert.“ Damit E1b abgeschlossen; die nachfolgende ältere Angabe „Test offen“ ist historisch. 100-ms-Schadenstakt und beabsichtigte kreisförmige Mehrfachprüfung unverändert, kein eigener Assistenten-Laufzeittest. K1/M1 offen, Audio-Polishing für drei überlagerte Explosionssounds vorgemerkt.
 

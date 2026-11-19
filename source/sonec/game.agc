@@ -300,9 +300,9 @@ function GameDo(Game ref as TGame,Now as integer)
 	
 	BulletMoveall(Game.BulletList,Game.World,Now)
 	BulletCollide(Game.BulletList,Game.Sonec,Game.Shield,Now)
-	BulletCollideOrbs(Game.BulletList,Game.OrbList)
-	BulletCollideWalkers(Game.BulletList,Game.WalkerList,Now)
-	// K1: one nearest-hit sweep across intelligent and simple mine lists.
+	// K1b: one nearest-hit sweep across all player-bullet target types.
+	BulletCollidePlayerTargets(Game.BulletList,Game.OrbList,Game.WalkerList,Game.MineList,Game.SimpleMineList,Game.ChestList,Now)
+	// Retain the established enemy-bullet interactions with mines and chests.
 	BulletCollideMines(Game.BulletList,Game.MineList,Game.SimpleMineList)
 	BulletCollideChest(Game.BulletList,Game.ChestList)
 	

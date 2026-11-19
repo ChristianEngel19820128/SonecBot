@@ -1,4 +1,10 @@
-# Übergabe: E1b vollständig abgenommen (9/9) – K1/M1 und Alpha-Polishing folgen
+# Übergabe: K1b implementiert – Entwicklerprüfung offen
+
+## AKTUELL – K1b Spielerprojektil-Sweep über Orbs, Walker-Turm, Minen und Kisten (19.11.2026)
+
+**Implementiert auf `develop`, Entwicklertest offen:** `BulletBoxSweepEntry()` prüft die Strecke `PreviousPosition`→aktuelle Kugelposition gegen eine um den bestehenden Kugelradius erweiterte AABB (konservative swept-circle/AABB-Näherung, keine pixelgenaue Form). `BulletCollidePlayerTargets()` sammelt den **frühesten Kontakt über Orbs, Walker-Turm, intelligente Minen, einfache Minen und Kisten** und lässt jede Spielerkugel nur **ein Ziel** treffen. Bei gleichen Eintrittszeiten gilt stabile Reihenfolge Orb → Walker-Turm → intelligente Mine → einfache Mine → Kiste. Minen behalten den bewährten Kreis-Sweep aus K1a; Walker bleibt **nur am Turm verwundbar**. Schaden, Rotblinken und Walker-`HitFlashUntil` entsprechen den bisherigen Routinen. `GameDo` verwendet die gemeinsame Auswahl statt getrennter Orb-/Walker-Checks; vorhandene Minen-/Kistenfunktionen laufen nachher weiter, damit **Gegnergeschosse ihre bisherigen Kollisionen** behalten. Bereits gelöschte Spielerbullets werden ignoriert. Keine Änderungen an Geschossgeschwindigkeit, Zeitmodell, Explosionen, Sounds, Spawn oder Waffen.
+
+**Test-Gate:** AGK Studio kompilieren; zuverlässige zentrale und knappe Randtreffer/Fehlschüsse gegen Orb, Walker-Turm und Kiste, auch bei hohen Geschosswegen; Walker-Beine/Korpus sollen nicht plötzlich Trefferfläche werden; Mine-vor-Orb und Orb-vor-Mine, Mine-vor-Kiste und umgekehrt, ggf. zwei gleiche Ziele hintereinander (nur das erste trifft); intelligente/einfache Mine, Kettenreaktion und E1b unverändert; Gegnergeschosse, übrige Waffen, Pause/Neustart, lokales HTML5. Falls Reihenfolge wegen zufälliger Spawns nicht testbar: **nicht durchgeführt** markieren. Eine konservativ erweiterte AABB kann an Ecken früher treffen als ein exakter Kreis; bewusst bei Randtests auf unerwartete Fehltreffer achten. **Keine AGK- oder HTML5-Ausführung durch den Assistenten.**
 
 ## E1b – vom Entwickler vollständig abgenommen: 9/9 (19.11.2026)
 

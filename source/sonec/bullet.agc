@@ -292,6 +292,169 @@ function BulletMineSweepEntry(Bullet ref as TBullet,Mine ref as TMine)
     endif
 endfunction Entry
 
+// K1b: earliest intersection of a moving bullet center with an AABB.
+// The bullet radius expands the target bounds; this is a conservative
+// swept-circle/AABB approximation, not a pixel-perfect sprite collision.
+// Return -1 for a miss or the first segment entry fraction [0,1].
+function BulletBoxSweepEntry(Bullet ref as TBullet,BoxMin ref as TPosition,BoxMax ref as TPosition)
+    local Dx as float
+    local Dy as float
+    local MinX as float
+    local MaxX as float
+    local MinY as float
+    local MaxY as float
+    local NearTime as float
+    local FarTime as float
+    local AxisNear as float
+    local AxisFar as float
+    local Temp as float
+    local Entry as float
+
+    Entry = -1
+    MinX = BoxMin.x - Bullet.ObjectData.Radius
+    MaxX = BoxMax.x + Bullet.ObjectData.Radius
+    MinY = BoxMin.y - Bullet.ObjectData.Radius
+    MaxY = BoxMax.y + Bullet.ObjectData.Radius
+    Dx = Bullet.ObjectData.Position.x - Bullet.PreviousPosition.x
+    Dy = Bullet.ObjectData.Position.y - Bullet.PreviousPosition.y
+    NearTime = 0
+    FarTime = 1
+
+    if Dx = 0
+        if Bullet.PreviousPosition.x < MinX or Bullet.PreviousPosition.x > MaxX then exitfunction Entry
+    else
+        AxisNear = (MinX-Bullet.PreviousPosition.x)/Dx
+        AxisFar = (MaxX-Bullet.PreviousPosition.x)/Dx
+        if AxisNear > AxisFar
+            Temp = AxisNear
+            AxisNear = AxisFar
+            AxisFar = Temp
+        endif
+        if AxisNear > NearTime then NearTime = AxisNear
+        if AxisFar < FarTime then FarTime = AxisFar
+    endif
+
+    if Dy = 0
+        if Bullet.PreviousPosition.y < MinY or Bullet.PreviousPosition.y > MaxY then exitfunction Entry
+    else
+        AxisNear = (MinY-Bullet.PreviousPosition.y)/Dy
+        AxisFar = (MaxY-Bullet.PreviousPosition.y)/Dy
+        if AxisNear > AxisFar
+            Temp = AxisNear
+            AxisNear = AxisFar
+            AxisFar = Temp
+        endif
+        if AxisNear > NearTime then NearTime = AxisNear
+        if AxisFar < FarTime then FarTime = AxisFar
+    endif
+
+    if NearTime <= FarTime and FarTime >= 0 and NearTime <= 1
+        Entry = NearTime
+    endif
+endfunction Entry
+
+// K1b: choose one earliest player-bullet hit across ALL supported targets.
+// Tie priority is stable: orb, Walker turret, intelligent mine, simple mine,
+// chest. Enemy bullets continue to use their existing collision functions.
+function BulletCollidePlayerTargets(BulletList ref as TBulletList,OrbList ref as TOrbList,WalkerList ref as TWalkerList,MineList ref as TMineList,SimpleMineList ref as TMineList,ChestList ref as TChestList,Now as integer)
+    local i as integer
+    local k as integer
+    local BestType as integer
+    local BestIndex as integer
+    local BestEntry as float
+    local Entry as float
+
+    for i = 0 to BulletList.Bullet.Length
+        if BulletList.Bullet[i].Enabled = TRUE and BulletList.Bullet[i].CollisionData.CollisionType = TYPEPLAYERONE
+            BestType = 0
+            BestIndex = -1
+            BestEntry = 2
+
+            for k = 0 to OrbList.Orb.Length
+                if OrbList.Orb[k].Enabled = TRUE
+                    Entry = BulletBoxSweepEntry(BulletList.Bullet[i],OrbList.Orb[k].CollisionData.Position1,OrbList.Orb[k].CollisionData.Position2)
+                    if Entry >= 0 and Entry < BestEntry
+                        BestEntry = Entry
+                        BestType = 1
+                        BestIndex = k
+                    endif
+                endif
+            next k
+
+            for k = 0 to WalkerList.Walker.Length
+                if WalkerList.Walker[k].Enabled = TRUE
+                    Entry = BulletBoxSweepEntry(BulletList.Bullet[i],WalkerList.Walker[k].WalkerCollisionData.Tower.Position1,WalkerList.Walker[k].WalkerCollisionData.Tower.Position2)
+                    if Entry >= 0 and Entry < BestEntry
+                        BestEntry = Entry
+                        BestType = 2
+                        BestIndex = k
+                    endif
+                endif
+            next k
+
+            for k = 0 to MineList.Mine.Length
+                if MineList.Mine[k].Enabled = TRUE
+                    Entry = BulletMineSweepEntry(BulletList.Bullet[i],MineList.Mine[k])
+                    if Entry >= 0 and Entry < BestEntry
+                        BestEntry = Entry
+                        BestType = 3
+                        BestIndex = k
+                    endif
+                endif
+            next k
+
+            for k = 0 to SimpleMineList.Mine.Length
+                if SimpleMineList.Mine[k].Enabled = TRUE
+                    Entry = BulletMineSweepEntry(BulletList.Bullet[i],SimpleMineList.Mine[k])
+                    if Entry >= 0 and Entry < BestEntry
+                        BestEntry = Entry
+                        BestType = 4
+                        BestIndex = k
+                    endif
+                endif
+            next k
+
+            for k = 0 to ChestList.Chest.Length
+                if ChestList.Chest[k].Enabled = TRUE
+                    Entry = BulletBoxSweepEntry(BulletList.Bullet[i],ChestList.Chest[k].CollisionData.Position1,ChestList.Chest[k].CollisionData.Position2)
+                    if Entry >= 0 and Entry < BestEntry
+                        BestEntry = Entry
+                        BestType = 5
+                        BestIndex = k
+                    endif
+                endif
+            next k
+
+            if BestType = 1
+                OrbList.Orb[BestIndex].Health.State = OrbList.Orb[BestIndex].Health.State - BulletList.Bullet[i].BulletData.Damage
+                ColorSet(OrbList.Orb[BestIndex].SpriteData.Color,255,0,0,255)
+                BulletDelete(BulletList,i)
+            endif
+            if BestType = 2
+                WalkerList.Walker[BestIndex].Health.State = WalkerList.Walker[BestIndex].Health.State - BulletList.Bullet[i].BulletData.Damage
+                WalkerList.Walker[BestIndex].HitFlashUntil = Now + 150
+                ColorSet(WalkerList.Walker[BestIndex].WalkerSpriteData.Tower.Color,255,0,0,255)
+                BulletDelete(BulletList,i)
+            endif
+            if BestType = 3
+                MineList.Mine[BestIndex].Health.State = MineList.Mine[BestIndex].Health.State - BulletList.Bullet[i].BulletData.Damage
+                ColorSet(MineList.Mine[BestIndex].SpriteData.Color,255,0,0,255)
+                BulletDelete(BulletList,i)
+            endif
+            if BestType = 4
+                SimpleMineList.Mine[BestIndex].Health.State = SimpleMineList.Mine[BestIndex].Health.State - BulletList.Bullet[i].BulletData.Damage
+                ColorSet(SimpleMineList.Mine[BestIndex].SpriteData.Color,255,0,0,255)
+                BulletDelete(BulletList,i)
+            endif
+            if BestType = 5
+                ChestList.Chest[BestIndex].Health.State = ChestList.Chest[BestIndex].Health.State - BulletList.Bullet[i].BulletData.Damage
+                ColorSet(ChestList.Chest[BestIndex].SpriteData.Color,255,0,0,255)
+                BulletDelete(BulletList,i)
+            endif
+        endif
+    next i
+endfunction
+
 // One scan across BOTH mine types ensures the nearest valid hit wins, even
 // when an intelligent and a simple mine lie on the same bullet trajectory.
 // Enemy bullets retain their prior endpoint-circle behavior for this K1 step.
