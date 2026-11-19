@@ -6,7 +6,7 @@
 #constant NOTICE_GAP 8
 #constant NOTICE_LINE_HEIGHT 8
 #constant NOTICE_PREVIEW 1800
-#constant PICKUP_STAR_MS 650
+#constant PICKUP_STAR_MS 1100
 
 function WarningCreate(Warning ref as TWarning,Screen as TSize)
     local i as integer
@@ -154,7 +154,7 @@ function WarningPickupStarDraw(Warning ref as TWarning,Sonec ref as TSonec)
         if Alpha < 0 then Alpha = 0
         Warning.StarData.Position.x = Sonec.SpriteData.Position.x
         Warning.StarData.Position.y = Sonec.SpriteData.Position.y-Sonec.ObjectData.Size.Height*0.65-Elapsed*20/PICKUP_STAR_MS
-        Warning.StarData.Scale = 0.5
+        Warning.StarData.Scale = 0.35
         ColorSet(Warning.StarData.Color,140,230,173,Alpha)
         SpriteDraw(Warning.StarIcon.Sprite,Warning.StarData)
         // Restore the shared notification icon styling.
