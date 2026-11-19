@@ -1,6 +1,12 @@
-# Übergabe: K1c Sonec-Bullet-Sweep implementiert – Entwicklerprüfung offen
+# Übergabe: K1c 12/12 abgenommen – Shape-Collision-Analyse folgt
 
-## AKTUELL – K1c Gegner-Bullet-Tunneling gegen Sonec korrigiert (19.11.2026)
+## AKTUELL – K1c 12/12 Entwicklerabnahme bestanden (19.11.2026)
+
+**K1c vollständig abgenommen, 12/12 bestanden; keine offenen oder fehlgeschlagenen Tests.** Entwickler bestätigt: AGK Studio kompiliert; gegnerische Bullets treffen stehenden Sonec zuverlässig; schnelle Kugeln fliegen nicht mehr sichtbar durch ihn; knappe Vorbeischüsse bleiben schadensfrei; beide Richtungen, Bewegung/Sprung, Schildabsorption mit Schild, Health-Schaden ohne Schild, kein Mehrfachtreffer einer Kugel, Spielerprojektile/K1b unverändert, Pause/Neustart und lokales HTML5 erfolgreich. **Beobachtungen: keine.** Diese Aussagen sind Entwicklertests, kein eigener AGK-Lauf des Assistenten. K1c-Korrektur bleibt auf Commit `c762c99`; diese Abnahme ändert keinen Spielcode.
+
+**Nächster Schritt: READ-ONLY-Analyse der Shape Collision** für Sonecs Körper gegenüber seinem kreisförmigen Schild. Danach gegebenenfalls Walker-Beine/Umgebungskollision untersuchen, ohne die aktuell nur am Turm mögliche Gewehr-Verwundbarkeit stillschweigend zu verändern. Prüfen, welche Shape-/Sprite-Daten und AGK-Kollisionsverfahren tatsächlich verwendet werden und wie eine genauere Formprüfung tunneling-sicher mit dem Segmenttest kombinierbar ist. Noch keine Shape-, Farb-, Schild- oder Walker-Änderung freigegeben. Später: giftgrün/rotes Trefferfeedback für Sonec und Schild, Drohnen-Jet-Sprite bei vertikaler Bewegung. **M1 bleibt separat offen.**
+
+## K1c – Implementierung vor Abnahme (historischer Stand, 19.11.2026)
 
 **K1c implementiert auf `develop`, Entwicklertest offen:** `BulletSweepHitsSonec` in `source/sonec/bullet.agc` prüft das **gesamte letzte Bullet-Bewegungssegment** (`PreviousPosition` bis `ObjectData.Position`) gegen den **unveränderten** Sonec-Kreisradius. Die nächste Position auf der Strecke wird über eine auf 0..1 begrenzte Projektion bestimmt; bei Nullbewegung erfolgt eine Punktprüfung. Weiterhin nur `TYPEENEMY`, strikt innerhalb des bisherigen Radius (kein addierter Bullet-Radius), einmaliger Treffer/Löschen der Bullet. Die bestehende `ShieldAbsorbDamage`-Berechnung und Health-Schadensformel sind unverändert; auch `GameDo`-Aufrufreihenfolge, Player-Bullet-K1b, Explosionen, Spawn und Animationen bleiben gleich. **Statische Quellcodeprüfung, kein AGK-/Windows-/HTML5-Lauf des Assistenten.**
 
