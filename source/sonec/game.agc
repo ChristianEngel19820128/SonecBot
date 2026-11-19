@@ -275,11 +275,6 @@ function GameDo(Game ref as TGame,Now as integer)
 	ExplosionCollideMine(Game.ExplosionList,Game.SimpleMineList,1)
 	ExplosionCollideWalkers(Game.ExplosionList,Game.WalkerList,Now)
 	
-	// Flash only when health actually decreases; shield-only hits do not flash Sonec.
-	if Game.Sonec.Health.State < SonecHealthBefore
-		SonecHitFlashUntil = Now + SONEC_HIT_FLASH_MS
-	endif
-	SonecVisualUpdate(Game.Sonec,Now)
 	SonecEnergyRegenerate(Game.Sonec,Now)
 	SonecHealthRegenerate(Game.Sonec,Now)
 		
@@ -333,6 +328,12 @@ function GameDo(Game ref as TGame,Now as integer)
 	PlasmaBlitzCollideWalkers(Game.PlasmaBlitzList,Game.WalkerList,Now)
 	PlasmaBlitzCollisionTimerReset(Game.PlasmaBlitzList,Now)
 	
+	// Check after explosions AND bullets, so Walker hits trigger the same flash.
+	if Game.Sonec.Health.State < SonecHealthBefore
+		SonecHitFlashUntil = Now + SONEC_HIT_FLASH_MS
+	endif
+	SonecVisualUpdate(Game.Sonec,Now)
+
 	SonecRefreshAnimations(Game.Sonec,Game.PlasmaBlitzList,Game.FlashList,Game.World)
 	Game.IsLost = Game.Sonec.IsLost
 	
