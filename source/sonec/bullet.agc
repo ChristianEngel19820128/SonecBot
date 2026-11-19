@@ -72,6 +72,7 @@ function BulletNew(Bullet ref as TBullet,ProtoBullet ref as TProtoBullet,World r
 	
 	Bullet.ObjectData.Position = Position
 	CalcPosition(Bullet.ObjectData.Position,Angle,Radius)
+	Bullet.PreviousPosition = Bullet.ObjectData.Position
 	
 	Bullet.ObjectData.MoveSpeedMax.x = 0
 	Bullet.ObjectData.MoveSpeedMax.y = 0
@@ -238,27 +239,123 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function BulletCollideMine(BulletList ref as TBulletList,MineList ref as TMineList)
-	
-	local i as integer
-	local k as integer
-	local Radius as float
-	
-	for i = 0 to BulletList.Bullet.Length
-		if BulletList.Bullet[i].Enabled = TRUE
-			for k = 0 to MineList.Mine.Length
-				if MineList.Mine[k].Enabled = TRUE
-					Radius = CalcRadius(BulletList.Bullet[i].ObjectData.Position,MineList.Mine[k].ObjectData.Position)
-					if Radius < BulletList.Bullet[i].ObjectData.Radius + MineList.Mine[k].ObjectData.Radius
-						MineList.Mine[k].Health.State = MineList.Mine[k].Health.State - BulletList.Bullet[i].BulletData.Damage
-						BulletDelete(BulletList,i)
-						ColorSet(MineList.Mine[k].SpriteData.Color,255,0,0,255)
-					endif
-				endif
-			next k
-		endif
-	next i
-	
+// K1: earliest contact along the bullet's last movement segment against
+// a stationary mine circle at the currently sampled position.
+// Returns -1 on miss, otherwise entry fraction [0,1] for nearest-hit ordering.
+// No hitbox enlargement: retain the existing bullet + mine radii.
+function BulletMineSweepEntry(Bullet ref as TBullet,Mine ref as TMine)
+    local Dx as float
+    local Dy as float
+    local StartX as float
+    local StartY as float
+    local Radius as float
+    local RadiusSq as float
+    local DistanceSq as float
+    local LengthSq as float
+    local Projection as float
+    local ClosestSq as float
+    local Chord as float
+    local Entry as float
+
+    Entry = -1
+    Radius = Bullet.ObjectData.Radius + Mine.ObjectData.Radius
+    RadiusSq = Radius*Radius
+    StartX = Bullet.PreviousPosition.x - Mine.ObjectData.Position.x
+    StartY = Bullet.PreviousPosition.y - Mine.ObjectData.Position.y
+    DistanceSq = StartX*StartX + StartY*StartY
+
+    if DistanceSq <= RadiusSq
+        // Already overlapping at the start of this step.
+        Entry = 0
+    else
+        Dx = Bullet.ObjectData.Position.x - Bullet.PreviousPosition.x
+        Dy = Bullet.ObjectData.Position.y - Bullet.PreviousPosition.y
+        LengthSq = Dx*Dx + Dy*Dy
+        if LengthSq > 0
+            Projection = -(StartX*Dx + StartY*Dy)/LengthSq
+            if Projection >= 0 and Projection <= 1
+                ClosestSq = DistanceSq - Projection*Projection*LengthSq
+                if ClosestSq <= RadiusSq
+                    Chord = sqrt((RadiusSq-ClosestSq)/LengthSq)
+                    Entry = Projection - Chord
+                    if Entry < 0 then Entry = 0
+                endif
+            else
+                // Center of closest approach may lie past the endpoint.
+                if Projection > 1
+                    StartX = Bullet.ObjectData.Position.x - Mine.ObjectData.Position.x
+                    StartY = Bullet.ObjectData.Position.y - Mine.ObjectData.Position.y
+                    if StartX*StartX + StartY*StartY <= RadiusSq then Entry = 1
+                endif
+            endif
+        endif
+    endif
+endfunction Entry
+
+// One scan across BOTH mine types ensures the nearest valid hit wins, even
+// when an intelligent and a simple mine lie on the same bullet trajectory.
+// Enemy bullets retain their prior endpoint-circle behavior for this K1 step.
+function BulletCollideMines(BulletList ref as TBulletList,MineList ref as TMineList,SimpleMineList ref as TMineList)
+    local i as integer
+    local k as integer
+    local BestType as integer
+    local BestIndex as integer
+    local BestEntry as float
+    local Entry as float
+    local Radius as float
+
+    for i = 0 to BulletList.Bullet.Length
+        if BulletList.Bullet[i].Enabled = TRUE
+            BestType = 0
+            BestIndex = -1
+            BestEntry = 2
+
+            for k = 0 to MineList.Mine.Length
+                if MineList.Mine[k].Enabled = TRUE
+                    Entry = -1
+                    if BulletList.Bullet[i].CollisionData.CollisionType = TYPEPLAYERONE
+                        Entry = BulletMineSweepEntry(BulletList.Bullet[i],MineList.Mine[k])
+                    else
+                        Radius = CalcRadius(BulletList.Bullet[i].ObjectData.Position,MineList.Mine[k].ObjectData.Position)
+                        if Radius < BulletList.Bullet[i].ObjectData.Radius + MineList.Mine[k].ObjectData.Radius then Entry = 1
+                    endif
+                    if Entry >= 0 and Entry < BestEntry
+                        BestEntry = Entry
+                        BestType = 1
+                        BestIndex = k
+                    endif
+                endif
+            next k
+
+            for k = 0 to SimpleMineList.Mine.Length
+                if SimpleMineList.Mine[k].Enabled = TRUE
+                    Entry = -1
+                    if BulletList.Bullet[i].CollisionData.CollisionType = TYPEPLAYERONE
+                        Entry = BulletMineSweepEntry(BulletList.Bullet[i],SimpleMineList.Mine[k])
+                    else
+                        Radius = CalcRadius(BulletList.Bullet[i].ObjectData.Position,SimpleMineList.Mine[k].ObjectData.Position)
+                        if Radius < BulletList.Bullet[i].ObjectData.Radius + SimpleMineList.Mine[k].ObjectData.Radius then Entry = 1
+                    endif
+                    if Entry >= 0 and Entry < BestEntry
+                        BestEntry = Entry
+                        BestType = 2
+                        BestIndex = k
+                    endif
+                endif
+            next k
+
+            if BestType = 1
+                MineList.Mine[BestIndex].Health.State = MineList.Mine[BestIndex].Health.State - BulletList.Bullet[i].BulletData.Damage
+                ColorSet(MineList.Mine[BestIndex].SpriteData.Color,255,0,0,255)
+                BulletDelete(BulletList,i)
+            endif
+            if BestType = 2
+                SimpleMineList.Mine[BestIndex].Health.State = SimpleMineList.Mine[BestIndex].Health.State - BulletList.Bullet[i].BulletData.Damage
+                ColorSet(SimpleMineList.Mine[BestIndex].SpriteData.Color,255,0,0,255)
+                BulletDelete(BulletList,i)
+            endif
+        endif
+    next i
 endfunction
 
 //----------------------------------------------------------------------
@@ -294,6 +391,8 @@ endfunction
 function BulletMove(Bullet ref as TBullet,World ref as TWorld,Now as integer)
 
 	if Bullet.Enabled = TRUE
+		// Always preserve a single-segment sweep, also when the 10-ms gate is closed.
+		Bullet.PreviousPosition = Bullet.ObjectData.Position
 		if TimeGet(Bullet.ObjectData.MoveTimer,Now) > 0
 			
 			Bullet.ObjectData.Position.x = Bullet.ObjectData.Position.x + Bullet.ObjectData.MoveSpeed.x * Bullet.ObjectData.MoveTimer.CalcRange

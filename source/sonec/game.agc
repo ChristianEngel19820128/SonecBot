@@ -301,8 +301,8 @@ function GameDo(Game ref as TGame,Now as integer)
 	BulletCollide(Game.BulletList,Game.Sonec,Game.Shield,Now)
 	BulletCollideOrbs(Game.BulletList,Game.OrbList)
 	BulletCollideWalkers(Game.BulletList,Game.WalkerList,Now)
-	BulletCollideMine(Game.BulletList,Game.MineList)
-	BulletCollideMine(Game.BulletList,Game.SimpleMineList)
+	// K1: one nearest-hit sweep across intelligent and simple mine lists.
+	BulletCollideMines(Game.BulletList,Game.MineList,Game.SimpleMineList)
 	BulletCollideChest(Game.BulletList,Game.ChestList)
 	
 	GrenadeMoveall(Game.GrenadeList,Game.World,Now)

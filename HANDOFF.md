@@ -1,4 +1,12 @@
-# Übergabe: Pre-Alpha abgeschlossen → Real Alpha Release-Gates M1 und K1
+# Übergabe: Real Alpha K1a Bullet-Sweep gegen Minen
+
+## AKTUELL – K1a Swept-Bullet-Kollision gegen beide Minenarten implementiert, Entwicklertest offen (19.11.2026)
+
+**Implementierter enger Schritt K1a:** `TBullet.PreviousPosition` speichert den Anfang des letzten Bullet-Bewegungsschritts; Initialisierung erfolgt direkt nach der Mündungsoffset-Berechnung in `BulletNew()`, Aktualisierung vor dem Timer-gesteuerten `BulletMove()`. Eine neue Funktion `BulletMineSweepEntry()` prüft die **gesamte Strecke von vorheriger zu aktueller Position** gegen den **unveränderten kombinierten Kreisradius** des Projektils und der Mine; sie liefert die Eintrittsfraktion 0–1, `-1` bei Fehlschuss. `BulletCollideMines()` verarbeitet **intelligente und einfache Mine gemeinsam**, nimmt nur die **früheste gültige Kollision** und löscht genau ein Projektil nach einem Treffer. Bisherige Trefferfarbe und Schadenswert bleiben bestehen. **Nur Spieler-Bullets** verwenden hier den Sweep; feindliche Bullets behalten für Minen die alte Endpunktprüfung. Keine Änderung an Bullet-Geschwindigkeit, Bullet-Renderpfad, anderen Waffengattungen, Minenbewegung, Walker-IK oder M1.
+
+**Grenze des ersten Patches:** Die Mine wird gegen ihre **aktuelle** Kreisposition geprüft; eigene Bewegung der Mine während des Frames ist noch nicht als relatives Sweep abgebildet. Und `GameDo()` prüft weiterhin Orb/Walker **vor** den Minen und Kisten **danach** – nächster Kollisionsgegner über alle Typen hinweg ist noch keine gemeinsame Trefferordnung. Dieser Schritt zielt gezielt auf die vom Entwickler beobachteten verlorenen Minentreffer; allgemeines K1-Release-Gate bleibt bis zu den weiteren Zielklassen offen.
+
+**Nachweis:** statische Kontrolle von Quellcode/Git, **kein eigener AGK-Studio-Compile, Windows- oder HTML5-Lauf**. Entwickler-Nachtest: zentral und knapp am Rand vorbeischießen, bewegte und still scheinende einfache/intelligente Minen, hohe Bulletgeschwindigkeit, zwei Minen auf gleicher Bahn in **beiden möglichen Typreihenfolgen**, Gegenrichtung, 55–60 FPS, Pause/Neustart, Schaden/Rotblinken/Energie-Drop sowie Regression Walker, Orb, Chest, Walker-Bullets, übrige Waffen. Bei Trefferproblemen erst K1a isolieren; keine ungeprüfte Ausweitung auf alle Gegner.
 
 ## Vereinbarte Alpha-Art- und Umfangsplanung (19.11.2026)
 

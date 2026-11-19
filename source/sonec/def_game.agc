@@ -399,6 +399,8 @@ endtype
 
 type TBullet
 	Enabled as integer
+	// K1: starting position of the most recent movement step (world coordinates).
+	PreviousPosition as TPosition
 	ObjectData as TObjectData
 	SpriteData as TSpriteData
 	BulletData as TBulletData
