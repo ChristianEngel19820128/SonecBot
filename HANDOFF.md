@@ -1,6 +1,16 @@
-# Übergabe: K1b implementiert – Entwicklerprüfung offen
+# Übergabe: K1b 12/12 abgenommen – K1c Sonec-Bullets und Trefferfeedback offen
 
-## AKTUELL – K1b Spielerprojektil-Sweep über Orbs, Walker-Turm, Minen und Kisten (19.11.2026)
+## AKTUELL – K1b 12/12 abgenommen; K1c und Trefferfeedback als nächste Prüfung (19.11.2026)
+
+**K1b-Entwicklerabnahme: 12/12 bestanden, keine offenen Punkte.** AGK-Compile, schnelle Orb-Treffer, Walker-Turm (nicht Körper/Beine), Kisten, beide Minenarten, Randtreffer und knappe Fehlschüsse, **Orb-vor-Mine und Mine-vor-Orb** (nur das vordere Ziel), Kettenreaktion/E1b, Gegnergeschosse/andere Waffen, Pause/Neustart und lokales HTML5 erfolgreich. Entwickler: „das trefferbild ist eindeutig gut und wirkt fairer als zuvor. alles was das gegner treffen betrifft wirkt korrekt.“ K1b abgeschlossen; der ältere Abschnitt mit offenem Test ist historisch.
+
+**K1c – Gegnerbullets gegen Sonec, noch keine Implementierung:** `BulletCollide` in `source/sonec/bullet.agc` prüft nur die Bullet-Endposition gegen Sonecs Kreisradius, ohne `PreviousPosition` und ohne Bullet-Radius. `PreviousPosition` ist vorhanden; ein enger Segment-Kreis-Sweep gegen den **bisherigen Sonec-Radius ohne Vergrößerung** ist als nächster technischer Schritt besprochen, um mögliches Tunneling zu verhindern. Schildabsorption und Health-Schaden unverändert lassen. Der Entwickler beschreibt Sonecs bisherigen Trefferbereich als grob und regt **Shape Collision am Körper** an; vor Implementierung klären, wie eine präzise Formprüfung mit einem schnellen Segmenttest kombinierbar ist. **Schild ist kreisförmig** und verwendet Schwarz/Weiß-Grafik. Körper-Shape und Schild-Kreis getrennt betrachten, kein vorschneller Wechsel des Schadensmodells.
+
+**Trefferfeedback-Ideen (noch keine Codeänderung):** Sonecs derzeitige Grafiken sind **grün**, nicht neutral schwarz/weiß. Entwickler schlägt für später eine neutrale/„giftgrüne“ Grunddarstellung und **rotes Aufblinken bei Treffer** vor; ebenso Feedback am Schild bei Einschlag. Vorher prüfen, wie bestehende Sprite-Farben und Schildanimation wirken; eine rot eingefärbte grüne Grafik könnte optisch anders ausfallen als gewünscht. Schild-Asset ist bereits schwarz/weiß. Rückmeldung sollte eindeutig zwischen Sonec-Körpertreffer und Schildabsorption unterscheiden; konkrete Gestaltung noch offen.
+
+**Spätere Drohnen-Idee (nicht Teil von K1c):** Drohne könnte bei vertikaler Bewegung den vorhandenen Jet-Sprite verwenden, analog zu Sonecs Jet-Anzeige, um Auf-/Abwärtsbewegung besser sichtbar zu machen. Nur Vormerkung, keine Umsetzung.
+
+## K1b – Implementierung vor Entwicklerabnahme (historisch, 19.11.2026)
 
 **Implementiert auf `develop`, Entwicklertest offen:** `BulletBoxSweepEntry()` prüft die Strecke `PreviousPosition`→aktuelle Kugelposition gegen eine um den bestehenden Kugelradius erweiterte AABB (konservative swept-circle/AABB-Näherung, keine pixelgenaue Form). `BulletCollidePlayerTargets()` sammelt den **frühesten Kontakt über Orbs, Walker-Turm, intelligente Minen, einfache Minen und Kisten** und lässt jede Spielerkugel nur **ein Ziel** treffen. Bei gleichen Eintrittszeiten gilt stabile Reihenfolge Orb → Walker-Turm → intelligente Mine → einfache Mine → Kiste. Minen behalten den bewährten Kreis-Sweep aus K1a; Walker bleibt **nur am Turm verwundbar**. Schaden, Rotblinken und Walker-`HitFlashUntil` entsprechen den bisherigen Routinen. `GameDo` verwendet die gemeinsame Auswahl statt getrennter Orb-/Walker-Checks; vorhandene Minen-/Kistenfunktionen laufen nachher weiter, damit **Gegnergeschosse ihre bisherigen Kollisionen** behalten. Bereits gelöschte Spielerbullets werden ignoriert. Keine Änderungen an Geschossgeschwindigkeit, Zeitmodell, Explosionen, Sounds, Spawn oder Waffen.
 
