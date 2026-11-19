@@ -23,6 +23,10 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
+// Visual-only impact flash: preserve the shield's animated opacity.
+#constant SHIELD_HIT_FLASH_MS 120
+global ShieldHitFlashUntil as integer
+
 function ShieldRefresh(Shield ref as TShield,World ref as TWorld,Position as TPosition,Now as integer)
 	
 	if Shield.Enabled = TRUE
@@ -41,6 +45,7 @@ function ShieldReset(Shield ref as TShield,AFrameMax as integer,Now as integer)
 	if Shield.SizeMultiplier <= 0 then Shield.SizeMultiplier = SHIELD_DEFAULT_SIZE_MULTIPLIER
 	Shield.Enabled = FALSE
 	Shield.LastDamageMs = 0
+	ShieldHitFlashUntil = 0
 	Shield.DamageCooldownActive = FALSE
 	Shield.ShapeTestChecks = 0
 	Shield.ShapeTestHits = 0
@@ -122,7 +127,7 @@ function ShieldAnimate(Shield ref as TShield,Sonec ref as TSonec,Now as integer)
 				//endif
 			endif
 			
-			ColorSet(Shield.SpriteData.Color,55,255,155,55+Shield.AnimationData.Frame*155/Shield.AnimationData.FrameMax)
+			// Shield tint is updated every frame below, independent of the animation timer.
 			
 			// Ein einheitlicher Größenverlauf für Auf- und Abbau.
 			Shield.SpriteData.Scale = Shield.SizeMultiplier*Shield.AnimationData.Frame/Shield.AnimationData.FrameMax
@@ -133,6 +138,14 @@ function ShieldAnimate(Shield ref as TShield,Sonec ref as TSonec,Now as integer)
 				Sonec.EnergyShield.State = 0
 			endif
 
+		endif
+		// Refresh every update so the 120-ms flash ends even between animation ticks.
+		local ShieldAlpha as integer
+		ShieldAlpha = 55+Shield.AnimationData.Frame*155/Shield.AnimationData.FrameMax
+		if Now < ShieldHitFlashUntil
+			ColorSet(Shield.SpriteData.Color,120,220,255,ShieldAlpha)
+		else
+			ColorSet(Shield.SpriteData.Color,55,255,155,ShieldAlpha)
 		endif
 	endif
 	
@@ -221,6 +234,7 @@ function ShieldAbsorbDamage(Shield ref as TShield,Sonec ref as TSonec,Damage as 
 		if charge > 0
 			absorbed = Damage * SHIELD_MAX_PROTECTION_PERCENT * charge / (100*Sonec.EnergyShield.StateMax)
 			if absorbed > charge then absorbed = charge
+			if absorbed > 0 then ShieldHitFlashUntil = Now + SHIELD_HIT_FLASH_MS
 			// Add new damage to the remaining visible trail and extend its lifetime.
 			local trailRemaining as float
 			trailRemaining = 0
