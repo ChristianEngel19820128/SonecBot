@@ -3,7 +3,8 @@
 #constant NOTICE_HEIGHT 58
 #constant NOTICE_TOP 13
 #constant NOTICE_MAX 4
-#constant NOTICE_STEP 65
+#constant NOTICE_GAP 8
+#constant NOTICE_LINE_HEIGHT 8
 #constant NOTICE_PREVIEW 1800
 
 function WarningCreate(Warning ref as TWarning,Screen as TSize)
@@ -98,8 +99,8 @@ function WarningDraw(Warning ref as TWarning)
     local r as integer
     local g as integer
     local b as integer
+    y = NOTICE_TOP
     for i = 0 to Warning.Count-1
-        y = NOTICE_TOP+i*NOTICE_STEP
         if Warning.Notice[i].Kind = 1
             r = 140
             g = 230
@@ -110,10 +111,11 @@ function WarningDraw(Warning ref as TWarning)
             b = 100
         endif
         if i > 0 and Warning.Now >= Warning.Notice[i].PreviewUntilMs
-            SetSpriteSize(Warning.Notice[i].BarSpriteID,NOTICE_WIDTH,8)
+            SetSpriteSize(Warning.Notice[i].BarSpriteID,NOTICE_WIDTH,NOTICE_LINE_HEIGHT)
             SetSpriteColor(Warning.Notice[i].BarSpriteID,r,g,b,240)
-            SetSpritePosition(Warning.Notice[i].BarSpriteID,Warning.CenterX-NOTICE_WIDTH*0.5,y+25)
+            SetSpritePosition(Warning.Notice[i].BarSpriteID,Warning.CenterX-NOTICE_WIDTH*0.5,y)
             DrawSprite(Warning.Notice[i].BarSpriteID)
+            y = y+NOTICE_LINE_HEIGHT+NOTICE_GAP
         else
             SetSpriteSize(Warning.Notice[i].BarSpriteID,NOTICE_WIDTH,NOTICE_HEIGHT)
             SetSpriteColor(Warning.Notice[i].BarSpriteID,12,12,24,180)
@@ -130,6 +132,7 @@ function WarningDraw(Warning ref as TWarning)
                 SpriteDraw(Warning.Icon.Sprite,Warning.IconData)
             endif
             DrawText(Warning.Notice[i].TextID)
+            y = y+NOTICE_HEIGHT+NOTICE_GAP
         endif
     next i
 endfunction
