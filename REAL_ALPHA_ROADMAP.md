@@ -26,7 +26,19 @@ Entwickler beobachtet, dass Maschinengewehrkugeln vor allem kleine einfache Mine
 
 ### E1 – Explosionsradius und Minenkettenreaktion prüfen (Alpha-Qualität)
 
+**Entwicklerpräzisierung (19.11.2026):** Kreisförmige Explosionskollision und wiederholte Schadensprüfung während der gesamten Explosion sind **absichtlich**. Im aktuellen Code erfolgen die Kollisionsabfragen pro aktivem `GameDo`-Update und die Schadensintervalle mindestens 100 ms auseinander, nicht ausschließlich einmal je neuem Animationsframe. Vor jeglicher Änderung zuerst Explosionsbildradius, zufällige Skalierung und Formationsabstände überprüfen; keine vorschnelle Fehlerannahme. Später **Formationsmuster mit bewusst unterschiedlichen Abständen** planen: Kettenreaktionen dürfen vorkommen, sollen aber **nicht zwangsläufig bei jedem Minenfeld** die gesamte Formation zerstören. Spielerische Abwägung/Fairness erst nach Radiusanalyse.
+
+
+
 Der Entwickler berichtet, dass nach Zerstören einer Mine häufig die **ganze einfache Dreierformation** explodiert. Aktuelle Formationsabstände sind **32 px horizontal** und **48 px vertikal**, also ca. **57,7 px zwischen Nachbarn** und **115,4 px von erster zu dritter Mine**. `MineDestroy()` erstellt eine Explosion vom Typ 1; ihr Radius hängt vom Bilddurchmesser und zufälliger Skalierung **75–125 %** ab. `ExplosionCollideMine()` prüft Entfernung des Minenmittelpunktes gegen den Explosionsradius; bei aktiviertem Zeitmodus sind **30 Schaden** pro Treffer und mindestens **100 ms** zwischen Treffern vorgesehen, gegenüber **25 HP** einer Mine. Das legt Kettenreaktionen nahe, beweist aber ohne tatsächliche Bildmaße und gezielten Laufzeittest keinen exakten Reichweitenwert. Für E1: Bildradius messen, Reichweitenvarianz und Formation vergleichen, Kaskade/Schadentakt testen, spielerische Fairness beurteilen. Kettenreaktion kann erwünschtes Gameplay sein; **noch keine Balanceentscheidung oder Codefreigabe**.
+
+### Alpha-Balancing – Minenfeldhäufigkeit und Warnungsdichte
+
+Der Entwickler empfindet `MINEFIELD DETECTED` bei längerer Spielzeit als zu häufig. Aktueller Zufallsabstand zwischen Minenfeld-Spawnversuchen: **18–30 Sekunden aktiver Spielzeit**. Beim späteren Alpha-Balancing **höhere Zufallsintervallwerte** erproben, um Felder/Warnungen tendenziell seltener erscheinen zu lassen. Neue Werte erst nach Beobachtung im Zusammenspiel mit weiteren Feinden und einem möglichen Gefahrenbudget festlegen. Warn-Trigger selbst und heutige Spawnwerte bleiben unverändert.
+
+### K1-Folgetest – Orb vor Mine / Mine vor Orb
+
+Der Entwickler beobachtete, dass eine Spielerkugel bei einem Orb direkt vor einer intelligenten Mine **nur den Orb** traf. Das passt zur aktuellen Prüf- und Löschreihenfolge in `GameDo`: Orb → Walker → Minen → Kisten. **Dies beweist noch keine korrekte räumliche Reihenfolge**, denn Orbs/Walker/Kisten nutzen momentane Endpunkt-AABBs, während Minen K1a-Segmenttests benutzen. Für die spätere K1-Erweiterung **beide Reihenfolgen** (Orb vor Mine und Mine vor Orb) mit reproduzierbarer Aufstellung testen und ggf. einheitliche früheste Trefferwahl über Zielklassen konzipieren. Noch keine Codefreigabe oder Änderung.
 
 ### Positive Meldungen und Sound-Feedback – vorgemerkte Alpha-Verbesserung
 
