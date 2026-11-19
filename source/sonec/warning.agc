@@ -6,6 +6,7 @@
 #constant NOTICE_GAP 8
 #constant NOTICE_LINE_HEIGHT 8
 #constant NOTICE_PREVIEW 1800
+#constant PICKUP_STAR_MS 650
 
 function WarningCreate(Warning ref as TWarning,Screen as TSize)
     local i as integer
@@ -41,6 +42,8 @@ endfunction
 function WarningReset(Warning ref as TWarning)
     local i as integer
     Warning.Count = 0
+    Warning.PickupStarStartMs = 0
+    Warning.PickupStarUntilMs = 0
     for i = 0 to NOTICE_MAX-1
         Warning.Notice[i].MessageString = ""
         Warning.Notice[i].UntilMs = 0
@@ -75,6 +78,8 @@ function WarningShow(Warning ref as TWarning,MessageString as string,Priority as
 endfunction
 
 function WarningShowPositive(Warning ref as TWarning,MessageString as string,DurationMs as integer,Now as integer)
+    Warning.PickupStarStartMs = Now
+    Warning.PickupStarUntilMs = Now+PICKUP_STAR_MS
     WarningPush(Warning,MessageString,1,DurationMs,Now)
 endfunction
 
@@ -135,4 +140,26 @@ function WarningDraw(Warning ref as TWarning)
             y = y+NOTICE_HEIGHT+NOTICE_GAP
         endif
     next i
+endfunction
+
+// A small local pickup confirmation; reuse the same star image as the top notice.
+// Draw in screen space following Sonec, with a gentle upward drift and fade.
+function WarningPickupStarDraw(Warning ref as TWarning,Sonec ref as TSonec)
+    local Elapsed as integer
+    local Alpha as integer
+    if Warning.PickupStarUntilMs > Warning.Now
+        Elapsed = Warning.Now-Warning.PickupStarStartMs
+        if Elapsed < 0 then Elapsed = 0
+        Alpha = 255-(Elapsed*255/PICKUP_STAR_MS)
+        if Alpha < 0 then Alpha = 0
+        Warning.StarData.Position.x = Sonec.SpriteData.Position.x
+        Warning.StarData.Position.y = Sonec.SpriteData.Position.y-Sonec.ObjectData.Size.Height*0.65-Elapsed*20/PICKUP_STAR_MS
+        Warning.StarData.Scale = 0.5
+        ColorSet(Warning.StarData.Color,140,230,173,Alpha)
+        SpriteDraw(Warning.StarIcon.Sprite,Warning.StarData)
+        // Restore the shared notification icon styling.
+        Warning.StarData.Scale = 0.75
+        Warning.StarData.Position.x = Warning.CenterX-171
+        ColorSet(Warning.StarData.Color,140,230,173,255)
+    endif
 endfunction

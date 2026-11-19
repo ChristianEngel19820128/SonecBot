@@ -441,6 +441,8 @@ function GameDraw(Game ref as TGame)
 	ExplosionDrawAll(Game.ExplosionList,Game.ProtoExplosion)
 
 	CloudDrawAll(Game.CloudList,Game.ProtoCloud,1,1.75)
+	// Local feedback for successful upgrades, independent of the FIFO notice queue.
+	WarningPickupStarDraw(Game.Warning,Game.Sonec)
 
 	GuiEnergyDraw(Game.Gui,Game.Sonec,Game.Screen,GetMilliseconds())
 	// S4: top warning overlay draws above gameplay and before main.agc Swap().

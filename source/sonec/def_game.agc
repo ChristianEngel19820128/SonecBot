@@ -736,6 +736,8 @@ type TWarning
     StarData as TSpriteData
     CenterX as float
     Now as integer
+    PickupStarStartMs as integer
+    PickupStarUntilMs as integer
 endtype
 
 // D1: one persistent unarmed hover drone; no collisions or attack logic yet.
