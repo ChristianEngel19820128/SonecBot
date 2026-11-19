@@ -164,24 +164,54 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
+// K1c: check the whole last movement segment of an enemy bullet against
+// Sonec's existing circle. Do not enlarge the hitbox by the bullet radius.
+// A zero-length step is checked at its current position.
+function BulletSweepHitsSonec(Bullet ref as TBullet,Sonec ref as TSonec)
+    local Dx as float
+    local Dy as float
+    local LengthSq as float
+    local Projection as float
+    local ClosestX as float
+    local ClosestY as float
+    local DeltaX as float
+    local DeltaY as float
+    local RadiusSq as float
+    local Hit as integer
+
+    Hit = FALSE
+    Dx = Bullet.ObjectData.Position.x - Bullet.PreviousPosition.x
+    Dy = Bullet.ObjectData.Position.y - Bullet.PreviousPosition.y
+    LengthSq = Dx*Dx + Dy*Dy
+    Projection = 0
+    if LengthSq > 0
+        Projection = ((Sonec.ObjectData.Position.x-Bullet.PreviousPosition.x)*Dx + (Sonec.ObjectData.Position.y-Bullet.PreviousPosition.y)*Dy)/LengthSq
+        if Projection < 0 then Projection = 0
+        if Projection > 1 then Projection = 1
+    endif
+
+    ClosestX = Bullet.PreviousPosition.x + Projection*Dx
+    ClosestY = Bullet.PreviousPosition.y + Projection*Dy
+    DeltaX = ClosestX - Sonec.ObjectData.Position.x
+    DeltaY = ClosestY - Sonec.ObjectData.Position.y
+    RadiusSq = Sonec.ObjectData.Radius*Sonec.ObjectData.Radius
+    if DeltaX*DeltaX + DeltaY*DeltaY < RadiusSq then Hit = TRUE
+endfunction Hit
+
 function BulletCollide(BulletList ref as TBulletList,Sonec ref as TSonec,Shield ref as TShield,Now as integer)
-	
-	local i as integer
-	local Radius as float
-	
-	for i = 0 to BulletList.Bullet.Length
-		if BulletList.Bullet[i].Enabled = TRUE
-			if BulletList.Bullet[i].CollisionData.CollisionType = TYPEENEMY
-				Radius = CalcRadius(BulletList.Bullet[i].ObjectData.Position,Sonec.ObjectData.Position)
-				if Radius < Sonec.ObjectData.Radius
-					// Reuse the same proportional protection as explosion damage.
-					Sonec.Health.State = Sonec.Health.State - (BulletList.Bullet[i].BulletData.Damage - ShieldAbsorbDamage(Shield,Sonec,BulletList.Bullet[i].BulletData.Damage,Now))
-					BulletDelete(BulletList,i)
-				endif
-			endif
-		endif
-	next i
-	
+    local i as integer
+
+    for i = 0 to BulletList.Bullet.Length
+        if BulletList.Bullet[i].Enabled = TRUE
+            if BulletList.Bullet[i].CollisionData.CollisionType = TYPEENEMY
+                if BulletSweepHitsSonec(BulletList.Bullet[i],Sonec) = TRUE
+                    // Keep the established proportional shield protection and health damage.
+                    Sonec.Health.State = Sonec.Health.State - (BulletList.Bullet[i].BulletData.Damage - ShieldAbsorbDamage(Shield,Sonec,BulletList.Bullet[i].BulletData.Damage,Now))
+                    BulletDelete(BulletList,i)
+                endif
+            endif
+        endif
+    next i
 endfunction
 
 //----------------------------------------------------------------------

@@ -1,6 +1,14 @@
-# Übergabe: K1b 12/12 abgenommen – K1c Sonec-Bullets und Trefferfeedback offen
+# Übergabe: K1c Sonec-Bullet-Sweep implementiert – Entwicklerprüfung offen
 
-## AKTUELL – K1b 12/12 abgenommen; K1c und Trefferfeedback als nächste Prüfung (19.11.2026)
+## AKTUELL – K1c Gegner-Bullet-Tunneling gegen Sonec korrigiert (19.11.2026)
+
+**K1c implementiert auf `develop`, Entwicklertest offen:** `BulletSweepHitsSonec` in `source/sonec/bullet.agc` prüft das **gesamte letzte Bullet-Bewegungssegment** (`PreviousPosition` bis `ObjectData.Position`) gegen den **unveränderten** Sonec-Kreisradius. Die nächste Position auf der Strecke wird über eine auf 0..1 begrenzte Projektion bestimmt; bei Nullbewegung erfolgt eine Punktprüfung. Weiterhin nur `TYPEENEMY`, strikt innerhalb des bisherigen Radius (kein addierter Bullet-Radius), einmaliger Treffer/Löschen der Bullet. Die bestehende `ShieldAbsorbDamage`-Berechnung und Health-Schadensformel sind unverändert; auch `GameDo`-Aufrufreihenfolge, Player-Bullet-K1b, Explosionen, Spawn und Animationen bleiben gleich. **Statische Quellcodeprüfung, kein AGK-/Windows-/HTML5-Lauf des Assistenten.**
+
+**Entwicklertest:** AGK-Compile; gegnerische Kugeln zentral auf stehenden Sonec; schnelle Geschosse/geringe FPS (kein Durchfliegen); knappe Vorbeischüsse ohne Fehltreffer; Treffer aus beiden Richtungen und bei Bewegung/Sprung; mit Schild aktiv und ohne Schild (korrekte Schild-/Health-Reduktion); keine Mehrfachtreffer derselben Bullet; andere Gegner- und Spielerprojektile/K1b/E1b unverändert; Pause/Neustart; lokales HTML5. **Grenze:** Sweep verwendet Sonecs **aktuelle Position** (kein relativer Sweep eines bewegten Sonec), ein Restfall bei sehr schneller Eigenbewegung bleibt möglich.
+
+**Danach separat prüfen, nicht jetzt implementieren:** präzisere **Shape Collision** für Sonecs Körper, kreisförmiges Schild, eigenes visuelles Trefferfeedback (giftgrün/rot) und ggf. Walker-Beinkollision/Shape-Verbesserung. Bei Walker unterscheiden: bisheriger **Gewehr-Schadensbereich ist nur der Turm**; verbesserte Bein-/Umgebungskollision darf nicht stillschweigend die Verwundbarkeit der Beine verändern. Jet-Sprite für Drohnen-Vertikalbewegung bleibt spätere Idee.
+
+## K1b-Abnahme und K1c-Planung (historischer Stand, 19.11.2026)
 
 **K1b-Entwicklerabnahme: 12/12 bestanden, keine offenen Punkte.** AGK-Compile, schnelle Orb-Treffer, Walker-Turm (nicht Körper/Beine), Kisten, beide Minenarten, Randtreffer und knappe Fehlschüsse, **Orb-vor-Mine und Mine-vor-Orb** (nur das vordere Ziel), Kettenreaktion/E1b, Gegnergeschosse/andere Waffen, Pause/Neustart und lokales HTML5 erfolgreich. Entwickler: „das trefferbild ist eindeutig gut und wirkt fairer als zuvor. alles was das gegner treffen betrifft wirkt korrekt.“ K1b abgeschlossen; der ältere Abschnitt mit offenem Test ist historisch.
 
