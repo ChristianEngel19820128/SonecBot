@@ -15,11 +15,15 @@ function GameCreate(Game ref as TGame,vx as integer,vy as integer)
 	
 	SoundLoad(Game.Sound)
 	
-	Game.DebugText.Length = 0
+	Game.DebugText.Length = 1
 	Game.DebugText[0] = CreateText("")
 	SetTextPosition(Game.DebugText[0],10,35)
 	SetTextSize(Game.DebugText[0],16)
 	SetTextColor(Game.DebugText[0],255,255,255,255)
+	Game.DebugText[1] = CreateText("")
+	SetTextPosition(Game.DebugText[1],10,55)
+	SetTextSize(Game.DebugText[1],16)
+	SetTextColor(Game.DebugText[1],255,255,255,255)
 	Game.IsLost = TRUE
 	Game.IsPause = FALSE
 	
@@ -345,11 +349,6 @@ endfunction
 //----------------------------------------------------------------------
 
 function GameDraw(Game ref as TGame)
-    // K1d diagnostic overlay: counts since game start, no gameplay effect.
-    if SONEC_TWO_CIRCLE_TEST = 1
-        Print("K1d checks "+Str(SonecTwoCircleChecks)+" both "+Str(SonecTwoCircleBoth)+" old-only "+Str(SonecTwoCircleOldOnly)+" new-only "+Str(SonecTwoCircleNewOnly))
-    endif
-
 	BackgroundDraw(Game.Background,Game.ProtoBackground)
 	CloudDrawAll(Game.CloudList,Game.ProtoCloud,0.25,1)
 	TowerDrawAll(Game.TowerList,Game.ProtoTower)
@@ -391,11 +390,13 @@ function GameDraw(Game ref as TGame)
 	WarningDraw(Game.Warning)
 	// F2 compares one platform and one visible skyscraper without affecting movement.
 	PlateDebugDrawAll(Game.PlateList,Game.TowerList)
+	// Keep the existing shield debug in slot 0; K1d uses slot 1.
 	if SHIELD_SHAPE_TEST = 1 and Device$ = "windows"
-		local debugIndex as integer
-		for debugIndex = 0 to Game.DebugText.Length
-			DrawText(Game.DebugText[debugIndex])
-		next debugIndex
+		DrawText(Game.DebugText[0])
+	endif
+	if SONEC_TWO_CIRCLE_TEST = 1
+		SetTextString(Game.DebugText[1],"K1d checks "+Str(SonecTwoCircleChecks)+" both "+Str(SonecTwoCircleBoth)+" old-only "+Str(SonecTwoCircleOldOnly)+" new-only "+Str(SonecTwoCircleNewOnly))
+		DrawText(Game.DebugText[1])
 	endif
 
 endfunction
