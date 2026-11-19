@@ -280,7 +280,10 @@ function BulletCollide(BulletList ref as TBulletList,Sonec ref as TSonec,Shield 
                 endif
                 if DamageHit = TRUE
                     // Keep the established proportional shield protection and health damage.
+                    local HealthBeforeHit as integer
+                    HealthBeforeHit = Sonec.Health.State
                     Sonec.Health.State = Sonec.Health.State - (BulletList.Bullet[i].BulletData.Damage - ShieldAbsorbDamage(Shield,Sonec,BulletList.Bullet[i].BulletData.Damage,Now))
+                    if Sonec.Health.State < HealthBeforeHit then SonecHitFlashUntil = Now + SONEC_HIT_FLASH_MS
                     BulletDelete(BulletList,i)
                 endif
             endif

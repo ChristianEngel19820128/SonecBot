@@ -181,8 +181,6 @@ endfunction
 
 function GameDo(Game ref as TGame,Now as integer)
 
-	local SonecHealthBefore as integer
-	SonecHealthBefore = Game.Sonec.Health.State
 	local WalkerChance as integer
 	local Index as integer
 	local i as integer
@@ -328,10 +326,7 @@ function GameDo(Game ref as TGame,Now as integer)
 	PlasmaBlitzCollideWalkers(Game.PlasmaBlitzList,Game.WalkerList,Now)
 	PlasmaBlitzCollisionTimerReset(Game.PlasmaBlitzList,Now)
 	
-	// Check after explosions AND bullets, so Walker hits trigger the same flash.
-	if Game.Sonec.Health.State < SonecHealthBefore
-		SonecHitFlashUntil = Now + SONEC_HIT_FLASH_MS
-	endif
+	// Attack hit flashes are triggered by bullet/explosion damage, not energy overload.
 	SonecVisualUpdate(Game.Sonec,Now)
 
 	SonecRefreshAnimations(Game.Sonec,Game.PlasmaBlitzList,Game.FlashList,Game.World)
