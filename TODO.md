@@ -1,3 +1,9 @@
+## Aktueller Stand 19.11.2026 – K1d und M1-Pruefauftrag
+
+**K1d:** Zwei-Kreis-Koerperkollision fuer gegnerische Bullets ist auf `develop` aktiv (Commit `cba3cc1`), mit Segment-Sweep gegen Tunneling und K1c-Rueckfalloption `SONEC_TWO_CIRCLE_DAMAGE=0`. Stehen/Bewegung/Flug: zwei Kreise; Ducken: zwei Kreise, zweiter 10 px tiefer; Waffe nicht kollidierbar. Entwickler bestaetigt AGK-Compile, sichtbare Geometrie, positives/faires Spielgefuehl und funktionierende F3-Umschaltung von Kollisionskreisen, K1d-Zaehlern und Schild-Debugtext (letzter Fix `39f2e0c`). **Keine vollstaendige neue HTML5-/Regressionstestmatrix fuer K1d gemeldet.** Aeltere Abschnitte zu K1d als reinem Diagnoseprototyp sind historisch.
+
+**M1 als naechstes – zuerst Befunde pruefen, keine Gameplay-Aenderung:** Die ausfuehrliche Walker-Pre-Alpha-Abnahme (IK, Fusskontakt, Stoppen/Feuern, lokale HTML5-Spielrunde) bleibt gueltig. Sie ersetzt aber keinen gesondert dokumentierten A/B-Vergleich von Walker-Bewegungsmodell A und B. Hochhaeuser nutzen bereits B (Delta-Time), Plattformen und Walker A (Timer/CalcRange). F5 vergleicht Hochhaeuser, F6 Plattformen; Walker-Regressionsbeobachtung bei F6 gesondert beachten. Fruehere Renderer-A/B-Praeferenz Basic/OpenGL nicht mit einer Bewegungsmodell-A/B-Abnahme verwechseln. Zuerst vorhandene Resultate und Diagnosen verifizieren, insbesondere Bildraten, Bewegungsruhe, Fusskontakt und Pausenverhalten. Keine automatische Walker-Migration.
+
 # SonecBot – Aktuelle Aufgaben und Meilensteine
 
 **Dokumentstatus:** Version 10.9 – K1c 12/12 abgenommen; Shape-Collision-Analyse als nächster Schritt; K1b 12/12 bestanden  
