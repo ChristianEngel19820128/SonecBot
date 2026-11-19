@@ -153,7 +153,7 @@ function WarningPickupStarDraw(Warning ref as TWarning,Sonec ref as TSonec)
         Alpha = 255-(Elapsed*255/PICKUP_STAR_MS)
         if Alpha < 0 then Alpha = 0
         Warning.StarData.Position.x = Sonec.SpriteData.Position.x
-        Warning.StarData.Position.y = Sonec.SpriteData.Position.y-Sonec.ObjectData.Size.Height*0.65-Elapsed*20/PICKUP_STAR_MS
+        Warning.StarData.Position.y = Sonec.SpriteData.Position.y-Sonec.ObjectData.Size.Height*0.65+5-Elapsed*20/PICKUP_STAR_MS
         Warning.StarData.Scale = 0.35
         ColorSet(Warning.StarData.Color,140,230,173,Alpha)
         SpriteDraw(Warning.StarIcon.Sprite,Warning.StarData)
