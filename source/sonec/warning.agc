@@ -4,7 +4,7 @@
 #constant NOTICE_TOP 13
 #constant NOTICE_MAX 4
 #constant NOTICE_STEP 65
-#constant NOTICE_PREVIEW 3000
+#constant NOTICE_PREVIEW 1800
 
 function WarningCreate(Warning ref as TWarning,Screen as TSize)
     local i as integer
