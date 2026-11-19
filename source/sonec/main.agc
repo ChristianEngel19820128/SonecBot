@@ -208,6 +208,14 @@ repeat
 			TowerMotionEveryFrameEnabled = 1
 			PlateMotionEveryFrameEnabled = 0
 		endif
+		// F3 toggles only the K1d primitive outlines.
+		if GetKeyPressed(KEY_F3) = 1
+			if SonecCollisionDebugVisible = 0
+				SonecCollisionDebugVisible = 1
+			else
+				SonecCollisionDebugVisible = 0
+			endif
+		endif
 		if GetKeyPressed(KEY_F2) = 1
 			PlateDebugToggle()
 			WalkerDebugEnabled = 0

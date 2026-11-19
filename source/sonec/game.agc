@@ -348,6 +348,58 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
+// K1d: lightweight manual outlines, not AGK sprite shape collision.
+// Use the same world-space parameters as the diagnostic sweep, converting Y for drawing.
+global SonecCollisionDebugLineSprite as integer
+
+function SonecCollisionDebugCircle(CenterX as float,CenterY as float,Radius as float)
+    local i as integer
+    local x1 as float
+    local y1 as float
+    local x2 as float
+    local y2 as float
+    local Angle1 as float
+    local Angle2 as float
+    local Dx as float
+    local Dy as float
+    local Length as float
+    for i = 0 to 23
+        Angle1 = i*15.0
+        Angle2 = (i+1)*15.0
+        x1 = CenterX+Cos(Angle1)*Radius
+        y1 = CenterY+Sin(Angle1)*Radius
+        x2 = CenterX+Cos(Angle2)*Radius
+        y2 = CenterY+Sin(Angle2)*Radius
+        Dx = x2-x1
+        Dy = y2-y1
+        Length = Sqrt(Dx*Dx+Dy*Dy)
+        SetSpriteSize(SonecCollisionDebugLineSprite,Length,2)
+        SetSpriteOffset(SonecCollisionDebugLineSprite,0,1)
+        SetSpriteAngle(SonecCollisionDebugLineSprite,ATan2(Dy,Dx))
+        SetSpritePositionByOffset(SonecCollisionDebugLineSprite,x1,y1)
+        DrawSprite(SonecCollisionDebugLineSprite)
+    next i
+endfunction
+
+function SonecCollisionDebugDraw(Sonec ref as TSonec,World ref as TWorld)
+    local Radius as float
+    local OffsetY as float
+    if SONEC_TWO_CIRCLE_TEST = 1 and SonecCollisionDebugVisible = 1
+        if SonecCollisionDebugLineSprite = 0
+            SonecCollisionDebugLineSprite = CreateSprite(0)
+            SetSpriteColor(SonecCollisionDebugLineSprite,0,255,255,255)
+        endif
+        Radius = Sonec.ObjectData.Size.Width*0.30
+        OffsetY = Sonec.ObjectData.Size.Height*0.18
+        if Sonec.State.Stand = TRUE and Sonec.State.Duck = TRUE
+            SonecCollisionDebugCircle(Sonec.ObjectData.Position.x,Sonec.ObjectData.Position.y-World.Position.y,Sonec.ObjectData.Size.Width*0.32)
+        else
+            SonecCollisionDebugCircle(Sonec.ObjectData.Position.x,Sonec.ObjectData.Position.y-World.Position.y-OffsetY,Radius)
+            SonecCollisionDebugCircle(Sonec.ObjectData.Position.x,Sonec.ObjectData.Position.y-World.Position.y+OffsetY,Radius)
+        endif
+    endif
+endfunction
+
 function GameDraw(Game ref as TGame)
 	BackgroundDraw(Game.Background,Game.ProtoBackground)
 	CloudDrawAll(Game.CloudList,Game.ProtoCloud,0.25,1)
@@ -378,6 +430,7 @@ function GameDraw(Game ref as TGame)
 	// Debug muzzle markers remain visible above bullets and flashes.
 	WalkerMuzzleDebugDrawAll(Game.WalkerList,Game.ProtoWalker,Game.World)
 	SonecDraw(Game.Sonec,Game.ProtoSonec)
+	SonecCollisionDebugDraw(Game.Sonec,Game.World)
 	ShieldDraw(Game.Shield,Game.ProtoShield)
 
 

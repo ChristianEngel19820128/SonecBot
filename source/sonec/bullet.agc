@@ -171,6 +171,8 @@ global SonecTwoCircleChecks as integer
 global SonecTwoCircleBoth as integer
 global SonecTwoCircleOldOnly as integer
 global SonecTwoCircleNewOnly as integer
+// F3 only controls the visible outlines; comparison remains active.
+global SonecCollisionDebugVisible as integer
 
 function BulletSweepHitsSonecCircle(Bullet ref as TBullet,CenterX as float,CenterY as float,Radius as float)
     local Dx as float
@@ -199,8 +201,14 @@ function BulletSweepHitsSonecTwoCircles(Bullet ref as TBullet,Sonec ref as TSone
     Radius = Sonec.ObjectData.Size.Width*0.30
     OffsetY = Sonec.ObjectData.Size.Height*0.18
     Hit = FALSE
-    if BulletSweepHitsSonecCircle(Bullet,Sonec.ObjectData.Position.x,Sonec.ObjectData.Position.y-OffsetY,Radius) = TRUE then Hit = TRUE
-    if BulletSweepHitsSonecCircle(Bullet,Sonec.ObjectData.Position.x,Sonec.ObjectData.Position.y+OffsetY,Radius) = TRUE then Hit = TRUE
+    if Sonec.State.Stand = TRUE and Sonec.State.Duck = TRUE
+        // Provisional single centered circle for ducking, same sprite height.
+        Radius = Sonec.ObjectData.Size.Width*0.32
+        if BulletSweepHitsSonecCircle(Bullet,Sonec.ObjectData.Position.x,Sonec.ObjectData.Position.y,Radius) = TRUE then Hit = TRUE
+    else
+        if BulletSweepHitsSonecCircle(Bullet,Sonec.ObjectData.Position.x,Sonec.ObjectData.Position.y-OffsetY,Radius) = TRUE then Hit = TRUE
+        if BulletSweepHitsSonecCircle(Bullet,Sonec.ObjectData.Position.x,Sonec.ObjectData.Position.y+OffsetY,Radius) = TRUE then Hit = TRUE
+    endif
 endfunction Hit
 
 // K1c: check the whole last movement segment of an enemy bullet against
