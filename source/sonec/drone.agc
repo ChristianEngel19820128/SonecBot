@@ -14,6 +14,8 @@
 #constant DRONE_CHARGE_MIN_INTERVAL_MS 4500
 #constant DRONE_CHARGE_MAX_INTERVAL_MS 8000
 #constant DRONE_CHARGE_DURATION_MS 900
+// Temporary proportions test; update PNG frames after choosing final height.
+#constant DRONE_CHARGE_SCALE_Y 0.70
 // D2.1 temporary visibility test: exaggerated hover, not final balancing.
 #constant DRONE_BOB_AMPLITUDE 8
 #constant DRONE_BOB_DEGREES_PER_MS 0.12
@@ -238,6 +240,18 @@ function DroneMove(Drone ref as TDrone,Screen as TSize,SonecX as float,Now as in
     endif
 endfunction
 
+// Temporary non-uniform charge draw. The generic SpriteDraw uses uniform scaling.
+function DroneChargeDraw(SpriteID as integer,Frame as integer,Position as TPosition)
+    if SpriteID > 0
+        SetSpriteFrame(SpriteID,Frame)
+        SetSpriteScaleByOffset(SpriteID,1.0,DRONE_CHARGE_SCALE_Y)
+        SetSpriteOffset(SpriteID,15.0,15.0*DRONE_CHARGE_SCALE_Y)
+        SetSpritePositionByOffset(SpriteID,Position.x,Position.y)
+        SetSpriteColor(SpriteID,30,255,60,190)
+        DrawSprite(SpriteID)
+    endif
+endfunction
+
 function DroneDraw(Drone ref as TDrone,ProtoDrone ref as TProtoDrone,World ref as TWorld)
     local EffectData as TSpriteData
     local TorsoData as TSpriteData
@@ -287,14 +301,12 @@ function DroneDraw(Drone ref as TDrone,ProtoDrone ref as TProtoDrone,World ref a
                 if Drone.Direction = MOVELEFT
                     EffectData.Position.x = EffectData.Position.x-28
                     if ProtoDrone.ChargeLeft.Sprite.ID > 0
-                        SetSpriteFrame(ProtoDrone.ChargeLeft.Sprite.ID,DroneChargeFrame)
-                        SpriteDraw(ProtoDrone.ChargeLeft.Sprite,EffectData)
+                        DroneChargeDraw(ProtoDrone.ChargeLeft.Sprite.ID,DroneChargeFrame,EffectData.Position)
                     endif
                 else
                     EffectData.Position.x = EffectData.Position.x+28
                     if ProtoDrone.ChargeRight.Sprite.ID > 0
-                        SetSpriteFrame(ProtoDrone.ChargeRight.Sprite.ID,DroneChargeFrame)
-                        SpriteDraw(ProtoDrone.ChargeRight.Sprite,EffectData)
+                        DroneChargeDraw(ProtoDrone.ChargeRight.Sprite.ID,DroneChargeFrame,EffectData.Position)
                     endif
                 endif
             endif
