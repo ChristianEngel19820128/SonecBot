@@ -6,10 +6,22 @@
 #constant DRONE_WORLD_MARGIN_Y 80
 #constant DRONE_PATROL_SPEED 0.10
 #constant DRONE_TURN_MS 400
+#constant DRONE_SCAN_MIN_INTERVAL_MS 2400
+#constant DRONE_SCAN_MAX_INTERVAL_MS 5000
+#constant DRONE_SCAN_MIN_DURATION_MS 500
+#constant DRONE_SCAN_MAX_DURATION_MS 1000
+#constant DRONE_SCAN_NEAR_X 220
+#constant DRONE_BOB_AMPLITUDE 2
+#constant DRONE_BOB_DEGREES_PER_MS 0.06
 
 global DroneMotionUseGate as integer
 global DroneMotionTimer as TTime
 global DroneMotionLastMode as integer
+global DroneScanUntilMs as integer
+global DroneNextScanMs as integer
+global DroneScanActive as integer
+global DroneBaseY as float
+global DroneBobStartMs as integer
 
 function DroneProtoLoad(ProtoDrone ref as TProtoDrone)
     ProtoDrone.Left.Image.File.Path = "/media/gfx/enemies/drone"
@@ -37,6 +49,10 @@ function DroneInit(Drone ref as TDrone,Screen as TSize,World ref as TWorld,Now a
     Drone.IsTurning = FALSE
     Drone.TurnUntilMs = 0
     Drone.LastMoveMs = Now
+    DroneScanActive = FALSE
+    DroneScanUntilMs = 0
+    DroneNextScanMs = Now + random(DRONE_SCAN_MIN_INTERVAL_MS,DRONE_SCAN_MAX_INTERVAL_MS)
+    DroneBobStartMs = Now
     TimeSet(DroneMotionTimer,10,10)
     TimeReset(DroneMotionTimer,Now)
     DroneMotionLastMode = DroneMotionUseGate
@@ -50,14 +66,17 @@ function DroneInit(Drone ref as TDrone,Screen as TSize,World ref as TWorld,Now a
         Drone.Position.y = World.Size.Height-DRONE_WORLD_MARGIN_Y
     endif
 
+    DroneBaseY = Drone.Position.y
+
     Drone.SpriteData.Center = TRUE
     Drone.SpriteData.Scale = 1
     Drone.SpriteData.Angle = 0
     ColorSet(Drone.SpriteData.Color,255,255,255,255)
 endfunction
 
-function DroneMove(Drone ref as TDrone,Screen as TSize,Now as integer)
+function DroneMove(Drone ref as TDrone,Screen as TSize,SonecX as float,Now as integer)
     local DeltaMs as integer
+    local TurnChance as integer
 
     if Drone.Enabled = TRUE
         if DroneMotionLastMode <> DroneMotionUseGate
@@ -79,6 +98,36 @@ function DroneMove(Drone ref as TDrone,Screen as TSize,Now as integer)
             Drone.LastMoveMs = Now
         endif
 
+        // Slow physical hover: the drawn sprite and future collision use the same Y.
+        Drone.Position.y = DroneBaseY + sin((Now-DroneBobStartMs)*DRONE_BOB_DEGREES_PER_MS)*DRONE_BOB_AMPLITUDE
+
+        if DroneScanActive = TRUE
+            if Now >= DroneScanUntilMs
+                DroneScanActive = FALSE
+                DroneNextScanMs = Now + random(DRONE_SCAN_MIN_INTERVAL_MS,DRONE_SCAN_MAX_INTERVAL_MS)
+                // Proximity can influence a turn, but never guarantees one.
+                TurnChance = 5
+                if abs(Drone.Position.x-SonecX) <= DRONE_SCAN_NEAR_X then TurnChance = 25
+                if random(1,100) <= TurnChance
+                    if Drone.Direction = MOVELEFT
+                        Drone.Direction = MOVERIGHT
+                    else
+                        Drone.Direction = MOVELEFT
+                    endif
+                    Drone.IsTurning = TRUE
+                    Drone.TurnUntilMs = Now+DRONE_TURN_MS
+                endif
+            endif
+        else
+            if Drone.IsTurning = FALSE and Now >= DroneNextScanMs
+                DroneScanActive = TRUE
+                DroneScanUntilMs = Now + random(DRONE_SCAN_MIN_DURATION_MS,DRONE_SCAN_MAX_DURATION_MS)
+            endif
+        endif
+
+        if DroneScanActive = TRUE
+            // Stationary scan; the center view is a temporary visual placeholder.
+        else
         if Drone.IsTurning = TRUE
             if Now >= Drone.TurnUntilMs
                 Drone.IsTurning = FALSE
@@ -102,13 +151,14 @@ function DroneMove(Drone ref as TDrone,Screen as TSize,Now as integer)
                 endif
             endif
         endif
+        endif
     endif
 endfunction
 
 function DroneDraw(Drone ref as TDrone,ProtoDrone ref as TProtoDrone,World ref as TWorld)
     if Drone.Enabled = TRUE
         SpritePositionCalc(Drone.SpriteData.Position,Drone.Position,World.Position)
-        if Drone.IsTurning = TRUE
+        if Drone.IsTurning = TRUE or DroneScanActive = TRUE
             SpriteDraw(ProtoDrone.Center.Sprite,Drone.SpriteData)
         else
             if Drone.Direction = MOVELEFT
