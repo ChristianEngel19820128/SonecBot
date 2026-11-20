@@ -51,6 +51,10 @@ Verbindlicher Planungsrahmen und Details: [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROA
 - Fairness gilt für Spieler und Gegner. Vorsichtiges Sammeln zählt; aufgebaute Vorteile dürfen später herausgefordert werden. Deckung, Ausweichen und Flucht bleiben gültig, kein allgemeiner Vernichtungszwang.
 - Quadrokopter, Fallen-/Waffenvarianten, weitergehende Missionen, Punkte/Ranglisten und mögliche Schwierigkeitsauswahl bleiben im [BACKLOG.md](BACKLOG.md). Grafische Endfassungen und umfassendes Balancing sind kein Vorab-Gate für die Funktionsentwicklung.
 
+## Letzter abgeschlossener Schritt
+
+- **E1c – Animierter Explosionsradius:** Code auf `develop` in [`3c8a8cf`](https://github.com/ChristianEngel19820128/SonecBot/commit/3c8a8cf8f28fc00c589b9c140786f60bbca7a610). Zufallsskalierung entfernt; drei typabhängige Maximalradien wachsen und schrumpfen mit der Animation. Entwickler meldet am 20.11.2026 **7/7 bestanden** im lokalen AGK-Test: Compile/Start, Animation, alle drei Typen, Sonec-Schaden, beide Minentypen, Kettenreaktionen, Kisten/Walker. Keine Auffälligkeiten; keine eigenständige HTML5-Prüfung gemeldet. Schadensbalancing bleibt vor dem Alpha-Release gesondert.
+
 ## Offene oder zurückgestellte Punkte
 
 - **M1 / Bewegungsruckeln:** Ursachenuntersuchung ausdrücklich zurückgestellt. Bei 75 Hz war das Ruckeln laut Entwickler nicht mehr vorhanden; Ursache und plattformübergreifende Wirkung sind unbewiesen. Umgang mit dem früher vereinbarten Alpha-Gate vor Release gesondert entscheiden; keine automatische Wiederaufnahme oder Abnahme.
@@ -69,7 +73,7 @@ Verbindlicher Planungsrahmen und Details: [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROA
 
 ## Genau ein nächster Schritt
 
-**E1c – Explosionsradius in AGK lokal prüfen:** Auf `develop` wurde der zufällige Explosions-Skalierungsfaktor entfernt und ein gemeinsamer Radiusverlauf (0 % → 100 % bei halber Animation → 0 %) für alle drei Typen umgesetzt. Designmaxima bleiben typabhängig; Schaden und Trefferintervalle sind unverändert. Windows-/HTML5-Laufzeitprüfung steht aus. Danach erst Minenformationen weiter umsetzen.
+**Minenformationen in Chat A als nächsten kleinen Umsetzungsschritt konkretisieren:** Diagonale Linie mit variabler Anzahl, Abstand und Ausrichtung; linksgerichteter symmetrischer Keil mit ungerader Minenzahl. Rudel, Doppelreihe und umgekehrter Keil bleiben optional. E1c ist vom Entwickler lokal in AGK mit 7/7 bestätigt; keine gesonderte HTML5-Abnahme behaupten.
 
 ## Weiterführende Dokumente
 
