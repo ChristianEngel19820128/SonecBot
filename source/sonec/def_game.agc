@@ -751,6 +751,8 @@ type TProtoDrone
     SensorRight as TProtoData
     ScanLeft as TProtoData
     ScanRight as TProtoData
+    ChargeLeft as TProtoData
+    ChargeRight as TProtoData
 endtype
 
 type TDrone
