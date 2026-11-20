@@ -6,7 +6,7 @@ Hier stehen nur unmittelbar nächste, gemeinsam zu bearbeitende Schritte. Höchs
 
 ## Jetzt
 
-- [ ] **Dritte Minenformation für Real Alpha auswählen und konkretisieren.** Diagonale und linksgerichteter Keil sind bereits lokal in AGK abgenommen; weitere Varianten nicht ohne gemeinsame Entscheidung implementieren.
+- [ ] **A3 – Zufälliges Minenrudel lokal in AGK testen.** Auf `develop` in `74c7e9e` umgesetzt: 3–6 Minen in begrenztem Bereich mit zufälligen Positionen, gemeinsamer Drift, bestehenden Weltgrenzen und Spawnregeln. Compile, Varianten, Kollisionen und Kettenreaktionen prüfen.
 
 Die Roadmap-Besprechung ist abgeschlossen. Das Paintball-Easter-Egg ist nach dem Windows-Sichttest vom Entwickler abgenommen. Detaillierte Alpha-Umsetzung folgt in Themenchats; eine feste Reihenfolge ist noch nicht beschlossen.
 
