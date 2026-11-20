@@ -53,6 +53,8 @@ Verbindlicher Planungsrahmen und Details: [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROA
 
 ## Letzter abgeschlossener Schritt
 
+- **A3 – Zufälliges Minenrudel:** Code auf `develop` in [`74c7e9e`](https://github.com/ChristianEngel19820128/SonecBot/commit/74c7e9e34d1030fe66557ac86b0703f37b293975). Entwickler meldet am 20.11.2026 **9/9 bestanden** im lokalen AGK-Test: Compile, Rudelgrößen 3–6, unregelmäßige begrenzte Platzierung ohne Überlappung, gemeinsame Drift, vertikale Weltgrenzen, unveränderte Diagonalen/Keile, höchstens sechs aktive einfache Minen, Treffer und Kettenreaktionen. Keine Auffälligkeiten; kein eigener HTML5-Test gemeldet. Damit A1 (8/8), A2 (9/9), A3 (9/9) vollständig abgenommen. Balancing vor Alpha-Release.
+
 - **A1/A2 – Minenformationen:** A1 (variable Diagonale, 2–4 Minen) vom Entwickler lokal in AGK mit **8/8 bestanden** bestätigt. A2 (linksgerichteter symmetrischer Keil mit 3/5 Minen) in [`252a320`](https://github.com/ChristianEngel19820128/SonecBot/commit/252a320bd39017bd3737dfcbf4a52cf4bf4266eb) umgesetzt und am 20.11.2026 vom Entwickler lokal in AGK mit **9/9 bestanden** bestätigt: Compile, beide Keilgrößen, Symmetrie, gemeinsame Bewegung, variable Abstände, Weltgrenzen, bestehende Diagonalen, maximal sechs aktive einfache Minen, Treffer/Kettenreaktionen. Keine Auffälligkeiten; kein eigener HTML5-Test gemeldet. Balancing vor Alpha-Release.
 - **E1c – Animierter Explosionsradius:** Code auf `develop` in [`3c8a8cf`](https://github.com/ChristianEngel19820128/SonecBot/commit/3c8a8cf8f28fc00c589b9c140786f60bbca7a610). Zufallsskalierung entfernt; drei typabhängige Maximalradien wachsen und schrumpfen mit der Animation. Entwickler meldet am 20.11.2026 **7/7 bestanden** im lokalen AGK-Test: Compile/Start, Animation, alle drei Typen, Sonec-Schaden, beide Minentypen, Kettenreaktionen, Kisten/Walker. Keine Auffälligkeiten; keine eigenständige HTML5-Prüfung gemeldet. Schadensbalancing bleibt vor dem Alpha-Release gesondert.
 
@@ -74,7 +76,7 @@ Verbindlicher Planungsrahmen und Details: [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROA
 
 ## Genau ein nächster Schritt
 
-**A3 – Zufälliges Minenrudel lokal in AGK testen.** `simplemine.agc` auf `develop` in [`74c7e9e`](https://github.com/ChristianEngel19820128/SonecBot/commit/74c7e9e34d1030fe66557ac86b0703f37b293975) erweitert: 3–6 Minen auf zufällig ausgewählten Positionen eines kompakten 2×3-Rasters mit kleinen Versätzen, gemeinsame Drift; zufällige Wahl zwischen Diagonale, Keil und Rudel. Spawnlimit sechs, Timer 18–30 Sekunden, vertikale Randprüfung und bestehende Treffermechanik unverändert. AGK-Compile/Laufzeittest offen. A1 (8/8) und A2 (9/9) bereits abgenommen.
+**Nächsten kleinen Real-Alpha-Schritt gemeinsam festlegen.** Alle drei Minenformationen A1–A3 lokal in AGK abgenommen (26/26). Naheliegender nächster Gegnerausbau: Drohne mit kurzen grünen Laserprojektilen und sichtbarer Aufladung; genaue Teilaufgabe vor Implementierung vereinbaren.
 
 ## Weiterführende Dokumente
 
