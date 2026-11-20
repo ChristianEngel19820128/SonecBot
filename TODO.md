@@ -6,7 +6,7 @@ Hier stehen nur unmittelbar nächste, gemeinsam zu bearbeitende Schritte. Höchs
 
 ## Jetzt
 
-- [ ] **Ersten Real-Alpha-Themenchat und kleinen Umsetzungsblock auswählen.** Auf Basis der festgelegten Roadmap den aktuellen Code, das konkrete Ziel und passende Entwicklertests eingrenzen.
+- [ ] **A1 – Variable diagonale Minenformation lokal in AGK testen.** Anzahl 2–4, beide Neigungen, Abstände, Weltgrenzen, Spawnlimit und bestehende Minenfunktionen prüfen; danach linksgerichteten Keil als nächsten Schritt behandeln.
 
 Die Roadmap-Besprechung ist abgeschlossen. Das Paintball-Easter-Egg ist nach dem Windows-Sichttest vom Entwickler abgenommen. Detaillierte Alpha-Umsetzung folgt in Themenchats; eine feste Reihenfolge ist noch nicht beschlossen.
 
