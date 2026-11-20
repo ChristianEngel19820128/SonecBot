@@ -4,6 +4,8 @@
 #constant SIMPLE_MINE_COLOR_R 32
 #constant SIMPLE_MINE_COLOR_G 125
 #constant SIMPLE_MINE_COLOR_B 55
+#constant SIMPLE_MINE_WEDGE_MIN_COUNT 3
+#constant SIMPLE_MINE_WEDGE_MAX_COUNT 5
 #constant SIMPLE_MINE_FORMATION_MIN_COUNT 2
 #constant SIMPLE_MINE_FORMATION_MAX_COUNT 4
 #constant SIMPLE_MINE_FORMATION_MIN_SPACING_X 32
@@ -80,6 +82,36 @@ function SimpleMineFormationAdd(MineList ref as TMineList,ProtoMine ref as TProt
 endfunction
 
 
+// A2: left-pointing symmetric wedge (3 or 5 mines).
+// The single tip is at the left; each pair extends right, above and below.
+function SimpleMineWedgeAdd(MineList ref as TMineList,ProtoMine ref as TProtoMine,World ref as TWorld,CenterY as integer,MineCount as integer,SpacingX as integer,SpacingY as integer,Now as integer)
+    local Arm as integer
+    local Side as integer
+    local Index as integer
+    local DriftSpeed as float
+
+    if MineCount < 3 then exitfunction
+    if MineCount > 5 then exitfunction
+    if mod(MineCount,2) = 0 then exitfunction
+
+    DriftSpeed = random(35,100)*0.001
+    for Arm = 0 to (MineCount-1)/2
+        for Side = -1 to 1
+            if Arm = 0 and Side = 0 or Arm > 0 and Side <> 0
+                Index = SimpleMineAdd(MineList,ProtoMine,World,CenterY+Side*Arm*SpacingY,Now)
+                if Index >= 0
+                    MineList.Mine[Index].ObjectData.Position.x = MineList.Mine[Index].ObjectData.Position.x + Arm*SpacingX
+                    MineList.Mine[Index].ObjectData.MoveSpeed.x = DriftSpeed
+                    SpritePositionCalc(MineList.Mine[Index].SpriteData.Position,MineList.Mine[Index].ObjectData.Position,World.Position)
+                    MineList.Mine[Index].CollisionData.Position1.x = MineList.Mine[Index].ObjectData.Position.x - MineList.Mine[Index].ObjectData.Size.Width*0.5
+                    MineList.Mine[Index].CollisionData.Position2.x = MineList.Mine[Index].ObjectData.Position.x + MineList.Mine[Index].ObjectData.Size.Width*0.5
+                endif
+            endif
+        next Side
+    next Arm
+endfunction
+
+
 // S3: Schedule one attempt at a time. Both initialization and update use the
 // same pause-aware virtual timestamp already passed to GameInit and GameDo.
 function SimpleMineSpawnInit(Game ref as TGame,Now as integer)
@@ -94,13 +126,19 @@ function SimpleMineSpawnDo(Game ref as TGame,Now as integer)
     local SpacingX as integer
     local SpacingY as integer
     local Direction as integer
+    local FormationType as integer
 
     if Now >= Game.SimpleMineNextSpawnMs
         // Always reschedule, even if capacity blocks the attempt; no backlog.
         Game.SimpleMineNextSpawnMs = Now + random(SIMPLE_MINE_MIN_SPAWN_MS,SIMPLE_MINE_MAX_SPAWN_MS)
 
         // Roll one complete formation; blocked attempts are not retried.
-        FormationCount = random(SIMPLE_MINE_FORMATION_MIN_COUNT,SIMPLE_MINE_FORMATION_MAX_COUNT)
+        FormationType = random(0,1)
+        if FormationType = 0
+            FormationCount = random(SIMPLE_MINE_FORMATION_MIN_COUNT,SIMPLE_MINE_FORMATION_MAX_COUNT)
+        else
+            FormationCount = random(0,1)*2 + SIMPLE_MINE_WEDGE_MIN_COUNT
+        endif
         SpacingX = random(SIMPLE_MINE_FORMATION_MIN_SPACING_X,SIMPLE_MINE_FORMATION_MAX_SPACING_X)
         SpacingY = random(SIMPLE_MINE_FORMATION_MIN_SPACING_Y,SIMPLE_MINE_FORMATION_MAX_SPACING_Y)
         Direction = 1
@@ -111,10 +149,19 @@ function SimpleMineSpawnDo(Game ref as TGame,Now as integer)
             // Use the entire world's vertical range, not the 450 px viewport.
             // Preserve at least 50 px from both world edges for every mine
             // in the formation, including its half-height (11 px art).
-            SafeHalfHeight = ((FormationCount-1)*SpacingY)/2 + SIMPLE_MINE_WORLD_MARGIN_Y + floor((GetImageHeight(Game.ProtoSimpleMine.AnimMine.Image.ID)+1)*0.5)
+            if FormationType = 0
+                SafeHalfHeight = ((FormationCount-1)*SpacingY)/2
+            else
+                SafeHalfHeight = ((FormationCount-1)/2)*SpacingY
+            endif
+            SafeHalfHeight = SafeHalfHeight + SIMPLE_MINE_WORLD_MARGIN_Y + floor((GetImageHeight(Game.ProtoSimpleMine.AnimMine.Image.ID)+1)*0.5)
             if Game.World.Size.Height > SafeHalfHeight*2
                 CenterY = random(SafeHalfHeight,Game.World.Size.Height-SafeHalfHeight)
-                SimpleMineFormationAdd(Game.SimpleMineList,Game.ProtoSimpleMine,Game.World,CenterY,FormationCount,SpacingX,SpacingY,Direction,Now)
+                if FormationType = 0
+                    SimpleMineFormationAdd(Game.SimpleMineList,Game.ProtoSimpleMine,Game.World,CenterY,FormationCount,SpacingX,SpacingY,Direction,Now)
+                else
+                    SimpleMineWedgeAdd(Game.SimpleMineList,Game.ProtoSimpleMine,Game.World,CenterY,FormationCount,SpacingX,SpacingY,Now)
+                endif
                 // Warn only for an actually spawned formation, never for a blocked attempt.
                 WarningShow(Game.Warning,"MINEFIELD DETECTED",1,6000,Now)
             endif
