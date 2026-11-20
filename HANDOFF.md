@@ -73,7 +73,7 @@ Verbindlicher Planungsrahmen und Details: [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROA
 
 ## Genau ein nächster Schritt
 
-**A2 – Symmetrischen linksgerichteten Minenkeil als nächsten kleinen Schritt umsetzen:** Eine Spitze links, paarweise spiegelgleiche Arme rechts, nur ungerade Minenzahlen, gemeinsame Driftgeschwindigkeit, vertikale Weltgrenzen und bestehende Spawnbegrenzung erhalten. A1 (`simplemine.agc`, [`96dce39`](https://github.com/ChristianEngel19820128/SonecBot/commit/96dce392d4b99aa511faaef5a6991e4ea51a8d51)) wurde vom Entwickler lokal in AGK mit **8/8 bestanden** bestätigt: Compile, 2–4 Minen, variable Abstände, beide Neigungen, Zusammenhalt, Weltgrenzen, sechs aktive Minen und Kettenreaktionen. Keine Auffälligkeiten. Rudel/Doppelreihe optional.
+**A2 – Linksgerichteten symmetrischen Minenkeil lokal in AGK testen:** `simplemine.agc` auf `develop` in [`252a320`](https://github.com/ChristianEngel19820128/SonecBot/commit/252a320bd39017bd3737dfcbf4a52cf4bf4266eb) ergänzt. Keil mit 3 oder 5 Minen, Spitze links, obere/untere Arme rechts, gemeinsamer Drift, zufällige Wahl zwischen Keil und bestehender Diagonale. Spawnlimit sechs, Timer 18–30 Sekunden und vertikale Randprüfung erhalten. AGK-Compile/Laufzeittest offen. A1 wurde vom Entwickler mit 8/8 abgenommen. Rudel/Doppelreihe optional.
 
 ## Weiterführende Dokumente
 
