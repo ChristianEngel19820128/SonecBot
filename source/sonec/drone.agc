@@ -206,12 +206,10 @@ function DroneMove(Drone ref as TDrone,Screen as TSize,SonecX as float,Now as in
             if DroneChargeFrame > 3 then DroneChargeFrame = 3
         endif
 
-        if DroneScanActive = TRUE
-            DroneScanFrame = 1 + Mod((Now-DroneScanStartMs)/150,3)
-            // Stationary scan; the center view is a temporary visual placeholder.
-        else
-        if DroneChargeActive = TRUE
-            // Hold horizontal position during the charge.
+        if DroneScanActive = TRUE or DroneChargeActive = TRUE
+            if DroneScanActive = TRUE
+                DroneScanFrame = 1 + Mod((Now-DroneScanStartMs)/150,3)
+            endif
         else
         if Drone.IsTurning = TRUE
             if Now >= Drone.TurnUntilMs
@@ -235,7 +233,6 @@ function DroneMove(Drone ref as TDrone,Screen as TSize,SonecX as float,Now as in
                     Drone.Direction = MOVELEFT
                 endif
             endif
-        endif
         endif
         endif
     endif
