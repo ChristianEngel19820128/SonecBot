@@ -14,8 +14,6 @@
 #constant DRONE_CHARGE_MIN_INTERVAL_MS 4500
 #constant DRONE_CHARGE_MAX_INTERVAL_MS 8000
 #constant DRONE_CHARGE_DURATION_MS 900
-// Temporary proportions test; update PNG frames after choosing final height.
-#constant DRONE_CHARGE_SCALE_Y 0.70
 // D2.1 temporary visibility test: exaggerated hover, not final balancing.
 #constant DRONE_BOB_AMPLITUDE 8
 #constant DRONE_BOB_DEGREES_PER_MS 0.12
@@ -240,12 +238,12 @@ function DroneMove(Drone ref as TDrone,Screen as TSize,SonecX as float,Now as in
     endif
 endfunction
 
-// Temporary non-uniform charge draw. The generic SpriteDraw uses uniform scaling.
+// Draw the charge frames at native size, with a centered 30x30 pivot.
 function DroneChargeDraw(SpriteID as integer,Frame as integer,Position as TPosition)
     if SpriteID > 0
         SetSpriteFrame(SpriteID,Frame)
-        SetSpriteScaleByOffset(SpriteID,1.0,DRONE_CHARGE_SCALE_Y)
-        SetSpriteOffset(SpriteID,15.0,15.0*DRONE_CHARGE_SCALE_Y)
+        SetSpriteScaleByOffset(SpriteID,1.0,1.0)
+        SetSpriteOffset(SpriteID,15.0,15.0)
         SetSpritePositionByOffset(SpriteID,Position.x,Position.y)
         SetSpriteColor(SpriteID,30,255,60,190)
         DrawSprite(SpriteID)
@@ -295,16 +293,18 @@ function DroneDraw(Drone ref as TDrone,ProtoDrone ref as TProtoDrone,World ref a
             ColorSet(TorsoData.Color,45,140,65,255)
             SpriteDraw(ProtoDrone.Torso.Sprite,TorsoData)
 
+            // 46px torso + 30px charge frame: center offset 23+15=38px.
+            // Frames begin at the torso edge, without overlap.
             if DroneChargeActive = TRUE
                 EffectData = Drone.SpriteData
                 ColorSet(EffectData.Color,30,255,60,190)
                 if Drone.Direction = MOVELEFT
-                    EffectData.Position.x = EffectData.Position.x-28
+                    EffectData.Position.x = EffectData.Position.x-38
                     if ProtoDrone.ChargeLeft.Sprite.ID > 0
                         DroneChargeDraw(ProtoDrone.ChargeLeft.Sprite.ID,DroneChargeFrame,EffectData.Position)
                     endif
                 else
-                    EffectData.Position.x = EffectData.Position.x+28
+                    EffectData.Position.x = EffectData.Position.x+38
                     if ProtoDrone.ChargeRight.Sprite.ID > 0
                         DroneChargeDraw(ProtoDrone.ChargeRight.Sprite.ID,DroneChargeFrame,EffectData.Position)
                     endif
