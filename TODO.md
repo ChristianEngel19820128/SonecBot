@@ -6,7 +6,7 @@ Hier stehen nur unmittelbar nächste, gemeinsam zu bearbeitende Schritte. Höchs
 
 ## Jetzt
 
-- [ ] **A1 – Variable diagonale Minenformation lokal in AGK testen.** Anzahl 2–4, beide Neigungen, Abstände, Weltgrenzen, Spawnlimit und bestehende Minenfunktionen prüfen; danach linksgerichteten Keil als nächsten Schritt behandeln.
+- [ ] **A2 – Symmetrischen linksgerichteten Minenkeil umsetzen und lokal in AGK testen.** Ungerade Minenzahl, eine Spitze links, spiegelgleiche Arme rechts, gemeinsame Bewegung, Weltgrenzen und bestehende Spawnbegrenzung erhalten.
 
 Die Roadmap-Besprechung ist abgeschlossen. Das Paintball-Easter-Egg ist nach dem Windows-Sichttest vom Entwickler abgenommen. Detaillierte Alpha-Umsetzung folgt in Themenchats; eine feste Reihenfolge ist noch nicht beschlossen.
 
