@@ -6,7 +6,7 @@ Hier stehen nur unmittelbar nächste, gemeinsam zu bearbeitende Schritte. Höchs
 
 ## Jetzt
 
-- [ ] **D3b/1 – Proportionstest der Laseraufladung:** Entwickler bestätigt den vorigen AGK-Test mit **6/6 bestanden** (Compile, drei grüne Ladephasen links/rechts, Position, X-Stillstand mit Wippen, Scan/Patrouille, helleres Torso-Grün). Screenshot-Bewertung: Ladekegel wirkt vertikal zu breit; temporär nur Lade-Sprites auf **70 % Y-Skalierung bei 100 % X** gesetzt, PNGs unverändert. Entwickler prüft die Wirkung und passt anschließend die Grafik selbst an. Danach D3b/2 Laserprojektil und Trefferlogik.
+- [ ] **D3b/2 – Visuellen Drohnen-Laserschuss lokal testen.** D3b/1 vom Entwickler akzeptiert; Aufladungsstrahlen in den PNGs enger gezeichnet, kleiner sichtbarer Abstand zur Drohne für späteres Polishing akzeptiert. `laser.png` ist jetzt 30×3 px. Nach 900-ms-Aufladung startet ein einzelnes grünes Projektil (RGB 30/255/60, Alpha 230) an der Ladungsspitze und fliegt horizontal bis über den Bildschirmrand; Geschwindigkeit vorläufig 0,35 px/ms. **Keine Kollision oder Schaden.** AGK-Test: Compile, Flugrichtung links/rechts, Startposition, Geschwindigkeit, vertikale Ausrichtung und Verschwinden am Rand. Danach Trefferlogik separat abstimmen.
 
 Die Roadmap-Besprechung ist abgeschlossen. Das Paintball-Easter-Egg ist nach dem Windows-Sichttest vom Entwickler abgenommen. Detaillierte Alpha-Umsetzung folgt in Themenchats; eine feste Reihenfolge ist noch nicht beschlossen.
 
