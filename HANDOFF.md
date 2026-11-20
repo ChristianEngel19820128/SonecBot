@@ -73,7 +73,7 @@ Verbindlicher Planungsrahmen und Details: [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROA
 
 ## Genau ein nächster Schritt
 
-**A1 – Variable diagonale Minenformation lokal in AGK prüfen:** `simplemine.agc` auf `develop` in [`96dce39`](https://github.com/ChristianEngel19820128/SonecBot/commit/96dce392d4b99aa511faaef5a6991e4ea51a8d51) erweitert: 2–4 Minen, horizontale Abstände 32–48, vertikale 48–72, beide Neigungen; Werte vorläufig. Mindestabstände, gemeinsamer Drift, Spawnlimit sechs, Intervall 18–30 Sekunden und vertikale Ränder erhalten. AGK-Test offen; anschließend symmetrischen linksgerichteten Keil umsetzen. Rudel/Doppelreihe optional.
+**A2 – Symmetrischen linksgerichteten Minenkeil als nächsten kleinen Schritt umsetzen:** Eine Spitze links, paarweise spiegelgleiche Arme rechts, nur ungerade Minenzahlen, gemeinsame Driftgeschwindigkeit, vertikale Weltgrenzen und bestehende Spawnbegrenzung erhalten. A1 (`simplemine.agc`, [`96dce39`](https://github.com/ChristianEngel19820128/SonecBot/commit/96dce392d4b99aa511faaef5a6991e4ea51a8d51)) wurde vom Entwickler lokal in AGK mit **8/8 bestanden** bestätigt: Compile, 2–4 Minen, variable Abstände, beide Neigungen, Zusammenhalt, Weltgrenzen, sechs aktive Minen und Kettenreaktionen. Keine Auffälligkeiten. Rudel/Doppelreihe optional.
 
 ## Weiterführende Dokumente
 
