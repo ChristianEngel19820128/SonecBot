@@ -833,6 +833,17 @@ endtype
 
 type TMenuPaint
     SpriteID as integer
+    Drip1SpriteID as integer
+    Drip2SpriteID as integer
+    Drip1Length as float
+    Drip2Length as float
+    Drip1Max as float
+    Drip2Max as float
+    Drip1X as float
+    Drip2X as float
+    DripY as float
+    Drip1Width as float
+    Drip2Width as float
 endtype
 
 type TIntro

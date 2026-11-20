@@ -25,6 +25,7 @@ function IntroPaintUpdate(Intro ref as TIntro,Now as integer)
     local i as integer
     local Delta as float
     local FreeSlot as integer
+    local DripLength as float
     if Intro.NextOrbMs > Now+2000 then Intro.NextOrbMs = Now+500
     if Intro.NextOrbMs <= Now
         FreeSlot = -1
@@ -46,6 +47,21 @@ function IntroPaintUpdate(Intro ref as TIntro,Now as integer)
     endif
     Delta = GetFrameTime()*1000
     if Delta > 60 then Delta = 60
+    // Let each paint drip grow slowly, then keep it on the menu.
+    for i = 0 to Intro.Paint.Length
+        if Intro.Paint[i].Drip1Length < Intro.Paint[i].Drip1Max
+            DripLength = Intro.Paint[i].Drip1Length+Delta*0.018
+            if DripLength > Intro.Paint[i].Drip1Max then DripLength = Intro.Paint[i].Drip1Max
+            Intro.Paint[i].Drip1Length = DripLength
+            SetSpriteSize(Intro.Paint[i].Drip1SpriteID,Intro.Paint[i].Drip1Width,DripLength)
+        endif
+        if Intro.Paint[i].Drip2Length < Intro.Paint[i].Drip2Max
+            DripLength = Intro.Paint[i].Drip2Length+Delta*0.012
+            if DripLength > Intro.Paint[i].Drip2Max then DripLength = Intro.Paint[i].Drip2Max
+            Intro.Paint[i].Drip2Length = DripLength
+            SetSpriteSize(Intro.Paint[i].Drip2SpriteID,Intro.Paint[i].Drip2Width,DripLength)
+        endif
+    next i
     for i = 0 to MENU_ORB_COUNT-1
         if Intro.Orbs[i].Enabled = TRUE
             // Every few moments randomly accelerate or decelerate horizontally.
@@ -84,6 +100,10 @@ function IntroPaintShoot(Intro ref as TIntro,X as float,Y as float)
     local U1 as float
     local U2 as float
     local HitRadius as float
+    local PaintColor as integer
+    local R as integer
+    local G as integer
+    local B as integer
     if Intro.PaintImageID <= 0 then exitfunction
     for i = MENU_ORB_COUNT-1 to 0 step -1
         if Intro.Orbs[i].Enabled = TRUE
@@ -93,6 +113,8 @@ function IntroPaintShoot(Intro ref as TIntro,X as float,Y as float)
                 Intro.Orbs[i].Enabled = FALSE
                 if Intro.Paint.Length >= MENU_PAINT_LIMIT-1
                     DeleteSprite(Intro.Paint[0].SpriteID)
+                    DeleteSprite(Intro.Paint[0].Drip1SpriteID)
+                    DeleteSprite(Intro.Paint[0].Drip2SpriteID)
                     Intro.Paint.Remove(0)
                 endif
                 Frame = Random(0,MENU_PAINT_FRAMES-1)
@@ -109,6 +131,54 @@ function IntroPaintShoot(Intro ref as TIntro,X as float,Y as float)
                 SetSpriteOffset(Paint.SpriteID,Size*0.5,Size*0.5)
                 SetSpritePositionByOffset(Paint.SpriteID,X,Y)
                 SetSpriteAngle(Paint.SpriteID,Random(0,359))
+                // Match the drips to a small paint palette. The original strip stays unchanged.
+                PaintColor = Random(0,5)
+                R = 238
+                G = 76
+                B = 148
+                if PaintColor = 1
+                    R = 40
+                    G = 201
+                    B = 232
+                endif
+                if PaintColor = 2
+                    R = 246
+                    G = 212
+                    B = 71
+                endif
+                if PaintColor = 3
+                    R = 140
+                    G = 230
+                    B = 173
+                endif
+                if PaintColor = 4
+                    R = 173
+                    G = 117
+                    B = 232
+                endif
+                if PaintColor = 5
+                    R = 242
+                    G = 123
+                    B = 66
+                endif
+                // Blank sprites can be tinted without changing the paintball image.
+                Paint.DripY = Y+Size*0.22
+                Paint.Drip1X = X-Size*0.18
+                Paint.Drip2X = X+Size*0.16
+                Paint.Drip1Width = Random(2,4)
+                Paint.Drip2Width = Random(2,3)
+                Paint.Drip1Length = 1
+                Paint.Drip2Length = 1
+                Paint.Drip1Max = Random(12,35)
+                Paint.Drip2Max = Random(8,26)
+                Paint.Drip1SpriteID = CreateSprite(0)
+                SetSpriteColor(Paint.Drip1SpriteID,R,G,B,230)
+                SetSpriteSize(Paint.Drip1SpriteID,Paint.Drip1Width,Paint.Drip1Length)
+                SetSpritePosition(Paint.Drip1SpriteID,Paint.Drip1X,Paint.DripY)
+                Paint.Drip2SpriteID = CreateSprite(0)
+                SetSpriteColor(Paint.Drip2SpriteID,R,G,B,230)
+                SetSpriteSize(Paint.Drip2SpriteID,Paint.Drip2Width,Paint.Drip2Length)
+                SetSpritePosition(Paint.Drip2SpriteID,Paint.Drip2X,Paint.DripY)
                 Intro.Paint.Insert(Paint)
                 exitfunction
             endif
@@ -119,6 +189,8 @@ endfunction
 function IntroPaintDraw(Intro ref as TIntro)
     local i as integer
     for i = 0 to Intro.Paint.Length
+        DrawSprite(Intro.Paint[i].Drip1SpriteID)
+        DrawSprite(Intro.Paint[i].Drip2SpriteID)
         DrawSprite(Intro.Paint[i].SpriteID)
     next i
     if Intro.OrbSpriteID > 0
