@@ -37,7 +37,7 @@ function IntroPaintUpdate(Intro ref as TIntro,Now as integer)
             Intro.Orbs[FreeSlot].Enabled = TRUE
             Intro.Orbs[FreeSlot].X = Random(35,Intro.MenuWidth-35)
             Intro.Orbs[FreeSlot].Y = Intro.MenuHeight+30
-            Intro.Orbs[FreeSlot].Size = Random(16,24)
+            Intro.Orbs[FreeSlot].Size = Random(12,18)
             Intro.Orbs[FreeSlot].Speed = Random(18,48)*0.001
         endif
         Intro.NextOrbMs = Now+Random(600,1400)
