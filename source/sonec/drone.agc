@@ -195,6 +195,8 @@ endfunction
 
 function DroneDraw(Drone ref as TDrone,ProtoDrone ref as TProtoDrone,World ref as TWorld)
     local EffectData as TSpriteData
+    local TorsoData as TSpriteData
+    local SensorData as TSpriteData
     if Drone.Enabled = TRUE
         SpritePositionCalc(Drone.SpriteData.Position,Drone.Position,World.Position)
 
@@ -229,14 +231,20 @@ function DroneDraw(Drone ref as TDrone,ProtoDrone ref as TProtoDrone,World ref a
                 endif
             endif
 
-            SpriteDraw(ProtoDrone.Torso.Sprite,Drone.SpriteData)
+            // D3a color test: tint torso and sensors independently, without editing PNGs.
+            TorsoData = Drone.SpriteData
+            ColorSet(TorsoData.Color,35,110,55,255)
+            SpriteDraw(ProtoDrone.Torso.Sprite,TorsoData)
+
+            SensorData = Drone.SpriteData
+            ColorSet(SensorData.Color,230,45,45,255)
             if Drone.IsTurning = TRUE
-                SpriteDraw(ProtoDrone.SensorCenter.Sprite,Drone.SpriteData)
+                SpriteDraw(ProtoDrone.SensorCenter.Sprite,SensorData)
             else
                 if Drone.Direction = MOVELEFT
-                    SpriteDraw(ProtoDrone.SensorLeft.Sprite,Drone.SpriteData)
+                    SpriteDraw(ProtoDrone.SensorLeft.Sprite,SensorData)
                 else
-                    SpriteDraw(ProtoDrone.SensorRight.Sprite,Drone.SpriteData)
+                    SpriteDraw(ProtoDrone.SensorRight.Sprite,SensorData)
                 endif
             endif
         endif
