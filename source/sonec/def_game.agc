@@ -835,6 +835,8 @@ type TMenuPaint
     SpriteID as integer
     Drip1SpriteID as integer
     Drip2SpriteID as integer
+    Drip1TipSpriteID as integer
+    Drip2TipSpriteID as integer
     Drip1Length as float
     Drip2Length as float
     Drip1Max as float
