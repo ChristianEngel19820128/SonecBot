@@ -1,3 +1,22 @@
+# AKTUELL – Nachtrag zur Entwicklungsrunde 19./20.11.2026 (Stand: 20.11., nach Chatwechsel)
+
+**Quellen und Evidenz:** GitHub-`develop` bis `c2a2d4e`; Entwickler-Rueckmeldung im Folgechat am 20.11.; rekonstruierter alter Chat-Ausschnitt (Paintball). Die frueheren Einzeltestprotokolle sind nur teilweise erhalten. **Entwickler berichtet ausdruecklich, dass alle an diesem Abend implementierten Aenderungen erfolgreich getestet wurden.** Das ist eine zusammenfassende Entwicklerabnahme, **keine** nachtraeglich erfundene nummerierte Testmatrix und kein eigener AGK-/HTML5-Lauf des Assistenten. Aeltere Angaben "Test offen" aus dem Stand vor dieser Rueckmeldung sind fuer die abends umgesetzten Schritte nicht automatisch aktuell; exakt dokumentierte Einzelabnahmen bleiben unveraendert.
+
+**Rekonstruierter Arbeitsumfang aus der Git-Historie (implementiert; keine neuen Aenderungen durch diesen Nachtrag):**
+- K1b/K1c und K1d: segmentbasierte Treffer gegen Zielklassen bzw. Sonec, Zwei-Kreis-Koerperkollision, F3-Diagnose. Fruehere spezifische Abnahmen und deren Umfang bleiben in den historischen Abschnitten dokumentiert.
+- Diagnostik/Bedienhilfe: Debug-Tasten 1-7 fuer Windows/HTML5; HTML5-Hilfetexte zu Tastaturfokus und Gamepad-Aktivierung.
+- Feedback: gruene Sonec-Einfaerbung, rotes Aufblitzen bei wirklichem Health-Schaden; eisblaues Schild-Aufblitzen bei absorbiertem Treffer.
+- Spielablauf: korrigierter Health-Regenerations-Upgrade-Timer; FIFO-Nachrichten mit positiven Upgrade-Meldungen/Sternsymbol, verfeinerten Zeiten und Abstaenden; korrigierte Boden-Laufgeschwindigkeitsbegrenzung/Bremsen; kurzer mintfarbener Stern ueber Sonec bei erfolgreichem Upgrade; bei ausgeschöpften Burst-Pickups Wechsel zu Fire-Rate-Upgrades.
+- Hauptmenue-Paintball-Easter-Egg: aufsteigende, seitlich driftende Energie-Orbs; abschiessbar mit toleranter Trefferzone; bleibende eingefaerbte Spritzflecken aus weissem Paintball-Sprite-Strip; animierte Laufnasen, zuletzt Rotation +/-25 Grad und kuerzere/naeher angesetzte Laufspuren (letzter Commit `c2a2d4e`). **Optischer Restpunkt:** Laufnasen erscheinen dem Entwickler weiterhin rechteckig. Im Code bestehen sie aus rechteckigen `CreateSprite(0)`-Spuren plus winzigen aus Spritz-Frames abgeleiteten Spitzen; echte runde Tropfenenden und variable Spurenanzahl/-breite entlang der Spur sind noch nicht umgesetzt. Der alte Chat nennt 1-3 Laufnasen und natuerlichere Formen als Zielvorstellung, nicht als erledigte Implementierung.
+
+**Bewegungsruckeln / M1:** Die Ursachenuntersuchung wurde vom Entwickler **zurueckgestellt**, weil keine nachvollziehbare Ursache festgestellt werden konnte. **Beobachtung:** Bei Umstellung des Monitors auf **75 Hz** war das Ruckeln nicht mehr vorhanden. Das belegt weder eine bestimmte Ursache noch eine abschliessende M1-Abnahme; offene technische Release-Gates bleiben separate Planungsfragen. Keine weitere Fehlersuche ohne neue Entscheidung.
+
+**Drohne:** Nach Aussage des Entwicklers **keine weitere inhaltliche Drohnenentwicklung** in der betreffenden Abendrunde. Vorhandene A/B-Diagnoseumschaltung und Hilfetexte sind nicht als Ausbau des Gegners zu werten. Vorhandener Drone-D1-Stand und fruehere Testbelege bleiben bestehen.
+
+**Naechster gemeinsamer Schritt:** Dokumentationsabgleich abschliessen, widerspruechliche alte "naechster Schritt"-Hinweise als historisch einordnen; erst anschliessend den kleinsten naechsten Grafik-/Gameplay-Schritt abstimmen. Keine automatische Codeaenderung, kein `main`-Merge, keine itch.io-Veroeffentlichung. 
+
+---
+
 ## HTML5 player help (19.11.2026; runtime test pending)
 
 Developer observation: keyboard input needs a click inside browser game canvas; gamepad activation needs first button press and takes approximately 3 seconds. Intro help initial HTML5 hint and rotating help tips now explain these behaviors. No input/gamepad initialization logic changed. Verify text width and behavior in HTML5. Drone T diagnostic remains under investigation; planned 1–0 debug remapping deferred until after drone A/B test.
