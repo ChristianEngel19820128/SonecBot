@@ -1,7 +1,7 @@
 # SonecBot – Real Alpha Roadmap
 
 **Stand:** 20. November 2026 · **Arbeitsbranch:** `develop`
-**Status:** Gemeinsamer Planungsstand nach Abschluss der Roadmap-Besprechung; neue Funktionen sind noch nicht implementiert.
+**Status:** Real-Alpha-Umsetzung begonnen; animierter Explosionsradius sowie variable diagonale und linksgerichtete Keil-Minenformationen lokal in AGK abgenommen.
 **Quellenbasis:** Entwicklerentscheidungen im Gespräch; Dokumentstand [`87927e5`](https://github.com/ChristianEngel19820128/SonecBot/commit/87927e564d5ce1539878b84773c8f8ea40c258d5), letzte Code-Referenz [`c2a2d4e`](https://github.com/ChristianEngel19820128/SonecBot/commit/c2a2d4ed1dd7b27de6aa13f1058a5431509b2d45).
 Nächste Aufgaben: [TODO.md](TODO.md) · Chatübergabe: [HANDOFF.md](HANDOFF.md) · Spätere Ideen: [BACKLOG.md](BACKLOG.md).
 Die Roadmap legt den Entwicklungsrahmen fest. Einzelne Codeänderungen, `main`-Merge und Veröffentlichung werden separat vereinbart.
@@ -36,7 +36,7 @@ Der Draft-Test vom 18.11. belegt keine Auslieferung späterer Alpha-Änderungen.
 
 ### Minenformationen
 
-- Kleine Erweiterung auf **drei Formationen** mit variabler Anzahl und variablen Abständen; konkrete Muster im Themenchat auswählen.
+- **Zwei Formationen umgesetzt und vom Entwickler lokal in AGK bestätigt:** variable Diagonale (2–4 Minen, A1: 8/8) und linksgerichteter symmetrischer Keil (3/5 Minen, A2: 9/9). Drittes Muster noch gemeinsam auswählen; Abstände variieren, Balancing später.
 - Bestehende Minentypen und ihre Unterschiede erhalten. Abstände dürfen unterschiedliche Kettenreaktionen ermöglichen.
 - Aktuelle 18–30 Sekunden zwischen Spawnversuchen und maximal sechs einfache Minen sind vorläufige Ausgangswerte; das Gefahrenbudget wird später gemeinsam integriert.
 
