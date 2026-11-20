@@ -163,7 +163,7 @@ function DroneMove(Drone ref as TDrone,Screen as TSize,SonecX as float,Now as in
         endif
 
         if DroneScanActive = TRUE
-            DroneScanFrame = 1 + mod((Now-DroneScanStartMs)/150,3)
+            DroneScanFrame = 1 + Mod((Now-DroneScanStartMs)/150,3)
             // Stationary scan; the center view is a temporary visual placeholder.
         else
         if Drone.IsTurning = TRUE
@@ -230,7 +230,7 @@ function DroneDraw(Drone ref as TDrone,ProtoDrone ref as TProtoDrone,World ref a
             endif
 
             SpriteDraw(ProtoDrone.Torso.Sprite,Drone.SpriteData)
-            if Drone.IsTurning = TRUE or DroneScanActive = TRUE
+            if Drone.IsTurning = TRUE
                 SpriteDraw(ProtoDrone.SensorCenter.Sprite,Drone.SpriteData)
             else
                 if Drone.Direction = MOVELEFT
