@@ -92,12 +92,11 @@ function SimpleMineWedgeAdd(MineList ref as TMineList,ProtoMine ref as TProtoMin
 
     if MineCount < 3 then exitfunction
     if MineCount > 5 then exitfunction
-    if mod(MineCount,2) = 0 then exitfunction
 
     DriftSpeed = random(35,100)*0.001
     for Arm = 0 to (MineCount-1)/2
         for Side = -1 to 1
-            if Arm = 0 and Side = 0 or Arm > 0 and Side <> 0
+            if (Arm = 0 and Side = 0) or (Arm > 0 and Side <> 0)
                 Index = SimpleMineAdd(MineList,ProtoMine,World,CenterY+Side*Arm*SpacingY,Now)
                 if Index >= 0
                     MineList.Mine[Index].ObjectData.Position.x = MineList.Mine[Index].ObjectData.Position.x + Arm*SpacingX
