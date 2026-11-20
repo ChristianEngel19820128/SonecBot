@@ -1,3 +1,13 @@
+## Statusnachtrag 20.11.2026 – Abendrekonstruktion
+
+Der Entwickler meldet, dass saemtliche in der Entwicklungsrunde 19./20.11. implementierten Aenderungen erfolgreich getestet wurden; fehlende Einzelprotokolle duerfen daraus nicht nachtraeglich erfunden werden. GitHub-`develop` enthielt am Ende `c2a2d4e`. Implementierte Features und bekannte Restarbeiten sind im aktuellen Kopfabschnitt von `HANDOFF.md` zusammengefasst.
+
+**M1:** Die Untersuchung des beobachteten Ruckelns wurde ohne reproduzierbare Ursache zurueckgestellt. Laut Entwickler verschwand das Ruckeln bei 75 Hz Monitorfrequenz. Dies ist eine Beobachtung, kein beweisender Root-Cause-Fund oder eine formelle Freigabe des Release-Gates. Der Stand der Drohne blieb inhaltlich unveraendert; die A/B-Diagnose war eine Untersuchung, keine neue Ausbaustufe.
+
+**Visueller Restpunkt ausserhalb der Kern-Release-Gates:** Laufnasen des neuen Hauptmenue-Paintball-Easter-Eggs wirken rechteckig; echte runde Tropfenenden/offenere organische Formen sind noch nicht abgeschlossen. Nach Abschluss des Dokumentationsabgleichs gesondert priorisieren. Keine implizite Implementierungsfreigabe.
+
+---
+
 ## Aktueller Stand 19.11.2026 – K1d und M1-Pruefauftrag
 
 **K1d:** Zwei-Kreis-Koerperkollision fuer gegnerische Bullets ist auf `develop` aktiv (Commit `cba3cc1`), mit Segment-Sweep gegen Tunneling und K1c-Rueckfalloption `SONEC_TWO_CIRCLE_DAMAGE=0`. Stehen/Bewegung/Flug: zwei Kreise; Ducken: zwei Kreise, zweiter 10 px tiefer; Waffe nicht kollidierbar. Entwickler bestaetigt AGK-Compile, sichtbare Geometrie, positives/faires Spielgefuehl und funktionierende F3-Umschaltung von Kollisionskreisen, K1d-Zaehlern und Schild-Debugtext (letzter Fix `39f2e0c`). **Keine vollstaendige neue HTML5-/Regressionstestmatrix fuer K1d gemeldet.** Aeltere Abschnitte zu K1d als reinem Diagnoseprototyp sind historisch.
