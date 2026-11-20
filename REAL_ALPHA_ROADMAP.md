@@ -36,7 +36,7 @@ Der Draft-Test vom 18.11. belegt keine Auslieferung späterer Alpha-Änderungen.
 
 ### Minenformationen
 
-- **Zwei Formationen umgesetzt und vom Entwickler lokal in AGK bestätigt:** variable Diagonale (2–4 Minen, A1: 8/8) und linksgerichteter symmetrischer Keil (3/5 Minen, A2: 9/9). Drittes Muster noch gemeinsam auswählen; Abstände variieren, Balancing später.
+- **Drei Formationen umgesetzt:** variable Diagonale (2–4 Minen, A1: 8/8 AGK-bestätigt), linksgerichteter symmetrischer Keil (3/5 Minen, A2: 9/9 AGK-bestätigt) und zufälliges Rudel (3–6 Minen in begrenztem Bereich, A3: AGK-Test offen). Abstände variieren; Balancing später.
 - Bestehende Minentypen und ihre Unterschiede erhalten. Abstände dürfen unterschiedliche Kettenreaktionen ermöglichen.
 - Aktuelle 18–30 Sekunden zwischen Spawnversuchen und maximal sechs einfache Minen sind vorläufige Ausgangswerte; das Gefahrenbudget wird später gemeinsam integriert.
 
