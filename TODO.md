@@ -6,7 +6,7 @@ Hier stehen nur unmittelbar nächste, gemeinsam zu bearbeitende Schritte. Höchs
 
 ## Jetzt
 
-- [ ] **D2 – Drohnenbewegung und Scanpausen konkretisieren, dann einzeln umsetzen.** Bestehende D1-Patrouille bewahren; zufällige Pausen, Scan-/Richtungswechsel, Sonec-abhängige Wendechance und leichte rein visuelle Wippbewegung planen. Kurze problembezogene Tests; Gesamtabnahme später.
+- [ ] **D2 – Drohnenbewegung und Scanpausen lokal in AGK testen.** Auf `develop` umgesetzt (`0250d15`, `6570e24`): ±2 px physische Höhenwippe, zufällige Scanpausen mit Center-Platzhaltergrafik, seltene Sonec-abhängige Richtungswechsel. Prüfen: Compile, langsames Wippen mit übereinstimmender Position, Pause/Fortsetzung, keine garantierte Verfolgung und Randwenden. Assets/Laserschuss folgen separat.
 
 Die Roadmap-Besprechung ist abgeschlossen. Das Paintball-Easter-Egg ist nach dem Windows-Sichttest vom Entwickler abgenommen. Detaillierte Alpha-Umsetzung folgt in Themenchats; eine feste Reihenfolge ist noch nicht beschlossen.
 
