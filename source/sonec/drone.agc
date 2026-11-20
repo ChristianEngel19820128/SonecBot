@@ -23,6 +23,8 @@ global DroneNextScanMs as integer
 global DroneScanActive as integer
 global DroneBaseY as float
 global DroneBobStartMs as integer
+global DroneScanStartMs as integer
+global DroneScanFrame as integer
 
 function DroneProtoLoad(ProtoDrone ref as TProtoDrone)
     ProtoDrone.Left.Image.File.Path = "/media/gfx/enemies/drone"
@@ -42,6 +44,36 @@ function DroneProtoLoad(ProtoDrone ref as TProtoDrone)
     if ImageLoad(ProtoDrone.Right.Image) = TRUE
         SpriteLoad(ProtoDrone.Right)
     endif
+    // D3a: layered art, with a three-frame ice-blue scan cone.
+    ProtoDrone.Torso.Image.File.Path = "/media/gfx/enemies/drone"
+    ProtoDrone.Torso.Image.File.Name = "drone_torso.png"
+    if ImageLoad(ProtoDrone.Torso.Image) = TRUE then SpriteLoad(ProtoDrone.Torso)
+
+    ProtoDrone.SensorLeft.Image.File.Path = "/media/gfx/enemies/drone"
+    ProtoDrone.SensorLeft.Image.File.Name = "drone_sensor_left.png"
+    if ImageLoad(ProtoDrone.SensorLeft.Image) = TRUE then SpriteLoad(ProtoDrone.SensorLeft)
+
+    ProtoDrone.SensorCenter.Image.File.Path = "/media/gfx/enemies/drone"
+    ProtoDrone.SensorCenter.Image.File.Name = "drone_sensor_center.png"
+    if ImageLoad(ProtoDrone.SensorCenter.Image) = TRUE then SpriteLoad(ProtoDrone.SensorCenter)
+
+    ProtoDrone.SensorRight.Image.File.Path = "/media/gfx/enemies/drone"
+    ProtoDrone.SensorRight.Image.File.Name = "drone_sensor_right.png"
+    if ImageLoad(ProtoDrone.SensorRight.Image) = TRUE then SpriteLoad(ProtoDrone.SensorRight)
+
+    ProtoDrone.ScanLeft.Image.File.Path = "/media/gfx/enemies/drone"
+    ProtoDrone.ScanLeft.Image.File.Name = "scan_left.png"
+    if ImageLoad(ProtoDrone.ScanLeft.Image) = TRUE
+        SpriteLoad(ProtoDrone.ScanLeft)
+        SetSpriteAnimation(ProtoDrone.ScanLeft.Sprite.ID,30,30,3)
+    endif
+
+    ProtoDrone.ScanRight.Image.File.Path = "/media/gfx/enemies/drone"
+    ProtoDrone.ScanRight.Image.File.Name = "scan_right.png"
+    if ImageLoad(ProtoDrone.ScanRight.Image) = TRUE
+        SpriteLoad(ProtoDrone.ScanRight)
+        SetSpriteAnimation(ProtoDrone.ScanRight.Sprite.ID,30,30,3)
+    endif
 endfunction
 
 function DroneInit(Drone ref as TDrone,Screen as TSize,World ref as TWorld,Now as integer)
@@ -54,6 +86,8 @@ function DroneInit(Drone ref as TDrone,Screen as TSize,World ref as TWorld,Now a
     DroneScanUntilMs = 0
     DroneNextScanMs = Now + random(DRONE_SCAN_MIN_INTERVAL_MS,DRONE_SCAN_MAX_INTERVAL_MS)
     DroneBobStartMs = Now
+    DroneScanStartMs = 0
+    DroneScanFrame = 1
     TimeSet(DroneMotionTimer,10,10)
     TimeReset(DroneMotionTimer,Now)
     DroneMotionLastMode = DroneMotionUseGate
@@ -122,11 +156,14 @@ function DroneMove(Drone ref as TDrone,Screen as TSize,SonecX as float,Now as in
         else
             if Drone.IsTurning = FALSE and Now >= DroneNextScanMs
                 DroneScanActive = TRUE
+                DroneScanStartMs = Now
+                DroneScanFrame = 1
                 DroneScanUntilMs = Now + random(DRONE_SCAN_MIN_DURATION_MS,DRONE_SCAN_MAX_DURATION_MS)
             endif
         endif
 
         if DroneScanActive = TRUE
+            DroneScanFrame = 1 + mod((Now-DroneScanStartMs)/150,3)
             // Stationary scan; the center view is a temporary visual placeholder.
         else
         if Drone.IsTurning = TRUE
@@ -157,15 +194,50 @@ function DroneMove(Drone ref as TDrone,Screen as TSize,SonecX as float,Now as in
 endfunction
 
 function DroneDraw(Drone ref as TDrone,ProtoDrone ref as TProtoDrone,World ref as TWorld)
+    local EffectData as TSpriteData
     if Drone.Enabled = TRUE
         SpritePositionCalc(Drone.SpriteData.Position,Drone.Position,World.Position)
-        if Drone.IsTurning = TRUE or DroneScanActive = TRUE
-            SpriteDraw(ProtoDrone.Center.Sprite,Drone.SpriteData)
-        else
-            if Drone.Direction = MOVELEFT
-                SpriteDraw(ProtoDrone.Left.Sprite,Drone.SpriteData)
+
+        // Keep the old full-body art as a fallback if the layered torso is unavailable.
+        if ProtoDrone.Torso.Sprite.ID = 0
+            if Drone.IsTurning = TRUE or DroneScanActive = TRUE
+                SpriteDraw(ProtoDrone.Center.Sprite,Drone.SpriteData)
             else
-                SpriteDraw(ProtoDrone.Right.Sprite,Drone.SpriteData)
+                if Drone.Direction = MOVELEFT
+                    SpriteDraw(ProtoDrone.Left.Sprite,Drone.SpriteData)
+                else
+                    SpriteDraw(ProtoDrone.Right.Sprite,Drone.SpriteData)
+                endif
+            endif
+        else
+            // The cone is drawn behind the body, using the same physical hover position.
+            if DroneScanActive = TRUE
+                EffectData = Drone.SpriteData
+                ColorSet(EffectData.Color,160,225,255,90)
+                if Drone.Direction = MOVELEFT
+                    EffectData.Position.x = EffectData.Position.x-28
+                    if ProtoDrone.ScanLeft.Sprite.ID > 0
+                        SetSpriteFrame(ProtoDrone.ScanLeft.Sprite.ID,DroneScanFrame)
+                        SpriteDraw(ProtoDrone.ScanLeft.Sprite,EffectData)
+                    endif
+                else
+                    EffectData.Position.x = EffectData.Position.x+28
+                    if ProtoDrone.ScanRight.Sprite.ID > 0
+                        SetSpriteFrame(ProtoDrone.ScanRight.Sprite.ID,DroneScanFrame)
+                        SpriteDraw(ProtoDrone.ScanRight.Sprite,EffectData)
+                    endif
+                endif
+            endif
+
+            SpriteDraw(ProtoDrone.Torso.Sprite,Drone.SpriteData)
+            if Drone.IsTurning = TRUE or DroneScanActive = TRUE
+                SpriteDraw(ProtoDrone.SensorCenter.Sprite,Drone.SpriteData)
+            else
+                if Drone.Direction = MOVELEFT
+                    SpriteDraw(ProtoDrone.SensorLeft.Sprite,Drone.SpriteData)
+                else
+                    SpriteDraw(ProtoDrone.SensorRight.Sprite,Drone.SpriteData)
+                endif
             endif
         endif
     endif
