@@ -14,6 +14,8 @@
 #constant DRONE_CHARGE_MIN_INTERVAL_MS 4500
 #constant DRONE_CHARGE_MAX_INTERVAL_MS 8000
 #constant DRONE_CHARGE_DURATION_MS 900
+#constant DRONE_LASER_SPEED 0.35
+#constant DRONE_LASER_START_OFFSET_X 53
 // D2.1 temporary visibility test: exaggerated hover, not final balancing.
 #constant DRONE_BOB_AMPLITUDE 8
 #constant DRONE_BOB_DEGREES_PER_MS 0.12
@@ -33,6 +35,11 @@ global DroneChargeStartMs as integer
 global DroneChargeUntilMs as integer
 global DroneNextChargeMs as integer
 global DroneChargeFrame as integer
+global DroneLaserActive as integer
+global DroneLaserX as float
+global DroneLaserY as float
+global DroneLaserDirection as integer
+global DroneLaserLastMs as integer
 
 function DroneProtoLoad(ProtoDrone ref as TProtoDrone)
     ProtoDrone.Left.Image.File.Path = "/media/gfx/enemies/drone"
@@ -94,6 +101,11 @@ function DroneProtoLoad(ProtoDrone ref as TProtoDrone)
         SpriteLoad(ProtoDrone.ChargeRight)
         SetSpriteAnimation(ProtoDrone.ChargeRight.Sprite.ID,30,30,3)
     endif
+    ProtoDrone.Laser.Image.File.Path = "/media/gfx/enemies/drone"
+    ProtoDrone.Laser.Image.File.Name = "laser.png"
+    if ImageLoad(ProtoDrone.Laser.Image) = TRUE
+        SpriteLoad(ProtoDrone.Laser)
+    endif
 endfunction
 
 function DroneInit(Drone ref as TDrone,Screen as TSize,World ref as TWorld,Now as integer)
@@ -113,6 +125,11 @@ function DroneInit(Drone ref as TDrone,Screen as TSize,World ref as TWorld,Now a
     DroneChargeUntilMs = 0
     DroneNextChargeMs = Now + random(DRONE_CHARGE_MIN_INTERVAL_MS,DRONE_CHARGE_MAX_INTERVAL_MS)
     DroneChargeFrame = 1
+    DroneLaserActive = FALSE
+    DroneLaserX = 0
+    DroneLaserY = 0
+    DroneLaserDirection = MOVELEFT
+    DroneLaserLastMs = Now
     TimeSet(DroneMotionTimer,10,10)
     TimeReset(DroneMotionTimer,Now)
     DroneMotionLastMode = DroneMotionUseGate
@@ -164,7 +181,31 @@ function DroneMove(Drone ref as TDrone,Screen as TSize,SonecX as float,Now as in
         if DroneChargeActive = TRUE
             if Now >= DroneChargeUntilMs
                 DroneChargeActive = FALSE
+                // Spawn a single visual projectile at the charge tip.
+                DroneLaserActive = TRUE
+                DroneLaserDirection = Drone.Direction
+                DroneLaserX = Drone.Position.x
+                if DroneLaserDirection = MOVELEFT
+                    DroneLaserX = DroneLaserX-DRONE_LASER_START_OFFSET_X
+                else
+                    DroneLaserX = DroneLaserX+DRONE_LASER_START_OFFSET_X
+                endif
+                DroneLaserY = Drone.Position.y
+                DroneLaserLastMs = Now
                 DroneNextChargeMs = Now + random(DRONE_CHARGE_MIN_INTERVAL_MS,DRONE_CHARGE_MAX_INTERVAL_MS)
+            endif
+        endif
+
+        // The projectile flies independently of subsequent drone movement.
+        if DroneLaserActive = TRUE
+            if DroneLaserDirection = MOVELEFT
+                DroneLaserX = DroneLaserX-(Now-DroneLaserLastMs)*DRONE_LASER_SPEED
+            else
+                DroneLaserX = DroneLaserX+(Now-DroneLaserLastMs)*DRONE_LASER_SPEED
+            endif
+            DroneLaserLastMs = Now
+            if DroneLaserX < -30 or DroneLaserX > Screen.Width+30
+                DroneLaserActive = FALSE
             endif
         endif
 
@@ -254,6 +295,7 @@ function DroneDraw(Drone ref as TDrone,ProtoDrone ref as TProtoDrone,World ref a
     local EffectData as TSpriteData
     local TorsoData as TSpriteData
     local SensorData as TSpriteData
+    local LaserData as TSpriteData
     if Drone.Enabled = TRUE
         SpritePositionCalc(Drone.SpriteData.Position,Drone.Position,World.Position)
 
@@ -322,6 +364,15 @@ function DroneDraw(Drone ref as TDrone,ProtoDrone ref as TProtoDrone,World ref a
                     SpriteDraw(ProtoDrone.SensorRight.Sprite,SensorData)
                 endif
             endif
+        endif
+
+        // Visual-only 3px-high projectile; world Y stays fixed after firing.
+        if DroneLaserActive = TRUE and ProtoDrone.Laser.Sprite.ID > 0
+            LaserData = Drone.SpriteData
+            LaserData.Position.x = DroneLaserX
+            LaserData.Position.y = DroneLaserY-World.Position.y
+            ColorSet(LaserData.Color,30,255,60,230)
+            SpriteDraw(ProtoDrone.Laser.Sprite,LaserData)
         endif
     endif
 endfunction
