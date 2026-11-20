@@ -8,8 +8,8 @@ Diese Datei ermöglicht den nächsten Chatwechsel. Sie wird aktualisiert und gek
 
 - Zuerst [AGENTS.md](AGENTS.md) und diese Übergabe lesen, dann den tatsächlichen `develop`-HEAD abfragen.
 - Code-Referenz der letzten Entwicklungsrunde: [`c2a2d4e`](https://github.com/ChristianEngel19820128/SonecBot/commit/c2a2d4ed1dd7b27de6aa13f1058a5431509b2d45).
-- Dokumentationsbasis vor dieser Bereinigung: [`a0a628e`](https://github.com/ChristianEngel19820128/SonecBot/commit/a0a628e699f701ce773498645e773ca1d0d32807). Das ist eine feste Quellenreferenz, kein dauerhaft aktueller HEAD.
-- Die aktuelle Arbeit ordnet ausschließlich Dokumentation und Planung. Die Inhalte der Real Alpha werden anschließend gemeinsam neu abgegrenzt.
+- Dokumentationsbasis vor dieser Roadmap-Festlegung: [`87927e5`](https://github.com/ChristianEngel19820128/SonecBot/commit/87927e564d5ce1539878b84773c8f8ea40c258d5). Feste Quellenreferenz, kein dauerhaft aktueller HEAD.
+- Die Real-Alpha-Richtung und die drei letzten Grundsatzfragen wurden am 20.11. gemeinsam geklärt und dokumentiert. Neue Funktionen sind geplant, noch nicht durch diese Dokumentation implementiert.
 - Es gibt keine neue Deadline. Alpha-Entwicklung, Balancing, Deployment und HTML5-Themen dürfen getrennte Chats beanspruchen.
 - Den aktuellen `develop`-Stand nicht mit dem auf itch.io hochgeladenen Build gleichsetzen; der Export-SHA wurde nicht durchgehend protokolliert.
 
@@ -38,17 +38,30 @@ Zusätzlich in dieser Runde umgesetzt:
 - Mintfarbener Upgrade-Stern; ausgeschöpfte Burst-Pickups wechseln zu Fire-Rate-Upgrades.
 - Paintball-Easter-Egg im Hauptmenü mit anklickbaren Energie-Orbs, bleibenden Spritzflecken und animierten Laufspuren.
 
+## Bestätigte Alpha-Planung
+
+Verbindlicher Planungsrahmen und Details: [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROADMAP.md). Einzelne Codeeingriffe werden weiterhin im jeweiligen Themenchat vereinbart.
+
+- Gegnervielfalt: Drohne mit kurzen grünen Laserprojektilen, Ladeanzeige und gelegentlichem Biep; stationäre Flarak; schneller Höhenbomber als einzelner Spawn. Walker bleibt akzeptierte Basis.
+- Weitere Weltobjekte: hilfreicher Jumppod für sehr hohen kostenlosen Sprung; drei Minenformationen mit variabler Anzahl/Abständen. Warn-/Hilfekern ist bereits vorhanden und wird inhaltlich erweitert.
+- Grundsysteme: Erfahrung, Ressourcen, Gefahrenbudget und kleine Spielziele. Überleben liefert einen kleinen Fortschrittsbeitrag; tatsächlicher Schaden, Zerstörung und sinnvoller Ressourcengewinn zählen stärker. Kein Perk-Kauf mit Erfahrung.
+- Budget: erst Timer und aktive Gefahr `G < B` prüfen, dann zufälligen Spawn bestimmen. Gesamtpreis `P <= B` erforderlich; danach ist `G + P > B` erlaubt. Kein Nachwürfeln auf einen passend billigen Ersatz.
+- Mit dem Level steigen Spitzen und Erholungsbudget; Vernichtung verdient eine Spawnpause, links verschwundene Gegner keine zusätzliche Pause. Genaue Werte/Zurechnung später.
+- Auswählbare Spezialmunition und ein einfaches Panzerungs-/Schadensmodell gehören als testbare Basis zur Alpha. Bei voller Standardmunition ersetzt Spezialmunition einen entsprechenden Teil; volle Standardmunition plus Standardpickup erzeugt keinen Vorratsgewinn und wenig bis keine Erfahrung.
+- Fairness gilt für Spieler und Gegner. Vorsichtiges Sammeln zählt; aufgebaute Vorteile dürfen später herausgefordert werden. Deckung, Ausweichen und Flucht bleiben gültig, kein allgemeiner Vernichtungszwang.
+- Quadrokopter, Fallen-/Waffenvarianten, weitergehende Missionen, Punkte/Ranglisten und mögliche Schwierigkeitsauswahl bleiben im [BACKLOG.md](BACKLOG.md). Grafische Endfassungen und umfassendes Balancing sind kein Vorab-Gate für die Funktionsentwicklung.
+
 ## Offene oder zurückgestellte Punkte
 
-- **M1 / Bewegungsruckeln:** Ursachenuntersuchung ausdrücklich zurückgestellt. Bei 75 Hz war das Ruckeln laut Entwickler nicht mehr vorhanden; Ursache und plattformübergreifende Wirkung sind unbewiesen. Umgang mit dem früher vereinbarten Alpha-Gate in der Roadmap-Besprechung klären; keine automatische Wiederaufnahme oder Abnahme.
+- **M1 / Bewegungsruckeln:** Ursachenuntersuchung ausdrücklich zurückgestellt. Bei 75 Hz war das Ruckeln laut Entwickler nicht mehr vorhanden; Ursache und plattformübergreifende Wirkung sind unbewiesen. Umgang mit dem früher vereinbarten Alpha-Gate vor Release gesondert entscheiden; keine automatische Wiederaufnahme oder Abnahme.
 - **Browserlaufzeit:** Nach längerem Testen half laut Entwickler ein Browserneustart gegen Performance-Einbußen. Bei Vergleichen frischen Start und längere Sitzung getrennt beobachten; ein Neustart klärt die Ursache nicht. Siehe [TECHNICAL.md](TECHNICAL.md).
-- **Paintball-Optik:** Laufnasen wirken weiterhin rechteckig. Runde Tropfenenden und organische, variable Spuren sind eine offene Gestaltungsidee, keine bereits erledigte Änderung.
-- **Drohne und weitere Alpha-Inhalte:** D1 ist die Basis; Ausbau, Art-Pass und zusätzliche Gegner gemeinsam einordnen. Die Zusammenfassung der Abendtests ersetzt keinen neuen Drohnenausbau.
-- Weitere Qualitätsbefunde und ungeklärte Release-Zuordnungen stehen in der [Real-Alpha-Roadmap](REAL_ALPHA_ROADMAP.md); sie werden hier nicht nochmals als Aufgabenliste geführt.
+- **Paintball-Optik:** Gewünschter optionaler Mini-Schritt ist jetzt einfach: Laufnasen ein Pixel breit, Fleckenrotation entfernen, ursprüngliche korrekte Grafik-/Tropfenrichtung erhalten. Noch nicht umgesetzt; kein aufwendiger Grafikumbau.
+- **Drohne/Assets:** D1 bleibt tatsächlicher Codebestand; der geplante Laserangriff ist noch nicht implementiert. Art-Pass separat. Legacy-Grafiken belegen keine fertigen früheren Gegnerfunktionen.
+- Weitere Qualitätsbefunde und technische Detailentscheidungen stehen in der [Real-Alpha-Roadmap](REAL_ALPHA_ROADMAP.md); keine Wiederholung als zweite Aufgabenliste.
 
 ## Arbeitsaufteilung und Tests
 
-- **Alpha-Entwicklung:** Zuerst Releaseumfang und Abschlusskriterien besprechen, danach kleine Umsetzungsblöcke auswählen.
+- **Alpha-Entwicklung:** Themenchats für A Gegner/Weltobjekte, B Grundsysteme, C Spielziele und D Präsentation/Qualität. Abgestimmte Themenwechsel sind möglich; jeweils einen kleinen Schritt abschließen.
 - **Balancing:** Eigener Chat für Gegnerdichte, Formationen, Ressourcen, Upgrades und Schwierigkeit; vorläufige Werte bleiben als solche erkennbar.
 - **Deployment:** Eigener Chat für Build-Zuordnung, Upload und Release-Entscheidungen. itch.io bleibt nach bisheriger Vereinbarung Draft/Secret URL; `main` und Veröffentlichung brauchen einen eigenen Auftrag.
 - **HTML5:** Plattformbezogene Fragen und ein gemeinsamer Meilensteincheck können in einem eigenen Chat gebündelt werden. Keine vollständige Windows-/HTML5-Wiederholung für jede Kleinigkeit.
@@ -56,7 +69,7 @@ Zusätzlich in dieser Runde umgesetzt:
 
 ## Genau ein nächster Schritt
 
-**Die Real-Alpha-Roadmap gemeinsam neu besprechen:** Was gehört zwingend in diesen Release, was ist optional, wie behandeln wir M1 und woran erkennen wir den Abschluss? Erst danach den ersten kleinen Implementierungsschritt auswählen.
+**Im passenden neuen Themenchat den ersten kleinen Umsetzungsblock aus der festgelegten Roadmap auswählen und konkretisieren:** aktueller Code, Ziel, betroffene Dateien und passende Entwicklertests. Eine feste Reihenfolge der Themen wurde noch nicht beschlossen.
 
 ## Weiterführende Dokumente
 
@@ -65,3 +78,4 @@ Zusätzlich in dieser Runde umgesetzt:
 - [BACKLOG.md](BACKLOG.md): unverbindliche Ideen ohne Releasezusage.
 - [PROJECT.md](PROJECT.md) / [TECHNICAL.md](TECHNICAL.md): nur passende Konzept- bzw. Technikabschnitte nachlesen.
 - [Archivübersicht](docs/archive/README.md): frühere Langfassungen und historische Testdetails; kein Pflichtlesestoff beim Chatstart.
+

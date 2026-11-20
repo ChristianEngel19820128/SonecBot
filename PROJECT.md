@@ -53,6 +53,18 @@ Ein Sturz unter den spielbaren Bereich kann zum Tod der Spielfigur führen.
 
 Fairness gilt für Sonec ebenso wie für computergesteuerte Gegner. Eine übermäßige Bevorzugung einer Seite darf das Zusammenspiel aus Bewegung, Kampf und Ressourcen nicht aushebeln. Treffer, Zielverhalten und Gegenwehr müssen nachvollziehbar und spielerisch angemessen sein; diese Regel ist bei jeder Änderung von KI, Waffen, Schaden und Balancing zu berücksichtigen.
 
+### Fortschritt und Ressourcen – bestätigte Designrichtung
+
+Erfahrung entsteht aus tatsächlicher Wirkung: Schaden, Zerstörung, erreichte Ziele und sinnvoller Ressourcengewinn. Reine Schusszahl oder ein wirkungsloser Pickup sind keine Leistung. Taktische Einschränkungen eines Gegners können wertvoll sein; zusätzliche Walker-Beinschäden sind dafür ein Beispiel, kein beschlossener Umbau.
+
+Auch Überleben leistet etwas: Ein kleiner Zeitbeitrag darf den geringsten regulären Fortschritt bilden und soll sich über längere Überlebensdauer lohnen. Nützliches Sammeln, insbesondere lebensnotwendige Energie, ist wertvoller. Höhe und zeitlicher Verlauf bleiben Balancingfragen.
+
+Erfahrung ist keine Währung zum Kauf von Perks. Sie treibt Level und langfristiges Gefahrenpotenzial; Belohnungen verbessern Ressourcen und Möglichkeiten. Mehr bedeutsame Wirkung in kurzer Zeit bedeutet schnelleren Fortschritt. Highscore-Punkte werden später separat gestaltet.
+
+Gefahr steigt rhythmisch: Belastung und begrenzte Erholung wechseln sich ab; mit dem Level wachsen sowohl Spitzen als auch Erholungsbudget. Vorsichtige Spieler sollen nicht grundlos überrollt werden, aufgebaute Vorteile dürfen aber später herausgefordert werden. Das Zusammenspiel soll unterschiedliche Spielstile tragen und wird mit Spielerfeedback geprüft.
+
+Kämpfen, Deckung suchen, ausweichen und fliehen sind gültige Entscheidungen. Die Vernichtung aller Gegner ist keine allgemeine Voraussetzung für Überleben und Fortschritt. Konkrete Alpha-Regeln und offene technische Details stehen in [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROADMAP.md).
+
 ### Spielbeginn und Spielerfahrung
 
 Eine Spielrunde beginnt damit, dass Sonec vom Himmel fällt.
@@ -61,7 +73,7 @@ Das Spiel soll nicht zwangsläufig sämtliche Mechaniken im Voraus erklären. Es
 
 Das schrittweise Erlernen der Spielmechaniken ist Teil der vorgesehenen Spielerfahrung.
 
-Ein genauer Ablauf für Einführung, Spielende und Neustart ist noch nicht abschließend festgelegt.
+Die weitere Einführung und konkrete kleine Spielziele sind noch auszugestalten. Der vorhandene Tod-/Neustartfluss ist bereits vom Entwickler geprüft; aktueller Belegumfang in [HANDOFF.md](HANDOFF.md).
 
 ## 4. Spielfigur: Sonec
 
@@ -92,6 +104,8 @@ Der Anzug ist ein wichtiger Bestandteil des Charakterkonzepts. Welche Funktionen
 - Aufsammelbare Energieobjekte
 
 Sonec kann Energie aus seiner Umgebung aufnehmen. Zusätzliche Energie kann durch entsprechende Sammelobjekte gewonnen werden.
+
+**Geplante Ressourcenbasis:** Energie, Munition und Upgrades sind Belohnungen und Vorbereitung auf kommende Gefahr. Unterschiedliche Munitionstypen sollen aktiv auswählbar sein. Bei vollem Standardvorrat ersetzt eingesammelte Spezialmunition einen entsprechenden Teil der Standardmunition innerhalb der Kapazität; weitere Standardmunition erzeugt dann keinen Vorratsgewinn und wenig bis keine Erfahrung. Die testbare Grundversion gehört zur Real Alpha, genaue Mengen und Bedienung zur Umsetzung/Balancing.
 
 ### Kisten und Belohnungen – Designidee (noch nicht implementiert)
 
@@ -131,9 +145,7 @@ Die Energieaufnahme verbraucht derzeit selbst Energie; dies wird zunächst als m
 
 ### Minen
 
-Minen können die Spielfigur verfolgen und stellen eine bewegliche Gefahr dar.
-
-Ein entsprechendes System ist im AGK-Quellcode vorhanden.
+Intelligente Minen können Sonec verfolgen. Einfache Minen driften als Formationsgefahr, verfolgen ihn nicht und reagieren nicht auf Energieanziehung. Beide Typen sind vorhanden. Die zusätzliche getarnte Jumppod-Falle ist ein getrenntes optionales Konzept.
 
 ### Alpha-Walker (Walker)
 
@@ -153,24 +165,19 @@ Für die aktuelle AGK-Version sind schwere Maschinengewehre als Bewaffnung vorge
 
 ### Kollisions- und Schadensmodell: abgestimmte Entwicklungsrichtung (16. November 2026)
 
-Für den aktuellen Pre-Alpha-Schritt gilt: **Sonec soll grundsätzlich allen beschädigbaren Spielobjekten mit allen vier Waffen Schaden zufügen können.** Keine Waffe wird pauschal von einer Zielklasse ausgeschlossen. Die bereits vorgesehenen Fraktionskategorien sind Player/Sonec (historisch mit zweitem Spieler für möglichen Multiplayer), Enemy und Neutral. Welche später benötigten Interaktionen daraus entstehen, bleibt offen; Fraktionen sind nicht mit Schadensarten gleichzusetzen.
+**Pre-Alpha-Referenzregel:** Sonec soll grundsätzlich allen beschädigbaren Spielobjekten mit allen vier Waffen Schaden zufügen können; keine Waffe wird pauschal von einer Zielklasse ausgeschlossen. Abweichungen durch das neue Panzerungsmodell werden ausdrücklich gemeinsam entschieden. Die bereits vorgesehenen Fraktionskategorien sind Player/Sonec (historisch mit zweitem Spieler für möglichen Multiplayer), Enemy und Neutral. Welche später benötigten Interaktionen daraus entstehen, bleibt offen; Fraktionen sind nicht mit Schadensarten gleichzusetzen.
 
-Als **spätere Designbasis**, noch nicht implementierte Schadens-/Rüstungsrechnung, sind Plasmaexplosion, Plasmaflammen, kinetischer Schaden (einschließlich Granatenaufprall) und Plasma-Blitz vorgesehen. Passende Panzerungs- und Schild-Gegenwerte werden später entwickelt. Das gewünschte Konterprinzip ähnelt Stein/Schere/Papier/Brunnen; Flammen sollen etwa gegen kleine schnelle Minen besonders nützlich sein. Noch **keine** konkreten Multiplikatoren oder Widerstandsparameter festlegen.
+Ein **einfaches, erweiterbares Schadens-/Panzerungsmodell ist als testbare Real-Alpha-Basis beschlossen**, noch nicht durch diese Planung implementiert. Frühere Kategorien Plasmaexplosion, Plasmaflammen, kinetischer Schaden einschließlich Granatenaufprall und Plasma-Blitz bleiben Designmaterial für das Konterprinzip. Die konkrete erste Auswahl, Gegenwerte und Wechselwirkungen werden im passenden Themenchat festgelegt; eine vollständige Widerstandsmatrix und endgültige Multiplikatoren gehören ins spätere Balancing bis 1.0.
 
 **Vorgehen bei weiteren Kollisionsfragen:** Den tatsächlichen Pfad und bestätigtes Sollverhalten prüfen, den nächsten kleinen Eingriff gemeinsam auswählen und passende Tests nach [AGENTS.md](AGENTS.md) festlegen. Kein pauschales Balancing und keine zusätzliche Walker-Politur.
 
-### Weitere Gegner und Gefahren
+### Weitere Gegner und Weltobjekte
 
-Aus dem bisherigen Spielkonzept und der historischen Version sind weitere Ideen bekannt:
+Die Real-Alpha-Planung ergänzt die vorhandene Basis um unterschiedliche Rollen: bewaffnete Drohne, Höhenbomber und stationäre Flarak. Der Jumppod ist ein hilfreiches Weltobjekt für einen sehr hohen Sprung ohne Energieverbrauch. Verbindlicher Umfang und Verhalten stehen in [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROADMAP.md).
 
-- Bomber
-- Raketenstellungen
-- Geschützstellungen
-- Jumppods
-- Weitere Bots
-- Bossgegner
+Quadrokopter, zusätzliche Geschützvarianten, weitere Bots und Bossgegner bleiben getrennte spätere Möglichkeiten. Der akzeptierte Walker braucht keine weitere Version für die Alpha. Varianten werden nur bei eigenem spielerischem Nutzen ausgewählt.
 
-Diese Elemente sind nicht automatisch Bestandteil der ersten Alpha.
+Legacy-Grafiken und Animationen dienen als Vorlagen; sie belegen keine vollständig implementierten früheren Funktionen. Der Entwickler ist sich beim historischen Funktionsstand einzelner Objekte unsicher. Neue Konzepte dürfen vom Legacy abweichen; fehlende fertige Grafiken sind kein Blocker für die Funktionsentwicklung.
 
 ## 6. Spielwelt und Darstellung
 
@@ -218,15 +225,11 @@ Der akzeptierte Alpha-Walker bleibt Referenz. Möglicherweise frameabhängige Sp
 - Kritische Fehler, die das Spielen verhindern, sind behoben.
 - Ein getesteter Alpha-Build kann veröffentlicht werden.
 
-### Noch zu klären
+### Planung und weitere Konkretisierung
 
-- Genauer Umfang bzw. mögliches Ziel einer Spielrunde
-- Verbleibender Umfang weiterer Gegner und Warn-/Hilfefunktionen
-- Konkrete Abschlussbedingungen der Real Alpha, einschließlich gebündelter Integrationstests
+Der Real-Alpha-Rahmen ist in [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROADMAP.md) festgehalten. Offen bleiben die ersten kleinen Spielziele, technische Teilentscheidungen, vorläufige Werte und passende Integrationstests je Umsetzungsblock.
 
-Menü, Pause, Tod/Neustart und Tastatur sind bereits vorhanden und vom Entwickler getestet gemeldet. Der noch festzulegende Releaseumfang wird nur in der jeweiligen Roadmap gepflegt.
-
-Die Alpha soll bewusst klein bleiben.
+Menü, Pause, Tod/Neustart und Tastatur sind bereits vorhanden und vom Entwickler getestet gemeldet. Die Alpha priorisiert unterscheidbare Spielerlebnisse und testbare Grundsysteme; Polishing und umfassendes Balancing folgen später.
 
 ## 9. Mögliche Erweiterungen
 
@@ -246,13 +249,13 @@ Die Entscheidung über Aussehen, technische Umsetzung und Integration steht noch
 
 ### Aufgaben und Missionen
 
-Eine spätere Erweiterung durch Aufgaben oder Missionen ist denkbar.
+Kleine erreichbare Spielziele gehören zur Real-Alpha-Planung. Auswahl, Vermittlung und Belohnungen werden separat konkretisiert; Ressourcen oder Unterstützung können ebenso sinnvoll sein wie spätere Punkte.
 
-Ob diese durch den Informationsavatar vermittelt werden und wie sie sich in den Spielablauf einfügen, ist noch nicht entschieden.
+Größere Missionen, etwa Flaraks für Luftunterstützung zu zerstören, bleiben Erweiterungsideen. Daraus folgt keine allgemeine Pflicht, sämtliche Gegner zu bekämpfen. Ob ein Informationsavatar Ziele vermittelt, ist offen.
 
 ### Weitere Entwicklungsziele
 
-- Online-Highscore-System für eine spätere Beta
+- Punkte und Online-Highscores später; mögliche Schwierigkeitsauswahl und konkrete Release-Zuordnung noch abzustimmen
 - Zusätzliche Gegner und Spielinhalte
 - Verbesserungen an Benutzeroberfläche, Grafik und Sound
 - Weitere Bezüge zum übergeordneten Universum
@@ -292,13 +295,14 @@ Unbestätigte Annahmen dürfen nicht als gesicherte Eigenschaften des Spiels dar
 ## 12. Offene Projektentscheidungen
 
 - Endgültiger Spieltitel
-- Genauer Umfang der Alpha
+- Konkrete Ausgestaltung der Alpha-Arbeitspakete innerhalb des festgelegten Rahmens
 - Weitergehende Browser-/Controller-Kompatibilität und spätere Bedienoptionen
 - Ablauf einer vollständigen Spielrunde
 - Konkrete Rolle des Anzugs bei einzelnen Fähigkeiten
 - Informationsavatar und dessen Darstellung
-- Mögliche Aufgaben und Missionen
+- Auswahl kleiner Spielziele und spätere weitergehende Missionen
 - Späteres Veröffentlichungs- und Versionsschema
 
 **Arbeitsplanung:** Aktueller Wiedereinstieg und nächster Schritt stehen in [HANDOFF.md](HANDOFF.md), der verbleibende Releaseumfang in [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROADMAP.md). Die akzeptierten Walker-/IK-/Grafikwerte bleiben Referenz.
+
 

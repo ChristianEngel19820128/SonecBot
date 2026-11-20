@@ -1,115 +1,155 @@
 # SonecBot – Real Alpha Roadmap
 
-**Stand:** 20. November 2026  
-**Arbeitsbranch:** `develop`  
-**Quellstand dieser Konsolidierung:** `a0a628e699f701ce773498645e773ca1d0d32807`  
-**Status:** Bisherige Entwicklungsrichtung erhalten; verbleibenden Releaseumfang jetzt gemeinsam neu abstimmen.
+**Stand:** 20. November 2026 · **Arbeitsbranch:** `develop`
+**Status:** Gemeinsamer Planungsstand nach Abschluss der Roadmap-Besprechung; neue Funktionen sind noch nicht implementiert.
+**Quellenbasis:** Entwicklerentscheidungen im Gespräch; Dokumentstand [`87927e5`](https://github.com/ChristianEngel19820128/SonecBot/commit/87927e564d5ce1539878b84773c8f8ea40c258d5), letzte Code-Referenz [`c2a2d4e`](https://github.com/ChristianEngel19820128/SonecBot/commit/c2a2d4ed1dd7b27de6aa13f1058a5431509b2d45).
+Nächste Aufgaben: [TODO.md](TODO.md) · Chatübergabe: [HANDOFF.md](HANDOFF.md) · Spätere Ideen: [BACKLOG.md](BACKLOG.md).
+Die Roadmap legt den Entwicklungsrahmen fest. Einzelne Codeänderungen, `main`-Merge und Veröffentlichung werden separat vereinbart.
 
-Diese Roadmap beschreibt Ziel, erreichten Stand und noch offene Releaseentscheidungen.
-Die unmittelbar nächsten Schritte stehen in [TODO.md](TODO.md), die Chatübergabe in [HANDOFF.md](HANDOFF.md).
-Die Planung erteilt keine Freigabe für einzelne Codeänderungen, einen `main`-Merge oder eine Veröffentlichung.
+## 1. Ziel und gemeinsame Designregeln
 
-## 1. Ziel und bisher vereinbarter Rahmen
+Die Real Alpha soll unterschiedliche spielerische Situationen und testbare Grundsysteme für aussagekräftiges Spielerfeedback bieten.
+Eigenständige Gegnerrollen haben Vorrang vor vielen Varianten desselben Gegners; fehlende Endgrafiken sind kein Entwicklungsblocker.
+Es gibt keine feste Deadline. Umfangreiche Politur und endgültiges Balancing bis Version 1.0 bleiben spätere Arbeit.
 
-Aus der spielbaren Pre-Alpha soll eine verständlich spielbare Real Alpha entstehen:
-Gefahren müssen erkennbar, Treffer nachvollziehbar und die Schwierigkeit beherrschbar sein.
-Es gibt keine feste Deadline und keine Mindestzahl zusätzlicher Gegner.
+- **Fairness für Spieler und Gegner:** Vorsichtige Spieler nicht grundlos überrollen; tatsächlich aufgebaute Vorteile und Vorräte sollen langfristig herausgefordert werden.
+- **Wirkung zählt:** Erfahrung folgt bedeutsamen Leistungen und tatsächlichem Ressourcengewinn. Ein bloß ausgelöstes Ereignis ist noch kein Fortschritt.
+- **Mehrere Überlebenswege:** Kämpfen, Sammeln, Deckung, Ausweichen und Fliehen sind sinnvoll; nicht jeder Gegner muss zerstört werden.
+- **Rhythmus und Wachstum:** Belastung und begrenzte Erholung wechseln sich ab; mit dem Level steigen beide Gefahrenniveaus langfristig.
+- **Zufall mit Reaktionsmöglichkeit:** Gegnerzusammenstellung und Belohnungen variieren; Angriffe bleiben erkennbar. Eine fehlende dominante Strategie ist ein Testziel, keine Garantie.
 
-Die drei bisherigen Kernbereiche bleiben Grundlage der anschließenden Besprechung:
+## 2. Bereits vorhandene Grundlage
 
-1. **Minenvarianten und Minenfelder:** intelligente Einzelminen sowie einfache, nicht verfolgende Gruppenminen.
-2. **Schwebende Drohnen:** zunächst ein überschaubarer Gegner mit lesbarer Bewegung und Wirkung.
-3. **Warnungen und Hilfe:** kurze kontextbezogene Hinweise; Umfang der Avatar-Unterstützung noch festlegen.
+| Bereich | Dokumentierter Bestand und Testevidenz |
+| --- | --- |
+| Pre-Alpha / Walker | Alpha-Walker abgeschlossen; akzeptierte IK, Pivots, Zielen und Rückstoß erhalten. Tastaturbelegung, Rebinding, Persistenz und Reset vorhanden; Draft-Embed am 18.11. mit 12/12 gemeldet. |
+| Minen S1–S3 | Einfache Minen, diagonale Dreierformation und wiederkehrende Spawns; 9/9, 10/10 und 12/12 Entwicklertests. Einfache Minen verfolgen Sonec nicht und reagieren nicht auf Energieanziehung. |
+| Warnungen / Drohne | Warn-/Hilfekern flexibel erweiterbar, Minenwarnung funktional unter Windows/HTML5 gemeldet. D1: unbewaffnete Patrouillenbasis, 11/11 gemeldet; 400-ms-Wende später positiv bewertet. |
+| Treffer / Explosionen | K1b und K1c jeweils 12/12; K1d-Zwei-Kreis-Körperkollision aktiv. E1b: getrennte Explosions-Schadenszeitpunkte beider Minenarten, 9/9 gemeldet. |
+| Abendrunde 19./20.11. | Debug-Tasten 1–7, HTML5-Eingabehinweise, Treffer-/Schildfarben, Regen-Timer-Fix, FIFO-Upgrade-Meldungen, Laufbegrenzung/Bremsen, Upgrade-Stern, Burst-Fallback und Menü-Paintball umgesetzt. |
 
-Eine Änderung dieser Ziele wird ausdrücklich vereinbart. Optionale Ideen sind in [BACKLOG.md](BACKLOG.md) gesammelt.
+Der Entwickler bestätigt alle implementierten Änderungen der Abendrunde zusammenfassend als erfolgreich getestet.
+Fehlende Einzelmatrizen oder genaue Plattformzuordnungen werden nicht erfunden; der Assistent hat keine eigenen AGK-/Browserläufe durchgeführt.
+Der Draft-Test vom 18.11. belegt keine Auslieferung späterer Alpha-Änderungen. Ausführlicher aktueller Teststand: [HANDOFF.md](HANDOFF.md).
 
-## 2. Erreichter Stand
+## 3. Arbeitsblock A – Gegner und hilfreiche Weltobjekte
 
-| Bereich | Dokumentierter Stand |
-|---|---|
-| Pre-Alpha-Basis | Alpha-Walker akzeptiert; Keyboard-Rebinding, Persistenz und Restore Defaults abgeschlossen. Draft-Embed vom Entwickler am 18.11. mit 12/12 bestanden gemeldet. |
-| Minen S1–S3 | Einfache Minen mit Linksdrift, diagonale Dreierformation, wiederkehrende Spawns; Entwicklertests 9/9, 10/10 und 12/12 bestanden. |
-| Minenregeln | Einfache Minen verfolgen Sonec nicht und reagieren nicht auf Energieanziehung. Intelligente Minen behalten ihren eigenen Typ und ihr Verhalten. |
-| Warnung S4 | `MINEFIELD DETECTED` auf Windows/HTML5 laut Entwickler sichtbar und funktional; keine erfundene vollständige S4-Testmatrix. |
-| Drohne D1 | Ein unbewaffneter Patrouillenprototyp mit drei Ansichten; 11/11 Tests bestanden. 400-ms-Wende später positiv bewertet. Noch kein bewaffneter Gegnerausbau. |
-| Treffer K1b/K1c | Frühester Spieler-Bullet-Treffer über die vorgesehenen Zielklassen sowie Sweep gegnerischer Bullets gegen Sonec: jeweils 12/12 bestanden. |
-| Körper K1d | Zwei-Kreis-Körperkollision mit Segment-Sweep aktiv; Waffe ausgenommen, Schildwirkung geschützt. |
-| Explosion E1/E1b | Radius/Kettenreaktion nachvollzogen; getrennte Schadenszeitpunkte beider Minenarten umgesetzt und mit 9/9 abgenommen. |
-| Abendrunde 19./20.11. | Unter anderem Treffer-/Schildfarben, Regen-Timer-Fix, positive FIFO-Upgrade-Meldungen, Laufbegrenzung/Bremsen, Upgrade-Stern und Burst-Fallback umgesetzt. |
+### Minenformationen
 
-Für die gesamte implementierte Abendrunde bis Code-Commit `c2a2d4e` meldete der Entwickler erfolgreiche Tests.
-Das gilt als Entwicklerbericht; fehlende einzelne Matrizen oder Plattformzuordnungen werden nicht nachträglich erfunden.
-Der Assistent hat keine eigenen AGK- oder Browser-Laufzeittests durchgeführt.
-Die damalige Draft-Abnahme belegt keine Auslieferung aller späteren Alpha-Änderungen auf itch.io.
+- Kleine Erweiterung auf **drei Formationen** mit variabler Anzahl und variablen Abständen; konkrete Muster im Themenchat auswählen.
+- Bestehende Minentypen und ihre Unterschiede erhalten. Abstände dürfen unterschiedliche Kettenreaktionen ermöglichen.
+- Aktuelle 18–30 Sekunden zwischen Spawnversuchen und maximal sechs einfache Minen sind vorläufige Ausgangswerte; das Gefahrenbudget wird später gemeinsam integriert.
 
-## 3. Verbleibende Kernplanung
+### Drohne
 
-### Minenfelder
+- D1 zu einem eigenständigen bewaffneten Luftgegner ausbauen: **kurze grüne Laserimpulse mit Projektilverhalten**.
+- Sichtbare Aufladung kündigt den Angriff an; gelegentliches charakteristisches **Biep-Biep** gibt der Drohne eine eigene Wirkung.
+- Bewegung, Angriffstakt, Verwundbarkeit, Eintritt/Austritt und Spawnbegrenzung im kleinen Umsetzungsschritt konkretisieren.
+- Grafischer Art-Pass und separater Sensor bleiben eigene Aufgaben; vorhandene Grafiken dienen als Basis. Dauerlaser ist eine spätere Variante.
 
-- Diagonale Dreierformation beibehalten; zusätzliche Muster wie Keil, Vertikalstaffelung oder unregelmäßiges Rudel gezielt auswählen.
-- 5er-/7er-Formationen waren Möglichkeiten, keine beschlossene Mindestanforderung.
-- Abstände so planen, dass Kettenreaktionen je nach Formation unterschiedlich wahrscheinlich sind.
-- Schwierigkeit bevorzugt über Muster, Dichte, Häufigkeit und Kombinationen gestalten; kein pauschaler Schadensanstieg.
-- Aktuell 18–30 Sekunden pro Spawnversuch und maximal sechs einfache Minen sind Ausgangswerte für späteres Balancing.
-- Die Welt-Y-Korrektur wurde positiv rückgemeldet; ausführliche Langzeit-/Randbeobachtungen wurden nicht vollständig protokolliert.
+### Flarakstellung
 
-### Drohnen
+- Stationäre Luftabwehr für einen begrenzten Luftraum; inaktiv äußerlich einem Jumppod bzw. der getarnten Mine ähnlich.
+- **Annäherung → sichtbar hochfahren → ausrichten → ungefähr zwei Raketen abfeuern.** Die Aktivierung muss eine Reaktionsmöglichkeit geben.
+- Vorhandene Animationsvorlage nutzen; genaue Raketenlenkung, Reichweite und Rückkehr in den Ruhezustand vor Umsetzung klären.
+- Massenraketenwerfer ohne Zielsuchraketen und missionsabhängige Luftunterstützung bleiben spätere Erweiterungen.
 
-- D1 ist die vorhandene Basis. Kollision, Verwundbarkeit, Schaden und gegebenenfalls Bewaffnung vor dem nächsten Ausbau festlegen.
-- Vorhandene drei Grafiken weiterverwenden; geplanten Art-Pass und separaten Sensor als eigenen Schritt behandeln.
-- Vertikale Bewegung, Jet-Sprite, Eintritt/Austritt, Spawnabstände und Maximalzahl sind noch zu konkretisieren.
-- Die Bewegungs-A/B-Diagnose hat den inhaltlichen D1-Ausbau nicht ersetzt oder erweitert.
+### Bomber
 
-### Warnungen, Hilfe und Rückmeldung
+- Schneller Höhengegner ohne vorgesehene Tiefflüge; genauer Bezug zum obersten Drittel/Viertel der Welt bleibt technische Detailentscheidung.
+- Gezielte, bewusst ungenaue **Bombensalven mit Flächenschaden**; einzelner Auftritt statt Bombergruppen.
+- Charakteristischer Ankündigungssound laut Entwickler aus Legacy vorhanden. Keine eigene Animation nötig; Sonecs Jetstream kann gegebenenfalls wiederverwendet werden.
+- Abschießbar, aber schwer erreichbar; Vernichtung ist keine Voraussetzung zum Weiterkommen. Deckung unter Plattformen, Ausweichen und Fliehen sind vorgesehene Antworten.
+- Bomben-/Plattform-/Explosionsinteraktion gezielt entwerfen und testen; wirksame Deckung ist damit noch nicht als implementiert belegt.
 
-- Auf vorhandener Minenwarnung und positiven Upgrade-Meldungen aufbauen.
-- Weitere Warnfälle auswählen, etwa Energieüberladung, geringe Energie/Schildreserve oder kritischen Schaden.
-- HUD-Erklärung und nachvollziehbare Schadens-/Todesursachen anhand des Spielerfeedbacks verbessern.
-- Meldungspriorität, Wiederholrate und Lesbarkeit bewerten; Warnung, Hilfe und Belohnung unterscheidbar halten.
-- Avatar-Grafik, Portrait oder Sprache sind noch nicht als fertiger Alpha-Umfang festgelegt.
+### Jumppod
 
-## 4. Technische Gates und bekannte Qualitätsfragen
+- **Hilfreiches Weltobjekt:** löst einen deutlich höheren Sprung ohne Energieverbrauch aus. Die vorhandene Animation gehört zum Sprung.
+- Kein Gegnertyp. Die seltene explodierende Täuschungsvariante ist optional und müsste rechtzeitig erkennbar sein; hilfreicher Jumppod bleibt die Basis.
 
-| Thema | Aktueller Status und erforderliche Entscheidung |
-|---|---|
-| **M1 – Bewegungsmodell** | Ursprünglich verbindliches Alpha-Gate. Untersuchung auf Wunsch zurückgestellt; Ruckeln verschwand laut Entwickler bei 75 Hz, Ursache unbewiesen. Vor Release ausdrücklich entscheiden, welche Untersuchung/Migration noch erforderlich ist oder welche Einschränkung bewusst akzeptiert wird. Keine automatische Walker-Umstellung. |
-| **K1 – Trefferzuverlässigkeit** | K1b/K1c abgenommen, K1d und Abendrunde erfolgreich rückgemeldet. Verbleibenden Umfang der abschließenden K1-Abnahme gemeinsam festlegen; keine bereits bestandenen Tests pauschal wieder öffnen. |
-| **K1a – spezielle Anordnungen** | Zwei kontrollierte Fälle mit hintereinanderliegenden Minen waren damals nicht durchführbar. Offen, nicht fehlgeschlagen; K1b prüfte separat Orb-vor-Mine und Mine-vor-Orb. Bedarf eines gezielten Testaufbaus klären. |
-| **Bewegung und Plattformen** | Laufbegrenzung/Bremsen wurden inzwischen angepasst. Schnelles Durchfallen ist beabsichtigt; verbleibende Fairnessfragen nur anhand konkreter Beobachtungen untersuchen. |
-| **Sonec → Walker** | Walker hält vor Sonec an; Sonec kann weiterhin in den Walker springen. Separaten Körperkontakt und eventuelle zusätzliche Trefferzonen bewerten, akzeptierte IK und Turm-Schadenszone schützen. |
-| **Audio** | Kratzen/Überlagerung bei mehreren Sounds wurde beobachtet, konkret etwa drei Explosionen einer Kettenreaktion. Reproduzieren, Pegel/Instanzen und gewünschtes Treffer-/Todesfeedback prüfen; kein bestätigter Enginefehler oder fertiger Fix. |
-| **Minen/Warnungsdichte** | Warnungen wirken im längeren Spiel zu häufig. Im Balancing-Chat mit übrigen Gegnern beurteilen; neue Intervalle noch nicht beschlossen. |
+Legacy-Grafiken (`rakstellung.png`, `spacejet.png`, `falle.bmp`) sind Vorlagen, kein Beweis fertig implementierter Altmechaniken.
+`falle.bmp` bezeichnet den Jumppod. Neue Grafikfassungen können separat entstehen; alte Konzepte müssen nicht unverändert übernommen werden.
 
-Browserneustart und Vergleich von frischer mit längerer Sitzung als Testbedingungen dokumentieren; siehe [TECHNICAL.md](TECHNICAL.md).
-Das Paintball-Polishing im Hauptmenü bleibt ein offener Präsentationspunkt in [BACKLOG.md](BACKLOG.md); seine Release-Zuordnung ist noch zu besprechen.
+## 4. Arbeitsblock B – Erfahrung, Ressourcen und Gefahr
 
-## 5. Getrennte Arbeitsblöcke und Abnahme
+### Erfahrung durch Leistung und Überleben
 
-| Arbeitsblock | Zweck |
-|---|---|
-| Alpha-Entwicklung | Vereinbarte Kernfunktionen und konkrete Qualitätsbefunde in kleinen Schritten bearbeiten. |
-| Balancing – eigener Chat | Waffen/Energie/Drop-Verhalten, Minen-/Warnhäufigkeit, Gefahrendichte und mögliche gemeinsame Steuerung beurteilen. |
-| HTML5 – eigener Chat bei Bedarf | Browserspezifische Themen sowie gebündelte Meilensteinprüfung; nicht jedes kleine Detail zusätzlich im Browser wiederholen. |
-| Deployment – eigener Chat | Getestete Revision, Export, Draft-Embed und tatsächlichen Auslieferungsstand getrennt prüfen; Merge-/Publish-Entscheidungen ausdrücklich treffen. |
+- Erfahrung steuert den dauerhaften Level-/Gefahrenfortschritt; sie ist **keine Währung für einen Perk-Shop**.
+- Tatsächlicher Schaden zählt, Zerstörung grundsätzlich mehr als bloßes Verletzen; eine besondere taktische Beeinträchtigung kann zusätzlich wertvoll sein.
+- Derselbe bereits erreichte Zustand ist nicht bei jedem weiteren Treffer erneut ein neuer Erfolg. Ins Leere schießen bringt keine Erfahrung.
+- Tatsächlich gewonnene Energie, Munition und sinnvolle Vorratsverbesserungen zählen ebenfalls; vorsichtigeres Sammeln ist eine gültige Spielweise.
+- **Bloßes Überleben liefert einen kleinen Beitrag:** längeres Überleben soll sich lohnen. Sein Ertrag kann der kleinste Fortschrittsbeitrag sein; Sammeln notwendiger Energie ist wertvoller.
+- Mehr bedeutsame Wirkung in kurzer Zeit bedeutet schnelleren Fortschritt. Eine zusätzliche kurzfristige Aktivitätskennzahl ist nicht beschlossen.
+- Höhe und Takt der Zeitbelohnung, Erfahrungswerte und Levelschwellen bleiben Balancingfragen; kein bestimmter linearer oder beschleunigter Zeitbonus ist festgelegt.
 
-Pro Änderung passende Prüfungen auswählen. Plattformübergreifende oder browserkritische Änderungen brauchen gezielte entsprechende Nachweise.
-Die integrierte Alpha soll im Zielbrowser spielbar sein; Umfang und Zeitpunkt der Abschlussprüfung gemeinsam festlegen.
-Offene optionale Prüfpunkte und bewusst zurückgestellte Untersuchungen sind nicht automatisch fehlgeschlagene Tests.
-itch.io bleibt Draft/Secret URL bis zu einer gesonderten Entscheidung.
+### Ressourcen, auswählbare Munition und Panzerung
 
-## 6. Nächste gemeinsame Entscheidung
+- Eine **spielbare, erweiterbare Grundversion** von auswählbaren Munitionsarten und Schadens-/Panzerungswirkung gehört zur Real Alpha.
+- Aktive Auswahl durch den Spieler wird gegenüber automatischer Munitionspriorisierung bevorzugt; Bedienung und erste Typenauswahl im Themenchat festlegen.
+- Standardmunition unter Kapazität: auffüllen. Standardmunition bereits voll plus weiterer Standardpickup: kein Vorratszuwachs, wenig bis keine Erfahrung.
+- Beispiel: voller Standardvorrat plus panzerbrechender Pickup **ersetzt die entsprechende Menge Standardmunition** durch Spezialmunition; keine künstliche Erhöhung der Gesamtkapazität.
+- Explosiv- und panzerbrechende Geschosse sind besprochene Beispiele. Umrechnungsmenge, Kapazitäten und Umgang mit bereits gemischten Vorräten werden vor Umsetzung konkretisiert.
+- Energie und Munition sind Belohnungen und Überlebensmittel. Aufbau von Vorräten darf spätere Herausforderung begründen; wirkungsloses Einsammeln erzeugt keinen künstlichen Fortschritt.
+- Einfache Schadenskategorien/Widerstände ermöglichen später das Konterprinzip. Keine vollständige Rüstungsmatrix oder endgültigen Multiplikatoren für die Alpha verlangen.
+- Walker-Beinschäden sind ein Beispiel für taktische Wirkung, kein beschlossener Umbau der akzeptierten Walker-Kollision.
 
-Nach der Dokumentationsbereinigung diese Roadmap inhaltlich durchgehen:
+### Gefahrenbudget und Erholung
 
-1. Was soll bei Minen, Drohnen und Warn-/Hilfesystem für **diese** Real Alpha noch fertig werden?
-2. Wie behandeln wir das zurückgestellte M1-Gate und die übrigen konkreten Qualitätsfragen?
-3. Welche optionalen Kandidaten kommen bewusst dazu, welche bleiben ohne Releasezusage?
-4. Welcher einzelne nächste Arbeitsschritt kommt anschließend in die kurze TODO?
+`G` ist die aktuelle Gefahr aus aktiven Gegnerkosten, `B` das momentan erlaubte Budget, `P` der Preis eines gewürfelten Gegners oder einer gesamten Formation.
 
-## Quellen und Vorgeschichte
+- Das Budget wächst innerhalb einer Belastungsphase zum Levelmaximum; anschließend folgt eine begrenzte Erholungsphase mit niedrigerem Budget.
+- Mit steigenden Levels wachsen sowohl Maximalbudget als auch Erholungsbudget: langfristig ansteigendes Sägezahn-/Wellenmuster.
+- Erholung soll Gefahr weiterhin zulassen. Das niedrigere Budget ist keine Pflicht, sofort einen Mindestbesatz aufzufüllen; bestehende Gegner werden nicht allein wegen einer Budgetsenkung entfernt.
+- Ein normaler Spawn-Timer begrenzt die Versuche. Erst wenn der Timer erlaubt und **`G < B`** gilt, wird Gegner/Formation einschließlich Anzahl gewürfelt.
+- Der einzelne Spawn muss **`P <= B`** erfüllen. Ein für die gesamte aktuelle Stufe zu teurer Kandidat entfällt; keine Suche nach einem passend zugeschnittenen Ersatz.
+- Bei zulässigem Preis wird gespawnt und `P` zu `G` addiert. **`G + P` darf `B` überschreiten**; danach blockieren weitere Spawns, solange `G >= B` ist.
+- Beispiel ohne Balancevorgabe: `B=100`, `G=80`, `P=40` erlaubt den Anstieg auf 120; `P=140` ist unzulässig.
+- Alle beteiligten Spawnquellen müssen dieselbe aktuelle Budgetlage berücksichtigen; Objekt-/Platzierungsbedingungen gelten zusätzlich.
+- Verschwindet ein Gegner, wird sein Beitrag frei. **Vernichtung gewährt eine verdiente Spawnpause**; links aus der Welt verschwinden gewährt keine zusätzliche Pause zum normalen Timer.
+- Zurechnung von Kettenreaktionen, konkrete Pausendauer und Umgang mit noch aktiven Bomben nach Gegnerabgang im technischen Entwurf klären.
+- Gegnerpreise, Kurven, Erfahrung und Belohnungen werden gemeinsam getestet. Höhere Vorräte sollen helfen, ohne die langfristig steigende Herausforderung dauerhaft auszuhebeln.
 
-- [Bisherige vollständige Real-Alpha-Planung](docs/archive/REAL_ALPHA_ROADMAP_BIS_2026-11-20.md)
-- [Bisherige TODO mit historischen Test- und Planungsdetails](docs/archive/TODO_BIS_2026-11-20.md)
-- [Bisherige Übergaben](docs/archive/HANDOFF_BIS_2026-11-20.md)
+## 5. Arbeitsblock C – Kleine Spielziele und Belohnungen
 
-Archive werden nur bei konkretem Bedarf gelesen. Alte „nächste Schritte“ darin sind keine aktuellen Arbeitsaufträge.
+- Kleine, verständliche Ziele gehören zur Alpha-Grundlage; konkrete erste Ziele und Erfolgserkennung im eigenen Themenchat auswählen.
+- Belohnungen können Ressourcen, Munition oder Upgrades sein. Sie müssen zur zunehmenden Gefahr passen; genaue Mengen bleiben offen.
+- Ziele dürfen unterschiedliche Spielweisen berücksichtigen. Allgemeiner Spielfortschritt verlangt nicht, alle Gegner zu vernichten.
+- Erfahrung und spätere Highscore-Punkte bleiben getrennte Größen. Punktesystem/Online-Rangliste folgen später; Schwierigkeitsauswahl ist ein dazugehöriger Vorschlag, noch keine festgelegte Alpha-Anforderung.
+- Flaraks zerstören, um Luftunterstützung zu ermöglichen, und Hilfe gegen Bomber sind erweiterte Zielideen im [BACKLOG.md](BACKLOG.md).
+
+## 6. Arbeitsblock D – Rückmeldung, Präsentation und Qualität
+
+Warn-/Hilfesystem und positive Upgrade-Meldungen sind im Kern vorhanden. Weitere Ereignisse, Lesbarkeit, Priorität und Wiederholrate gezielt ergänzen.
+Avatar/Sprachausgabe und umfangreiche Grafikpolitur sind keine Voraussetzung. Warnmeldungen und neue Angriffsvorbereitungen sinnvoll aufeinander abstimmen.
+
+| Thema | Aktueller Umgang |
+| --- | --- |
+| M1 / Bewegungsruckeln | Untersuchung zurückgestellt; bei 75 Hz laut Entwickler nicht mehr vorhanden, Ursache unbewiesen. Behandlung des früher vereinbarten Release-Gates vor Release ausdrücklich entscheiden; keine automatische Migration. |
+| K1 / Treffer | K1b/K1c abgenommen, K1d/Abendrunde erfolgreich rückgemeldet. Zwei spezielle K1a-Minenanordnungen waren nicht durchführbar; gezielten Nachtestbedarf festlegen, keine pauschale Wiederöffnung bestandener Tests. |
+| Plattformen / Walker | Laufbegrenzung/Bremsen korrigiert, schnelles Durchfallen beabsichtigt. Sonec kann in den Walker springen; konkreten Körperkontakt separat bewerten, IK und Turm-Schadenszone schützen. |
+| Audio | Kratzen/Überlagerung mehrerer Sounds, etwa Kettenexplosionen, gezielt untersuchen. Kein bewiesener Enginefehler; Soundpolitur nach spielerischem Bedarf begrenzen. |
+| Minen / Browser | Welt-Y-Korrektur positiv rückgemeldet, längere Randbeobachtungen nicht vollständig protokolliert. Minen-/Warnhäufigkeit ins Balancing; frische und längere Browsersitzung getrennt beobachten. |
+| Paintball | Optionaler Mini-Schritt: Laufnasen ein Pixel breit, Fleckenrotation aufheben, Originalgrafiken korrekt nach unten ausrichten. Keine neue Tropfengrafikserie oder aufwendige Effekte nötig. Noch nicht umgesetzt. |
+
+## 7. Themenchats, offene Details und Abschluss
+
+| Arbeitsblock | Zweck und Abgrenzung |
+| --- | --- |
+| A – Objekte | Minen, Drohne, Flarak, Bomber und Jumppod einzeln spezifizieren, implementieren und prüfen. |
+| B – Grundsysteme | Erfahrung, Ressourcen/Munition, Panzerung und Gefahrenbudget in kleinen abgestimmten Schritten aufbauen. |
+| C – Ziele | Erste kleine Ziele samt Erfolgserkennung und Belohnung auswählen. |
+| D – Qualität | Konkrete Befunde, Warnungen und begrenzte Präsentationsaufgaben bearbeiten. |
+| Balancing | Eigener Chat: zunächst faire Testparameter, später mit ausreichender Gegnervielfalt vertiefen; umfassende Abstimmung bis 1.0. |
+| HTML5 / Deployment | Eigene Chats für Browserfragen/Meilensteintest bzw. getestete Revision, Export, Upload und gesonderte Merge-/Publish-Entscheidungen. |
+
+Die Alpha braucht mehrere Chats. Themenwechsel zur Abwechslung sind nach Abstimmung möglich; Abhängigkeiten und aktueller nächster Schritt bleiben sichtbar.
+Pro Änderung passende Tests wählen, HTML5-relevante Änderungen dort prüfen und Integration gebündelt testen; keine vollständige Browserwiederholung für jedes Detail.
+
+**Abschlussrahmen:** Die geplanten Grundversionen müssen spielbar zusammenwirken und brauchbares Feedback ermöglichen.
+Gefahrenzulassung, Erholungsrhythmus, tatsächlicher Ressourcengewinn und Munitionsersatz sollen gezielt prüfbar sein; unterschiedliche Spielweisen werden praktisch beurteilt.
+Bekannte Qualitätsfragen erhalten eine ausdrückliche Entscheidung bzw. dokumentierte Grenze; der integrierte Alpha-Build wird auf der Zielplattform geprüft.
+Diese Kriterien sind Prüfaufträge für die Umsetzung, keine bereits bestandene Alpha-Abnahme. itch.io bleibt Draft/Secret URL bis zu einer gesonderten Entscheidung.
+
+**Nächster Schritt:** Im passenden Themenchat den ersten kleinen Umsetzungsblock samt Ziel, Dateien und Abnahme auswählen; keine automatische Reihenfolge oder Codefreigabe aus dieser Roadmap ableiten.
+
+Spätere Varianten und Ideen stehen in [BACKLOG.md](BACKLOG.md). Frühere Langfassungen liegen im [Archiv](docs/archive/README.md); sie werden nur für konkrete historische Fragen gelesen.

@@ -3,46 +3,53 @@
 **Stand:** 20. November 2026  
 **Status:** Unverbindliche Sammlung; ohne feste Reihenfolge, Termin oder Implementierungsfreigabe.
 
-Ein Eintrag hier ist keine Zusage für einen Release. Bei bewusster Auswahl wird er in dessen Roadmap übernommen.
-Bereits eingeplante Arbeit und konkrete Qualitätsfragen stehen in [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROADMAP.md).
-Die nächsten tatsächlich vereinbarten Schritte stehen in [TODO.md](TODO.md).
+Die beschlossenen Real-Alpha-Grundversionen stehen in [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROADMAP.md), nächste Schritte in [TODO.md](TODO.md).
+Bomber, Flarak, hilfreicher Jumppod, Gefahren-/Erfahrungsgrundsystem, kleine Ziele und die Munitions-/Panzerungsbasis sind dorthin übernommen.
 
-## Optionale Kandidaten aus der bisherigen Alpha-Planung
+## Varianten und Unterstützung
 
-Ihre Release-Zuordnung bleibt bei der erneuten Real-Alpha-Besprechung ausdrücklich offen:
+- **Quadrokopter:** eigenständiges, noch offenes Konzept. Möglich sind zeitweilige verbündete Unterstützung, etwa als Belohnung nach zerstörten Flaraks, ein auf Abstand angreifender Verfolger oder Aufklärung. Keine Rolle endgültig gewählt; keine weitere Kamikaze-Kopie der intelligenten Mine als Vorgabe.
+- **Jumppod-Falle:** sehr seltene explodierende Attrappe. Nur erwägen, wenn ein kleiner erkennbarer Unterschied bzw. eine rechtzeitige Aktivierungsbewegung faire Gegenwehr erlaubt. Idee: bei Annäherung etwa einen Pixel ausfahren, Kontakt löst Explosion aus. Nicht auf alle vorhandenen Minentypen übertragen.
+- **Flarak-Massenwerfer:** ungenaue Raketensalve ohne Zielsuchraketen als spätere Modifikation.
+- **Drohnen-Dauerlaser:** seltener, zeitlich begrenzter, über den Boden schwenkender Strahl; sichtbares Aufladen vor dem Angriff. Alpha-Basis sind kurze Laserprojektile.
+- **Flammenfalle:** stationäre Modifikation mit berechenbarem Feuerraum. Flammenwerfer müssen nicht exklusiv Sonec gehören.
+- **Luftunterstützung als Aufgabe/Belohnung:** Flaraks zerstören, um Unterstützung zu ermöglichen; mögliche Hilfe gegen ein oder zwei Bomber. Konkrete Aufgabe und Unterstützungsfunktion offen, kein Pflichtumfang der ersten kleinen Ziele.
+- **Walker-Erweiterungen:** zusätzliche Trefferzonen/Beinschaden als Beispiel für taktische Wirkung; gegebenenfalls stationäre Variante im Fallenkonzept. Kein neuer Auftrag am abgeschlossenen Alpha-Walker und keine Umdeutung seiner aktuellen Turm-Schadenszone.
+- **Weitere Bots/Bosse:** nur bei eigener spielerischer Rolle konkretisieren; keine Mindestzahl an Varianten.
 
-- **Bomber:** hoher Überflug und Bombensalven; frühe Grafiken laut Entwickler vorhanden. Warnzeit und Ausweichraum zuerst entwerfen.
-- **Flarakstellung:** ausfahrende Stellung mit gelenkten Raketen; frühe Grafiken laut Entwickler vorhanden. Größerer Entwurfs-/Testumfang.
-- **Kleines Rundenziel:** Orientierung oder Überlebensziel ohne großes Missionssystem.
-- **Phasen/Wellen oder Gefahrenbudget:** Gegnerdichte und Kombinationen gemeinsam steuern; keine bestehende Spawnlogik beiläufig ersetzen.
-- **Weitere Walker-Trefferzonen:** von der konkreten offenen Sonec→Walker-Kontaktfrage in der Roadmap unterscheiden; Turm-Fokus und akzeptierte IK bewahren.
+## Fortschritt, Wertung und Bedienung
 
-## Weitere Spiel- und Präsentationsideen
+- **Punkte und Online-Ranglisten:** später getrennt vom Erfahrungswert entwickeln; Erfahrung steuert Gefahr, die Wertung ist noch nicht festgelegt. Mögliche Anknüpfung an Crystals.
+- **Schwierigkeitsauswahl:** im Zusammenhang mit späteren Punkten/Ranglisten prüfen. Getrennte Tabellen je Schwierigkeit und eine gemeinsame Alpha-Ausgangseinstellung sind Vorschläge aus der Besprechung, noch keine endgültigen Regeln.
+- **Umfassende Rüstungs-/Schadensmatrix:** einfache testbare Basis gehört zur Alpha; weitere Gegenwerte, Typen und Feinausgleich später, besonders vor 1.0. Fraktionen Player/Enemy/Neutral getrennt von Schadensarten behandeln.
+- **Zusätzliche Upgrades, Ressourcenanzeigen und Achievements:** bei erkennbarem spielerischem Nutzen konkretisieren.
+- **Gamepad-Rebinding, Maus und weitere Bedienoptionen:** später; Entwickler ist mit der vorhandenen Gamepad-Steuerung zufrieden. Keyboard-Umbelegung, Speicherung und Reset sind umgesetzt.
+- **Spieloptionen zurücksetzen:** Umfang getrennt vom fertigen Keyboard-Reset klären.
+- **Energieanziehung als Halten/Umschalten:** mögliche spätere Einstellung; heutiges Verhalten nicht automatisch ändern.
+- **Umfangreichere Missionen, Informationsavatar oder Sprache:** über die kleinen Alpha-Ziele und vorhandenen Warn-/Hilfetexte hinausgehender Ausbau.
+- **Optionale Draufsicht und Multiplayer:** langfristig, ohne zugesagten Release.
 
-- **Hauptmenü-Paintball:** echte runde Tropfenenden und organischere Laufnasen; Release-Zuordnung offen. Das Easter Egg selbst ist bereits umgesetzt und getestet gemeldet.
-- **Fraktionen/Schadensarten:** Player, Enemy, Neutral; Plasmaexplosion/-flamme, kinetisch und Plasma-Blitz mit passenden Panzerungen. Noch keine Widerstandswerte oder Multiplikatoren.
-- **Zusätzliche Upgrades und Ressourcenanzeigen:** nur bei erkennbarem spielerischem Nutzen konkretisieren.
-- **Score/Achievements, Online-Hochscores:** mögliche Anknüpfung an Crystals; „Waffenschein für alle“ war ein Scherz, keine feste Anforderung.
-- **Optionale Draufsicht und Multiplayer:** langfristige Ideen ohne zugesagten Release.
-- **Gamepad-Rebinding, Maus und weitere Bedienoptionen:** bestehende Tastaturbelegung, Speicherung und Keyboard-Reset sind bereits vorhanden.
-- **Spieloptionen zurücksetzen:** Umfang und Bestätigungsdialog getrennt vom bereits fertigen Keyboard-Reset klären.
-- **Energieanziehung als Halten/Umschalten:** mögliche Einstellung erst bei konkretem Bedarf besprechen; heutiges Verhalten nicht automatisch ändern.
+## Grafik und Präsentation
+
+- **Weitere Paintball-Flecken:** zusätzliche Grafiken bei Gelegenheit; optionaler Alpha-Mini-Schritt ist bereits auf ein Pixel breite Laufnasen ohne Fleckenrotation begrenzt. Aufwendige organische Tropfen sind kein aktueller Auftrag.
+- **Drohnen-/Quadrokopter-Art-Pass:** an den Spielstil angleichen, separat vom Funktionsausbau. Fehlende Endgrafik ist kein Entwicklungsblocker; beim Quadrokopter zunächst die Rolle klären.
 - **Strukturierte externe Hilfetexte, etwa JSON:** mögliche spätere Ausbaustufe, kein aktueller Architekturauftrag.
-- **Öffentliche Hinweise:** englische itch.io-Bereiche `COMING SOON` und `TIPS & TRICKS` bei passendem Deployment-Schritt; Pläne und verfügbare Funktionen sauber unterscheiden.
+- **Öffentliche Hinweise:** englische itch.io-Bereiche `COMING SOON` und `TIPS & TRICKS` bei passendem Deployment-Schritt; Pläne und verfügbare Funktionen unterscheiden.
 
 ## Technik und wiederverwendbare Erkenntnisse
 
-- **Sound-Trigger ordnen:** Ereignisfunktionen und Sonec-spezifische Aufrufe inventarisieren, Doppeltrigger vermeiden. Konkretes Audio-Kratzen bleibt Qualitätsfrage der Alpha-Roadmap.
+- **Sound-Trigger ordnen:** Ereignisse und Sonec-spezifische Aufrufe inventarisieren, Doppeltrigger vermeiden. Konkretes Audio-Kratzen bleibt Qualitätsfrage der Alpha-Roadmap.
 - **Aufnahmeverfahren:** lange GifCam-Aufnahmen/RAM-Verhalten bei Bedarf untersuchen; bisherige Ursache nur Hypothese.
 - **AGK-Knowledge-Base-Kandidaten:** Gamepad-Initialisierung, Browser-ESC/QUIT, XAMPP-Cache, zeitabhängige Spawns, Sprite-/Zahlenrechnung, Random-Grenzen, verschachtelte Konstanten und Turmprojektion.
 - **Soundloops:** Entwicklererfahrung zu MIDI-Ereignissen am Loop-Anfang und einer Pause am Ende; Werkzeuge, Export und Reproduzierbarkeit vor einer allgemeinen Empfehlung prüfen.
-- Vor einem Knowledge-Base-Beitrag Quelle/Revision, Bedingungen, Gegenprobe und Evidenzgrad prüfen; Bearbeitung des anderen Repositories gesondert vereinbaren.
+- Knowledge-Base-Beiträge separat vereinbaren; Quellen/Revision, Bedingungen und Evidenzgrad erhalten.
 
 ## Pflege
 
-- Neue Ideen kurz halten und vorhandenen Themen zuordnen; keine Chatprotokolle oder Umsetzungshistorie anhängen.
-- Ausgewählte Punkte in die zuständige Release-Roadmap verschieben; erledigte oder verworfene Ideen aus dieser aktiven Liste entfernen.
-- Wenn die Sammlung unübersichtlich wird, gemeinsam zusammenfassen und aussortieren. Nicht automatisch weitere Pflicht-Lesedokumente erzeugen.
-- Crystals/Crystal Columns hat eine [eigene TODO](https://github.com/ChristianEngel19820128/Crystals/blob/main/TODO.md); dessen Themen bleiben im eigenen Projekt.
+- Kurze Einträge, vorhandenen Themen zuordnen; keine Chatprotokolle anhängen.
+- Ausgewähltes in die betreffende Roadmap verschieben; erledigte oder verworfene Ideen entfernen, Dubletten zusammenfassen.
+- Konkrete Fehler und zugesagte Releasearbeit nicht als unverbindliche Ideen wegparken.
+- Crystals/Crystal Columns hat eine [eigene TODO](https://github.com/ChristianEngel19820128/Crystals/blob/main/TODO.md).
 
-Historischer Ausgangsstand: [TODO-Archiv](docs/archive/TODO_BIS_2026-11-20.md) und [Real-Alpha-Archiv](docs/archive/REAL_ALPHA_ROADMAP_BIS_2026-11-20.md).
+Historische Ausgangsstände bleiben im [Archiv](docs/archive/README.md); kein Pflichtlesestoff beim Chatstart.
+
