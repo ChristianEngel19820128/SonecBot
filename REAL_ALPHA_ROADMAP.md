@@ -129,7 +129,7 @@ Avatar/Sprachausgabe und umfangreiche Grafikpolitur sind keine Voraussetzung. Wa
 | Plattformen / Walker | Laufbegrenzung/Bremsen korrigiert, schnelles Durchfallen beabsichtigt. Sonec kann in den Walker springen; konkreten Körperkontakt separat bewerten, IK und Turm-Schadenszone schützen. |
 | Audio | Kratzen/Überlagerung mehrerer Sounds, etwa Kettenexplosionen, gezielt untersuchen. Kein bewiesener Enginefehler; Soundpolitur nach spielerischem Bedarf begrenzen. |
 | Minen / Browser | Welt-Y-Korrektur positiv rückgemeldet, längere Randbeobachtungen nicht vollständig protokolliert. Minen-/Warnhäufigkeit ins Balancing; frische und längere Browsersitzung getrennt beobachten. |
-| Paintball | Mini-Codeänderung: Laufnasen ein Pixel breit, zufällige Fleckenrotation entfernt; Entwickler bestätigt Laufnasen und Orb-Funktionen. Anschließend gemeldete 90°-Verdrehung durch korrigierte AGK-UV-Eckpunktreihenfolge behoben (Code), erneuter Sichttest offen. Keine neue Tropfengrafikserie oder aufwendige Effekte. |
+| Paintball | Abgeschlossen und vom Entwickler unter Windows visuell bestätigt: ein Pixel breite farblich passende Laufnasen nach unten, korrekte Fleckenausrichtung nach AGK-UV-Korrektur und normales Orb-/Menüverhalten. Kein weiterer Grafikumbau. |
 
 ## 7. Themenchats, offene Details und Abschluss
 

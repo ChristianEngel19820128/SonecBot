@@ -55,7 +55,7 @@ Verbindlicher Planungsrahmen und Details: [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROA
 
 - **M1 / Bewegungsruckeln:** Ursachenuntersuchung ausdrücklich zurückgestellt. Bei 75 Hz war das Ruckeln laut Entwickler nicht mehr vorhanden; Ursache und plattformübergreifende Wirkung sind unbewiesen. Umgang mit dem früher vereinbarten Alpha-Gate vor Release gesondert entscheiden; keine automatische Wiederaufnahme oder Abnahme.
 - **Browserlaufzeit:** Nach längerem Testen half laut Entwickler ein Browserneustart gegen Performance-Einbußen. Bei Vergleichen frischen Start und längere Sitzung getrennt beobachten; ein Neustart klärt die Ursache nicht. Siehe [TECHNICAL.md](TECHNICAL.md).
-- **Paintball-Optik:** Entwickler bestätigt Orb-Funktionen und ein Pixel breite, farblich passende, nach unten wachsende Laufnasen. Farbflecken waren noch 90° gegen den Uhrzeigersinn gedreht; AGK-UV-Eckpunktreihenfolge im Code korrigiert. Erneuter lokaler Sichttest der Ausrichtung steht aus. Kein aufwendiger Grafikumbau.
+- **Paintball-Optik abgeschlossen:** Entwickler bestätigt unter Windows mit Screenshot korrekte Fleckenausrichtung nach AGK-UV-Korrektur, ein Pixel breite farblich passende Laufnasen nach unten sowie normales Orb-/Menüverhalten. Kein weiterer Paintball-Schritt offen.
 - **Drohne/Assets:** D1 bleibt tatsächlicher Codebestand; der geplante Laserangriff ist noch nicht implementiert. Art-Pass separat. Legacy-Grafiken belegen keine fertigen früheren Gegnerfunktionen.
 - Weitere Qualitätsbefunde und technische Detailentscheidungen stehen in der [Real-Alpha-Roadmap](REAL_ALPHA_ROADMAP.md); keine Wiederholung als zweite Aufgabenliste.
 
@@ -69,7 +69,7 @@ Verbindlicher Planungsrahmen und Details: [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROA
 
 ## Genau ein nächster Schritt
 
-**Korrigierte Paintball-UV-Ausrichtung im Hauptmenü vom Entwickler prüfen lassen.** Danach den ersten Real-Alpha-Umsetzungsblock im passenden neuen Themenchat auswählen.
+**Ersten Real-Alpha-Umsetzungsblock im passenden neuen Themenchat gemeinsam auswählen und konkretisieren.** Keine feste Themenreihenfolge beschlossen.
 
 ## Weiterführende Dokumente
 
