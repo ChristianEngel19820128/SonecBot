@@ -134,8 +134,7 @@ function IntroPaintShoot(Intro ref as TIntro,X as float,Y as float)
                 SetSpriteSize(Paint.SpriteID,Size,Size)
                 SetSpriteOffset(Paint.SpriteID,Size*0.5,Size*0.5)
                 SetSpritePositionByOffset(Paint.SpriteID,X,Y)
-                // Keep the splash mostly upright so gravity-driven drips attach naturally.
-                SetSpriteAngle(Paint.SpriteID,Random(-25,25))
+                // Preserve the source frame's upright orientation and baked-in drips.
                 // White paintball frames can now be tinted to match their drips.
                 PaintColor = Random(0,5)
                 R = 238
@@ -167,12 +166,12 @@ function IntroPaintShoot(Intro ref as TIntro,X as float,Y as float)
                     B = 66
                 endif
                 SetSpriteColor(Paint.SpriteID,R,G,B,255)
-                // Thin vertical trails with small, rounded splatter tips.
+                // One-pixel vertical trails with small, rounded splatter tips.
                 Paint.DripY = Y+Size*0.12
                 Paint.Drip1X = X-Size*0.12
                 Paint.Drip2X = X+Size*0.10
-                Paint.Drip1Width = Random(2,4)
-                Paint.Drip2Width = Random(2,3)
+                Paint.Drip1Width = 1
+                Paint.Drip2Width = 1
                 Paint.Drip1Length = 1
                 Paint.Drip2Length = 1
                 Paint.Drip1Max = Random(10,28)

@@ -6,9 +6,9 @@ Hier stehen nur unmittelbar nächste, gemeinsam zu bearbeitende Schritte. Höchs
 
 ## Jetzt
 
-- [ ] **Passenden Themenchat und ersten kleinen Umsetzungsblock auswählen.** Grundlage ist die festgelegte [Real-Alpha-Roadmap](REAL_ALPHA_ROADMAP.md). Dort zunächst tatsächlichen Code, Ziel, betroffene Dateien und passende Abnahme konkretisieren.
+- [ ] **Paintball-Miniänderung im Hauptmenü testen.** Ein Pixel breite Laufnasen und ungedrehte Flecken visuell prüfen; anschließend den ersten Real-Alpha-Umsetzungsblock im passenden Themenchat auswählen.
 
-Die Roadmap-Besprechung ist abgeschlossen. Detaillierte Umsetzung folgt in den jeweiligen Themenchats; eine feste Reihenfolge ist noch nicht beschlossen. Der mögliche kleine Paintball-Schritt ist gesondert in der Roadmap begrenzt.
+Die Roadmap-Besprechung ist abgeschlossen. Die kleine Paintball-Codeänderung wartet auf den lokalen Entwicklertest. Detaillierte Alpha-Umsetzung folgt in Themenchats; eine feste Reihenfolge ist noch nicht beschlossen.
 
 ## Pflege
 
