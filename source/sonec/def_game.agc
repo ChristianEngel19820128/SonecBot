@@ -821,7 +821,28 @@ type TGame
 	
 endtype
 
+type TMenuOrb
+    Enabled as integer
+    X as float
+    Y as float
+    Speed as float
+    Size as float
+endtype
+
+type TMenuPaint
+    SpriteID as integer
+endtype
+
 type TIntro
+    PaintImageID as integer
+    OrbImageID as integer
+    OrbSpriteID as integer
+    Paint as TMenuPaint[-1]
+    Orbs as TMenuOrb[7]
+    NextOrbMs as integer
+    LastPaintFrame as integer
+    MenuWidth as integer
+    MenuHeight as integer
 	ProtoBackground as TProtoData
 	Background as TBackground
 	TextStart as integer

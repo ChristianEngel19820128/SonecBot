@@ -113,6 +113,7 @@ UseNewDefaultFonts(1)
 #include "gui.agc"
 #include "sound.agc"
 #include "game.agc"
+#include "intro_paintball.agc"
 #include "intro.agc"
 
 local FPS as integer
