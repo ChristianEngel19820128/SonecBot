@@ -39,7 +39,7 @@ function IntroPaintUpdate(Intro ref as TIntro,Now as integer)
             Intro.Orbs[FreeSlot].Y = Intro.MenuHeight+30
             Intro.Orbs[FreeSlot].Size = Random(12,18)
             Intro.Orbs[FreeSlot].Speed = Random(18,48)*0.001
-            Intro.Orbs[FreeSlot].SpeedX = Random(-35,35)*0.001
+            Intro.Orbs[FreeSlot].SpeedX = Random(-18,18)*0.001
             Intro.Orbs[FreeSlot].NextSteerMs = Now+Random(180,450)
         endif
         Intro.NextOrbMs = Now+Random(600,1400)
@@ -52,12 +52,12 @@ function IntroPaintUpdate(Intro ref as TIntro,Now as integer)
             // SpeedX is in virtual pixels per millisecond, including direction.
             if Now >= Intro.Orbs[i].NextSteerMs
                 if Random(0,1) = 0
-                    Intro.Orbs[i].SpeedX = Intro.Orbs[i].SpeedX-Random(5,18)*0.001
+                    Intro.Orbs[i].SpeedX = Intro.Orbs[i].SpeedX-Random(3,9)*0.001
                 else
-                    Intro.Orbs[i].SpeedX = Intro.Orbs[i].SpeedX+Random(5,18)*0.001
+                    Intro.Orbs[i].SpeedX = Intro.Orbs[i].SpeedX+Random(3,9)*0.001
                 endif
-                if Intro.Orbs[i].SpeedX > 0.09 then Intro.Orbs[i].SpeedX = 0.09
-                if Intro.Orbs[i].SpeedX < -0.09 then Intro.Orbs[i].SpeedX = -0.09
+                if Intro.Orbs[i].SpeedX > 0.045 then Intro.Orbs[i].SpeedX = 0.045
+                if Intro.Orbs[i].SpeedX < -0.045 then Intro.Orbs[i].SpeedX = -0.045
                 Intro.Orbs[i].NextSteerMs = Now+Random(180,450)
             endif
             Intro.Orbs[i].X = Intro.Orbs[i].X+Intro.Orbs[i].SpeedX*Delta
@@ -83,10 +83,13 @@ function IntroPaintShoot(Intro ref as TIntro,X as float,Y as float)
     local Size as float
     local U1 as float
     local U2 as float
+    local HitRadius as float
     if Intro.PaintImageID <= 0 then exitfunction
     for i = MENU_ORB_COUNT-1 to 0 step -1
         if Intro.Orbs[i].Enabled = TRUE
-            if (X-Intro.Orbs[i].X)*(X-Intro.Orbs[i].X)+(Y-Intro.Orbs[i].Y)*(Y-Intro.Orbs[i].Y) <= Intro.Orbs[i].Size*Intro.Orbs[i].Size*0.25
+            // Allow a 2px edge tolerance around the displayed orb.
+            HitRadius = Intro.Orbs[i].Size*0.5+2
+            if (X-Intro.Orbs[i].X)*(X-Intro.Orbs[i].X)+(Y-Intro.Orbs[i].Y)*(Y-Intro.Orbs[i].Y) <= HitRadius*HitRadius
                 Intro.Orbs[i].Enabled = FALSE
                 if Intro.Paint.Length >= MENU_PAINT_LIMIT-1
                     DeleteSprite(Intro.Paint[0].SpriteID)
