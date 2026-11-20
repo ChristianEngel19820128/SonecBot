@@ -26,6 +26,7 @@ function IntroCreate(Intro ref as TIntro,vx as integer,vy as integer,Now as inte
 	local k as integer
 
 	IntroProtoLoad(Intro)
+    IntroPaintCreate(Intro,vx,vy,Now)
 	
 	
 	Intro.Background.SpriteData.Center = TRUE
@@ -463,6 +464,10 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Optio
 		TimeReset(Intro.TimerHelp,Now)
 	endif
 	
+	if Intro.IsOption = FALSE
+        IntroPaintUpdate(Intro,Now)
+    endif
+
 	if Intro.IsOption = TRUE
 		// Page 1=OPTIONS, 2=GAMEPLAY, 3=CONTROLS, 4=AUDIO.
 		OptionCount = 3
@@ -798,8 +803,8 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Optio
 		endif
 		
 		if GetPointerPressed()
-			
-		endif
+            IntroPaintShoot(Intro,GetPointerX(),GetPointerY())
+        endif
 		
 	endif
 endfunction Value
@@ -812,6 +817,9 @@ function IntroDraw(Intro ref as TIntro)
 	local k as integer
 
 	SpriteDraw(Intro.ProtoBackground.Sprite,Intro.Background.SpriteData)
+    if Intro.IsOption = FALSE
+        IntroPaintDraw(Intro)
+    endif
 	
 	if Intro.IsOption = TRUE
 		Drawtext(Intro.TextOptionsTitle)
