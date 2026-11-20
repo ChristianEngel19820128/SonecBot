@@ -76,7 +76,7 @@ Verbindlicher Planungsrahmen und Details: [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROA
 
 ## Genau ein nächster Schritt
 
-**Nächsten kleinen Real-Alpha-Schritt gemeinsam festlegen.** Alle drei Minenformationen A1–A3 lokal in AGK abgenommen (26/26). Naheliegender nächster Gegnerausbau: Drohne mit kurzen grünen Laserprojektilen und sichtbarer Aufladung; genaue Teilaufgabe vor Implementierung vereinbaren.
+**D2 – Drohnenbewegung und Scanpausen zuerst konkretisieren:** Entwickler wünscht eine gut ausgearbeitete Drohne statt früh mehrerer Varianten. Geplant: zufällige Patrouillenpausen auch ohne Schuss, Scannen durch wechselnde Sensor-/Richtungseffekte, Sonec-abhängige aber nicht garantierte vorzeitige Richtungswechsel, leichtes Wippen (idealerweise nur visuell, auch als Vorbereitung für vertikale Bewegung). Danach D3: Drohne hält zum sichtbaren grün/rot aufgeladenen kurzen Laserschuss an. D4/Assets: Entwickler liefert Torso, Links-/Rechts-/Center-, Sensor- und Waffengrafiken sowie später Sounddateien; drei Sonec-Jetstreams für Antrieb, Proto-JSON-Integration. Geplante Audioereignisse: Drohnensurren, Biep/Scan, Schuss; optional leiseres Minensurren bei Nähe. Fehlende Dateien dürfen nicht zu Start-/Laufzeitfehlern führen; Audio-Polish eigener Chat. Nutzer wünscht englische Commit-Überschriften für eigene Asset-Pushes. Nur kurze problembezogene Tests je Schritt, abschließende Gesamtverifizierung später. Noch kein neuer Drohnencode implementiert.
 
 ## Weiterführende Dokumente
 
