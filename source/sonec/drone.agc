@@ -11,8 +11,9 @@
 #constant DRONE_SCAN_MIN_DURATION_MS 500
 #constant DRONE_SCAN_MAX_DURATION_MS 1000
 #constant DRONE_SCAN_NEAR_X 220
-#constant DRONE_BOB_AMPLITUDE 2
-#constant DRONE_BOB_DEGREES_PER_MS 0.06
+// D2.1 temporary visibility test: exaggerated hover, not final balancing.
+#constant DRONE_BOB_AMPLITUDE 8
+#constant DRONE_BOB_DEGREES_PER_MS 0.12
 
 global DroneMotionUseGate as integer
 global DroneMotionTimer as TTime
