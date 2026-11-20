@@ -1,3 +1,13 @@
+## AKTUELLER NACHGANG – 20.11.2026 (Entwickler-Rueckmeldung nach Chatwechsel)
+
+- **Abendrunde 19./20.11.:** Entwickler bestaetigt zusammenfassend, dass alle implementierten Aenderungen erfolgreich getestet wurden. Einzelne Testmatrizen sind nicht vollstaendig aus dem alten Chat rekonstruiert. Git-Historie bis `c2a2d4e` und Einzelheiten siehe `HANDOFF.md`.
+- **Offener optischer Restpunkt:** Hauptmenue-Paintball-Laufnasen wirken weiterhin rechteckig, obwohl ihre Endstuecke und Ausrichtung angepasst wurden. Natuerlich runde Tropfen und organischere Spuren noch nicht umgesetzt. Kein Code-Fix ohne gesonderte Freigabe.
+- **M1/Ruckeln zurueckgestellt:** Keine nachvollziehbare Ursache; bei 75-Hz-Monitoreinstellung laut Entwickler nicht mehr beobachtet. Kein Nachweis einer Ursache, keine automatische Aufhebung des technischen Alpha-Gates.
+- **Drohne:** Keine weitere inhaltliche Drohnenentwicklung in der Abendrunde; A/B-Diagnose nicht als Gegnerausbau werten.
+- **Naechster Schritt:** Dokumentation konsolidieren; keine spontane Gameplay-Aenderung, kein `main`-Merge, kein Publish. Nachfolgende alte Abschnitte enthalten historische Arbeitsstaende.
+
+---
+
 ## M1 – Drone T A/B (19.11.2026; developer test pending)
 
 On `develop`, T toggles drone B (default, existing per-update dt) and A (standard 10-ms TimeGet gate) in Windows and HTML5. Both use elapsed milliseconds and unchanged speed, bounds, turn duration, sprites, and virtual clock. Mode changes reset movement timestamps. FPS label identifies `DRONE A 10ms` or `DRONE B dt`. No other object movement changed. Developer to compile and compare HTML5 under identical conditions; T is not part of the default movement/weapon bindings; user-remapped controls could conflict. Record motion smoothness, edge shimmer, frame rate, camera behavior. Knowledge Base remains unchanged until findings are collected. This is a diagnostic, not a new release default.
