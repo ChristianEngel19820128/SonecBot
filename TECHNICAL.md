@@ -1,12 +1,12 @@
 # SonecBot – Technische Dokumentation
 
-**Dokumentstatus:** Konsolidierter Abschlussstand 3.22  
-**Stand:** 16. November 2026  
+**Dokumentstatus:** Technische Referenz mit eingeordneten historischen Testnotizen  
+**Stand:** 20. November 2026  
 **Branch:** `develop`  
 **Historische lokal akzeptierte Walker-Code-Referenz:** [`18f92a965810763b552bd96649607c112f966238`](https://github.com/ChristianEngel19820128/SonecBot/commit/18f92a965810763b552bd96649607c112f966238)  
 **Status:** **Alpha-Walker abgeschlossen; HTML5-Pre-Alpha im itch.io-Draft eingebettet und laut Entwickler erfolgreich smoke-getestet.**
 
-> [HANDOFF.md](HANDOFF.md) ist der direkte Chat-Einstieg. Dieses Dokument konsolidiert den aktuellen Stand; die vollständige datierte Entwicklungshistorie ist [im vorherigen TECHNICAL-Stand](https://github.com/ChristianEngel19820128/SonecBot/blob/18f92a965810763b552bd96649607c112f966238/TECHNICAL.md) und in Git erhalten. Historische „Test offen“-Abschnitte beschreiben frühere Stände, nicht automatisch neue Entwicklungsaufträge.
+> Aktueller Wiedereinstieg: [HANDOFF.md](HANDOFF.md); Releaseplanung: [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROADMAP.md). Dieses Dokument enthält technische Referenzwerte und ausdrücklich datierte historische Notizen. Nur aufgabenrelevante Abschnitte lesen. Historische „Test offen“-/„nächster Schritt“-Angaben sind keine aktuellen Arbeitsaufträge. Ältere Stände bleiben in Git nachvollziehbar.
 
 ## 1. Abschluss und Evidenz
 
@@ -35,7 +35,7 @@ Aktiver AGK-Code: `source/sonec/`; historische BlitzBasic-Quellen: `source/legac
 | world.agc / background.agc / tower.agc / cloud.agc | Welt, Hintergrund, Hochhäuser und Wolken |
 | intro.agc / sound.agc | Intro/Menü und Sound |
 
-Virtuelle Auflösung aktuell **900×450**, Windows-Fenster 1350×675. main.agc führt eine pausierbare virtuelle Zeit CurrentNow getrennt von der realen Millisekundenzeit. Während aktiver Pause werden Spielupdate/-eingabe ausgesetzt, Darstellung bleibt erhalten. GameInit setzt Pause/Lost zurück und initialisiert die Spielobjektpools. Echter Tod-/Neustartfluss im Browser noch zu prüfen.
+Virtuelle Auflösung aktuell **900×450**, Windows-Fenster 1350×675. main.agc führt eine pausierbare virtuelle Zeit CurrentNow getrennt von der realen Millisekundenzeit. Während aktiver Pause werden Spielupdate/-eingabe ausgesetzt, Darstellung bleibt erhalten. GameInit setzt Pause/Lost zurück und initialisiert die Spielobjektpools. Tod und mehrfacher Neustart wurden vom Entwickler im lokalen HTML5-Browser bestätigt; Neustart auch im Draft-Embed. Langzeit-/Geräteabdeckung und exakter Export-SHA sind damit nicht vollständig belegt.
 
 Objektverwaltung und Kollisionen bestehen weitgehend aus eigenen Strukturen/Pools und Kreis-/AABB-Hilfen. Keine pauschale Umstellung auf native Sprite-Physik beschlossen. Einzelne Sonec-Bewegungs-/Ereignispfade können noch bildratenabhängig sein; keine globale Zeit-/Physikänderung vor Veröffentlichung ohne konkreten Befund.
 
@@ -105,35 +105,43 @@ Timer-Multiplikator ist 1000.0/Span statt 1000/Span. Nach Entwicklerbefund könn
 
 Windows-Arbeitsrenderer ist #renderer "Basic" (OpenGL); die lokalen A/B-Tests favorisierten ihn gegenüber Vulkan auf RX 6600 XT/Lenovo T24t-20. Kein allgemeiner GPU-/HTML5-Nachweis. HTML5 fordert SetVSync(1), Windows je WINDOWS_VSYNC_TEST ebenfalls oder Fallback 60 FPS. Alte Kommentare zu zwingender Rückkehr auf Prefer Best sind nicht aktuelle Entscheidung.
 
-Hochhausbewegung standardmäßig positiver dt-Pfad (B); Plattformbewegung im Normalbetrieb weiter bisheriger Timerpfad (A). F1 Walker/IK und F2 Plattformdiagnose sind Windowsfunktionen; F4 Pixel-Snap, F5 Hochhaus-A/B und F6 Plattform-A/B nur Diagnose. Nicht im Release ungeprüft umstellen. Alte Ruckelhypothesen nicht als neue bestätigte Blocker darstellen.
+Hochhausbewegung standardmäßig positiver dt-Pfad (B); Plattformbewegung im Normalbetrieb weiter bisheriger Timerpfad (A). In der Entwicklungsrunde 19./20.11. wurden die Debug-Funktionen auf die Zifferntasten 1–7 für Windows/HTML5 gelegt; ältere F-Tastenangaben sind historische Bezeichnungen. Die A/B-Diagnosen sind keine automatische Freigabe zur Bewegungsumstellung. M1 ist zurückgestellt; seine Behandlung vor Release wird in der Roadmap entschieden.
 
-**F1-Einschränkung:** Die Textzeile Flash ist noch vereinfacht aus Barrel0 gebildet; sie misst nicht den tatsächlichen neutralisierten Pool-Flash. Echte Markerbewegung wurde vom Entwickler bestätigt; Animation insgesamt akzeptiert. Debugtext später pflegen.
+**Historische Walker-Diagnose-Einschränkung (damals F1):** Die Textzeile Flash ist noch vereinfacht aus Barrel0 gebildet; sie misst nicht den tatsächlichen neutralisierten Pool-Flash. Echte Markerbewegung wurde vom Entwickler bestätigt; Animation insgesamt akzeptiert. Debugtext später pflegen.
 
 ## 5. Weitere Mechaniken und bekannte Grenzen
 
-- Sonec-Energie: Maximum und Start 5250 als ausdrückliche Testhilfe, kein endgültiges Alpha-Balancing.
+- Sonec-Energie: normales Maximum 4000, Start 4500; vorläufige Testwerte, kein endgültiges Alpha-Balancing. HUD-Overload-Anzeigebereich 1500, Deckkraft `HUD_BAR_ALPHA=100`; die Anzeige erhöht keine tatsächliche Kapazität.
 - Schild: lokal bestätigte proportional ladungsabhängige Explosionsabsorption bis 80 %, 500-ms-Regenerationspause nach Schaden, dynamische Größe und rote HUD-Schadensspur. Standardgrößenfaktor 0.8 akzeptiert; nicht weiter verkleinern. Stärkere Upgrades nicht umgesetzt.
-- Shield-Shape-/Radiusvergleich ist Diagnose, echte Schadenslogik nicht auf Shape umgestellt. Ladung/Animationsframe langfristig trennen.
-- Explosionen: zeitbasierter Modus 30 Schaden je 100 ms; neutraler Schaden/Kettenreaktionen beabsichtigt. Walker-Explosionstreffer noch nicht vollständig ergänzt.
-- BulletCollide zieht bei Feindtreffer direkt Gesundheit ab. Vollständiger Schildschutz gegen feindliche Bullets nicht behaupten.
+- Schildradius und Körperkollision unterscheiden: K1d verwendet aktiv zwei Körperkreise mit Segment-Sweep gegen Gegnerbullets; die Waffe ist ausgenommen. Ein älterer Diagnoseprototyp ist kein aktueller Schadensstatus. Ladung/Animationsframe langfristig getrennt betrachten.
+- Explosionen: zeitbasierter Modus 30 Schaden je 100 ms; neutraler Schaden/Kettenreaktionen beabsichtigt. Walker-Turm-Explosionstreffer sind ergänzt und lokal akzeptiert. E1b trennt die Schadenszeitpunkte einfacher/intelligenter Minen; 9/9 Entwicklertests gemeldet.
+- Gegnerbullets nutzen die vorhandene `ShieldAbsorbDamage`-Berechnung; aktiver geladener Schild reduziert den Health-Schaden entsprechend der Absorption. Kein pauschaler Vollschutz. K1b/K1c-Segmentprüfungen wurden jeweils mit 12/12 Entwicklertests abgenommen.
 - Walker-Bullets sollen eigene Walker/Orbs nicht treffen; Kisten/Minen vorläufig schon. Weitere Matrix/Tunneling/OBB-Fragen offen.
-- Rotierte Bullet-Trefferhülle ist AABB, keine pixelgenaue OBB.
+- K1b nutzt für Orb, Walker-Turm und Kiste einen Segmenttest gegen die um den Kugelradius erweiterte Ziel-AABB; dies ist keine pixelgenaue Formprüfung. Minen behalten den Kreissweep, Gegnerbullets den Sonec-Körpersweep.
 - Doppelskalierung bei Kisten-/Flammenkollision korrigiert; wachsende Flammenkreise gegen Kisten lokal positiv. Spätere Orbs-/Minen-Radiusregression und reine Seiteneffekte getrennt prüfen. Spielerflammen-Sonec-Aufruf ist nicht automatisch aktiver Schadenspfad.
 - Sonecs eigener Bullet-Radius 25 px / Flash-Radius 33 px ist vom Walker getrennt.
 - Upgrade-/Dropbalance, Energieaufnahme-Kosten, Transparenz und Schusssound-Entkopplung sind spätere Aufgaben.
 - Crystals ist Vergleichsquelle für HTML5-Controller/Highscore-/Speicherfragen, kein Auftrag zu Änderungen in dessen Repository.
 
-## 6. HTML5 und nächster Auftrag
+## 6. HTML5, Testbedingungen und Performancebeobachtung
 
-1. Nutzer erstellt/bereitstellt aktuellen AGK-HTML5-Export; bisher kein ZIP/Browserbuild im Chat.
-2. Browserstart mit Assets, Intro/Start und Audio prüfen.
-3. **Grundsätzliche HTML5-Gamepad-Funktion vom Entwickler bestätigt** (Xbox- oder kompatibler Controller). Festen Index 1 im HTML5-Workaround beibehalten: Erst nach einer initialen Eingabe wird Controller 1 verfügbar, möglicherweise mit 2–3 s Verzögerung; Windows-Erkennungsverfahren funktioniert im HTML5-Pfad nicht. IntroDo und Pause verwenden Gamepad; Tastatur ist unvollständig, KEY_2 doppelt belegt. **Alle Tasten im Windows-Compile getestet, nicht alle HTML5-Aktionen**. Gamepad-only-Hinweis und vollständigen Browser-Aktionstest vor Draft-Freigabe vorsehen.
-4. Spielrunde, Kampf, Pause/Fortsetzen, Tod und mindestens zwei Neustarts testen.
-5. Nur konkrete Releaseblocker minimal korrigieren; keine weitere Walkerentwicklung.
-6. README/itch.io mit tatsächlichen Controls, Known Limits und Pre-Alpha-Status finalisieren.
-7. Auf itch.io hochladen und den eingebetteten Build erneut testen. Projekt-URL/Zugang und Exportartefakt im neuen Chat klären.
+- Tastatursteuerung einschließlich Umbelegung, Speicherung und Restore Defaults ist umgesetzt. Der Entwickler meldete am 18.11. den aktualisierten itch.io-Draft-Embed mit 12/12 bestanden.
+- HTML5-Gamepad-Funktion wurde mit Xbox- bzw. kompatiblem Controller gemeldet. Nach der ersten Eingabe kann die Erkennung etwa 2–3 Sekunden dauern; Tastatureingaben benötigen den Fokus im Spiel-Canvas. Hilfetexte dazu sind ergänzt.
+- Entwicklungsstand, lokal getesteter Export und tatsächlich hochgeladener Build sind getrennte Angaben. Der genaue Export-SHA ist nicht durchgehend belegt; der Draft-Test vom 18.11. deckt spätere Alpha-Änderungen nicht automatisch ab.
+- Prüfungen nach Änderung wählen: Browser-/Eingabe-/Timing-Themen gezielt in HTML5, übergreifende Prüfung an Meilensteinen oder im eigenen HTML5-Chat. Kein vollständiger Plattformtest für jede Dokumentations- oder Detailänderung.
+- AGK-Compile, Export und Laufzeittests führt der Entwickler aus. Aktuelle Planung und der nächste Schritt stehen in HANDOFF/TODO; es gibt keine feste Release-Deadline.
 
-Zieltermin des Nutzers: **16. November 2026**. Keine Veröffentlichung, erfolgreiche Browserprüfung oder verfügbaren Zugriff erfinden. Der Assistent hat bisher keinen AGK-/HTML5-Build ausgeführt.
+### Browserneustart nach längeren Tests – Entwicklerbeobachtung vom 20.11.2026
+
+Der Entwickler berichtet von Performance-Einbußen nach längerem Testen, die sich durch einen Browserneustart wieder besserten. Ursache und Reproduzierbarkeit wurden nicht isoliert nachgewiesen.
+
+Für vergleichbare Tests dieselbe Build-Revision und Umgebung festhalten; Zustand direkt nach Browserneustart und nach längerer Sitzung getrennt beurteilen. Vor einem Vergleich bei auffälliger Trägheit eine frische Sitzung als Ausgangspunkt prüfen, die Auffälligkeit der längeren Sitzung aber ebenfalls dokumentieren. Ein flüssiger Neustart allein schließt ein Laufzeitproblem nicht aus.
+
+Unabhängig davon verschwand das beobachtete Bewegungsruckeln laut Entwickler bei 75 Hz Monitorfrequenz. Die M1-Ursachenuntersuchung ist zurückgestellt; daraus weder eine bewiesene Ursache noch eine automatische Release-Gate-Abnahme ableiten.
+
+## 7. Historische Entwicklungs- und Testnotizen vom 16. November 2026
+
+Die folgenden datierten Zwischenstände bleiben als technische Belege erhalten. Spätere Ergebnisse innerhalb dieser Chronik und der aktuelle HANDOFF ordnen sie ein; alte Testaufträge oder „nächste Schritte“ nicht erneut ausführen.
 
 ### Lokaler HTML5-Smoke-Test – Entwicklermeldung vom 16. November 2026
 
@@ -311,10 +319,11 @@ Der vorherige Anzeigemaßstab +1500 für sieben rote Segmente sowie Energie `Sta
 
 **Zusätzlicher Entwicklertest:** Nach dem erfolgreichen Funktions-Smoke-Test im itch.io-HTML5-Embed wurde auch der **Neustart** als „soweit ok“ bestätigt. Damit ist der einfache Neustart im Embed positiv gemeldet; mehrere lokale HTML5-Neustarts waren bereits zuvor bestanden. Keine vollständige Langzeit-/Browserübergreifende Regression oder eigener Browserlauf des Assistenten. Auf der itch.io-Draft-Seite sind laut Entwickler nun **zwei separate GitHub-Links** zu `develop` und `main` gesetzt. Die Seite verbleibt ausdrücklich im **Draft mit Secret URL**; der Link wird an Community-Tester weitergegeben. Der spätere Merge `develop`→`main` ist **noch nicht ausgeführt**. Keine Spielcodeänderung.
 
-## 7. Übergabe und Historie
+## 8. Übergabe und Historie
 
-[HANDOFF.md](HANDOFF.md) enthält getesteten Referenzcommit, exakte Parameter, Release-Gates, offene Entscheidungen und einen direkten Starttext. Tatsächlichen develop-HEAD neu abfragen, lokale Nutzerdateien/alte Anhänge nicht voraussetzen.
+[HANDOFF.md](HANDOFF.md) enthält den kurzen aktuellen Übergang mit Evidenz und genau einem nächsten Schritt. Technische Referenzparameter bleiben hier; Releaseumfang und Gates stehen in [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROADMAP.md), nächste Aufgaben in [TODO.md](TODO.md). Tatsächlichen `develop`-HEAD neu abfragen, alte Anhänge nicht voraussetzen.
 
-Das gesamte ältere Untersuchungs-/Testprotokoll bleibt [hier im Git-Stand vor Konsolidierung](https://github.com/ChristianEngel19820128/SonecBot/blob/18f92a965810763b552bd96649607c112f966238/TECHNICAL.md), die frühere ausführliche Aufgabenliste [hier](https://github.com/ChristianEngel19820128/SonecBot/blob/18f92a965810763b552bd96649607c112f966238/TODO.md). Diese historischen Quellen nicht als aktuelle Reihenfolge ausführen. Aktuelle Priorität: **abgeschlossener Alpha-Walker → HTML5-Pre-Alpha-Deployment**.
+Das gesamte ältere Untersuchungs-/Testprotokoll bleibt [hier im Git-Stand vor Konsolidierung](https://github.com/ChristianEngel19820128/SonecBot/blob/18f92a965810763b552bd96649607c112f966238/TECHNICAL.md), die frühere ausführliche Aufgabenliste [hier](https://github.com/ChristianEngel19820128/SonecBot/blob/18f92a965810763b552bd96649607c112f966238/TODO.md). Diese historischen Quellen nicht als aktuelle Reihenfolge ausführen. Die aktuelle Arbeitsreihenfolge wird ausschließlich in HANDOFF/TODO gepflegt.
 
-Knowledge-Base-Kandidaten/kurzes Register nach dem dringenden Deployment prüfen; Quellen-/Evidenzstatus erhalten. Arbeitsregeln in AGENTS.md.
+Knowledge-Base-Kandidaten stehen in [BACKLOG.md](BACKLOG.md); Beiträge separat vereinbaren und Quellen-/Evidenzstatus erhalten. Arbeitsregeln in [AGENTS.md](AGENTS.md).
+

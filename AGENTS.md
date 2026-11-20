@@ -1,200 +1,105 @@
 # SonecBot – Agent Instructions
 
-## 1. Project context
+Repository: `ChristianEngel19820128/SonecBot` · Engine: AppGameKit Studio (AGK).
+Aktive Entwicklung: `develop` · Meilenstein-/Referenzbranch: `main`.
+Der Entwickler entscheidet über Spielrichtung, Prioritäten und Veröffentlichungen.
 
-- **Repository:** `ChristianEngel19820128/SonecBot`
-- **Project:** SonecBot
-- **Engine:** AppGameKit Studio (AGK)
-- **Active development branch:** `develop`
-- **Reference branch:** `main`
-- **Historical source:** `source/legacy/`
-- **Current handoff:** `HANDOFF.md`
-- **Current milestone:** HTML5 pre-alpha including Alpha-Walker and keyboard rebinding/restore defaults completed and developer-tested; updated itch.io Draft embed smoke test 12/12 reported passed (18 November 2026). Next: review documentation, obtain separate approval for a `develop` → `main` pre-alpha merge, then plan Real Alpha mine variants.
+## 1. Einstieg und Arbeitsumfang
 
-SonecBot is an independently developed side-scrolling action game featuring platforming, weapons, energy management and enemy encounters.
+1. `AGENTS.md` und den aktuellen `HANDOFF.md` lesen; den tatsächlichen `develop`-HEAD abfragen.
+2. Die konkrete Aufgabe und vorhandene Freigaben aus dem Gespräch berücksichtigen.
+3. Danach nur relevante Stellen in TODO, Release-Roadmap, Fachdokumenten und Quellcode lesen.
+4. Archive nur bei einer konkreten historischen Frage öffnen. Keine automatische Chat-/Dateiübertragung voraussetzen.
 
-The original game was developed using **BlitzBasic Plus**. The historical source code is preserved for reference only. A separate, unfinished BlitzMax file also exists.
+Eine Bitte um Untersuchung, Review oder Buganalyse erlaubt zunächst nur lesende Arbeit.
+Umsetzung braucht einen vereinbarten konkreten Umfang. Eine bereits erteilte Freigabe gilt innerhalb dieses Umfangs weiter; nicht für jeden notwendigen Teilschritt erneut fragen.
+Bei einer echten Erweiterung des Umfangs Befund und kleinsten Vorschlag vorlegen und die Entscheidung abwarten.
+Ein Dokumenteintrag oder eine Idee ist für sich noch kein Implementierungsauftrag.
 
-The current game is developed in AppGameKit Studio.
+## 2. Entwicklung und Schutz bestehender Funktionen
 
-**Primary goal:** Produce a stable, playable alpha version before expanding the game with additional features.
+- Kleine, verständliche Änderungen auf `develop`; die betroffenen Ausführungspfade vorher nachvollziehen.
+- Bewegung, Energie, Waffen, Schild, Kollisionen, Gegner, Animation, Eingabe und Sound vor unbeabsichtigten Nebenwirkungen schützen.
+- Unfertige, deaktivierte oder experimentelle Funktionen können beabsichtigt sein; unbekanntes Sollverhalten klären.
+- Keine beiläufigen Refaktorierungen, Grafikänderungen oder Balancekorrekturen. Technisch eleganter bedeutet nicht automatisch spielerisch besser.
+- `main`, `source/legacy/`, Lizenz, Git-Historie, Releases und Veröffentlichung nur mit einem eigenen ausdrücklichen Auftrag verändern.
+- `.gitignore` beachten; keine kompilierten Programme, temporären Builds oder Testartefakte einchecken.
+- Commit-Nachrichten beschreiben die tatsächliche Änderung. Kein automatischer Wechsel auf ein anderes Repository.
 
-## Collaboration and release workflow (confirmed 16 November 2026)
+## 3. Befunde und Bugberichte
 
-- Work as a team in **small, jointly agreed steps**: inspect the actual GitHub `develop` HEAD, understand the current question, discuss evidence and options, approve the exact change, implement only that scope, and check results together.
-- The owner runs AppGameKit Studio and a local Apache test server on their desktop. **Only the owner can perform and confirm local AGK exports, compiles, browser/gamepad runs and itch.io page changes here.** Assistant code review and static checks are not runtime tests.
-- If an interesting AGK peculiarity appears, record the observation, evidence level and source in the relevant project documentation, **finish the current task step first**, and only then decide whether to investigate or add it to the [AGK Knowledge Base](https://github.com/ChristianEngel19820128/agk-knowledge-base). The Knowledge Base is reusable background knowledge, not an automatic parallel task. The 1.0 release of Crystals provides useful process experience.
-- GitHub repositories can be read as needed for comparisons; write changes remain subject to each repository's permissions and a specific agreement. Do not expand work to another repository automatically.
-- Maintain handoff-ready notes as part of each approved change: actual HEAD/tested revision, what was changed, who tested it and where, verified versus suspected findings, open decisions, and the **single next step**. Before a chat change or context limit, update `HANDOFF.md` and relevant status documents. Never assume prior chat attachments or local files are accessible.
-- Prioritize a playable HTML5 pre-alpha for the AGK community and selected testers, **not a rushed public launch**. The itch.io project page deliberately remains in **Draft**. Its secret URL can be shared with chosen testers; anyone holding that URL may access it. The owner reports that switching to Published provides a one-time discovery/index boost that cannot be regained; **do not publish or suggest changing the visibility without explicit owner approval**. The decision to publish at beta 0.9 or 1.0 is open.
-- itch.io edits and uploads are done manually by the owner. Prepare itch.io texts and public release-facing descriptions in **English Markdown** for copy/paste. The green heart **💚** is the agreed visual identity for GitHub README and itch.io.
-- Do not spend the last release steps on general balance or Walker polish. Investigate potentially frame-driven spawn probabilities as a **hypothesis**, compare options, and change only after an explicit decision and real test.
+Fakten, Entwicklerbeobachtungen und Hypothesen trennen. Relevante Dateien/Funktionen und möglichst die Quellrevision nennen.
+Reproduktion oder geeignete Prüfung beschreiben; vorhandene Aufgaben auf Dubletten prüfen und die kleinste sinnvolle Korrektur vorschlagen.
+Keine spekulativen Buglisten und keine erfundenen Tests, Messungen oder aktualisierten Register.
 
-## 2. Fundamental rule: investigation first
+Bugberichte auf Deutsch mit:
 
-**The default authorization is READ-ONLY.**
+- ID `SB-###` nur bei vorhandener, geprüfter Zuordnung, sonst `Noch nicht vergeben`; kurzer Titel.
+- Priorität: Kritisch / Hoch / Mittel / Niedrig / Offen; Status: Vermutet / Bestätigt / In Bearbeitung / Behoben / Verworfen.
+- Dateien/Funktionen, Quellbeleg, bestätigtes Soll und beobachtetes bzw. vermutetes Ist.
+- Reproduktion/Prüfmethode, Auswirkung, minimale Korrektur und Dublettenprüfung.
 
-A request to investigate, review, analyze or report a bug does not authorize implementation.
+Widersprüche mit dokumentierten Entscheidungen offen benennen; keine Spielentscheidung selbstständig umdeuten.
+Eine ausdrücklich zusammenfassende Testbestätigung des Entwicklers zählt als solche. Fehlende Einzelprotokolle weder erfinden noch als nachträglichen Fehlschlag behandeln.
 
-Unless the repository owner explicitly approves a specific change:
+## 4. Zuständigkeiten der Dokumente
 
-- Do not create, edit, delete, move or rename files.
-- Do not apply patches or refactor code.
-- Do not create commits, branches, pull requests, issues or releases.
-- Do not modify project configuration or dependencies.
-- Do not automatically fix discovered bugs.
-- Do not change gameplay, balancing, graphics or sound.
+| Datei | Aufgabe und Richtwert |
+| --- | --- |
+| `AGENTS.md` | Dauerhafte Arbeitsregeln; keine wechselnden Meilensteine oder Testchronik. |
+| `HANDOFF.md` | Kurzer Chatübergang: Basis, Teststand, offene Entscheidungen, genau ein nächster Schritt; etwa 60–120 kurze Zeilen. |
+| `TODO.md` | Nur die nächsten konkreten, priorisierten Arbeitsschritte; höchstens fünf Einträge, möglichst unter 60 kurzen Zeilen. |
+| `REAL_ALPHA_ROADMAP.md` | Ziel, Umfang, Stand und Abschlusskriterien dieses Releases; grob 100–180 kurze Zeilen, keine Sitzungshistorie. |
+| Weitere Release-Roadmaps | Erst bei tatsächlicher Planung anlegen, etwa `PRE_BETA_ROADMAP.md`; denselben überschaubaren Aufbau verwenden. |
+| `BACKLOG.md` | Unverbindliche Ideen und bewusst spätere Möglichkeiten; kurze Einträge ohne automatische Releasezusage. |
+| `PROJECT.md` | Spielkonzept und längerfristige Designentscheidungen. |
+| `TECHNICAL.md` | Architektur, relevante Implementierungsdetails und nachvollziehbare technische Erkenntnisse. |
+| `README.md` | Öffentlicher Projekt-/Release-/Eingabestatus mit tatsächlich belegtem Umfang. |
+| `docs/archive/` | Abgelöste Dokumentstände zur gezielten Nachschau; keine aktuellen Arbeitsaufträge. |
 
-Explain findings and possible solutions. Wait for explicit approval before implementation.
+Richtwerte verhindern Wachstum, sind keine Aufforderung, Fakten zu verlieren oder Zeilen künstlich zu verdichten.
+Aktuelle Aussagen ersetzen statt immer neue Nachträge davorzustellen. Erledigtes aus TODO entfernen; Ergebnis am zuständigen Ort knapp festhalten.
+Neue Wünsche zuerst einordnen: nächster vereinbarter Schritt, Releaseentscheidung oder unverbindliche Idee. Bestätigte Fehler nicht als bloße Ideen wegparken.
+Roadmaps bündeln größere Arbeitspakete; technische Einzelheiten gehören in Fachdokumente. Releaseumfang nur gemeinsam ändern.
+BACKLOG bei der Releaseplanung auf Dubletten und Relevanz prüfen; keine Kopie der gesamten alten TODO erzeugen.
+Historie bleibt in Git. Größere abgelöste Übergaben bei einer Konsolidierung archivieren; kein neues Archiv für jeden Chat und kein fortlaufendes Gesprächsprotokoll.
 
-## 3. Understand the game before reporting bugs
+## 5. Abschluss jedes vereinbarten Schritts
 
-**Unfinished does not automatically mean defective.**
+1. Änderung im freigegebenen Umfang umsetzen und soweit hier möglich prüfen.
+2. Betroffene Dokumentation im selben Commit auf den tatsächlich bekannten Stand bringen; nicht routinemäßig alle Dateien anfassen.
+3. Falls erforderlich einen kleinen, passenden Entwicklertest benennen. Bis zur Rückmeldung bleibt sein Laufzeitstatus offen.
+4. Rückmeldungen auswerten und zeitnah dokumentieren: getestete Revision soweit bekannt, Person/Umgebung, Ergebnis und verbleibende Unsicherheit.
+5. TODO und HANDOFF bei geändertem Arbeitsstand ersetzen; genau einen nächsten vereinbarten Schritt benennen.
 
-SonecBot is under active development. Disabled enemies, incomplete systems, placeholders and experimental code may be intentional.
+Dokumentationspflege gehört zum Abschluss; nicht erst auf den nächsten Chat verschieben.
+Code-HEAD, tatsächlich getestete Revision und ausgelieferter Build können verschieden sein. Fehlende Export-SHAs ausdrücklich offen lassen.
+Abgeschlossene oder bewusst vertagte Aufgaben nicht durch einen alten Archiveintrag wieder aktivieren.
 
-Before classifying behavior as a bug:
+## 6. Tests und Testbericht
 
-1. Read the relevant source code.
-2. Trace the affected execution path.
-3. Consult `PROJECT.md` and `TECHNICAL.md`, if available.
-4. Distinguish intended behavior from actual behavior.
-5. Ask for clarification when the intended behavior is unknown.
+Der Entwickler führt lokale AGK-Compiles/-Exporte sowie Windows-, Browser-/Gamepad- und itch.io-Tests aus.
+Assistenten-Quellprüfung, übersetzte Simulationen und tatsächliche AGK-/Browserläufe bleiben getrennte Evidenz.
+Testumfang nach Änderung und Risiko wählen: keine Pflicht, jedes Detail zusätzlich in HTML5 zu testen.
+Browserrelevante Änderungen gezielt dort prüfen; übergreifende HTML5-Prüfungen an Meilensteinen oder im eigenen Themenchat bündeln.
+Optionale, nicht durchführbare oder gemeinsam vertagte Punkte sind keine automatischen Blocker. Bestätigte Fehler und notwendige Freigabekriterien gezielt klären.
+Bei Performanceberichten Sitzungslänge, Umgebung und Neustartzustand unterscheiden; ein flüssiger Neustart widerlegt kein Problem nach längerer Laufzeit.
 
-Do not invent requirements or treat assumptions as established facts.
+Für vereinbarte Entwicklerchecks eine kurze, optional teilweise ausfüllbare Testliste anbieten:
 
-## 4. Preserve existing gameplay
+- Titel mit Schritt und Zähler `x / n bestätigt`; Haken bedeutet bestanden, leer bedeutet unbestätigt, nicht gescheitert.
+- Gesamtergebnis: `Noch nicht vollständig getestet` / `Bestanden` / `Auffälligkeiten / Fehler`; keine Einzelhaken daraus ableiten.
+- Optionales mehrzeiliges Feld für Beobachtungen; genau ein expliziter Button `Testergebnis senden`.
+- Haken, Auswahl und Texteingabe senden nie automatisch. Bericht enthält Schritt, Gesamtergebnis, Bestätigt, Offen und Beobachtungen bzw. `Keine Angaben`.
+- Unterstützt der Chat diese Bedienelemente nicht, dieselben Felder als kopierbaren Text anbieten. Keine funktionsfähigen Buttons vortäuschen.
 
-Existing gameplay mechanics must be protected.
+Das ist eine Chatkonvention, keine Aufgabe zum Einbau eines Testformulars ins Spiel.
 
-Pay particular attention to:
+## 7. Veröffentlichung und wiederverwendbare Erkenntnisse
 
-- Player movement, jumping, gravity and jetpack behavior.
-- Energy absorption, consumption and regeneration.
-- Weapons, ammunition and defensive systems.
-- Platforms, scrolling and camera movement.
-- Enemy movement, attacks and collisions.
-- Animation, graphics, sound and input handling.
-
-Do not change the behavior of these systems as an unintended side effect of a bugfix.
-
-**A technically cleaner implementation is not automatically a better implementation.**
-
-Avoid unrelated optimizations, redesigns and architectural changes.
-
-## 5. Bug investigation procedure
-
-For each suspected bug:
-
-1. Identify the affected files and functions.
-2. Trace the relevant code and dependencies.
-3. Describe the observed or suspected problem.
-4. Separate verified facts from hypotheses.
-5. Explain the potential impact on gameplay.
-6. Provide reproduction steps or a proposed verification method.
-7. Check existing entries in `TODO.md` or a dedicated bug register.
-8. Suggest the smallest reasonable correction.
-
-Never claim that a bug was reproduced or a test was executed unless this actually happened.
-
-Do not generate large collections of speculative bug reports. Prioritize actionable, well-supported findings.
-
-## 6. Bug report format
-
-Bug reports must be written in **German**.
-
-Each report should contain:
-
-- **ID:** `SB-###`, only when assigned and verified; otherwise `Noch nicht vergeben`
-- **Title:** Short, descriptive summary
-- **Priority:** Kritisch / Hoch / Mittel / Niedrig / Offen
-- **Status:** Vermutet / Bestätigt / In Bearbeitung / Behoben / Verworfen
-- **Affected files and functions**
-- **Source evidence:** Relevant locations and commit SHA when available
-- **Expected behavior:** Only when documented or confirmed
-- **Actual or suspected behavior**
-- **Reproduction or verification steps**
-- **Potential impact**
-- **Suggested minimal correction**
-- **Duplicate check**
-
-The repository documentation is the shared reference. Do not claim to have updated a bug register unless the update was actually performed and authorized.
-
-## 7. Development and version control
-
-- Perform active development on `develop`.
-- Do not modify `main` without explicit authorization.
-- Keep changes small, focused and understandable.
-- Avoid combining unrelated fixes.
-- Preserve the historical code in `source/legacy/`.
-- Do not modify legacy source unless explicitly instructed.
-- Respect `.gitignore`.
-- Do not commit compiled executables or temporary build artifacts.
-- Do not rewrite Git history without explicit authorization.
-
-Commit messages should clearly describe the actual changes.
-
-## 8. Implementation after explicit approval
-
-When implementation is authorized:
-
-1. Confirm the exact scope.
-2. Identify the files that need modification.
-3. Prefer the smallest behavior-preserving solution.
-4. Avoid unrelated cleanup and refactoring.
-5. Validate the result where possible.
-6. Report which tests were actually performed.
-7. Explain any remaining uncertainty or risk.
-
-If the approved scope needs to expand, request approval again.
-
-## 9. Project documentation
-
-The following Markdown files form the shared project documentation:
-
-- `HANDOFF.md` – Current new-chat entry point, tested baseline, release gates and exact next steps
-- `README.md` – Public project status and verified usage limits
-
-- `AGENTS.md` – Agent instructions and safety rules
-- `PROJECT.md` – Game concept, mechanics and development goals
-- `TECHNICAL.md` – Architecture and verified technical findings
-- `TODO.md` – Prioritized tasks, bugs and milestones
-
-Some documents may not exist yet. Their absence does not authorize an agent to create them.
-
-**Keep relevant documentation current with every commit.** Update the important documents affected by the change in the same commit; do not touch every document routinely. Record implemented behavior, developer-reported tests, remaining uncertainties, provisional test/balancing values and the current next step. For a documentation-only commit, update only the relevant instructions or status entries. Chat handoffs depend on these files; do not defer necessary documentation to a later chat.
-
-**Review reusable findings for the AGK Knowledge Base.** During implementation, debugging and test review, check whether the result could become a useful general lesson, reproducible experiment or reference in `ChristianEngel19820128/agk-knowledge-base`. Check existing topics before proposing an addition. Record promising candidates and their evidence/test status in the project documentation; do not present an uncompiled or visually untested experiment as a proven solution. The Knowledge Base should grow with the projects and serve as a reusable implementation reference. Contributions require sources/revisions, conditions, limitations and a reproducible explanation, with source-project code distinguished from AGK engine behavior. Respect each repository's existing write scope.
-
-Do not silently overwrite existing documentation or contradict established project decisions.
-
-When new findings conflict with documentation, report the discrepancy instead of independently deciding which source is correct.
-
-**Chatwechsel / Kontextgrenzen:** Do not assume automatic chat/history/attachment transfer. Start by reading AGENTS.md and HANDOFF.md, then current PROJECT.md, TODO.md and TECHNICAL.md. Query the real develop HEAD and relevant source files again. HANDOFF.md is the canonical current transition; pinned older documents are history, not instructions to repeat completed work. The owner has explicitly closed the Alpha-Walker task after the final turret-recoil test. Preserve the accepted IK, pivots, artwork/prototypes, aim and recoil; the HTML5 pre-alpha and keyboard Draft embed verification are completed according to developer reports (12/12 on 18 November 2026). The next gate is a separately approved pre-alpha merge to `main`, followed by Real Alpha mine planning (simple mines do not track Sonec and do not respond to energy attraction). Do not reopen Walker polishing without a specific owner request or demonstrated release blocker. Local developer tests, translated simulations, actual AGK compiles and actual browser tests must remain distinct.
-
-## Reusable interactive test-report format (SonecBot)
-
-For each small implementation or visual check, present an **interactive, optional/partially completable test checklist** in the chat after the code review. This project convention should survive chat changes:
-
-1. Title with the exact step (for example `Schritt 7b – Testprotokoll`) and a counter `x / n bestätigt`.
-2. One checkbox per specific observable test point, including AGK compile where appropriate; a checked box means **confirmed passed**, not merely attempted. Leave unverified points unchecked.
-3. One separate radio choice for overall result: **Noch nicht vollständig getestet**, **Bestanden**, **Auffälligkeiten / Fehler**. Never infer all checks passed solely from this choice, or rewrite a user-selected result.
-4. A **multiline optional free-text field** for observations, unexpected behavior, screenshots or reproducibility notes. Partial reports and failures are valid.
-5. Exactly one explicit **`Testergebnis senden`** button using the host's normal submit-new-turn action. Checking a box, switching the radio or typing must **never** submit automatically.
-6. Submit a compact report including step name, overall result, **Bestätigt** (checked), **Offen** (unchecked) and **Beobachtungen** (actual free text or `Keine Angaben`). Treat a box left unchecked as **not verified**, not automatically as a failure; explicitly distinguish additional design observations from proven defects.
-7. On receipt, evaluate **actual developer-reported compile/runtime evidence** separately from assistant static source review; if any point is open or a defect is reported, investigate the narrow issue before advancing. Do not claim a full pass or implement further gameplay changes without explicit approval.
-8. Use the current chat's supported interactive controls for the checklist, result selector, multiline input and explicit send action. If unavailable, offer the same structured fields as copyable text, without pretending there is a working button.
-
-This is a **response and test-reporting convention**, not a requirement to implement test forms inside the AGK game. Keep it compatible with current UI capabilities; avoid relying on hidden chat state or automatic memory.
-
-## 10. Working principles
-
-- **Understand first.**
-- **Investigate before implementing.**
-- **Protect working functionality.**
-- **Separate facts from assumptions.**
-- **Prefer small, testable steps.**
-- **Document important findings.**
-- **Ask before changing anything.**
-
-The repository owner retains control over project direction, priorities, implementation and releases.
+- Balancing, Deployment und HTML5-Themen können eigene Chats erhalten; dabei denselben aktuellen Dokumentstand verwenden. Es gibt keinen pauschalen Zeitdruck.
+- itch.io-Uploads und Seitenänderungen führt der Entwickler manuell aus. Sichtbarkeit und Veröffentlichung benötigen einen eigenen ausdrücklichen Auftrag; Git-Merge und Deployment sind getrennte Vorgänge.
+- Öffentliche Release-/itch.io-Texte in englischem Markdown vorbereiten; 💚 bleibt die vereinbarte Kennzeichnung. Secret-URL-Tokens nicht in öffentliche Dokumentation schreiben.
+- AGK-Besonderheiten mit Quelle, Bedingungen und Evidenzgrad im passenden Fachabschnitt knapp festhalten. Erst den laufenden Arbeitsschritt abschließen.
+- Beiträge zur [AGK Knowledge Base](https://github.com/ChristianEngel19820128/agk-knowledge-base) separat entscheiden, vorhandene Themen prüfen und Quellprojektverhalten von bewiesenem Engine-Verhalten trennen.
+- Ein interessanter Befund allein erlaubt keine Änderungen in der Knowledge Base oder anderen Repositories.

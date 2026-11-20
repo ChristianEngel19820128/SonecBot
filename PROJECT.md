@@ -1,6 +1,6 @@
 # SonecBot – Projektübersicht
 
-**Dokumentstatus:** Version 0.12  
+**Dokumentstatus:** Spielkonzept; Status-/Dokumentverweise abgeglichen am 20. November 2026  
 **Projektstatus:** In Entwicklung  
 **Engine:** AppGameKit Studio (AGK)  
 **Aktiver Entwicklungszweig:** `develop`  
@@ -119,9 +119,9 @@ Der Energieschild ist für die Alpha in seinen wesentlichen Funktionen lokal get
 
 **Offen:** Die experimentelle Shape-Kollision ist noch keine Grundlage des tatsächlichen Explosionsschutzes. Zusätzliche Schadensarten und ein vom Animationsframe unabhängiger Ladungswert sind spätere technische Aufgaben.
 
-### Gesammelte Wünsche zur Transparenz
+### Transparenzstand und weitere Wünsche
 
-- Das HUD soll teilweise transparent werden.
+- Die HUD-Balken sind teilweise transparent umgesetzt; technischer Referenzwert in [TECHNICAL.md](TECHNICAL.md).
 - Die Inenergie-Animation soll teilweise transparent sein, ungefähr wie der Schild.
 - Energie-Sammelobjekte sollen mit sinkendem Energiewert transparenter werden, innerhalb festgelegter Minimal- und Maximalwerte.
 
@@ -157,7 +157,7 @@ Für den aktuellen Pre-Alpha-Schritt gilt: **Sonec soll grundsätzlich allen bes
 
 Als **spätere Designbasis**, noch nicht implementierte Schadens-/Rüstungsrechnung, sind Plasmaexplosion, Plasmaflammen, kinetischer Schaden (einschließlich Granatenaufprall) und Plasma-Blitz vorgesehen. Passende Panzerungs- und Schild-Gegenwerte werden später entwickelt. Das gewünschte Konterprinzip ähnelt Stein/Schere/Papier/Brunnen; Flammen sollen etwa gegen kleine schnelle Minen besonders nützlich sein. Noch **keine** konkreten Multiplikatoren oder Widerstandsparameter festlegen.
 
-**Jetzt pragmatisch:** Fehlende Kollisionspfade nacheinander mit vorhandenen Health-/Damage-Mechanismen ergänzen; jede Änderung separat lokal unter AGK/HTML5 testen. Kein pauschales Balancing und keine zusätzliche Walker-Politur.
+**Vorgehen bei weiteren Kollisionsfragen:** Den tatsächlichen Pfad und bestätigtes Sollverhalten prüfen, den nächsten kleinen Eingriff gemeinsam auswählen und passende Tests nach [AGENTS.md](AGENTS.md) festlegen. Kein pauschales Balancing und keine zusätzliche Walker-Politur.
 
 ### Weitere Gegner und Gefahren
 
@@ -191,9 +191,7 @@ Ein Teil der Grafiken wurde mit Paint.NET erstellt. Für die Audioentwicklung wu
 
 Das Spiel wurde bisher insbesondere für Gamepads entwickelt und orientiert sich an Xbox-Controllern.
 
-Für die HTML5-Version müssen Browser- und Gamepad-Kompatibilität überprüft werden.
-
-Ob eine zusätzliche Tastatursteuerung erforderlich ist und wie diese umgesetzt wird, ist noch nicht abschließend festgelegt.
+Gamepad und Tastatur sind in der HTML5-Pre-Alpha verfügbar. Tastaturbelegung, Umbelegung, Speicherung und Wiederherstellung der Standardtasten wurden umgesetzt und vom Entwickler geprüft; der aktualisierte itch.io-Draft-Embed wurde am 18.11. mit 12/12 bestanden gemeldet. Belegumfang und spätere Änderungen stehen in [HANDOFF.md](HANDOFF.md), aktuelle Bedienhinweise in [README.md](README.md). Kompatibilität mit weiteren Browsern und Controllern bleibt gezielt zu prüfen.
 
 ## 8. Erste Veröffentlichung: HTML5-Pre-Alpha, danach Alpha
 
@@ -203,11 +201,13 @@ Ob eine zusätzliche Tastatursteuerung erforderlich ist und wie diese umgesetzt 
 
 Ein Windows-Build kann später zusätzlich angeboten werden.
 
-### Aktuelles Veröffentlichungsziel
+### Veröffentlichungsrahmen
 
-**Aktualisierte Entscheidung vom 16. November 2026:** Der vorherige Termin ist keine feste öffentliche Release-Deadline. Die HTML5-Pre-Alpha soll mit Sorgfalt für die AGK-Community und ausgewählte Tester über die **Secret URL der bewusst im Draft belassenen itch.io-Seite** verfügbar werden; jeder mit Link kann zugreifen. Der öffentliche Published-Wechsel mit einmaligem itch.io-Index-Push wird für einen späteren Zeitpunkt aufbewahrt (Beta 0.9 oder 1.0 noch nicht entschieden). itch.io-Pflege und Browser-/Gamepad-Tests erfolgen durch den Entwickler lokal; öffentliche Texte werden auf Englisch als Markdown vorbereitet. 💚 ist die vereinbarte visuelle Kennzeichnung. Der lokal akzeptierte Alpha-Walker ist der eingefrorene Gegner-Referenzstand. Zuerst aktuellen HTML5-Export im Browser prüfen; nur konkrete Fehler korrigieren, die Start, Steuerung, Spielrunde oder Neustart verhindern. Ein öffentlicher Build muss seinen tatsächlichen Eingabeumfang, den experimentellen Stand und bekannte Einschränkungen klar benennen. Eine Gamepad-only-Pre-Alpha ist als Minimalvorschlag vertretbar, wenn der Controller im Browser tatsächlich funktioniert und die Seite dies deutlich sagt; diese Eingabeentscheidung ist noch zu bestätigen.
+Die HTML5-Pre-Alpha ist laut Entwickler über die Secret URL der bewusst im Draft belassenen itch.io-Seite für ausgewählte Tester zugänglich. Ein Wechsel auf Published wird gesondert entschieden; Beta 0.9 oder 1.0 sind keine beschlossenen Veröffentlichungstermine. Der Entwickler möchte den von ihm berichteten einmaligen Sichtbarkeitsschub aufbewahren; diese Plattformannahme ist hier nicht unabhängig verifiziert. Öffentliche Texte werden in englischem Markdown vorbereitet, 💚 bleibt die vereinbarte Kennzeichnung.
 
-Als gesonderter Prüfkandidat gelten möglicherweise frameabhängige Spawnwahrscheinlichkeiten in der Spielschleife: erst untersuchen, Wirkung abwägen und gemeinsam entscheiden; noch kein bestätigter Defekt oder Änderungsauftrag. Nach dem abgeschlossenen Alpha-Walker sind Draufsicht, neue Gegner, Optionsmenü, neue Punkte-/Online-Highscore-Systeme und umfassendes Energie-/Grafikbalancing für die kurzfristige Pre-Alpha nachrangig. Vorläufige Energie 5250 nicht stillschweigend als endgültige Alpha-Balance ausgeben. Die folgenden Alpha-Anforderungen bleiben als regulärer Zielrahmen bestehen.
+Es besteht keine feste Release-Deadline. Den verbleibenden Real-Alpha-Umfang hält [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROADMAP.md) fest. Balancing, Deployment und HTML5-Themen erhalten bei Bedarf eigene Chats. Ein öffentlicher Build benennt seinen tatsächlichen Eingabeumfang, Entwicklungsstand und bekannte Einschränkungen; der aktuelle Codebranch belegt keine bereits erfolgte Auslieferung.
+
+Der akzeptierte Alpha-Walker bleibt Referenz. Möglicherweise frameabhängige Spawnwahrscheinlichkeiten sind eine Untersuchungsidee, kein nachgewiesener Defekt. Energie- und andere Balancingwerte sind vorläufig; technische Werte werden in [TECHNICAL.md](TECHNICAL.md) gepflegt.
 
 ### Verbindliche Anforderungen
 
@@ -220,11 +220,11 @@ Als gesonderter Prüfkandidat gelten möglicherweise frameabhängige Spawnwahrsc
 
 ### Noch zu klären
 
-- Genauer Umfang einer Spielrunde
-- Anforderungen an Menü, Pause, Tod und Neustart
-- Tastatursteuerung zusätzlich zum Gamepad
-- Mindestumfang weiterer Gegner
-- Konkrete Abschlussbedingungen der Alpha
+- Genauer Umfang bzw. mögliches Ziel einer Spielrunde
+- Verbleibender Umfang weiterer Gegner und Warn-/Hilfefunktionen
+- Konkrete Abschlussbedingungen der Real Alpha, einschließlich gebündelter Integrationstests
+
+Menü, Pause, Tod/Neustart und Tastatur sind bereits vorhanden und vom Entwickler getestet gemeldet. Der noch festzulegende Releaseumfang wird nur in der jeweiligen Roadmap gepflegt.
 
 Die Alpha soll bewusst klein bleiben.
 
@@ -242,7 +242,7 @@ Die bevorzugte Darstellungsform sind **animierte Porträtbilder**. Ein dreidimen
 
 Die Entscheidung über Aussehen, technische Umsetzung und Integration steht noch aus.
 
-**Zusätzliche Idee (16. November 2026):** Ein erster, bewusst kleiner Umsetzungsschritt könnte **ohne Sprachsynthese und ohne fertiges Porträt** nur Warnmeldungen oben im Spielbild zeigen: fett, rot, in Großbuchstaben, etwa `MINEFIELD DETECTED`, wenn Minen gruppenweise erscheinen. Ein passendes Symbol oder später animiertes Avatarbild und Sprachausgabe bleiben Optionen. Vor Umsetzung passende Auslöseereignisse, Anzeigedauer und die Vermeidung wiederholter Warnungen festlegen. Der Entwickler beobachtet oft Minengruppen; Spawnverteilung und mögliche Frameabhängigkeit gesondert analysieren. Dies ist eine zukünftige Gestaltungsidee, **kein Releaseblocker oder Auftrag für unmittelbaren Code**.
+**Vorhandene Basis (Abgleich 20. November 2026):** Die Textwarnung `MINEFIELD DETECTED` und positive Upgrade-Meldungen sind umgesetzt und vom Entwickler funktional geprüft. Weitere avatarspezifische Symbole, ein animiertes Avatarbild oder Sprachausgabe bleiben Optionen. Weitere Warnfälle, Wiederholraten und Hilfeumfang gehören in die Releaseplanung; ein vollständiger Avatar ist damit noch nicht beschlossen.
 
 ### Aufgaben und Missionen
 
@@ -269,7 +269,7 @@ Das Projekt wird in kleinen, überschaubaren Schritten entwickelt.
 4. Änderungen einzeln planen und freigeben.
 5. Keine ungefragten Refaktorierungen.
 6. Nachvollziehbare Commits verwenden.
-7. Erkenntnisse dokumentieren; bei Chatwechsel `AGENTS.md`, `PROJECT.md`, `TECHNICAL.md` und `TODO.md` sowie den GitHub-HEAD als wiederlesbare Übergabe verwenden.
+7. Erkenntnisse am passenden Ort dokumentieren; bei Chatwechsel zuerst `AGENTS.md`, den kurzen `HANDOFF.md` und den aktuellen GitHub-HEAD lesen, danach nur aufgabenrelevante Fachabschnitte.
 
 Die Entwicklung erfolgt im Branch `develop`.
 
@@ -277,12 +277,15 @@ Der Branch `main` bleibt vorerst die Referenz für den bisherigen eingecheckten 
 
 ## 11. Projektdokumentation
 
-- `HANDOFF.md` – Direkter Einstieg für den Deployment-Chat, getesteter Stand und nächste Schritte
+- [HANDOFF.md](HANDOFF.md) – Kurzer Chatübergang, Evidenz und genau ein nächster Schritt
 - `README.md` – Öffentlicher Projekt-/Release-/Eingabestatus
 - `AGENTS.md` – Arbeitsregeln für Coding-Agenten
 - `PROJECT.md` – Spielkonzept, Projektgeschichte und Ziele
 - `TECHNICAL.md` – Technischer Aufbau und bestätigte Codebefunde
-- `TODO.md` – Aufgaben, bekannte Probleme und Meilensteine
+- [TODO.md](TODO.md) – Nur die unmittelbar nächsten Aufgaben
+- [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROADMAP.md) – Umfang und Abschlusskriterien dieses Releases; weitere Roadmaps erst bei konkreter Releaseplanung
+- [BACKLOG.md](BACKLOG.md) – Unverbindliche spätere Ideen
+- [Archiv](docs/archive/README.md) – Abgelöste Langfassungen zur gezielten Nachschau
 
 Unbestätigte Annahmen dürfen nicht als gesicherte Eigenschaften des Spiels dargestellt werden.
 
@@ -290,11 +293,12 @@ Unbestätigte Annahmen dürfen nicht als gesicherte Eigenschaften des Spiels dar
 
 - Endgültiger Spieltitel
 - Genauer Umfang der Alpha
-- Steuerungskonzept für HTML5
+- Weitergehende Browser-/Controller-Kompatibilität und spätere Bedienoptionen
 - Ablauf einer vollständigen Spielrunde
 - Konkrete Rolle des Anzugs bei einzelnen Fähigkeiten
 - Informationsavatar und dessen Darstellung
 - Mögliche Aufgaben und Missionen
 - Späteres Veröffentlichungs- und Versionsschema
 
-**Nächster Meilenstein:** **Alpha-Walker ist abgeschlossen.** Im neuen Chat direkt [HANDOFF.md](HANDOFF.md) lesen und HTML5-Pre-Alpha-Deployment fortsetzen: Export, Browser-/Gamepad-/Pause-/Tod-/Neustarttest, nur echte Blocker, Controls/README/itch.io und Upload mit Nachtest. Die am 16. November 2026 bestätigten Walker-/IK-/Grafikwerte bleiben Referenz.
+**Arbeitsplanung:** Aktueller Wiedereinstieg und nächster Schritt stehen in [HANDOFF.md](HANDOFF.md), der verbleibende Releaseumfang in [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROADMAP.md). Die akzeptierten Walker-/IK-/Grafikwerte bleiben Referenz.
+

@@ -108,10 +108,13 @@ Local developer tests and the **updated keyboard-enabled itch.io embedded smoke 
 ## Development and project notes
 
 - [HANDOFF.md](HANDOFF.md) — latest confirmed state and next development step
-- [TODO.md](TODO.md) — current pre-alpha checklist and deferred work
-- [PROJECT.md](PROJECT.md) — game concept, design goals and roadmap
+- [TODO.md](TODO.md) — only the next agreed tasks
+- [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROADMAP.md) — scope, progress and open decisions for this release
+- [BACKLOG.md](BACKLOG.md) — optional ideas without a release commitment
+- [PROJECT.md](PROJECT.md) — game concept and enduring design goals
 - [TECHNICAL.md](TECHNICAL.md) — implementation notes, technical evidence and earlier tests
 - [AGENTS.md](AGENTS.md) — repository collaboration rules
+- [Documentation archive](docs/archive/README.md) — superseded notes for specific historical questions
 - [AGK Knowledge Base](https://github.com/ChristianEngel19820128/agk-knowledge-base) — reusable AGK findings and experiments
 
 The project is developed in small, individually tested changes. The developer performs the actual AGK Studio compilation and Windows/HTML5 playtests; source analysis and documentation are tracked in Git.
@@ -119,3 +122,4 @@ The project is developed in small, individually tested changes. The developer pe
 ## License
 
 See [LICENSE](LICENSE).
+
