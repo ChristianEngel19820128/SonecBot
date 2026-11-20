@@ -6,7 +6,7 @@ Hier stehen nur unmittelbar nächste, gemeinsam zu bearbeitende Schritte. Höchs
 
 ## Jetzt
 
-- [ ] **D3b/1 – Laseraufladung lokal in AGK prüfen.** D3a-Farbtest am 21.11.2026 vom Entwickler mit **4/4 bestanden** bestätigt (Compile, dunkelgrüner Torso, rote Sensoren, eisblauer Scan). Neuer Stand: Torso testweise etwas heller (45/140/65/255); gelegentliches 900-ms-Anhalten mit drei grünen Ladeframes (30/255/60/190), links/rechts getrennt, keine Projektile oder Treffer. Sichttest: Compile, Aufladeposition und Richtung, Farbe, ruhende X-Position bei weiterlaufendem Wippen, Patrouille/Scan danach. Anschließend D3b/2: Laserprojektil und Trefferlogik.
+- [ ] **D3b/1 – Proportionstest der Laseraufladung:** Entwickler bestätigt den vorigen AGK-Test mit **6/6 bestanden** (Compile, drei grüne Ladephasen links/rechts, Position, X-Stillstand mit Wippen, Scan/Patrouille, helleres Torso-Grün). Screenshot-Bewertung: Ladekegel wirkt vertikal zu breit; temporär nur Lade-Sprites auf **70 % Y-Skalierung bei 100 % X** gesetzt, PNGs unverändert. Entwickler prüft die Wirkung und passt anschließend die Grafik selbst an. Danach D3b/2 Laserprojektil und Trefferlogik.
 
 Die Roadmap-Besprechung ist abgeschlossen. Das Paintball-Easter-Egg ist nach dem Windows-Sichttest vom Entwickler abgenommen. Detaillierte Alpha-Umsetzung folgt in Themenchats; eine feste Reihenfolge ist noch nicht beschlossen.
 
