@@ -73,7 +73,7 @@ Verbindlicher Planungsrahmen und Details: [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROA
 
 ## Genau ein nächster Schritt
 
-**Minenformationen in Chat A als nächsten kleinen Umsetzungsschritt konkretisieren:** Diagonale Linie mit variabler Anzahl, Abstand und Ausrichtung; linksgerichteter symmetrischer Keil mit ungerader Minenzahl. Rudel, Doppelreihe und umgekehrter Keil bleiben optional. E1c ist vom Entwickler lokal in AGK mit 7/7 bestätigt; keine gesonderte HTML5-Abnahme behaupten.
+**A1 – Variable diagonale Minenformation lokal in AGK prüfen:** `simplemine.agc` auf `develop` in [`96dce39`](https://github.com/ChristianEngel19820128/SonecBot/commit/96dce392d4b99aa511faaef5a6991e4ea51a8d51) erweitert: 2–4 Minen, horizontale Abstände 32–48, vertikale 48–72, beide Neigungen; Werte vorläufig. Mindestabstände, gemeinsamer Drift, Spawnlimit sechs, Intervall 18–30 Sekunden und vertikale Ränder erhalten. AGK-Test offen; anschließend symmetrischen linksgerichteten Keil umsetzen. Rudel/Doppelreihe optional.
 
 ## Weiterführende Dokumente
 
