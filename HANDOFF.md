@@ -53,6 +53,7 @@ Verbindlicher Planungsrahmen und Details: [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROA
 
 ## Letzter abgeschlossener Schritt
 
+- **A1/A2 – Minenformationen:** A1 (variable Diagonale, 2–4 Minen) vom Entwickler lokal in AGK mit **8/8 bestanden** bestätigt. A2 (linksgerichteter symmetrischer Keil mit 3/5 Minen) in [`252a320`](https://github.com/ChristianEngel19820128/SonecBot/commit/252a320bd39017bd3737dfcbf4a52cf4bf4266eb) umgesetzt und am 20.11.2026 vom Entwickler lokal in AGK mit **9/9 bestanden** bestätigt: Compile, beide Keilgrößen, Symmetrie, gemeinsame Bewegung, variable Abstände, Weltgrenzen, bestehende Diagonalen, maximal sechs aktive einfache Minen, Treffer/Kettenreaktionen. Keine Auffälligkeiten; kein eigener HTML5-Test gemeldet. Balancing vor Alpha-Release.
 - **E1c – Animierter Explosionsradius:** Code auf `develop` in [`3c8a8cf`](https://github.com/ChristianEngel19820128/SonecBot/commit/3c8a8cf8f28fc00c589b9c140786f60bbca7a610). Zufallsskalierung entfernt; drei typabhängige Maximalradien wachsen und schrumpfen mit der Animation. Entwickler meldet am 20.11.2026 **7/7 bestanden** im lokalen AGK-Test: Compile/Start, Animation, alle drei Typen, Sonec-Schaden, beide Minentypen, Kettenreaktionen, Kisten/Walker. Keine Auffälligkeiten; keine eigenständige HTML5-Prüfung gemeldet. Schadensbalancing bleibt vor dem Alpha-Release gesondert.
 
 ## Offene oder zurückgestellte Punkte
@@ -73,7 +74,7 @@ Verbindlicher Planungsrahmen und Details: [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROA
 
 ## Genau ein nächster Schritt
 
-**A2 – Linksgerichteten symmetrischen Minenkeil lokal in AGK testen:** `simplemine.agc` auf `develop` in [`252a320`](https://github.com/ChristianEngel19820128/SonecBot/commit/252a320bd39017bd3737dfcbf4a52cf4bf4266eb) ergänzt. Keil mit 3 oder 5 Minen, Spitze links, obere/untere Arme rechts, gemeinsamer Drift, zufällige Wahl zwischen Keil und bestehender Diagonale. Spawnlimit sechs, Timer 18–30 Sekunden und vertikale Randprüfung erhalten. AGK-Compile/Laufzeittest offen. A1 wurde vom Entwickler mit 8/8 abgenommen. Rudel/Doppelreihe optional.
+**Dritte Minenformation für Real Alpha gemeinsam auswählen und konkretisieren.** Diagonale (A1) und linksgerichteter Keil (A2) sind vom Entwickler in AGK abgenommen. Rudel/Doppelreihe bleiben bislang optionale Kandidaten; keine weitere Implementierung ohne Auswahl.
 
 ## Weiterführende Dokumente
 
