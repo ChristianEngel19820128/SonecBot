@@ -6,7 +6,7 @@ Hier stehen nur unmittelbar nächste, gemeinsam zu bearbeitende Schritte. Höchs
 
 ## Jetzt
 
-- [ ] **D2 – Wippen und seltene Richtungswechsel gezielt nachprüfen.** Erster AGK-Test: Compile, Patrouillengeschwindigkeit, Scanpause und Fortsetzung positiv; ±2-px-Wippen nicht sichtbar und keine zufälligen Richtungswechsel beobachtet, auch bei horizontaler Sonec-Nähe. Ursache/Beobachtbarkeit klären, dann kleine abgestimmte Anpassung. Scanpausenlänge später mit Scan-Effekt festlegen.
+- [ ] **D2.1 – Überzeichnetes Drohnenwippen lokal beurteilen.** Richtungswechsel inzwischen vom Entwickler bestätigt. Für einen reinen Sichttest sind auf `develop` vorübergehend ±8 px und ca. 3 s Wippperiode eingestellt (`6c0a37d`); nicht als Endwerte übernehmen. Danach kleinere Amplitude und ruhige Frequenz gemeinsam festlegen. Scanpausenlänge später mit Scan-Effekt abstimmen.
 
 Die Roadmap-Besprechung ist abgeschlossen. Das Paintball-Easter-Egg ist nach dem Windows-Sichttest vom Entwickler abgenommen. Detaillierte Alpha-Umsetzung folgt in Themenchats; eine feste Reihenfolge ist noch nicht beschlossen.
 
