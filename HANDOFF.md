@@ -74,7 +74,7 @@ Verbindlicher Planungsrahmen und Details: [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROA
 
 ## Genau ein nächster Schritt
 
-**Dritte Minenformation für Real Alpha gemeinsam auswählen und konkretisieren.** Diagonale (A1) und linksgerichteter Keil (A2) sind vom Entwickler in AGK abgenommen. Rudel/Doppelreihe bleiben bislang optionale Kandidaten; keine weitere Implementierung ohne Auswahl.
+**A3 – Zufälliges Minenrudel lokal in AGK testen.** `simplemine.agc` auf `develop` in [`74c7e9e`](https://github.com/ChristianEngel19820128/SonecBot/commit/74c7e9e34d1030fe66557ac86b0703f37b293975) erweitert: 3–6 Minen auf zufällig ausgewählten Positionen eines kompakten 2×3-Rasters mit kleinen Versätzen, gemeinsame Drift; zufällige Wahl zwischen Diagonale, Keil und Rudel. Spawnlimit sechs, Timer 18–30 Sekunden, vertikale Randprüfung und bestehende Treffermechanik unverändert. AGK-Compile/Laufzeittest offen. A1 (8/8) und A2 (9/9) bereits abgenommen.
 
 ## Weiterführende Dokumente
 
