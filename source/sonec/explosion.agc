@@ -138,9 +138,10 @@ function ExplosionNew(Explosion ref as TExplosion,ProtoExplosion ref as TProtoEx
 	
 	Explosion.SpriteData.Angle  = random(0,360)
 	Explosion.SpriteData.Center = TRUE
-	Explosion.SpriteData.Scale  = random(75,125)*0.01
+	Explosion.SpriteData.Scale  = 1.0
 	
-	Explosion.ObjectData.Radius = Explosion.ObjectData.Radius * Explosion.SpriteData.Scale
+	// The blast starts at zero and reaches the design radius halfway through the animation.
+	Explosion.ObjectData.Radius = 0
 	
 	select Explosion.ExplosionType
 		case 0
@@ -236,12 +237,26 @@ endfunction
 function ExplosionAnimateAll(ExplosionList ref as TExplosionList,ProtoExplosion ref as TProtoExplosion,Now as integer)
 
 	local i as integer
+	local FrameCount as integer
+	local Progress as float
+	local RadiusFactor as float
+	local MaxRadius as float
 	
 	for i = 0 to ExplosionList.Explosion.Length
 		if TimeGet(ExplosionList.Explosion[i].AnimationData.AnimTimer,Now) > 0
 			ExplosionList.Explosion[i].AnimationData.Frame = ExplosionList.Explosion[i].AnimationData.Frame +1
-			if ExplosionList.Explosion[i].AnimationData.Frame > ProtoExplosion.AnimExplosion[ExplosionList.Explosion[i].ExplosionType].Length
+			FrameCount = ProtoExplosion.AnimExplosion[ExplosionList.Explosion[i].ExplosionType].Length + 1
+			if ExplosionList.Explosion[i].AnimationData.Frame >= FrameCount
 				ExplosionDelete(ExplosionList,i)
+			else
+				// One shared growth/shrink curve, with each type's own design radius.
+				Progress = ExplosionList.Explosion[i].AnimationData.Frame * 1.0 / (FrameCount - 1)
+				RadiusFactor = 1.0 - abs(2.0 * Progress - 1.0)
+				MaxRadius = ExplosionList.Explosion[i].ObjectData.Size.Width * 0.5
+				if ExplosionList.Explosion[i].ObjectData.Size.Height > ExplosionList.Explosion[i].ObjectData.Size.Width
+					MaxRadius = ExplosionList.Explosion[i].ObjectData.Size.Height * 0.5
+				endif
+				ExplosionList.Explosion[i].ObjectData.Radius = MaxRadius * RadiusFactor
 			endif
 			if ExplosionList.Explosion[i].AnimationData.AnimTimer.Span > 15
 				TimeSet(ExplosionList.Explosion[i].AnimationData.AnimTimer,floor(ExplosionList.Explosion[i].AnimationData.AnimTimer.Span*0.9),1)
