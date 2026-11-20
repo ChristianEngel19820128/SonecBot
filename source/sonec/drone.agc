@@ -11,6 +11,9 @@
 #constant DRONE_SCAN_MIN_DURATION_MS 500
 #constant DRONE_SCAN_MAX_DURATION_MS 1000
 #constant DRONE_SCAN_NEAR_X 220
+#constant DRONE_CHARGE_MIN_INTERVAL_MS 4500
+#constant DRONE_CHARGE_MAX_INTERVAL_MS 8000
+#constant DRONE_CHARGE_DURATION_MS 900
 // D2.1 temporary visibility test: exaggerated hover, not final balancing.
 #constant DRONE_BOB_AMPLITUDE 8
 #constant DRONE_BOB_DEGREES_PER_MS 0.12
@@ -25,6 +28,11 @@ global DroneBaseY as float
 global DroneBobStartMs as integer
 global DroneScanStartMs as integer
 global DroneScanFrame as integer
+global DroneChargeActive as integer
+global DroneChargeStartMs as integer
+global DroneChargeUntilMs as integer
+global DroneNextChargeMs as integer
+global DroneChargeFrame as integer
 
 function DroneProtoLoad(ProtoDrone ref as TProtoDrone)
     ProtoDrone.Left.Image.File.Path = "/media/gfx/enemies/drone"
@@ -74,6 +82,18 @@ function DroneProtoLoad(ProtoDrone ref as TProtoDrone)
         SpriteLoad(ProtoDrone.ScanRight)
         SetSpriteAnimation(ProtoDrone.ScanRight.Sprite.ID,30,30,3)
     endif
+    ProtoDrone.ChargeLeft.Image.File.Path = "/media/gfx/enemies/drone"
+    ProtoDrone.ChargeLeft.Image.File.Name = "lasercharge_left.png"
+    if ImageLoad(ProtoDrone.ChargeLeft.Image) = TRUE
+        SpriteLoad(ProtoDrone.ChargeLeft)
+        SetSpriteAnimation(ProtoDrone.ChargeLeft.Sprite.ID,30,30,3)
+    endif
+    ProtoDrone.ChargeRight.Image.File.Path = "/media/gfx/enemies/drone"
+    ProtoDrone.ChargeRight.Image.File.Name = "lasercharge_right.png"
+    if ImageLoad(ProtoDrone.ChargeRight.Image) = TRUE
+        SpriteLoad(ProtoDrone.ChargeRight)
+        SetSpriteAnimation(ProtoDrone.ChargeRight.Sprite.ID,30,30,3)
+    endif
 endfunction
 
 function DroneInit(Drone ref as TDrone,Screen as TSize,World ref as TWorld,Now as integer)
@@ -88,6 +108,11 @@ function DroneInit(Drone ref as TDrone,Screen as TSize,World ref as TWorld,Now a
     DroneBobStartMs = Now
     DroneScanStartMs = 0
     DroneScanFrame = 1
+    DroneChargeActive = FALSE
+    DroneChargeStartMs = 0
+    DroneChargeUntilMs = 0
+    DroneNextChargeMs = Now + random(DRONE_CHARGE_MIN_INTERVAL_MS,DRONE_CHARGE_MAX_INTERVAL_MS)
+    DroneChargeFrame = 1
     TimeSet(DroneMotionTimer,10,10)
     TimeReset(DroneMotionTimer,Now)
     DroneMotionLastMode = DroneMotionUseGate
@@ -136,6 +161,13 @@ function DroneMove(Drone ref as TDrone,Screen as TSize,SonecX as float,Now as in
         // Slow physical hover: the drawn sprite and future collision use the same Y.
         Drone.Position.y = DroneBaseY + sin((Now-DroneBobStartMs)*DRONE_BOB_DEGREES_PER_MS)*DRONE_BOB_AMPLITUDE
 
+        if DroneChargeActive = TRUE
+            if Now >= DroneChargeUntilMs
+                DroneChargeActive = FALSE
+                DroneNextChargeMs = Now + random(DRONE_CHARGE_MIN_INTERVAL_MS,DRONE_CHARGE_MAX_INTERVAL_MS)
+            endif
+        endif
+
         if DroneScanActive = TRUE
             if Now >= DroneScanUntilMs
                 DroneScanActive = FALSE
@@ -154,7 +186,7 @@ function DroneMove(Drone ref as TDrone,Screen as TSize,SonecX as float,Now as in
                 endif
             endif
         else
-            if Drone.IsTurning = FALSE and Now >= DroneNextScanMs
+            if DroneChargeActive = FALSE and Drone.IsTurning = FALSE and Now >= DroneNextScanMs
                 DroneScanActive = TRUE
                 DroneScanStartMs = Now
                 DroneScanFrame = 1
@@ -162,9 +194,24 @@ function DroneMove(Drone ref as TDrone,Screen as TSize,SonecX as float,Now as in
             endif
         endif
 
+        if DroneChargeActive = FALSE and DroneScanActive = FALSE and Drone.IsTurning = FALSE and Now >= DroneNextChargeMs
+            DroneChargeActive = TRUE
+            DroneChargeStartMs = Now
+            DroneChargeUntilMs = Now+DRONE_CHARGE_DURATION_MS
+            DroneChargeFrame = 1
+        endif
+
+        if DroneChargeActive = TRUE
+            DroneChargeFrame = 1 + (Now-DroneChargeStartMs)/300
+            if DroneChargeFrame > 3 then DroneChargeFrame = 3
+        endif
+
         if DroneScanActive = TRUE
             DroneScanFrame = 1 + Mod((Now-DroneScanStartMs)/150,3)
             // Stationary scan; the center view is a temporary visual placeholder.
+        else
+        if DroneChargeActive = TRUE
+            // Hold horizontal position during the charge.
         else
         if Drone.IsTurning = TRUE
             if Now >= Drone.TurnUntilMs
@@ -188,6 +235,7 @@ function DroneMove(Drone ref as TDrone,Screen as TSize,SonecX as float,Now as in
                     Drone.Direction = MOVELEFT
                 endif
             endif
+        endif
         endif
         endif
     endif
@@ -233,8 +281,26 @@ function DroneDraw(Drone ref as TDrone,ProtoDrone ref as TProtoDrone,World ref a
 
             // D3a color test: tint torso and sensors independently, without editing PNGs.
             TorsoData = Drone.SpriteData
-            ColorSet(TorsoData.Color,35,110,55,255)
+            ColorSet(TorsoData.Color,45,140,65,255)
             SpriteDraw(ProtoDrone.Torso.Sprite,TorsoData)
+
+            if DroneChargeActive = TRUE
+                EffectData = Drone.SpriteData
+                ColorSet(EffectData.Color,30,255,60,190)
+                if Drone.Direction = MOVELEFT
+                    EffectData.Position.x = EffectData.Position.x-28
+                    if ProtoDrone.ChargeLeft.Sprite.ID > 0
+                        SetSpriteFrame(ProtoDrone.ChargeLeft.Sprite.ID,DroneChargeFrame)
+                        SpriteDraw(ProtoDrone.ChargeLeft.Sprite,EffectData)
+                    endif
+                else
+                    EffectData.Position.x = EffectData.Position.x+28
+                    if ProtoDrone.ChargeRight.Sprite.ID > 0
+                        SetSpriteFrame(ProtoDrone.ChargeRight.Sprite.ID,DroneChargeFrame)
+                        SpriteDraw(ProtoDrone.ChargeRight.Sprite,EffectData)
+                    endif
+                endif
+            endif
 
             SensorData = Drone.SpriteData
             ColorSet(SensorData.Color,230,45,45,255)
