@@ -753,6 +753,7 @@ type TProtoDrone
     ScanRight as TProtoData
     ChargeLeft as TProtoData
     ChargeRight as TProtoData
+    Laser as TProtoData
 endtype
 
 type TDrone
