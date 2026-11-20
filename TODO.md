@@ -6,7 +6,7 @@ Hier stehen nur unmittelbar nächste, gemeinsam zu bearbeitende Schritte. Höchs
 
 ## Jetzt
 
-- [ ] **D2.1 – Überzeichnetes Drohnenwippen lokal beurteilen.** Richtungswechsel inzwischen vom Entwickler bestätigt. Für einen reinen Sichttest sind auf `develop` vorübergehend ±8 px und ca. 3 s Wippperiode eingestellt (`6c0a37d`); nicht als Endwerte übernehmen. Danach kleinere Amplitude und ruhige Frequenz gemeinsam festlegen. Scanpausenlänge später mit Scan-Effekt abstimmen.
+- [ ] **D3 – Drohnen-Laserangriff als nächsten kleinen Schritt konkretisieren.** D2.1-Sichttest erfolgreich: ±8 px Wippen gut wahrnehmbar und fast passend; Amplitude beibehalten, Periodendauer derzeit ca. 3 s, beim nächsten Schritt eventuell auf 4–5 s erhöhen. Scanpausenlänge erst mit Scan-Effekt anpassen. Vor Codeänderungen Angriff/Aufladung und Assets abstimmen.
 
 Die Roadmap-Besprechung ist abgeschlossen. Das Paintball-Easter-Egg ist nach dem Windows-Sichttest vom Entwickler abgenommen. Detaillierte Alpha-Umsetzung folgt in Themenchats; eine feste Reihenfolge ist noch nicht beschlossen.
 
