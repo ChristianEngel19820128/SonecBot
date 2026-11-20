@@ -6,7 +6,7 @@ Hier stehen nur unmittelbar nächste, gemeinsam zu bearbeitende Schritte. Höchs
 
 ## Jetzt
 
-- [ ] **A2 – Symmetrischen linksgerichteten Minenkeil umsetzen und lokal in AGK testen.** Ungerade Minenzahl, eine Spitze links, spiegelgleiche Arme rechts, gemeinsame Bewegung, Weltgrenzen und bestehende Spawnbegrenzung erhalten.
+- [ ] **A2 – Linksgerichteten Minenkeil lokal in AGK testen.** Auf `develop` umgesetzt (`252a320`): 3 oder 5 Minen, symmetrische Arme rechts, gemeinsame Drift, zufälliger Wechsel mit der Diagonale. Compile, Geometrie, Weltgrenzen, Spawnlimit, Kollisionen und Kettenreaktionen prüfen.
 
 Die Roadmap-Besprechung ist abgeschlossen. Das Paintball-Easter-Egg ist nach dem Windows-Sichttest vom Entwickler abgenommen. Detaillierte Alpha-Umsetzung folgt in Themenchats; eine feste Reihenfolge ist noch nicht beschlossen.
 
