@@ -223,6 +223,20 @@ function EnergieCollect(EnergieList ref as TEnergieList,Sonec ref as TSonec,Warn
 						if Sonec.MGun.FireBurstMax < Sonec.MGun.FireBurstLimit
 							Sonec.MGun.FireBurstMax  = Sonec.MGun.FireBurstMax +1
 							WarningShowPositive(Warning,"BURST UPGRADE",6000,Now)
+						else
+							// Once burst is capped, apply the existing fire-rate upgrade instead.
+							if Sonec.MGun.FireRate > 400
+								Sonec.MGun.FireRate = Sonec.MGun.FireRate -1
+								WarningShowPositive(Warning,"FIRE RATE UPGRADE",6000,Now)
+							endif
+							if Sonec.MGun.FireBurstRate > 120
+								Sonec.MGun.FireBurstRate = Sonec.MGun.FireBurstRate -1
+								if Sonec.MGun.FireRate <= 400
+									WarningShowPositive(Warning,"FIRE RATE UPGRADE",6000,Now)
+								endif
+							endif
+							TimeSet(Sonec.MGun.FireTimer,Sonec.MGun.FireRate,1)
+							TimeSet(Sonec.MGun.FireBurstTimer,Sonec.MGun.FireBurstRate,1)
 						endif
 					endcase
 					case 6
