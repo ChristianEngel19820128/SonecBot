@@ -827,6 +827,8 @@ type TMenuOrb
     Y as float
     Speed as float
     Size as float
+    SpeedX as float
+    NextSteerMs as integer
 endtype
 
 type TMenuPaint

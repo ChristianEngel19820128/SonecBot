@@ -39,6 +39,8 @@ function IntroPaintUpdate(Intro ref as TIntro,Now as integer)
             Intro.Orbs[FreeSlot].Y = Intro.MenuHeight+30
             Intro.Orbs[FreeSlot].Size = Random(12,18)
             Intro.Orbs[FreeSlot].Speed = Random(18,48)*0.001
+            Intro.Orbs[FreeSlot].SpeedX = Random(-35,35)*0.001
+            Intro.Orbs[FreeSlot].NextSteerMs = Now+Random(180,450)
         endif
         Intro.NextOrbMs = Now+Random(600,1400)
     endif
@@ -46,6 +48,28 @@ function IntroPaintUpdate(Intro ref as TIntro,Now as integer)
     if Delta > 60 then Delta = 60
     for i = 0 to MENU_ORB_COUNT-1
         if Intro.Orbs[i].Enabled = TRUE
+            // Every few moments randomly accelerate or decelerate horizontally.
+            // SpeedX is in virtual pixels per millisecond, including direction.
+            if Now >= Intro.Orbs[i].NextSteerMs
+                if Random(0,1) = 0
+                    Intro.Orbs[i].SpeedX = Intro.Orbs[i].SpeedX-Random(5,18)*0.001
+                else
+                    Intro.Orbs[i].SpeedX = Intro.Orbs[i].SpeedX+Random(5,18)*0.001
+                endif
+                if Intro.Orbs[i].SpeedX > 0.09 then Intro.Orbs[i].SpeedX = 0.09
+                if Intro.Orbs[i].SpeedX < -0.09 then Intro.Orbs[i].SpeedX = -0.09
+                Intro.Orbs[i].NextSteerMs = Now+Random(180,450)
+            endif
+            Intro.Orbs[i].X = Intro.Orbs[i].X+Intro.Orbs[i].SpeedX*Delta
+            // Bounce off the menu edges instead of disappearing sideways.
+            if Intro.Orbs[i].X < Intro.Orbs[i].Size*0.5
+                Intro.Orbs[i].X = Intro.Orbs[i].Size*0.5
+                Intro.Orbs[i].SpeedX = Abs(Intro.Orbs[i].SpeedX)
+            endif
+            if Intro.Orbs[i].X > Intro.MenuWidth-Intro.Orbs[i].Size*0.5
+                Intro.Orbs[i].X = Intro.MenuWidth-Intro.Orbs[i].Size*0.5
+                Intro.Orbs[i].SpeedX = -Abs(Intro.Orbs[i].SpeedX)
+            endif
             Intro.Orbs[i].Y = Intro.Orbs[i].Y-Intro.Orbs[i].Speed*Delta
             if Intro.Orbs[i].Y < -50 then Intro.Orbs[i].Enabled = FALSE
         endif
