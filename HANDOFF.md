@@ -69,7 +69,7 @@ Verbindlicher Planungsrahmen und Details: [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROA
 
 ## Genau ein nächster Schritt
 
-**Ersten Real-Alpha-Umsetzungsblock im passenden neuen Themenchat gemeinsam auswählen und konkretisieren.** Keine feste Themenreihenfolge beschlossen.
+**E1c – Explosionsradius in AGK lokal prüfen:** Auf `develop` wurde der zufällige Explosions-Skalierungsfaktor entfernt und ein gemeinsamer Radiusverlauf (0 % → 100 % bei halber Animation → 0 %) für alle drei Typen umgesetzt. Designmaxima bleiben typabhängig; Schaden und Trefferintervalle sind unverändert. Windows-/HTML5-Laufzeitprüfung steht aus. Danach erst Minenformationen weiter umsetzen.
 
 ## Weiterführende Dokumente
 
