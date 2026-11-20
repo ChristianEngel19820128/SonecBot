@@ -235,7 +235,7 @@ function GameDo(Game ref as TGame,Now as integer)
 	
 	// S3 simple formations run on the pause-aware virtual game clock.
 	SimpleMineSpawnDo(Game,Now)
-	DroneMove(Game.Drone,Game.Screen,Now)
+	DroneMove(Game.Drone,Game.Screen,Game.Sonec.ObjectData.Position.x,Now)
 	WarningUpdate(Game.Warning,Now)
 	
 	if MineCountAll(Game.MineList) < 15
