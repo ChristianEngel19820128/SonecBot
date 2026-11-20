@@ -70,13 +70,13 @@ function IntroPaintShoot(Intro ref as TIntro,X as float,Y as float)
                 endif
                 Frame = Random(0,MENU_PAINT_FRAMES-1)
                 if Frame = Intro.LastPaintFrame
-                    Frame = (Frame+1) mod MENU_PAINT_FRAMES
+                    Frame = Mod(Frame+1,MENU_PAINT_FRAMES)
                 endif
                 Intro.LastPaintFrame = Frame
                 Paint.SpriteID = CreateSprite(Intro.PaintImageID)
                 U1 = Frame*1.0/MENU_PAINT_FRAMES
                 U2 = (Frame+1)*1.0/MENU_PAINT_FRAMES
-                SetSpriteUV(Paint.SpriteID,U1,0,U2,1)
+                SetSpriteUV(Paint.SpriteID,U1,0,U2,0,U1,1,U2,1)
                 Size = Random(24,75)
                 SetSpriteSize(Paint.SpriteID,Size,Size)
                 SetSpriteOffset(Paint.SpriteID,Size*0.5,Size*0.5)
