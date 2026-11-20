@@ -745,6 +745,12 @@ type TProtoDrone
     Left as TProtoData
     Center as TProtoData
     Right as TProtoData
+    Torso as TProtoData
+    SensorLeft as TProtoData
+    SensorCenter as TProtoData
+    SensorRight as TProtoData
+    ScanLeft as TProtoData
+    ScanRight as TProtoData
 endtype
 
 type TDrone
