@@ -3,6 +3,7 @@
 #constant NOTICE_HEIGHT 58
 #constant NOTICE_TOP 13
 #constant NOTICE_MAX 4
+#constant NOTICE_QUEUE_MAX 64
 #constant NOTICE_GAP 8
 #constant NOTICE_LINE_HEIGHT 8
 #constant NOTICE_PREVIEW 1800
@@ -42,9 +43,12 @@ endfunction
 function WarningReset(Warning ref as TWarning)
     local i as integer
     Warning.Count = 0
+    Warning.OverflowCount = 0
     Warning.PickupStarStartMs = 0
     Warning.PickupStarUntilMs = 0
-    for i = 0 to NOTICE_MAX-1
+    for i = 0 to NOTICE_QUEUE_MAX-1
+        Warning.Notice[i].DurationMs = 0
+        Warning.Notice[i].RepeatCount = 0
         Warning.Notice[i].MessageString = ""
         Warning.Notice[i].UntilMs = 0
         Warning.Notice[i].PreviewUntilMs = 0
@@ -52,24 +56,35 @@ function WarningReset(Warning ref as TWarning)
     next i
 endfunction
 
-function WarningUpdate(Warning ref as TWarning,Now as integer)
-    local i as integer
+// Copy only message data: sprite/text IDs belong to fixed visible slots.
+function WarningCopy(Warning ref as TWarning,Destination as integer,Source as integer)
+    Warning.Notice[Destination].MessageString = Warning.Notice[Source].MessageString
+    Warning.Notice[Destination].Kind = Warning.Notice[Source].Kind
+    Warning.Notice[Destination].UntilMs = Warning.Notice[Source].UntilMs
+    Warning.Notice[Destination].PreviewUntilMs = Warning.Notice[Source].PreviewUntilMs
+    Warning.Notice[Destination].DurationMs = Warning.Notice[Source].DurationMs
+    Warning.Notice[Destination].RepeatCount = Warning.Notice[Source].RepeatCount
+endfunction
+
+function WarningRemove(Warning ref as TWarning,Index as integer)
     local k as integer
+    for k = Index to Warning.Count-2
+        WarningCopy(Warning,k,k+1)
+    next k
+    Warning.Count = Warning.Count-1
+endfunction
+
+function WarningUpdate(Warning ref as TWarning,Now as integer)
     Warning.Now = Now
-    i = 0
-    while i < Warning.Count
-        if Now >= Warning.Notice[i].UntilMs
-            for k = i to Warning.Count-2
-                Warning.Notice[k].MessageString = Warning.Notice[k+1].MessageString
-                Warning.Notice[k].Kind = Warning.Notice[k+1].Kind
-                Warning.Notice[k].UntilMs = Warning.Notice[k+1].UntilMs
-                Warning.Notice[k].PreviewUntilMs = Warning.Notice[k+1].PreviewUntilMs
-            next k
-            Warning.Count = Warning.Count-1
-        else
-            i = i+1
+    if Warning.Count > 0
+        if Now >= Warning.Notice[0].UntilMs
+            WarningRemove(Warning,0)
+            if Warning.Count > 0
+                // Waiting messages receive their full display duration on promotion.
+                Warning.Notice[0].UntilMs = Now+Warning.Notice[0].DurationMs
+            endif
         endif
-    endwhile
+    endif
 endfunction
 
 // Retain the original call signature for existing warning producers.
@@ -85,17 +100,52 @@ endfunction
 
 function WarningPush(Warning ref as TWarning,MessageString as string,Kind as integer,DurationMs as integer,Now as integer)
     local i as integer
-    if DurationMs > 0
-        WarningUpdate(Warning,Now)
-        if Warning.Count < NOTICE_MAX
-            i = Warning.Count
-            Warning.Notice[i].MessageString = MessageString
-            Warning.Notice[i].Kind = Kind
-            Warning.Notice[i].UntilMs = Now+DurationMs
-            Warning.Notice[i].PreviewUntilMs = Now+NOTICE_PREVIEW
-            Warning.Count = Warning.Count+1
+    local j as integer
+    if DurationMs <= 0 then exitfunction
+    WarningUpdate(Warning,Now)
+    // Merge identical events across active and waiting messages.
+    for i = 0 to Warning.Count-1
+        if Warning.Notice[i].Kind = Kind and Warning.Notice[i].MessageString = MessageString
+            Warning.Notice[i].RepeatCount = Warning.Notice[i].RepeatCount+1
+            if i = 0
+                Warning.Notice[i].UntilMs = Now+DurationMs
+            endif
+            exitfunction
+        endif
+    next i
+    // A new danger supersedes the current panel, including an older danger.
+    // N1b will animate this transition; for now it is immediate.
+    if Kind = 0 and Warning.Count > 0
+        WarningRemove(Warning,0)
+    endif
+    if Warning.Count >= NOTICE_QUEUE_MAX
+        // Prefer retaining danger messages if the queue is saturated.
+        j = -1
+        for i = Warning.Count-1 to 0 step -1
+            if Warning.Notice[i].Kind = 1 and j = -1 then j = i
+        next i
+        if j >= 0
+            WarningRemove(Warning,j)
+        else
+            Warning.OverflowCount = Warning.OverflowCount+1
+            exitfunction
         endif
     endif
+    i = Warning.Count
+    if Kind = 0
+        // Insert the new warning at the front, keeping waiting order intact.
+        for j = Warning.Count to 1 step -1
+            WarningCopy(Warning,j,j-1)
+        next j
+        i = 0
+    endif
+    Warning.Notice[i].MessageString = MessageString
+    Warning.Notice[i].Kind = Kind
+    Warning.Notice[i].DurationMs = DurationMs
+    Warning.Notice[i].RepeatCount = 1
+    Warning.Notice[i].UntilMs = Now+DurationMs
+    Warning.Notice[i].PreviewUntilMs = Now+NOTICE_PREVIEW
+    Warning.Count = Warning.Count+1
 endfunction
 
 function WarningDraw(Warning ref as TWarning)
@@ -106,6 +156,7 @@ function WarningDraw(Warning ref as TWarning)
     local b as integer
     y = NOTICE_TOP
     for i = 0 to Warning.Count-1
+        if i >= NOTICE_MAX then exit
         if Warning.Notice[i].Kind = 1
             r = 140
             g = 230
@@ -115,7 +166,7 @@ function WarningDraw(Warning ref as TWarning)
             g = 100
             b = 100
         endif
-        if i > 0 and Warning.Now >= Warning.Notice[i].PreviewUntilMs
+        if i > 0
             SetSpriteSize(Warning.Notice[i].BarSpriteID,NOTICE_WIDTH,NOTICE_LINE_HEIGHT)
             SetSpriteColor(Warning.Notice[i].BarSpriteID,r,g,b,240)
             SetSpritePosition(Warning.Notice[i].BarSpriteID,Warning.CenterX-NOTICE_WIDTH*0.5,y)
@@ -126,7 +177,11 @@ function WarningDraw(Warning ref as TWarning)
             SetSpriteColor(Warning.Notice[i].BarSpriteID,12,12,24,180)
             SetSpritePosition(Warning.Notice[i].BarSpriteID,Warning.CenterX-NOTICE_WIDTH*0.5,y)
             DrawSprite(Warning.Notice[i].BarSpriteID)
-            SetTextString(Warning.Notice[i].TextID,Warning.Notice[i].MessageString)
+            if Warning.Notice[i].RepeatCount > 1
+                SetTextString(Warning.Notice[i].TextID,Warning.Notice[i].MessageString+" x"+Str(Warning.Notice[i].RepeatCount))
+            else
+                SetTextString(Warning.Notice[i].TextID,Warning.Notice[i].MessageString)
+            endif
             SetTextColor(Warning.Notice[i].TextID,r,g,b,255)
             SetTextPosition(Warning.Notice[i].TextID,Warning.CenterX+20,y+NOTICE_HEIGHT*0.5-23*0.55)
             if Warning.Notice[i].Kind = 1

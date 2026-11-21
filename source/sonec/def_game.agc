@@ -733,13 +733,16 @@ type TNotice
     Kind as integer
     UntilMs as integer
     PreviewUntilMs as integer
+    DurationMs as integer
+    RepeatCount as integer
     TextID as integer
     BarSpriteID as integer
 endtype
 
 type TWarning
     Count as integer
-    Notice as TNotice[3]
+    OverflowCount as integer
+    Notice as TNotice[63]
     Icon as TProtoData
     IconData as TSpriteData
     StarIcon as TProtoData
