@@ -6,7 +6,7 @@ Hier stehen nur unmittelbar nächste, gemeinsam zu bearbeitende Schritte. Höchs
 
 ## Jetzt
 
-- [ ] **Bomber B2b – Fünfer-Bombenteppich lokal testen.** B2a **6/6 bestanden**. Neu: fünf unabhängige Bomben alle 250 ms, letzte ungefähr bei bisherigem B2a-Abwurf-X; Bomben hinter dem Spacejet zeichnen. Physik unverändert, noch ohne Kollision/Explosion/Schaden. Anzahl, Timing, Flugbahnen, Layering und Regressionen prüfen. Details in [HANDOFF.md](HANDOFF.md).
+- [ ] **Bomber B2b – früheren Abwurfbeginn lokal nachtesten.** Erster AGK-Test **6/7**: Nur die fünfte Bombe begann zu spät. Jetzt Bombe 1 abwerfen, sobald der Spacejet vollständig rechts sichtbar ist; weitere vier weiterhin im 250-ms-Abstand. Mittige räumliche Abdeckung prüfen; Physik, Layering und übrige Funktionen unverändert. Noch keine Kollision/Explosion/Schaden. Details in [HANDOFF.md](HANDOFF.md).
 
 **Drohne D1–D6 abgeschlossen:** D6-Funktionstest 8/8 lokal bestanden. Jetstream-Feinschliff (30 ms, Skalierung 0,65, Auslässe −10/0/+10 px, Y+13 px) zuletzt per Screenshot optisch bestätigt; kein erneuter vollständiger Funktionstest nach der letzten Höhenkorrektur. Chat B ersetzt später den provisorischen Spawn-Timer. Testdetails stehen in [HANDOFF.md](HANDOFF.md).
 

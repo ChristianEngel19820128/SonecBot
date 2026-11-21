@@ -95,7 +95,7 @@ Verbindlicher Planungsrahmen und Details: [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROA
 
 ## Genau ein nächster Schritt
 
-**Bomber B2b – Fünfer-Bombenteppich lokal in AGK/Windows testen.** B2a vom Entwickler mit **6/6 bestanden** bestätigt. B2b im Code: fünf unabhängige Bomben im 250-ms-Abstand, erste Freigabe ca. 400 px rechts der früheren B2a-Abwurfposition; die fünfte startet ungefähr bei der bisherigen Bildschirmmitte. Flugphysik und Rotation je Bombe wie B2a. Bomben werden **vor** dem Spacejet gezeichnet, sodass er sie verdecken kann. Noch keine Kollision, Explosion oder Schaden. Compile, Anzahl, Abstände, Flugbahnen, Sichtbarkeit und Regressionen lokal prüfen. Drohnen-Jetstream erst nach Bomberabschluss; `main` unberührt.
+**Bomber B2b – Abwurfbeginn korrigiert, AGK-Nachtest offen.** Entwickler meldet **6/7 bestanden**: Compile, fünf Bomben, ca. 250-ms-Abstände, unabhängige Physik/Rotation, Layering hinter Spacejet und Regressionen bestätigt. Die letzte Bombe begann zu spät; Ziel ist ein mittig abgedeckter Spielbereich. **Kleine Korrektur im Code:** Erste Bombe wird abgeworfen, sobald der Spacejet vollständig rechts im Bild ist (`Screen.Width − halbe Spritebreite`); weitere vier folgen alle 250 ms. Physik, Rotation und Zeichenreihenfolge unverändert. Noch keine Kollision, Explosion oder Schaden. Nachtest: Abwurfbeginn und räumliche Abdeckung beobachten; erst danach ggf. Timing geringfügig anpassen. Drohnen-Jetstream erst nach Bomberabschluss; `main` unberührt.
 
 ## Weiterführende Dokumente
 
