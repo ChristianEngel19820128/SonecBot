@@ -440,7 +440,7 @@ function GameDraw(Game ref as TGame)
 	WalkerDrawAll(Game.WalkerList,Game.ProtoWalker,Game.World)
 	
 	InenergieDraw(Game.Inenergie,Game.ProtoInenergie)
-	JetfireDrawAll(Game.JetfireList,Game.ProtoJetfire)
+	JetfireDrawAll(Game.JetfireList,Game.ProtoJetfire,Game.World)
 	FlameDrawAll(Game.FlameList,Game.ProtoFlame)
 	BulletDrawAll(Game.BulletList,Game.ProtoBullet)
 	GrenadeDrawAll(Game.GrenadeList,Game.ProtoGrenade)

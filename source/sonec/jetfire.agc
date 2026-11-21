@@ -150,9 +150,11 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function JetfireDraw(Jetfire ref as TJetfire,ProtoJetfire ref as TProtoJetfire)
+function JetfireDraw(Jetfire ref as TJetfire,ProtoJetfire ref as TProtoJetfire,World ref as TWorld)
 	
 	if Jetfire.Enabled = TRUE
+		// Recalculate from world coordinates each frame as the camera moves.
+		SpritePositionCalc(Jetfire.SpriteData.Position,Jetfire.ObjectData.Position,World.Position)
 		SpriteDraw(ProtoJetfire.AnimJetfire.Sprite,Jetfire.SpriteData)
 	endif
 	
@@ -162,12 +164,12 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function JetfireDrawAll(JetfireList ref as TJetfireList,ProtoJetfire ref as TProtoJetfire)
+function JetfireDrawAll(JetfireList ref as TJetfireList,ProtoJetfire ref as TProtoJetfire,World ref as TWorld)
 	
 	local i as integer
 	
 	for i = 0 to JetfireList.Jetfire.Length
-		JetfireDraw(JetfireList.Jetfire[i],ProtoJetfire)
+		JetfireDraw(JetfireList.Jetfire[i],ProtoJetfire,World)
 	next i
 	
 endfunction
