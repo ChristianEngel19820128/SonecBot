@@ -1,6 +1,6 @@
 # SonecBot – Aktuelle Übergabe
 
-**Stand:** 20. November 2026 · **Arbeitszweig:** `develop`
+**Stand:** 21. November 2026 · **Arbeitszweig:** `develop`
 
 Diese Datei ermöglicht den nächsten Chatwechsel. Sie wird aktualisiert und gekürzt, nicht um Chatprotokolle erweitert.
 
@@ -37,6 +37,13 @@ Zusätzlich in dieser Runde umgesetzt:
 - Health-Regenerations-Upgrade-Timer, Boden-Laufgeschwindigkeitsbegrenzung/Bremsen und FIFO-Nachrichten mit Upgrade-Feedback korrigiert bzw. ergänzt.
 - Mintfarbener Upgrade-Stern; ausgeschöpfte Burst-Pickups wechseln zu Fire-Rate-Upgrades.
 - Paintball-Easter-Egg im Hauptmenü mit anklickbaren Energie-Orbs, bleibenden Spritzflecken und animierten Laufspuren.
+
+## Aktueller Drohnenstand (21.11.2026)
+
+- D1–D3c lokal vom Entwickler abgenommen; D3c/2 mit **6/6 bestanden**. Laser verursacht testweise 20 Schaden unter Nutzung der bestehenden Schildabsorption; endgültiges Balancing später.
+- **D4a – Spawn** vom Entwickler mit **6/6 bestanden** bestätigt (lokaler Windows-/AGK-Test): kein automatischer Spawn bei Spielstart; F6-Testspawn von beiden Bildschirmseiten, keine zweite aktive Drohne, Patrouille/Scan/Laden/Laser/Schaden unverändert; keine Auffälligkeiten.
+- Der **temporäre F6-Testhook ist nach der Abnahme entfernt**. `DroneSpawn` in `source/sonec/drone.agc` bleibt für spätere Aufrufe erhalten. Chat B regelt Wellen/Anzahl; die Drohnenfunktion prüft Position und aktiviert höchstens eine Drohne. Umfassende Hindernisprüfung und Mehrfachdrohnen sind noch nicht implementiert.
+- **Nächster Schritt:** gemeinsame Festlegung der nächsten Drohnen-Ausbaustufe; kein automatischer Spawn-Timer in diesem Modul.
 
 ## Bestätigte Alpha-Planung
 
