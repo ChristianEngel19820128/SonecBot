@@ -6,7 +6,7 @@ Hier stehen nur unmittelbar nächste, gemeinsam zu bearbeitende Schritte. Höchs
 
 ## Jetzt
 
-- [ ] **D6 – Drei Drohnen-Jetstreams lokal testen.** Die drei unteren Auslässe nutzen Sonecs vorhandenen Jetfire-Effekt, alle 30 ms je ein Partikel pro Auslass. Prüfen: Compile, drei sichtbare Ströme, Mitbewegung/Schweben, Pause, Zerstörung, Respawn und keine Beeinträchtigung von Sonecs Flugstrahl. Die Jetfire-Partikel verblassen regulär nach Abschuss.
+- [ ] **D6 – Jetstream-Feinabstimmung nach Screenshot.** Funktionstest vom Entwickler mit **8/8 bestanden** bestätigt. Beobachtungen: Partikel erscheinen möglicherweise zu dicht (aktuell 30 ms), äußere Strahlen sitzen etwas zu weit außen (aktuell −14/0/+14 px). Auf angekündigtes Bild warten; erst danach Position und Takt gezielt anpassen.
 
 **Drohne D1–D5c vorerst abgeschlossen.** D5c vom Entwickler mit **8/8 bestanden** bestätigt: Compile, Trefferblinken, einmalige Zerstörungsexplosion, sauberes Aufräumen, volle Gesundheit beim Respawn, wiederholte Zyklen, keine unerwünschten Explosionsschäden und keine Langzeitauffälligkeiten. Farbabgleich nach D5c: Drohnen-Trefferfeedback an Rumpf, Sensoren und Fallback auf Standardrot RGB (255,0,0) gesetzt; Farbänderung vom Entwickler visuell bestätigt. Kein weiterer Drohnen-Codeauftrag; Chat B übernimmt später die Spawnsteuerung.
 
