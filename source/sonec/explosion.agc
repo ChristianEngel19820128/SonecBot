@@ -104,6 +104,8 @@ endfunction
 function ExplosionNew(Explosion ref as TExplosion,ProtoExplosion ref as TProtoExplosion,Game ref as TGame,ExplosionType as integer,Position ref as TPosition,Now as integer)
 
 	Explosion.Enabled = TRUE
+    Explosion.LimitDamageBelowY = FALSE
+    Explosion.DamageMaxY = 0
 	Explosion.MeasureStartMs = GetMilliseconds()
 	Explosion.LastSonecHitMs = 0
 	Explosion.LastDroneHitMs = 0
@@ -187,32 +189,40 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function ExplosionAdd(ExplosionList ref as TExplosionList,ProtoExplosion ref as TProtoExplosion,Game ref as TGame,ExplosionType as integer,Position ref as TPosition,Now as integer)
-	
-	local Found as integer
-	local i as integer
-	local Explosion as TExplosion
-	
-	ExplosionNew(Explosion,ProtoExplosion,Game,ExplosionType,Position,Now)
-	
-	Found = FALSE
-	i = ExplosionList.FirstFree
-	while Found = FALSE and i <= ExplosionList.Explosion.Length
-		if ExplosionList.Explosion[i].Enabled = FALSE
-			Found = TRUE
-		else
-			i = i+1
-		endif
-	endwhile
-	
-	if Found = FALSE
-		ExplosionList.Explosion.Insert(Explosion)
-		ExplosionList.FirstFree = ExplosionList.Explosion.Length
-	else
-		ExplosionList.Explosion[i] = Explosion
-		ExplosionList.FirstFree = i+1
-	endif
+function ExplosionInsert(ExplosionList ref as TExplosionList,Explosion ref as TExplosion)
+    local Found as integer
+    local i as integer
+    Found = FALSE
+    i = ExplosionList.FirstFree
+    while Found = FALSE and i <= ExplosionList.Explosion.Length
+        if ExplosionList.Explosion[i].Enabled = FALSE
+            Found = TRUE
+        else
+            i = i+1
+        endif
+    endwhile
+    if Found = FALSE
+        ExplosionList.Explosion.Insert(Explosion)
+        ExplosionList.FirstFree = ExplosionList.Explosion.Length
+    else
+        ExplosionList.Explosion[i] = Explosion
+        ExplosionList.FirstFree = i+1
+    endif
+endfunction
 
+function ExplosionAdd(ExplosionList ref as TExplosionList,ProtoExplosion ref as TProtoExplosion,Game ref as TGame,ExplosionType as integer,Position ref as TPosition,Now as integer)
+    local Explosion as TExplosion
+    ExplosionNew(Explosion,ProtoExplosion,Game,ExplosionType,Position,Now)
+    ExplosionInsert(ExplosionList,Explosion)
+endfunction
+
+// Only bomb impacts opt into this world-space damage boundary.
+function ExplosionAddAboveY(ExplosionList ref as TExplosionList,ProtoExplosion ref as TProtoExplosion,Game ref as TGame,ExplosionType as integer,Position ref as TPosition,MaxY as float,Now as integer)
+    local Explosion as TExplosion
+    ExplosionNew(Explosion,ProtoExplosion,Game,ExplosionType,Position,Now)
+    Explosion.LimitDamageBelowY = TRUE
+    Explosion.DamageMaxY = MaxY
+    ExplosionInsert(ExplosionList,Explosion)
 endfunction
 
 //----------------------------------------------------------------------
@@ -281,7 +291,7 @@ function ExplosionCollideSonec(ExplosionList ref as TExplosionList,Sonec ref as 
 		if ExplosionList.Explosion[i].Enabled = TRUE
 			ExplosionList.Explosion[i].MeasureChecks = ExplosionList.Explosion[i].MeasureChecks + 1
 			Radius = CalcRadius(ExplosionList.Explosion[i].ObjectData.Position,Sonec.ObjectData.Position)
-			if Radius < ExplosionList.Explosion[i].ObjectData.Radius
+			if Radius < ExplosionList.Explosion[i].ObjectData.Radius and (ExplosionList.Explosion[i].LimitDamageBelowY = FALSE or Sonec.ObjectData.Position.y <= ExplosionList.Explosion[i].DamageMaxY)
 				if EXPLOSION_TIMED_DAMAGE = 0 or ExplosionList.Explosion[i].LastSonecHitMs = 0 or GetMilliseconds()-ExplosionList.Explosion[i].LastSonecHitMs >= EXPLOSION_DAMAGE_INTERVAL_MS
 					ExplosionList.Explosion[i].LastSonecHitMs = GetMilliseconds()
 					ExplosionList.Explosion[i].MeasureHits = ExplosionList.Explosion[i].MeasureHits + 1
@@ -312,7 +322,7 @@ function ExplosionCollideChest(ExplosionList ref as TExplosionList,ChestList ref
 			for k = 0 to ChestList.Chest.Length
 				if ChestList.Chest[k].Enabled = TRUE
 					Radius = CalcRadius(ExplosionList.Explosion[i].ObjectData.Position,ChestList.Chest[k].ObjectData.Position)
-					if Radius < ExplosionList.Explosion[i].ObjectData.Radius
+					if Radius < ExplosionList.Explosion[i].ObjectData.Radius and (ExplosionList.Explosion[i].LimitDamageBelowY = FALSE or ChestList.Chest[k].ObjectData.Position.y <= ExplosionList.Explosion[i].DamageMaxY)
 						if ExplosionList.Explosion[i].LastChestHitMs.Length < k
 							ExplosionList.Explosion[i].LastChestHitMs.Length = k
 						endif
@@ -344,7 +354,7 @@ function ExplosionCollideOrb(ExplosionList ref as TExplosionList,OrbList ref as 
 			for k = 0 to OrbList.Orb.Length
 				if OrbList.Orb[k].Enabled = TRUE
 					Radius = CalcRadius(ExplosionList.Explosion[i].ObjectData.Position,OrbList.Orb[k].ObjectData.Position)
-					if Radius < ExplosionList.Explosion[i].ObjectData.Radius
+					if Radius < ExplosionList.Explosion[i].ObjectData.Radius and (ExplosionList.Explosion[i].LimitDamageBelowY = FALSE or OrbList.Orb[k].ObjectData.Position.y <= ExplosionList.Explosion[i].DamageMaxY)
 						if ExplosionList.Explosion[i].LastOrbHitMs.Length < k
 							ExplosionList.Explosion[i].LastOrbHitMs.Length = k
 						endif
@@ -380,7 +390,7 @@ function ExplosionCollideMine(ExplosionList ref as TExplosionList,MineList ref a
 			for k = 0 to MineList.Mine.Length
 				if MineList.Mine[k].Enabled = TRUE
 					Radius = CalcRadius(ExplosionList.Explosion[i].ObjectData.Position,MineList.Mine[k].ObjectData.Position)
-					if Radius < ExplosionList.Explosion[i].ObjectData.Radius
+					if Radius < ExplosionList.Explosion[i].ObjectData.Radius and (ExplosionList.Explosion[i].LimitDamageBelowY = FALSE or MineList.Mine[k].ObjectData.Position.y <= ExplosionList.Explosion[i].DamageMaxY)
 						HitNow = GetMilliseconds()
 						HitAllowed = FALSE
 						if IsSimpleMine = 1
@@ -433,7 +443,7 @@ function ExplosionCollideWalkers(ExplosionList ref as TExplosionList,WalkerList 
 					if NearestPoint.x > WalkerList.Walker[k].WalkerCollisionData.Tower.Position2.x then NearestPoint.x = WalkerList.Walker[k].WalkerCollisionData.Tower.Position2.x
 					if NearestPoint.y < WalkerList.Walker[k].WalkerCollisionData.Tower.Position1.y then NearestPoint.y = WalkerList.Walker[k].WalkerCollisionData.Tower.Position1.y
 					if NearestPoint.y > WalkerList.Walker[k].WalkerCollisionData.Tower.Position2.y then NearestPoint.y = WalkerList.Walker[k].WalkerCollisionData.Tower.Position2.y
-					if CalcRadius(ExplosionList.Explosion[i].ObjectData.Position,NearestPoint) < ExplosionList.Explosion[i].ObjectData.Radius
+					if CalcRadius(ExplosionList.Explosion[i].ObjectData.Position,NearestPoint) < ExplosionList.Explosion[i].ObjectData.Radius and (ExplosionList.Explosion[i].LimitDamageBelowY = FALSE or NearestPoint.y <= ExplosionList.Explosion[i].DamageMaxY)
 						if ExplosionList.Explosion[i].LastWalkerHitMs.Length < k
 							ExplosionList.Explosion[i].LastWalkerHitMs.Length = k
 						endif
@@ -466,7 +476,7 @@ function ExplosionCollideDrone(ExplosionList ref as TExplosionList,Drone ref as 
             if NearestPoint.x > Drone.Position.x+23 then NearestPoint.x = Drone.Position.x+23
             if NearestPoint.y < Drone.Position.y-15 then NearestPoint.y = Drone.Position.y-15
             if NearestPoint.y > Drone.Position.y+15 then NearestPoint.y = Drone.Position.y+15
-            if CalcRadius(ExplosionList.Explosion[i].ObjectData.Position,NearestPoint) < ExplosionList.Explosion[i].ObjectData.Radius
+            if CalcRadius(ExplosionList.Explosion[i].ObjectData.Position,NearestPoint) < ExplosionList.Explosion[i].ObjectData.Radius and (ExplosionList.Explosion[i].LimitDamageBelowY = FALSE or NearestPoint.y <= ExplosionList.Explosion[i].DamageMaxY)
                 if EXPLOSION_TIMED_DAMAGE = 0 or ExplosionList.Explosion[i].LastDroneHitMs = 0 or GetMilliseconds()-ExplosionList.Explosion[i].LastDroneHitMs >= EXPLOSION_DAMAGE_INTERVAL_MS
                     ExplosionList.Explosion[i].LastDroneHitMs = GetMilliseconds()
                     DroneTakeDamage(Drone,ExplosionList.Explosion[i].BulletData.Damage)

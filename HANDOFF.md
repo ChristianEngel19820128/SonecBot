@@ -95,7 +95,7 @@ Verbindlicher Planungsrahmen und Details: [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROA
 
 ## Genau ein nächster Schritt
 
-**Bomber B2c – Plattform-Aufschlag und Explosion lokal testen.** B2b vom Entwickler mit **6/6 bestanden** bestätigt, zusätzlich drei Screenshots: fünf Bomben, 250-ms-Abstände, spawn-gekoppelter Abwurf und bessere mittige Abdeckung; B2b abgenommen. B2c erkennt das abwärts gerichtete Kreuzen der Plattformoberkante per interpoliertem X-Kontaktpunkt, deaktiviert die Bombe und erzeugt eine bestehende Typ-1-Explosion am Trefferpunkt. Physik und Timing unverändert. **Wichtig:** Die bestehende Explosion kann Schaden verursachen; Plattformabschirmung gegen Explosionsradius ist noch nicht implementiert, ebenso wenig direkte kinetische Treffer, Bombenabschuss und Bomberzerstörung. Lokal AGK testen: Compile, Oberkantenkontakt, eine Explosion pro Bombe, keine Durchdringung und Regressionen. Drohnen-Jetstream erst nach Bomberabschluss; `main` unberührt.
+**Bomber B2d – Schadensabschirmung durch Plattformoberkante lokal testen.** B2c vom Entwickler **6/6 bestanden**; Screenshot zeigt große Typ-1-Explosion. Neu: optionale Welt-Y-Schadensgrenze in der allgemeinen Explosion; nur Bomben-Aufschläge setzen sie auf die Plattformoberkante. Ziele darunter erhalten von diesen Explosionen keinen Radius-Schaden, andere Explosionen bleiben unverändert. **Visuelles Abschneiden noch nicht implementiert**, folgt separat. Direkter kinetischer Schaden, Bombenabschuss und Bomberzerstörung offen. Lokal Compile, Deckung und Regressionen prüfen. Drohnen-Jetstream nach Bomberabschluss; `main` unberührt.
 
 ## Weiterführende Dokumente
 

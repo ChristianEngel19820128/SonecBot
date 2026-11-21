@@ -265,7 +265,7 @@ function BomberBombCollidePlate(Bomber ref as TBomber,PlateList ref as TPlateLis
                             HitPosition.x = HitX
                             HitPosition.y = TopY
                             Bomber.Bomb[i].Enabled = FALSE
-                            ExplosionAdd(Game.ExplosionList,Game.ProtoExplosion,Game,1,HitPosition,Now)
+                            ExplosionAddAboveY(Game.ExplosionList,Game.ProtoExplosion,Game,1,HitPosition,TopY,Now)
                         endif
                     endif
                 endif

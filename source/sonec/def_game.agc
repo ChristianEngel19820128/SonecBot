@@ -594,6 +594,8 @@ type TProtoExplosion
 endtype
 
 type TExplosion
+    LimitDamageBelowY as integer
+    DamageMaxY as float
 	LastDroneHitMs as integer
 	LastSonecHitMs as integer
 	LastChestHitMs as integer[-1]

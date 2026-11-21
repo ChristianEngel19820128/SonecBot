@@ -6,7 +6,7 @@ Hier stehen nur unmittelbar nächste, gemeinsam zu bearbeitende Schritte. Höchs
 
 ## Jetzt
 
-- [ ] **Bomber B2c – Plattform-Aufschlag und Explosion lokal testen.** B2b **6/6 bestanden**, Screenshots optisch akzeptiert. Bomben treffen beim abwärts gerichteten Kreuzen die Plattformoberkante und erzeugen eine Typ-1-Explosion; pro Bombe nur einmal. Prüfen: Compile, Aufschlagposition, kein Durchfallen, Regressionen. Plattformen blockieren **noch nicht** Explosionsschaden; kinetische Treffer, Abschießen und Bomberzerstörung folgen separat. Details in [HANDOFF.md](HANDOFF.md).
+- [ ] **Bomber B2d – Plattformabschirmung lokal testen.** B2c **6/6 bestanden**. Bomben-Aufschlagexplosionen erhalten optionale Welt-Y-Schadensgrenze an Plattformoberkante; unterhalb kein Radius-Schaden, andere Explosionen unverändert. Sichtbares Abschneiden folgt später. Compile, Deckung und Regressionen prüfen. Details in [HANDOFF.md](HANDOFF.md).
 
 **Drohne D1–D6 abgeschlossen:** D6-Funktionstest 8/8 lokal bestanden. Jetstream-Feinschliff (30 ms, Skalierung 0,65, Auslässe −10/0/+10 px, Y+13 px) zuletzt per Screenshot optisch bestätigt; kein erneuter vollständiger Funktionstest nach der letzten Höhenkorrektur. Chat B ersetzt später den provisorischen Spawn-Timer. Testdetails stehen in [HANDOFF.md](HANDOFF.md).
 
