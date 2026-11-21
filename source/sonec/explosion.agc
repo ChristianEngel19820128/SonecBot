@@ -613,7 +613,8 @@ function ExplosionDraw(Explosion ref as TExplosion,ProtoExplosion ref as TProtoE
 
             ScreenWidth = GetVirtualWidth()
             ScreenHeight = GetVirtualHeight()
-            CutY = floor(Explosion.SpriteData.Position.y)
+            // Clip at the impacted platform top, not at the bomb/chest impact center.
+            CutY = floor(Explosion.DamageMaxY+Explosion.SpriteData.Position.y-Explosion.ObjectData.Position.y)
             LeftX = floor(Explosion.ImpactPlateLeftX+Explosion.SpriteData.Position.x-Explosion.ObjectData.Position.x)
             RightX = floor(Explosion.ImpactPlateRightX+Explosion.SpriteData.Position.x-Explosion.ObjectData.Position.x)
             if CutY < 0 then CutY = 0
