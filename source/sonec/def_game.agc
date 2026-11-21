@@ -871,7 +871,7 @@ type TGame
 	IsLost as integer
     TouchdownUntilMs as integer
     TouchdownNowMs as integer
-    TouchdownTextID as integer
+    TouchdownStarted as integer
 	
 	Gui as TGui
 	Warning as TWarning

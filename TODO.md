@@ -6,7 +6,7 @@ Hier stehen nur unmittelbar nächste, gemeinsam zu bearbeitende Schritte. Höchs
 
 ## Jetzt
 
-- [ ] **T1 – Touchdown-Countdown lokal testen.** Spawn X=Bildschirmbreite/4, Y=0; Anzeige 3→2→1 für 3 Sekunden; Sonec/Schild bis dahin unsichtbar, Eingaben und Simulation pausiert, danach normales Spiel. AGK-Compile, Pause und Regression prüfen.
+- [ ] **T2 – Countdown-Nachricht und Startbeschleunigung lokal testen.** T1 7/7 bestätigt; Countdown jetzt im bestehenden Warnfeld ohne Stapelung, separater Text entfernt, Sonec-Bewegungstimer beim Übergang zurückgesetzt. AGK-Compile, normale Fallbeschleunigung, Pause/Neustart und reguläre Warnmeldungen prüfen.
 
 **Drohne D1–D6 abgeschlossen:** D6-Funktionstest 8/8 lokal bestanden. Jetstream-Feinschliff (30 ms, Skalierung 0,65, Auslässe −10/0/+10 px, Y+13 px) zuletzt per Screenshot optisch bestätigt; kein erneuter vollständiger Funktionstest nach der letzten Höhenkorrektur. Chat B ersetzt später den provisorischen Spawn-Timer. Testdetails stehen in [HANDOFF.md](HANDOFF.md).
 

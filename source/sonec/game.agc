@@ -26,11 +26,6 @@ function GameCreate(Game ref as TGame,vx as integer,vy as integer)
 	SetTextPosition(Game.DebugText[1],10,55)
 	SetTextSize(Game.DebugText[1],16)
 	SetTextColor(Game.DebugText[1],255,255,255,255)
-	Game.TouchdownTextID = CreateText("")
-    SetTextAlignment(Game.TouchdownTextID,1)
-    SetTextPosition(Game.TouchdownTextID,Game.Screen.Width*0.5,Game.Screen.Height*0.4)
-    SetTextSize(Game.TouchdownTextID,28)
-    SetTextColor(Game.TouchdownTextID,255,255,255,255)
 	Game.IsLost = TRUE
 	Game.IsPause = FALSE
 	
@@ -125,6 +120,7 @@ function GameInit(Game ref as TGame,Now as integer)
 	Game.IsLost = FALSE
     Game.TouchdownUntilMs = Now+TOUCHDOWN_COUNTDOWN_MS
     Game.TouchdownNowMs = Now
+    Game.TouchdownStarted = FALSE
 
 	WorldInit(Game.World,Game.ProtoBackground,Game.Screen)
 	TowerInit(Game.TowerList)
@@ -198,8 +194,22 @@ function GameDo(Game ref as TGame,Now as integer)
 	local Index as integer
 	local i as integer
     Game.TouchdownNowMs = Now
-    // Hold all gameplay, movement and damage until Sonec becomes visible.
-    if Now < Game.TouchdownUntilMs then exitfunction
+    // Display the countdown in the existing warning panel, replacing the same notice.
+    if Now < Game.TouchdownUntilMs
+        Game.Warning.Now = Now
+        Game.Warning.Count = 1
+        Game.Warning.Notice[0].Kind = 0
+        Game.Warning.Notice[0].MessageString = "Touchdown in "+Str((Game.TouchdownUntilMs-Now+999)/1000)+" Sekunden."
+        Game.Warning.Notice[0].UntilMs = Game.TouchdownUntilMs
+        Game.Warning.Notice[0].PreviewUntilMs = Game.TouchdownUntilMs
+        exitfunction
+    endif
+    if Game.TouchdownStarted = FALSE
+        // No accumulated 3-second movement step on the first playable frame.
+        TimeReset(Game.Sonec.ObjectData.MoveTimer,Now)
+        WarningReset(Game.Warning)
+        Game.TouchdownStarted = TRUE
+    endif
 	
 	BackgroundDo(Game.Background,Game.World,Now)
 	if CloudCountAll(Game.CloudList) < 50
@@ -488,10 +498,6 @@ function GameDraw(Game ref as TGame)
 	WarningPickupStarDraw(Game.Warning,Game.Sonec)
 
 	GuiEnergyDraw(Game.Gui,Game.Sonec,Game.Screen,GetMilliseconds())
-    if Game.TouchdownNowMs < Game.TouchdownUntilMs
-        SetTextString(Game.TouchdownTextID,"Touchdown in "+Str((Game.TouchdownUntilMs-Game.TouchdownNowMs+999)/1000)+" Sekunden.")
-        DrawText(Game.TouchdownTextID)
-    endif
 	// S4: top warning overlay draws above gameplay and before main.agc Swap().
 	WarningDraw(Game.Warning)
 	// F2 compares one platform and one visible skyscraper without affecting movement.

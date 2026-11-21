@@ -95,7 +95,7 @@ Verbindlicher Planungsrahmen und Details: [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROA
 
 ## Genau ein nächster Schritt
 
-**T1 – Touchdown-Countdown implementiert; lokaler AGK-Test offen.** Quellprüfung: `SonecInit` setzt Spawn auf **X = Screen.Width/4, Y = 0** (Weltkoordinaten), Fallzustand TRUE. Vor Sonecs Erscheinen nun 3 Sekunden `Touchdown in 3/2/1 Sekunden.`; Sonec und Schild werden nicht gezeichnet, Eingaben und gesamte `GameDo`-Simulation bleiben bis Ablauf angehalten (dadurch keine Angriffe/Schäden). Der Countdown nutzt den bestehenden pausierbaren `Now`-Spielzeitwert; kein AGK-Build durch Assistenten. **B4c lokal 6/6 bestanden**, Spacejet vorerst 50 TP, beide Plasma-Richtungen und Trefferblitz korrekt. **Nächster Schritt:** T1 lokal prüfen: Spawnposition, 3→2→1, Sichtbarkeit/Unverwundbarkeit, Eingaben, Pause und normales Spiel nach Ablauf. `main` unberührt.
+**T2 implementiert; lokaler AGK-Test offen.** T1 vom Entwickler **7/7 bestanden** (Countdown 3→2→1, unsichtbar/unverwundbar, Spawn X=Screen.Width/4 Y=0, Pause/Neustart/Steuerung). Neue Beobachtung: Sonec beschleunigt beim Erscheinen zu stark; Quellhypothese: Bewegungs-Timer holt 3 Sekunden nach. **T2:** `TimeReset(Sonec.ObjectData.MoveTimer,Now)` einmalig beim Countdown-Ende; Countdown-Nachricht im vorhandenen `Warning`-Panel (ein und derselbe Slot wird jede Sekunde überschrieben, keine FIFO-Stapelung), separate Textanzeige entfernt. Warnsystem nach Countdown zurückgesetzt; keine Änderungen an Spawn/50-TP-Spacejet. **Nächster Schritt:** T2 lokal prüfen (Compile, 3/2/1 im Nachrichtenfeld, kein Stapeln, normale Fallbeschleunigung, Spielstart/Pause/Neustart). Keine AGK-Ausführung durch Assistenten; `main` unberührt.
 
 ## Weiterführende Dokumente
 
