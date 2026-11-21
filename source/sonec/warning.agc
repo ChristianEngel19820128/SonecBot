@@ -155,8 +155,7 @@ function WarningDraw(Warning ref as TWarning)
     local g as integer
     local b as integer
     y = NOTICE_TOP
-    for i = 0 to Warning.Count-1
-        if i >= NOTICE_MAX then exit
+    for i = 0 to Min(Warning.Count,NOTICE_MAX)-1
         if Warning.Notice[i].Kind = 1
             r = 140
             g = 230
