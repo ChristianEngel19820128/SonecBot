@@ -210,9 +210,6 @@ endfunction
 function MineHealthRegenerate(MineList ref as TMineList,Game ref as TGame,Now as integer)
 	
 	local i as integer
-	local k as integer
-	local EnergieType as integer
-	local Position as TPosition
 	
 	for i = 0 to MineList.Mine.Length
 		if MineList.Mine[i].Enabled = TRUE
@@ -228,12 +225,7 @@ function MineHealthRegenerate(MineList ref as TMineList,Game ref as TGame,Now as
 				TimeReset(MineList.Mine[i].Health.RegenerationTimer,Now)
 			endif
 			if MineList.Mine[i].Health.State < 0
-				for k = 0 to random(0,4)
-					EnergieType = 0
-					Position.x = MineList.Mine[i].ObjectData.Position.x + random(0,20) - 10
-					Position.y = MineList.Mine[i].ObjectData.Position.y + random(0,20) - 10
-					EnergieAdd(Game.EnergieList,Game.ProtoEnergie,Game.World,EnergieType,Position,Now)
-				next k
+				RewardDrop(Game,REWARD_OBJECT_SMART_MINE,MineList.Mine[i].ObjectData.Position,Now)
 				MineDestroy(MineList,i,Game.ExplosionList,Game.ProtoExplosion,Game,MineList.Mine[i].ObjectData.Position,Now)
 			endif
 		endif

@@ -91,6 +91,7 @@ UseNewDefaultFonts(1)
 #include "shield.agc"
 #include "inenergie.agc"
 #include "energie.agc"
+#include "reward.agc"
 #include "flame.agc"
 #include "bullet.agc"
 #include "grenade.agc"

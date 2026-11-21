@@ -273,11 +273,7 @@ function SimpleMineHealthRegenerate(MineList ref as TMineList,Game ref as TGame,
                 TimeReset(MineList.Mine[i].Health.RegenerationTimer,Now)
             endif
             if MineList.Mine[i].Health.State < 0
-                for k = 0 to random(0,4)
-                    Position.x = MineList.Mine[i].ObjectData.Position.x + random(0,20) - 10
-                    Position.y = MineList.Mine[i].ObjectData.Position.y + random(0,20) - 10
-                    EnergieAdd(Game.EnergieList,Game.ProtoEnergie,Game.World,0,Position,Now)
-                next k
+                RewardDrop(Game,REWARD_OBJECT_SIMPLE_MINE,MineList.Mine[i].ObjectData.Position,Now)
                 MineDestroy(MineList,i,Game.ExplosionList,Game.ProtoExplosion,Game,MineList.Mine[i].ObjectData.Position,Now)
             endif
         endif
