@@ -104,6 +104,7 @@ endfunction
 function ExplosionNew(Explosion ref as TExplosion,ProtoExplosion ref as TProtoExplosion,Game ref as TGame,ExplosionType as integer,Position ref as TPosition,Now as integer)
 
 	Explosion.Enabled = TRUE
+    Explosion.CompositeUpperVisual = FALSE
     Explosion.LimitDamageBelowY = FALSE
     Explosion.DamageMaxY = 0
 	Explosion.MeasureStartMs = GetMilliseconds()
@@ -222,6 +223,9 @@ function ExplosionAddAboveY(ExplosionList ref as TExplosionList,ProtoExplosion r
     ExplosionNew(Explosion,ProtoExplosion,Game,ExplosionType,Position,Now)
     Explosion.LimitDamageBelowY = TRUE
     Explosion.DamageMaxY = MaxY
+    Explosion.CompositeUpperVisual = TRUE
+    Explosion.SpriteData.Angle = 0
+    ColorSet(Explosion.SpriteData.Color,255,255,255,200)
     ExplosionInsert(ExplosionList,Explosion)
 endfunction
 
@@ -526,12 +530,40 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
+// B2e/1: experimental blue-then-red upper-half composite at draw time.
+// This is deliberately limited to platform bomb impacts; no damage changes.
+// Use the same animation progress to sample both source sequences.
 function ExplosionDraw(Explosion ref as TExplosion,ProtoExplosion ref as TProtoExplosion)
-	
-	if Explosion.Enabled = TRUE
-		SpriteDraw(ProtoExplosion.AnimExplosion[Explosion.ExplosionType,Explosion.AnimationData.Frame].Sprite,Explosion.SpriteData)
-	endif
-	
+    local BlueFrame as integer
+    local BlueSpriteID as integer
+    local RedSpriteID as integer
+    local CutY as integer
+    local BlueFrames as integer
+    local RedFrames as integer
+
+    if Explosion.Enabled = TRUE
+        if Explosion.CompositeUpperVisual = TRUE
+            BlueFrames = ProtoExplosion.AnimExplosion[0].Length+1
+            RedFrames = ProtoExplosion.AnimExplosion[1].Length+1
+            BlueFrame = floor(Explosion.AnimationData.Frame*BlueFrames*1.0/RedFrames)
+            if BlueFrame >= BlueFrames then BlueFrame = BlueFrames-1
+            BlueSpriteID = ProtoExplosion.AnimExplosion[0,BlueFrame].Sprite.ID
+            RedSpriteID = ProtoExplosion.AnimExplosion[1,Explosion.AnimationData.Frame].Sprite.ID
+            CutY = floor(Explosion.SpriteData.Position.y)
+            if CutY > 0
+                if CutY > GetVirtualHeight() then CutY = GetVirtualHeight()
+                // Scissor clips the lower half at the world-space impact surface.
+                SetSpriteScissor(BlueSpriteID,0,0,GetVirtualWidth(),CutY)
+                SpriteDraw(ProtoExplosion.AnimExplosion[0,BlueFrame].Sprite,Explosion.SpriteData)
+                SetSpriteScissor(BlueSpriteID,0,0,0,0)
+                SetSpriteScissor(RedSpriteID,0,0,GetVirtualWidth(),CutY)
+                SpriteDraw(ProtoExplosion.AnimExplosion[1,Explosion.AnimationData.Frame].Sprite,Explosion.SpriteData)
+                SetSpriteScissor(RedSpriteID,0,0,0,0)
+            endif
+        else
+            SpriteDraw(ProtoExplosion.AnimExplosion[Explosion.ExplosionType,Explosion.AnimationData.Frame].Sprite,Explosion.SpriteData)
+        endif
+    endif
 endfunction
 
 //----------------------------------------------------------------------

@@ -594,6 +594,7 @@ type TProtoExplosion
 endtype
 
 type TExplosion
+    CompositeUpperVisual as integer
     LimitDamageBelowY as integer
     DamageMaxY as float
 	LastDroneHitMs as integer

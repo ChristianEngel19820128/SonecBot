@@ -95,7 +95,7 @@ Verbindlicher Planungsrahmen und Details: [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROA
 
 ## Genau ein nächster Schritt
 
-**Bomber B2e – sichtbare Explosionsbegrenzung als nächsten Schritt prüfen.** B2d vom Entwickler am 21.11.2026 im lokalen AGK-Test mit **6/6 bestanden** bestätigt: Compile, Bombenaufschläge auf Plattformoberseiten, Schutz für Sonec unterhalb, Schaden oberhalb, unveränderte normale Explosionen sowie keine Regressionen bei Bombenteppich, Spacejet und Drohne. Die optionale Welt-Y-Schadensgrenze ist damit funktional abgenommen. Als Nächstes nur die visuelle Begrenzung der Bombenexplosion an der Plattformoberkante konzipieren/umsetzen; Schadenslogik unverändert lassen. Direkter kinetischer Schaden, Bombenabschuss und Bomberzerstörung bleiben offen. Drohnen-Jetstream erst nach Bomberabschluss; `main` unberührt.
+**Bomber B2e/1 – Blau-Rot-Explosionskombination lokal testen.** B2d vom Entwickler **6/6 bestanden** (Schadensabschirmung). Experimenteller visueller Pfad ausschließlich für Bomben-Aufschläge auf Plattformen: vorhandene blaue Animationsframes zuerst, rote darüber, synchronisiert nach Fortschritt, ohne Rotation, per Sprite-Scissor an der Plattformoberkante auf den oberen Bereich begrenzt. Die Kombination wird **noch zur Laufzeit gezeichnet, nicht vorab in Texturen gebacken**; damit zunächst Wirkung und AGK-Scissor-Kompatibilität prüfen, bevor ein Pre-Render-Pfad erwogen wird. Schadenslogik, Bombenphysik und normale Explosionen unverändert. Lokaler AGK-Test offen: Compile, Blau+Rot, Clipping, Kamera und Regressionen. Direkter kinetischer Schaden, Bombenabschuss und Bomberzerstörung bleiben offen; Drohnen-Jetstream nach Bomberabschluss; `main` unberührt.
 
 ## Weiterführende Dokumente
 
