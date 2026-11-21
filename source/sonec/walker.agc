@@ -741,9 +741,6 @@ endfunction
 function WalkerHealthRegenerate(WalkerList ref as TWalkerList,Game ref as TGame,Now as integer)
 	
 	local i as integer
-	local k as integer
-	local EnergieType as integer
-	local Position as TPosition
 	
 	for i = 0 to WalkerList.Walker.Length
 		if WalkerList.Walker[i].Enabled = TRUE
@@ -776,15 +773,7 @@ function WalkerHealthRegenerate(WalkerList ref as TWalkerList,Game ref as TGame,
 			
 			if WalkerList.Walker[i].Health.State < 0
 				
-				for k = 0 to random(0,12)
-					EnergieType = 0
-					if random(0,8) > 5
-						EnergieType = random(0,Game.ProtoEnergie.AnimEnergie.Length)
-					endif
-					Position.x = WalkerList.Walker[i].ObjectData.Position.x + random(0,20) - 10
-					Position.y = WalkerList.Walker[i].ObjectData.Position.y + random(0,20) - 10
-					EnergieAdd(Game.EnergieList,Game.ProtoEnergie,Game.World,EnergieType,Position,Now)
-				next k
+				RewardDrop(Game,REWARD_OBJECT_WALKER,WalkerList.Walker[i].ObjectData.Position,Now)
 				
 				WalkerDestroy(WalkerList,i,Game.ExplosionList,Game.ProtoExplosion,Game,WalkerList.Walker[i].ObjectData.Position,Now)
 			
