@@ -246,6 +246,58 @@ endfunction
 #constant BOMBER_BOMB_DIRECT_DAMAGE 100
 #constant BOMBER_BOMB_HIT_RADIUS 7
 
+// B3a: only Sonec's machine-gun bullets can intercept falling bombs.
+// Sweep the bullet's last movement segment against a small bomb hit circle.
+#constant BOMBER_BOMB_SHOT_RADIUS 7
+
+function BomberBombCollideBullets(Bomber ref as TBomber,BulletList ref as TBulletList,ExplosionList ref as TExplosionList,ProtoExplosion ref as TProtoExplosion,Game ref as TGame,Now as integer)
+    local i as integer
+    local k as integer
+    local Dx as float
+    local Dy as float
+    local LengthSq as float
+    local Fraction as float
+    local NearestX as float
+    local NearestY as float
+    local HitX as float
+    local HitY as float
+    local Radius as float
+    local HitPosition as TPosition
+
+    for i = 0 to BulletList.Bullet.Length
+        if BulletList.Bullet[i].Enabled = TRUE and BulletList.Bullet[i].CollisionData.CollisionType = TYPEPLAYERONE
+            Dx = BulletList.Bullet[i].ObjectData.Position.x-BulletList.Bullet[i].PreviousPosition.x
+            Dy = BulletList.Bullet[i].ObjectData.Position.y-BulletList.Bullet[i].PreviousPosition.y
+            LengthSq = Dx*Dx+Dy*Dy
+            Radius = BOMBER_BOMB_SHOT_RADIUS+BulletList.Bullet[i].ObjectData.Radius
+            for k = 0 to BOMBER_BOMB_COUNT-1
+                if BulletList.Bullet[i].Enabled = TRUE and Bomber.Bomb[k].Enabled = TRUE
+                    Fraction = 0
+                    if LengthSq > 0
+                        Fraction = ((Bomber.Bomb[k].Position.x-BulletList.Bullet[i].PreviousPosition.x)*Dx+(Bomber.Bomb[k].Position.y-BulletList.Bullet[i].PreviousPosition.y)*Dy)/LengthSq
+                        if Fraction < 0 then Fraction = 0
+                        if Fraction > 1 then Fraction = 1
+                    endif
+                    NearestX = BulletList.Bullet[i].PreviousPosition.x+Fraction*Dx
+                    NearestY = BulletList.Bullet[i].PreviousPosition.y+Fraction*Dy
+                    HitX = NearestX-Bomber.Bomb[k].Position.x
+                    HitY = NearestY-Bomber.Bomb[k].Position.y
+                    if HitX*HitX+HitY*HitY <= Radius*Radius
+                        Bomber.Bomb[k].Enabled = FALSE
+                        BulletDelete(BulletList,i)
+                        HitPosition = Bomber.Bomb[k].Position
+                        ExplosionAdd(ExplosionList,ProtoExplosion,Game,1,HitPosition,Now)
+                    endif
+                endif
+            next k
+        endif
+    next i
+endfunction
+
+//----------------------------------------------------------------------
+// 
+//----------------------------------------------------------------------
+
 function BomberBombCollideSonec(Bomber ref as TBomber,Game ref as TGame,Now as integer)
     local i as integer
     local DeltaX as float

@@ -315,6 +315,7 @@ function GameDo(Game ref as TGame,Now as integer)
 	FlameCollideDrone(Game.FlameList,Game.Drone)
 	
 	BulletMoveall(Game.BulletList,Game.World,Now)
+    BomberBombCollideBullets(Game.Bomber,Game.BulletList,Game.ExplosionList,Game.ProtoExplosion,Game,Now)
 	BulletCollide(Game.BulletList,Game.Sonec,Game.Shield,Now)
 	// K1b: one nearest-hit sweep across all player-bullet target types.
 	BulletCollidePlayerTargets(Game.BulletList,Game.OrbList,Game.WalkerList,Game.MineList,Game.SimpleMineList,Game.ChestList,Game.Drone,Now)
