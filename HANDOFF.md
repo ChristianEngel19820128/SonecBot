@@ -49,8 +49,8 @@ Zusätzlich in dieser Runde umgesetzt:
 - **D5b abgenommen (7/7):** Entwickler bestätigt Compile, Schaden/Zerstörung durch Flammen, Granaten, Plasma und Explosionen, erneuten Spawn und keine Waffenregressionen.
 - **D5c abgenommen (8/8):** Entwickler bestätigt Compile, rotes Trefferfeedback, genau eine Zerstörungsexplosion, keine verbleibenden Angriffe, vollen HP-Respawn, mehrere Zyklen, keinen unerwünschten Umgebungsschaden und keine Langzeitauffälligkeiten.
 - **Farbabgleich nach D5c bestätigt:** Entwickler hat Standardrot RGB (255,0,0) visuell geprüft und bestätigt. Optionales Schadenshöhen-Farbspektrum steht unverbindlich in `BACKLOG.md`.
-- **D6 umgesetzt, lokaler AGK-Test offen:** Drei Drohnen-Jetstreams an X-Offsets −14/0/+14 und Y+16 mit Sonecs Jetfire-Grafik und Lebenszyklus, eigener 30-ms-Takt auf Spieluhr. Keine Energiekosten; vorhandene Jetfire-Partikel verblassen nach Tod regulär.
-- **Nächster Schritt:** Entwickler testet D6 lokal, danach Drohnenübergabe an Chat B.
+- **D6 Funktionstest abgenommen (8/8):** Entwickler bestätigt Compile, drei sichtbare Strahlen, korrektes Mitbewegen, unveränderte Drohnenfunktionen, Pause, Zerstörung, Respawn und unveränderten Sonec-Jetfire. Nur visuelle Feinheiten: möglicherweise zu dichter Partikelausstoß (30 ms), äußere Strahlen leicht zu weit außen (Offsets −14/0/+14 px). Screenshot folgt, noch keine Werteänderung.
+- **Nächster Schritt:** Screenshot der Jetstreams prüfen und anschließend nur Takt/Position feinabstimmen; danach Übergabe an Chat B.
 
 
 ## Bestätigte Alpha-Planung
