@@ -6,7 +6,8 @@ Hier stehen nur unmittelbar nächste, gemeinsam zu bearbeitende Schritte. Höchs
 
 ## Jetzt
 
-- [ ] **Nächsten Bomber-Schritt gemeinsam festlegen.** B2f lokal **6/6 bestanden** (Plattformbewegung, seitlicher Schaden, Schutz, Clipping, Kamera und Regressionen). Offen: kinetischer Bombenschaden, Bombenabschuss oder Bomberzerstörung. Rechte Plattformkante bei Gelegenheit weiter beobachten, kein bestätigter Fehler. Details in [HANDOFF.md](HANDOFF.md).
+- [ ] **Bomber B2g – direkten Bombentreffer lokal testen.** Sweep-Kollision, 100 Direktschaden mit Schildabsorption, rote Explosion; Compile, Treffer, Schild, Einmaligkeit und Plattformregression prüfen. Rechte Plattformkante mittlerweile bestätigt. Details in [HANDOFF.md](HANDOFF.md).
+- [ ] **Später: Touchdown-Countdown beim Spielstart.** Vor Sonecs Erscheinen 'Touchdown in 3 Sekunden.' mit 3→2→1; Sonec erst danach sichtbar und verwundbar. Noch nicht implementieren, nach Bomber priorisieren.
 
 **Drohne D1–D6 abgeschlossen:** D6-Funktionstest 8/8 lokal bestanden. Jetstream-Feinschliff (30 ms, Skalierung 0,65, Auslässe −10/0/+10 px, Y+13 px) zuletzt per Screenshot optisch bestätigt; kein erneuter vollständiger Funktionstest nach der letzten Höhenkorrektur. Chat B ersetzt später den provisorischen Spawn-Timer. Testdetails stehen in [HANDOFF.md](HANDOFF.md).
 
