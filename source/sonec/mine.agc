@@ -245,6 +245,8 @@ function MineCollideSonec(MineList ref as TMineList,Sonec ref as TSonec,Game ref
 		if MineList.Mine[i].Enabled = TRUE
 			Radius = CalcRadius(MineList.Mine[i].ObjectData.Position,Sonec.ObjectData.Position)
 			if Radius < Sonec.ObjectData.Radius + MineList.Mine[i].ObjectData.Radius
+				// A collision destroys the smart mine too: grant its normal reward.
+				RewardDrop(Game,REWARD_OBJECT_SMART_MINE,MineList.Mine[i].ObjectData.Position,Now)
 				MineDestroy(MineList,i,Game.ExplosionList,Game.ProtoExplosion,Game,MineList.Mine[i].ObjectData.Position,Now)
 			endif
 		endif
