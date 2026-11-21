@@ -6,7 +6,7 @@ Hier stehen nur unmittelbar nächste, gemeinsam zu bearbeitende Schritte. Höchs
 
 ## Jetzt
 
-- [ ] **D3c/2 – Drohnenlaser-Schaden lokal testen.** D3c/1 vom Entwickler mit **5/5 bestanden** bestätigt. Bei Lasertreffer werden nun testweise **20 Schaden** über die bestehende `ShieldAbsorbDamage`-Logik verteilt (Schild absorbiert ladungsabhängig bis zu 80 %, Rest trifft Gesundheit). Bestehende Schild-/Sonec-Trefferblitze werden verwendet. Laser verschwindet weiterhin beim Treffer; kein zusätzlicher Sound. AGK-Test: Compile, ohne Schild Gesundheitsschaden, mit Schild Ladungsverlust und reduzierter Gesundheitsschaden, Trefferblitze, keine doppelten Treffer, übrige Drohnenfunktionen unverändert. Danach Balancing separat abstimmen.
+- [ ] **D4a – Drohnen-Spawn lokal testen.** D3c/2 vom Entwickler mit **6/6 bestanden** bestätigt; 20 Laserschaden bleiben bis zum globalen Balancing unverändert. D4a: Drohne startet inaktiv; `DroneSpawn` wählt links/rechts, prüft Welt-/Sichtgrenzen und Mindestabstand zu Sonec und meldet Erfolg/Fehlschlag; Patrouille beginnt nach dem Einflug. **Nur Windows-Test:** F6 fordert einen Spawn an. Nach Abnahme F6-Hook entfernen, Spawn-API für Chat B erhalten. AGK-Tests: Compile, vor F6 keine Drohne, F6-Einflug links/rechts über mehrere Neustarts, keine zweite aktive Drohne, Patrouille und Angriff unverändert. Hindernisfreiheit noch nicht umfassend geprüft.
 
 Die Roadmap-Besprechung ist abgeschlossen. Das Paintball-Easter-Egg ist nach dem Windows-Sichttest vom Entwickler abgenommen. Detaillierte Alpha-Umsetzung folgt in Themenchats; eine feste Reihenfolge ist noch nicht beschlossen.
 
