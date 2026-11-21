@@ -52,7 +52,9 @@ function WarningReset(Warning ref as TWarning)
         Warning.Notice[i].MessageString = ""
         Warning.Notice[i].UntilMs = 0
         Warning.Notice[i].PreviewUntilMs = 0
-        SetTextString(Warning.Notice[i].TextID,"")
+        if i < NOTICE_MAX
+            SetTextString(Warning.Notice[i].TextID,"")
+        endif
     next i
 endfunction
 
