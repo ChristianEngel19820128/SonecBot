@@ -53,6 +53,7 @@ function BomberInit(Bomber ref as TBomber,Now as integer)
         Bomber.Bomb[i].LastMoveMs = Now
         Bomber.Bomb[i].Position.x = 0
         Bomber.Bomb[i].Position.y = 0
+        Bomber.Bomb[i].PreviousPosition = Bomber.Bomb[i].Position
         Bomber.Bomb[i].Velocity.x = 0
         Bomber.Bomb[i].Velocity.y = 0
         Bomber.Bomb[i].SpriteData.Angle = 0
@@ -205,6 +206,7 @@ function BomberBombDo(Bomber ref as TBomber,ProtoBomber ref as TProtoBomber,Worl
             Bomber.Bomb[i].Enabled = TRUE
             Bomber.Bomb[i].Position.x = Bomber.Position.x
             Bomber.Bomb[i].Position.y = Bomber.Position.y+BOMBER_BOMB_RELEASE_Y
+            Bomber.Bomb[i].PreviousPosition = Bomber.Bomb[i].Position
             Bomber.Bomb[i].Velocity.x = -BOMBER_SPEED_PX_PER_MS
             Bomber.Bomb[i].Velocity.y = 0
             Bomber.Bomb[i].LastMoveMs = Now
@@ -218,6 +220,7 @@ function BomberBombDo(Bomber ref as TBomber,ProtoBomber ref as TProtoBomber,Worl
         if Bomber.Bomb[i].Enabled = TRUE
             DeltaMs = Now-Bomber.Bomb[i].LastMoveMs
             if DeltaMs > 0
+                Bomber.Bomb[i].PreviousPosition = Bomber.Bomb[i].Position
                 DragFactor = 1.0/(1.0+BOMBER_BOMB_DRAG_PER_MS*DeltaMs)
                 Bomber.Bomb[i].Velocity.x = Bomber.Bomb[i].Velocity.x*DragFactor
                 Bomber.Bomb[i].Velocity.y = Bomber.Bomb[i].Velocity.y+BOMBER_BOMB_GRAVITY_PX_PER_MS2*DeltaMs
@@ -230,6 +233,43 @@ function BomberBombDo(Bomber ref as TBomber,ProtoBomber ref as TProtoBomber,Worl
             if Bomber.Bomb[i].Position.y > World.Size.Height+32 or Bomber.Bomb[i].Position.x < -32
                 Bomber.Bomb[i].Enabled = FALSE
             endif
+        endif
+    next i
+endfunction
+
+// B2c: detect a downward crossing of a platform's upper surface.
+// Interpolate X at the crossing so fast-moving bombs cannot skip a thin plate.
+// The bomb tip is approximated by a small vertical offset; later polishing
+// can use a rotated shape. Explosion damage uses the existing game system.
+function BomberBombCollidePlate(Bomber ref as TBomber,PlateList ref as TPlateList,Game ref as TGame,Now as integer)
+    local i as integer
+    local k as integer
+    local TopY as float
+    local OldTipY as float
+    local NewTipY as float
+    local HitX as float
+    local Fraction as float
+    local HitPosition as TPosition
+
+    for i = 0 to BOMBER_BOMB_COUNT-1
+        if Bomber.Bomb[i].Enabled = TRUE and Bomber.Bomb[i].Velocity.y > 0
+            OldTipY = Bomber.Bomb[i].PreviousPosition.y+5
+            NewTipY = Bomber.Bomb[i].Position.y+5
+            for k = 0 to PlateList.Plate.Length
+                if Bomber.Bomb[i].Enabled = TRUE and PlateList.Plate[k].Enabled = TRUE
+                    TopY = PlateList.Plate[k].CollisionData.Position1.y
+                    if OldTipY <= TopY and NewTipY >= TopY and NewTipY > OldTipY
+                        Fraction = (TopY-OldTipY)/(NewTipY-OldTipY)
+                        HitX = Bomber.Bomb[i].PreviousPosition.x+(Bomber.Bomb[i].Position.x-Bomber.Bomb[i].PreviousPosition.x)*Fraction
+                        if HitX >= PlateList.Plate[k].CollisionData.Position1.x and HitX <= PlateList.Plate[k].CollisionData.Position2.x
+                            HitPosition.x = HitX
+                            HitPosition.y = TopY
+                            Bomber.Bomb[i].Enabled = FALSE
+                            ExplosionAdd(Game.ExplosionList,Game.ProtoExplosion,Game,1,HitPosition,Now)
+                        endif
+                    endif
+                endif
+            next k
         endif
     next i
 endfunction

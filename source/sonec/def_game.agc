@@ -777,6 +777,7 @@ endtype
 type TBomberBomb
     Enabled as integer
     Position as TPosition
+    PreviousPosition as TPosition
     Velocity as TPosition
     LastMoveMs as integer
     SpriteData as TSpriteData

@@ -95,7 +95,7 @@ Verbindlicher Planungsrahmen und Details: [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROA
 
 ## Genau ein nächster Schritt
 
-**Bomber B2b – Spawn-gekoppelter Bombenteppich lokal testen.** Entwickler bestätigte zuvor **6/7** für fünf Bomben, ca. 250-ms-Abstände, Physik/Rotation, Layering und Regressionen; Screenshots zeigten den Teppich zu weit links. Neuer Versuch: Spacejet-Spawn um **1/4 Bildschirmbreite weiter rechts**; erste Bombe **250 ms nach tatsächlichem Spawn**, vier weitere alle 250 ms. Kein positionsabhängiger Abwurfstart mehr. Risiko: Bomben fallen zunächst außerhalb des Bildes. Physik, Rotation, Layering unverändert; noch keine Kollision, Explosion oder Schaden. Lokaler Sichttest: Sichtbarkeit aller fünf und mittige Abdeckung prüfen. Drohnen-Jetstream erst nach Bomberabschluss; `main` unberührt.
+**Bomber B2c – Plattform-Aufschlag und Explosion lokal testen.** B2b vom Entwickler mit **6/6 bestanden** bestätigt, zusätzlich drei Screenshots: fünf Bomben, 250-ms-Abstände, spawn-gekoppelter Abwurf und bessere mittige Abdeckung; B2b abgenommen. B2c erkennt das abwärts gerichtete Kreuzen der Plattformoberkante per interpoliertem X-Kontaktpunkt, deaktiviert die Bombe und erzeugt eine bestehende Typ-1-Explosion am Trefferpunkt. Physik und Timing unverändert. **Wichtig:** Die bestehende Explosion kann Schaden verursachen; Plattformabschirmung gegen Explosionsradius ist noch nicht implementiert, ebenso wenig direkte kinetische Treffer, Bombenabschuss und Bomberzerstörung. Lokal AGK testen: Compile, Oberkantenkontakt, eine Explosion pro Bombe, keine Durchdringung und Regressionen. Drohnen-Jetstream erst nach Bomberabschluss; `main` unberührt.
 
 ## Weiterführende Dokumente
 
