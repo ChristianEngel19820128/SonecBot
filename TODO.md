@@ -6,7 +6,7 @@ Hier stehen nur unmittelbar nächste, gemeinsam zu bearbeitende Schritte. Höchs
 
 ## Jetzt
 
-- [ ] **D6 – Jetstream-Feinabstimmung nach Screenshot.** Funktionstest vom Entwickler mit **8/8 bestanden** bestätigt. Beobachtungen: Partikel erscheinen möglicherweise zu dicht (aktuell 30 ms), äußere Strahlen sitzen etwas zu weit außen (aktuell −14/0/+14 px). Auf angekündigtes Bild warten; erst danach Position und Takt gezielt anpassen.
+- [ ] **D6 – Jetstream-Feinabstimmung lokal prüfen.** Funktionstest zuvor mit **8/8 bestanden**. Nach Screenshot wurden Intervall von 30 auf 50 ms und X-Offsets von −14/0/+14 auf −10/0/+10 px angepasst. Jetzt nur visuelle Dichte, Auslasspositionen und unverändertes Verhalten prüfen; lokaler Nachtest offen.
 
 **Drohne D1–D5c vorerst abgeschlossen.** D5c vom Entwickler mit **8/8 bestanden** bestätigt: Compile, Trefferblinken, einmalige Zerstörungsexplosion, sauberes Aufräumen, volle Gesundheit beim Respawn, wiederholte Zyklen, keine unerwünschten Explosionsschäden und keine Langzeitauffälligkeiten. Farbabgleich nach D5c: Drohnen-Trefferfeedback an Rumpf, Sensoren und Fallback auf Standardrot RGB (255,0,0) gesetzt; Farbänderung vom Entwickler visuell bestätigt. Kein weiterer Drohnen-Codeauftrag; Chat B übernimmt später die Spawnsteuerung.
 
