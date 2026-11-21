@@ -95,7 +95,7 @@ endfunction Value
 // 
 //----------------------------------------------------------------------
 
-function ChestHealthRegenerate(ChestList ref as TChestList,Now as integer)
+function ChestHealthRegenerate(ChestList ref as TChestList,Game ref as TGame,Now as integer)
 	
 	local i as integer
 	
@@ -112,7 +112,10 @@ function ChestHealthRegenerate(ChestList ref as TChestList,Now as integer)
 				endif
 				TimeReset(ChestList.Chest[i].Health.RegenerationTimer,Now)
 			endif
-			if ChestList.Chest[i].Health.State < 0 then ChestDelete(ChestList,i)
+			if ChestList.Chest[i].Health.State < 0
+				RewardDrop(Game,REWARD_OBJECT_CHEST,ChestList.Chest[i].ObjectData.Position,Now)
+				ChestDelete(ChestList,i)
+			endif
 		endif
 	next i
 	

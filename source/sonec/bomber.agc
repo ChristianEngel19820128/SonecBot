@@ -490,6 +490,7 @@ function BomberTakeDamage(Bomber ref as TBomber,Game ref as TGame,Damage as inte
         Bomber.Phase = 3
         // Already released bombs continue to fall; no further bombs are released.
         ExplosionAdd(Game.ExplosionList,Game.ProtoExplosion,Game,1,Position,Now)
+        RewardDrop(Game,REWARD_OBJECT_BOMBER,Position,Now)
     endif
 endfunction
 

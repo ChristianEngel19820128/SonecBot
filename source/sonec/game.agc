@@ -334,7 +334,7 @@ function GameDo(Game ref as TGame,Now as integer)
 	ChestMoveAll(Game.ChestList,Game.PlateList,Game.World)
 	ChestCheckAll(Game.ChestList,Game.ProtoChest)
 	PlateCheckAll(Game.PlateList,Game.ProtoPlate)
-	ChestHealthRegenerate(Game.ChestList,Now)
+	ChestHealthRegenerate(Game.ChestList,Game,Now)
 	SonecCollidePlate(Game.Sonec,Game.PlateList,Game.ChestList,Game.World)
 	
 	FlashLifeCycle(Game.FlashList,Now)
@@ -382,6 +382,7 @@ function GameDo(Game ref as TGame,Now as integer)
 	// D5c: consume one destruction event after all weapon collisions.
 	if DroneDeathEffectPending = TRUE
 		ExplosionAdd(Game.ExplosionList,Game.ProtoExplosion,Game,0,DroneDeathPosition,Now)
+		RewardDrop(Game,REWARD_OBJECT_DRONE,DroneDeathPosition,Now)
 		DroneDeathEffectPending = FALSE
 	endif
 	
