@@ -1,6 +1,6 @@
-// B1: one unarmed spacejet overflight for visual speed/size evaluation.
-// Temporary once-per-game test entry; Chat B will later own spawn scheduling.
-#constant BOMBER_TEST_WAIT_MS 4000
+// Temporary repeatable test appearances until wave scheduling owns bomber spawns.
+#constant BOMBER_TEST_WAIT_MIN_MS 8000
+#constant BOMBER_TEST_WAIT_MAX_MS 15000
 #constant BOMBER_WARNING_LEAD_MS 2200
 #constant BOMBER_SPEED_PX_PER_MS 0.40
 #constant BOMBER_ENTRY_MARGIN_X 65
@@ -29,7 +29,7 @@
 #constant BOMBER_HIT_HALF_HEIGHT 24
 
 // Phase: 0 = waiting for a visible flight corridor, 1 = warning,
-// 2 = flying, 3 = finished. At most one bomber; no bomber array.
+// 2 = flying, 3 = waiting for remaining bombs to resolve. At most one bomber.
 function BomberProtoLoad(ProtoBomber ref as TProtoBomber)
     ProtoBomber.Body.Image.File.Path = "/media/gfx/enemies"
     ProtoBomber.Body.Image.File.Name = "spacejet.png"
@@ -50,7 +50,7 @@ function BomberInit(Bomber ref as TBomber,Now as integer)
     Bomber.HitFlashUntil = 0
     Bomber.LastPlasmaHitMs = 0
     Bomber.Phase = 0
-    Bomber.NextWarningMs = Now+BOMBER_TEST_WAIT_MS
+    Bomber.NextWarningMs = Now+random(BOMBER_TEST_WAIT_MIN_MS,BOMBER_TEST_WAIT_MAX_MS)
     Bomber.SpawnAtMs = 0
     Bomber.LastMoveMs = Now
     Bomber.NextJetMs = Now
@@ -149,8 +149,23 @@ function BomberDo(Bomber ref as TBomber,ProtoBomber ref as TProtoBomber,Warning 
     local HalfHeight as float
     local HalfWidth as float
     local DeltaMs as integer
+    local i as integer
+    local ActiveBombs as integer
 
     if ProtoBomber.Body.Sprite.ID <= 0 then exitfunction
+
+    // Re-arm only after the previous flight and all released bombs have finished.
+    // This avoids clearing live bombs when the next flight resets bomb slots.
+    if Bomber.Phase = 3
+        ActiveBombs = 0
+        for i = 0 to BOMBER_BOMB_COUNT-1
+            if Bomber.Bomb[i].Enabled = TRUE then ActiveBombs = ActiveBombs+1
+        next i
+        if ActiveBombs = 0
+            Bomber.Phase = 0
+            Bomber.NextWarningMs = Now+random(BOMBER_TEST_WAIT_MIN_MS,BOMBER_TEST_WAIT_MAX_MS)
+        endif
+    endif
 
     HalfHeight = GetSpriteHeight(ProtoBomber.Body.Sprite.ID)*0.5
     HalfWidth = GetSpriteWidth(ProtoBomber.Body.Sprite.ID)*0.5

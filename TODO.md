@@ -4,7 +4,7 @@
 
 ## Jetzt
 
-- [ ] **B5 – Bomben zerstören genau eine getroffene Kiste, lokaler Test offen.** Sweep gegen aktuelle Kisten-Rechtecke, normaler Chest-Reward einmalig, vorhandene plattformbegrenzte Explosion; keine neue Zerstörungsanimation. 
+- [ ] **B5 – Bomben zerstören genau eine getroffene Kiste, lokaler Test blockiert (1/7: Compile bestanden, sechs Fälle nicht prüfbar); zufällige wiederkehrende Bomber-Testauftritte 8–15 s implementiert, erneuter lokaler Test offen.** Sweep gegen aktuelle Kisten-Rechtecke, normaler Chest-Reward einmalig, vorhandene plattformbegrenzte Explosion; keine neue Zerstörungsanimation. 
 
 - [ ] **Menü-Hilfetexte später erweitern.** Nur vormerken; gehört nicht in den aktuellen N1-/Cloud-Arbeitsschritt.
 
