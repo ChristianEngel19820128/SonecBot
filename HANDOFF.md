@@ -48,7 +48,7 @@ Zusätzlich in dieser Runde umgesetzt:
 - **D5a abgenommen (7/7):** Entwickler bestätigt Compile, MG-Treffer, Zerstörung, Ende der Angriffe, erneuten Timer-Spawn und unveränderte andere Geschosskollisionen. Umsetzung: Drohne mit 100 HP; Spieler-MG-Geschosse treffen sie in derselben Nearest-Hit-Auswahl wie andere Ziele (46×30 px), beschädigen sie und verschwinden. Bei 0 HP deaktiviert; Laser und laufende Aktionen beendet. Späterer Timer-Spawn setzt HP zurück. Explosion/Zerstörungseffekt und andere Waffen folgen D5b/D5c.
 - **D5b abgenommen (7/7):** Entwickler bestätigt Compile, Schaden/Zerstörung durch Flammen, Granaten, Plasma und Explosionen, erneuten Spawn und keine Waffenregressionen.
 - **D5c abgenommen (8/8):** Entwickler bestätigt Compile, rotes Trefferfeedback, genau eine Zerstörungsexplosion, keine verbleibenden Angriffe, vollen HP-Respawn, mehrere Zyklen, keinen unerwünschten Umgebungsschaden und keine Langzeitauffälligkeiten.
-- **Farbhinweis:** Drohnenrumpf/Fallback blinkt RGB (255,65,65), Sensoren RGB (255,160,160), anders als das reine Rot RGB (255,0,0) anderer Gegner. Keine Farbänderung beschlossen.
+- **Farbabgleich nach D5c:** Auf Entwicklerwunsch blinkt die Drohne jetzt an Rumpf, Sensoren und Fallback in Standardrot RGB (255,0,0). Nur diese Farbänderung ist noch nicht lokal nachgetestet.
 - **Nächster Schritt:** Chat B übernimmt zu gegebener Zeit die Drohnen-Spawnsteuerung und entfernt den provisorischen Timer-Aufruf; bis dahin kein weiterer Drohnen-Codeauftrag.
 
 ## Bestätigte Alpha-Planung
