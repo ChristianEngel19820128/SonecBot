@@ -6,7 +6,9 @@ Hier stehen nur unmittelbar nächste, gemeinsam zu bearbeitende Schritte. Höchs
 
 ## Jetzt
 
-**Drohne D1–D5c vorerst abgeschlossen.** D5c vom Entwickler mit **8/8 bestanden** bestätigt: Compile, Trefferblinken, einmalige Zerstörungsexplosion, sauberes Aufräumen, volle Gesundheit beim Respawn, wiederholte Zyklen, keine unerwünschten Explosionsschäden und keine Langzeitauffälligkeiten. Farbabgleich nach D5c: Drohnen-Trefferfeedback an Rumpf, Sensoren und Fallback auf Standardrot RGB (255,0,0) gesetzt; lokaler Nachtest dieser Farbänderung noch offen. Kein weiterer Drohnen-Codeauftrag; Chat B übernimmt später die Spawnsteuerung.
+- [ ] **D6 – Drei Drohnen-Jetstreams lokal testen.** Die drei unteren Auslässe nutzen Sonecs vorhandenen Jetfire-Effekt, alle 30 ms je ein Partikel pro Auslass. Prüfen: Compile, drei sichtbare Ströme, Mitbewegung/Schweben, Pause, Zerstörung, Respawn und keine Beeinträchtigung von Sonecs Flugstrahl. Die Jetfire-Partikel verblassen regulär nach Abschuss.
+
+**Drohne D1–D5c vorerst abgeschlossen.** D5c vom Entwickler mit **8/8 bestanden** bestätigt: Compile, Trefferblinken, einmalige Zerstörungsexplosion, sauberes Aufräumen, volle Gesundheit beim Respawn, wiederholte Zyklen, keine unerwünschten Explosionsschäden und keine Langzeitauffälligkeiten. Farbabgleich nach D5c: Drohnen-Trefferfeedback an Rumpf, Sensoren und Fallback auf Standardrot RGB (255,0,0) gesetzt; Farbänderung vom Entwickler visuell bestätigt. Kein weiterer Drohnen-Codeauftrag; Chat B übernimmt später die Spawnsteuerung.
 
 D5b vom Entwickler mit **7/7 bestanden** bestätigt: Flammenwerfer, Granat-Direkttreffer, Plasma und Explosionen beschädigen/zerstören Drohne, neuer Spawn und keine Regressionen; keine Auffälligkeiten.
 
