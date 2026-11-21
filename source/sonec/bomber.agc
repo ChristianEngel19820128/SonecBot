@@ -2,10 +2,10 @@
 // Temporary once-per-game test entry; Chat B will later own spawn scheduling.
 #constant BOMBER_TEST_WAIT_MS 4000
 #constant BOMBER_WARNING_LEAD_MS 2200
-#constant BOMBER_SPEED_PX_PER_MS 0.30
+#constant BOMBER_SPEED_PX_PER_MS 0.40
 #constant BOMBER_ENTRY_MARGIN_X 65
 #constant BOMBER_VIEW_MARGIN_Y 16
-#constant BOMBER_JET_INTERVAL_MS 30
+#constant BOMBER_JET_INTERVAL_MS 20
 #constant BOMBER_JET_PARTICLE_SCALE 0.85
 
 // Phase: 0 = waiting for a visible flight corridor, 1 = warning,
@@ -30,7 +30,7 @@ function BomberInit(Bomber ref as TBomber,Now as integer)
     Bomber.SpriteData.Angle = 0
     Bomber.SpriteData.Scale = 1
     Bomber.SpriteData.Center = TRUE
-    ColorSet(Bomber.SpriteData.Color,255,255,255,255)
+    ColorSet(Bomber.SpriteData.Color,80,232,80,255)
 endfunction
 
 // Dedicated emitter timer: Sonec and drone retain their own jetfire cadence.
@@ -82,10 +82,10 @@ function BomberDo(Bomber ref as TBomber,ProtoBomber ref as TProtoBomber,Warning 
     HalfWidth = GetSpriteWidth(ProtoBomber.Body.Sprite.ID)*0.5
 
     if Bomber.Phase = 0 and Now >= Bomber.NextWarningMs
-        // World-relative altitude 20%-40%; only preview while the whole
+        // World-relative altitude 10%-30%; only preview while the whole
         // ship can be seen in the current camera view.
-        MinY = World.Size.Height*0.20
-        MaxY = World.Size.Height*0.40
+        MinY = World.Size.Height*0.10
+        MaxY = World.Size.Height*0.30
         if MinY < World.Position.y+HalfHeight+BOMBER_VIEW_MARGIN_Y
             MinY = World.Position.y+HalfHeight+BOMBER_VIEW_MARGIN_Y
         endif

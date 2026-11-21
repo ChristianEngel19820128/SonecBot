@@ -45,10 +45,11 @@ Zusätzlich in dieser Runde umgesetzt:
 - **Temporärer Spawn:** Der pausierbare 20–35-Sekunden-Timer bleibt vorerst aktiv. Der F6-Testhook wurde entfernt. Chat B soll später den Timer-Aufruf durch die zentrale Spawn-/Wellensteuerung ersetzen; `DroneSpawn` bleibt als API bestehen und lässt maximal eine aktive Drohne zu.
 - **Bewusst offen:** Endgültiges Balancing und optionaler Art-Pass; Schadenshöhen-Farbspektrum und Drohnenschild sind nur BACKLOG-Ideen. Ein gelegentliches Biep ist geplant, aber nicht als implementiert bestätigt.
 
-## Bomber B1 – erster Überflug (AGK-Test offen)
+## Bomber B1 – Überflug (6/6 bestanden; Feinabstimmung offen)
 
 - **Quellstand auf `develop`:** `source/sonec/media/gfx/enemies/spacejet.png` (176×64 px); einzelner `TBomber`, noch keine Bomben/Schadenslogik.
-- **Vorläufiger Sichttest:** Einmal pro Spielstart, frühestens nach 4 s und sobald der 20–40-%-Welt-Y-Korridor in der Kamera sichtbar ist. Dann 2,2 s `SPACEJET INCOMING!`, Eintritt von rechts, Flug nach links mit 0,30 px/ms und eigenem Jetfire-Takt; nach Austritt kein erneuter Testspawn. Die Zeitwerte sind noch nicht abgenommen.
+- **B1 vom Entwickler lokal in AGK/Windows mit 6/6 bestanden:** Compile, Vorwarnung, Welt-Y-Höhenbereich, kompletter Überflug, Jetstream ohne Sonec-/Drohnenregression und höchstens ein Testanflug pro Spielstart bestätigt.
+- **B1-Feinschliff im Code, Nachtest offen:** Flughöhe von 20–40 % auf **10–30 % der Welt-Y-Höhe** verschoben, Geschwindigkeit 0,30 → **0,40 px/ms**, Jetfire-Takt 30 → **20 ms** (engere Partikelabstände trotz höherer Geschwindigkeit), Bomberfarbe **RGB (80,232,80)**. Weiterhin frühestens 4 s nach Spielstart, 2,2 s Warnung und nur bei sichtbarem Flughöhenkorridor.
 - **Spätere Bombenentscheidung:** Fünf zeitversetzte Bomben mit Bomber-Anfangsgeschwindigkeit und Luftwiderstand. Direkttreffer: kinetischer Schaden **plus** Explosion; abgeschossene Bomben explodieren ebenfalls. Echte Plattformdeckung und gegebenenfalls sichtbar beschnittene Explosionsanimation erfordern eine gesonderte Erweiterung der allgemeinen Explosionsphysik. Bomber selbst soll abschießbar, sein Abschuss aber selten sein.
 
 ## Bestätigte Alpha-Planung
@@ -89,7 +90,7 @@ Verbindlicher Planungsrahmen und Details: [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROA
 
 ## Genau ein nächster Schritt
 
-**B1 – Spacejet-Überflug vom Entwickler lokal in AGK/Windows testen.** Prüfen: Compile, Ankündigung vor Eintritt, richtige Flughöhe (20–40 % Welt-Y), vollständiger Rechts-links-Überflug, sichtbarer Jetstream ohne Sonec-/Drohnenregression und kein zweiter Bomber pro Spielstart. Nach Feedback Geschwindigkeit, Höhe und Jetstream abstimmen; keine Bomben in B1. `main` bleibt unberührt.
+**B1-Feinschliff lokal in AGK/Windows nachtesten.** Prüfen: 10–30 % Welt-Y, 0,40 px/ms, dichterer Jetstream (20 ms), grüne Spacejet-Färbung sowie unveränderte Warnung und maximal ein Überflug. Erst nach Rückmeldung B1 abschließen und B2 (Bombenprototyp) planen. `main` bleibt unberührt.
 
 ## Weiterführende Dokumente
 

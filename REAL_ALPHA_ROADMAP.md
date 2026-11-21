@@ -55,8 +55,8 @@ Der Draft-Test vom 18.11. belegt keine Auslieferung späterer Alpha-Änderungen.
 
 ### Bomber
 
-- **B1 im Code, lokaler AGK-Test offen:** Der 176×64-px-Spacejet fliegt einmalig von rechts nach links, mit Vorwarnung und eigenem Jetstream-Takt. Testgeschwindigkeit 0,30 px/ms; zunächst keine Waffen oder Kollisionen.
-- **Flughöhe:** zwischen 1/5 und 2/5 der gesamten Welt-Y-Höhe, nicht relativ zur Kameraposition. Der einmalige B1-Testanflug wartet auf einen sichtbaren Teil dieses Höhenbands.
+- **B1-Basis lokal mit 6/6 bestanden:** Der 176×64-px-Spacejet fliegt einmalig von rechts nach links, mit Vorwarnung und eigenem Jetstream-Takt. **Feinschliff noch ungetestet:** 0,40 px/ms, Jetfire alle 20 ms, Grün RGB (80,232,80). Weiterhin keine Waffen oder Kollisionen.
+- **Flughöhe:** nach erstem B1-Test um 10 Prozentpunkte nach oben korrigiert, jetzt **1/10 bis 3/10 der gesamten Welt-Y-Höhe**. Der einmalige Testanflug wartet auf einen sichtbaren Teil dieses Höhenbands.
 - **Bombenteppich:** fünf zeitversetzt abgeworfene Bomben. Sie übernehmen beim Abwurf die horizontale Geschwindigkeit des Bombers und werden danach durch Luftwiderstand gebremst.
 - **Kampfmodell für spätere Schritte:** Bomben sind durch Sonec zerstörbar und explodieren dabei; ein direkter Bombentreffer erzeugt kinetischen Schaden **und** eine Explosion. Bomber selbst ist abschießbar, aber ein Abschuss soll selten bleiben. Kein Vernichtungszwang.
 - **Deckung:** Plattformen sollen Bomben und Explosionsschaden abschirmen. Dafür die allgemeine Explosionsphysik und eine eventuell sichtbar an Plattformen gekappte Explosionsanimation separat prüfen; noch nicht implementiert.

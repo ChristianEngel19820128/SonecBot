@@ -6,7 +6,7 @@ Hier stehen nur unmittelbar nächste, gemeinsam zu bearbeitende Schritte. Höchs
 
 ## Jetzt
 
-- [ ] **B1 – Spacejet-Überflug lokal in AGK/Windows testen.** Einmaliger Testanflug nach Vorwarnung in 20–40 % der Welt-Y-Höhe, Flug von rechts nach links mit Jetstream, ohne Bomben oder Schaden. Geschwindigkeit, Größe, Flughöhe und Jetstream optisch beurteilen; kein AGK-Test durch den Assistenten. Details in [HANDOFF.md](HANDOFF.md).
+- [ ] **B1 – Spacejet-Feinschliff lokal in AGK/Windows nachtesten.** B1-Basis vom Entwickler mit **6/6 bestanden**. Jetzt 10–30 % Welt-Y, Geschwindigkeit 0,40 px/ms, Jetstream 20 ms und Grün RGB (80,232,80) optisch beurteilen; Vorwarnung und einmaligen Überflug kontrollieren. Noch keine Bomben. Details in [HANDOFF.md](HANDOFF.md).
 
 **Drohne D1–D6 abgeschlossen:** D6-Funktionstest 8/8 lokal bestanden. Jetstream-Feinschliff (30 ms, Skalierung 0,65, Auslässe −10/0/+10 px, Y+13 px) zuletzt per Screenshot optisch bestätigt; kein erneuter vollständiger Funktionstest nach der letzten Höhenkorrektur. Chat B ersetzt später den provisorischen Spawn-Timer. Testdetails stehen in [HANDOFF.md](HANDOFF.md).
 
