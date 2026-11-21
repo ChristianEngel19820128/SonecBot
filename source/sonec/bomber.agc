@@ -4,6 +4,7 @@
 #constant BOMBER_WARNING_LEAD_MS 2200
 #constant BOMBER_SPEED_PX_PER_MS 0.40
 #constant BOMBER_ENTRY_MARGIN_X 65
+#constant BOMBER_SPAWN_EXTRA_SCREEN_FRACTION 0.25
 #constant BOMBER_VIEW_MARGIN_Y 16
 #constant BOMBER_JET_INTERVAL_MS 20
 #constant BOMBER_JET_PARTICLE_SCALE 1.0
@@ -164,14 +165,15 @@ function BomberDo(Bomber ref as TBomber,ProtoBomber ref as TProtoBomber,Warning 
     endif
 
     if Bomber.Phase = 1 and Now >= Bomber.SpawnAtMs
-        Bomber.Position.x = Screen.Width+HalfWidth+BOMBER_ENTRY_MARGIN_X
+        Bomber.Position.x = Screen.Width+HalfWidth+BOMBER_ENTRY_MARGIN_X+Screen.Width*BOMBER_SPAWN_EXTRA_SCREEN_FRACTION
         Bomber.LastMoveMs = Now
         Bomber.NextJetMs = Now
         Bomber.LastJetX = Bomber.Position.x+GetSpriteWidth(ProtoBomber.Body.Sprite.ID)*0.5-BOMBER_JET_UPPER_X_FROM_RIGHT
         Bomber.Enabled = TRUE
         Bomber.Phase = 2
         Bomber.BombCount = 0
-        Bomber.NextBombAtMs = 0
+        // First release is timed from the actual spawn.
+        Bomber.NextBombAtMs = Now+BOMBER_BOMB_INTERVAL_MS
     endif
 
     if Bomber.Enabled = TRUE
@@ -190,21 +192,14 @@ function BomberDo(Bomber ref as TBomber,ProtoBomber ref as TProtoBomber,Warning 
 endfunction
 
 // B2b: five independent bombs, spaced by time along the overflight.
-// Start half a sprite-width earlier than the fully visible threshold.
-// The first bomb is immediate; the 250-ms timer governs subsequent drops.
+// First release 250 ms after spawn; subsequent releases every 250 ms.
 function BomberBombDo(Bomber ref as TBomber,ProtoBomber ref as TProtoBomber,World ref as TWorld,Screen as TSize,Now as integer)
     local DeltaMs as integer
     local DragFactor as float
     local HorizontalSpeed as float
-    local FirstDropX as float
     local i as integer
 
-    FirstDropX = Screen.Width
-
     if Bomber.Enabled = TRUE and Bomber.BombCount < BOMBER_BOMB_COUNT and ProtoBomber.Bomb.Sprite.ID > 0
-        if Bomber.NextBombAtMs = 0 and Bomber.Position.x <= FirstDropX
-            Bomber.NextBombAtMs = Now
-        endif
         if Bomber.NextBombAtMs > 0 and Now >= Bomber.NextBombAtMs
             i = Bomber.BombCount
             Bomber.Bomb[i].Enabled = TRUE

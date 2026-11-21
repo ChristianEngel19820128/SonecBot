@@ -95,7 +95,7 @@ Verbindlicher Planungsrahmen und Details: [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROA
 
 ## Genau ein nächster Schritt
 
-**Bomber B2b – früherer Abwurfstart, AGK-Nachtest offen.** Entwickler bestätigte **6/7** für fünf Bomben, ca. 250-ms-Abstände, Physik/Rotation, Layering und Regressionen. Screenshot zeigt den Teppich noch zu weit links. Im Code beginnt Bombe 1 jetzt **eine halbe Spritebreite (ca. 88 px) früher**: Bombermittelpunkt erreicht `Screen.Width`, während das Heck noch rechts außerhalb liegt. Die erste Bombe fällt ohne zusätzliche Timerwartezeit; ab Bombe 2 gelten unverändert 250 ms. Physik, Rotation, Zeichenreihenfolge unverändert; noch keine Kollision, Explosion oder Schaden. Nächster lokaler Sichttest: Abwurfstart und mittige räumliche Abdeckung beurteilen; erst danach ggf. Abstände anpassen. Drohnen-Jetstream erst nach Bomberabschluss; `main` unberührt.
+**Bomber B2b – Spawn-gekoppelter Bombenteppich lokal testen.** Entwickler bestätigte zuvor **6/7** für fünf Bomben, ca. 250-ms-Abstände, Physik/Rotation, Layering und Regressionen; Screenshots zeigten den Teppich zu weit links. Neuer Versuch: Spacejet-Spawn um **1/4 Bildschirmbreite weiter rechts**; erste Bombe **250 ms nach tatsächlichem Spawn**, vier weitere alle 250 ms. Kein positionsabhängiger Abwurfstart mehr. Risiko: Bomben fallen zunächst außerhalb des Bildes. Physik, Rotation, Layering unverändert; noch keine Kollision, Explosion oder Schaden. Lokaler Sichttest: Sichtbarkeit aller fünf und mittige Abdeckung prüfen. Drohnen-Jetstream erst nach Bomberabschluss; `main` unberührt.
 
 ## Weiterführende Dokumente
 

@@ -6,7 +6,7 @@ Hier stehen nur unmittelbar nächste, gemeinsam zu bearbeitende Schritte. Höchs
 
 ## Jetzt
 
-- [ ] **Bomber B2b – um ca. 88 px vorgezogenen Abwurfstart lokal testen.** Screenshot zeigt Teppich noch zu weit links. Bombe 1 fällt jetzt bereits bei Bombermittelpunkt `Screen.Width` (Heck noch rechts außerhalb); Bombe 2–5 unverändert alle 250 ms. Mittige Abdeckung und Startpunkt beurteilen; Physik, Layering und übrige Funktionen unverändert. Noch keine Kollision/Explosion/Schaden. Details in [HANDOFF.md](HANDOFF.md).
+- [ ] **Bomber B2b – Spawn-gekoppelten Bombenteppich lokal testen.** Spawn um **1/4 Bildschirmbreite** nach rechts verschoben; erste Bombe **250 ms nach Spawn**, vier weitere im 250-ms-Abstand. Prüfen, ob Bomben zu früh/außerhalb des Bildes fallen und ob die mittige Abdeckung besser wird. Physik und Layering unverändert; noch keine Kollision/Explosion/Schaden. Details in [HANDOFF.md](HANDOFF.md).
 
 **Drohne D1–D6 abgeschlossen:** D6-Funktionstest 8/8 lokal bestanden. Jetstream-Feinschliff (30 ms, Skalierung 0,65, Auslässe −10/0/+10 px, Y+13 px) zuletzt per Screenshot optisch bestätigt; kein erneuter vollständiger Funktionstest nach der letzten Höhenkorrektur. Chat B ersetzt später den provisorischen Spawn-Timer. Testdetails stehen in [HANDOFF.md](HANDOFF.md).
 
