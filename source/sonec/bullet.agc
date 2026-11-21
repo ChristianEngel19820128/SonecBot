@@ -470,6 +470,8 @@ function BulletCollidePlayerTargets(BulletList ref as TBulletList,OrbList ref as
     local BestIndex as integer
     local BestEntry as float
     local Entry as float
+    local DroneMin as TPosition
+    local DroneMax as TPosition
 
     for i = 0 to BulletList.Bullet.Length
         if BulletList.Bullet[i].Enabled = TRUE and BulletList.Bullet[i].CollisionData.CollisionType = TYPEPLAYERONE
@@ -534,8 +536,6 @@ function BulletCollidePlayerTargets(BulletList ref as TBulletList,OrbList ref as
 
             // Drone joins the same nearest-hit sweep as all other player targets.
             if Drone.Enabled = TRUE
-                local DroneMin as TPosition
-                local DroneMax as TPosition
                 DroneMin.x = Drone.Position.x-23
                 DroneMin.y = Drone.Position.y-15
                 DroneMax.x = Drone.Position.x+23
