@@ -9,6 +9,7 @@
 #constant NOTICE_PREVIEW 1800
 #constant PICKUP_STAR_MS 1100
 #constant NOTICE_SLIDE_MS 500
+#constant NOTICE_SLIDE_GAP 24
 #constant NOTICE_REPEAT_MS 250
 #constant NOTICE_BAR_ALPHA 89
 
@@ -214,7 +215,7 @@ function WarningDraw(Warning ref as TWarning)
             SlideOffset = 0
             Elapsed = Warning.Now-Warning.SlideStartMs
             if Elapsed >= 0 and Elapsed < NOTICE_SLIDE_MS
-                SlideOffset = NOTICE_WIDTH*(NOTICE_SLIDE_MS-Elapsed)/NOTICE_SLIDE_MS
+                SlideOffset = (NOTICE_WIDTH+NOTICE_SLIDE_GAP)*(NOTICE_SLIDE_MS-Elapsed)/NOTICE_SLIDE_MS
             endif
             SetSpriteSize(Warning.Notice[i].BarSpriteID,NOTICE_WIDTH,NOTICE_HEIGHT)
             SetSpriteColor(Warning.Notice[i].BarSpriteID,12,12,24,NOTICE_BAR_ALPHA)
@@ -262,7 +263,7 @@ function WarningDraw(Warning ref as TWarning)
     if Warning.OutUntilMs > Warning.Now
         Elapsed = NOTICE_SLIDE_MS-(Warning.OutUntilMs-Warning.Now)
         if Elapsed < 0 then Elapsed = 0
-        OutX = Warning.CenterX-NOTICE_WIDTH*0.5-NOTICE_WIDTH*Elapsed/NOTICE_SLIDE_MS
+        OutX = Warning.CenterX-NOTICE_WIDTH*0.5-(NOTICE_WIDTH+NOTICE_SLIDE_GAP)*Elapsed/NOTICE_SLIDE_MS
         SetSpriteSize(Warning.OutBarSpriteID,NOTICE_WIDTH,NOTICE_HEIGHT)
         SetSpriteColor(Warning.OutBarSpriteID,12,12,24,NOTICE_BAR_ALPHA)
         SetSpritePosition(Warning.OutBarSpriteID,OutX,NOTICE_TOP)
