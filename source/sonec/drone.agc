@@ -2,6 +2,8 @@
 // Horizontal patrol inside screen/world X bounds, fixed world-space flight height.
 // Three user-provided 46x30 colored images: left, center (turn), right.
 
+#constant DRONE_AUTO_SPAWN_MIN_MS 20000
+#constant DRONE_AUTO_SPAWN_MAX_MS 35000
 #constant DRONE_SPAWN_OFFSET_X 30
 #constant DRONE_SPAWN_MIN_SONEC_DISTANCE 160
 #constant DRONE_PATROL_MARGIN_X 60
@@ -25,6 +27,8 @@
 #constant DRONE_BOB_AMPLITUDE 8
 #constant DRONE_BOB_DEGREES_PER_MS 0.12
 
+// Temporary standalone spawn scheduler; Chat B will replace its call site.
+global DroneNextAutoSpawnMs as integer
 global DroneMotionUseGate as integer
 global DroneMotionTimer as TTime
 global DroneMotionLastMode as integer
@@ -118,6 +122,7 @@ endfunction
 
 function DroneInit(Drone ref as TDrone,Screen as TSize,World ref as TWorld,Now as integer)
     Drone.Enabled = FALSE
+    DroneNextAutoSpawnMs = Now+random(DRONE_AUTO_SPAWN_MIN_MS,DRONE_AUTO_SPAWN_MAX_MS)
     Drone.Direction = MOVELEFT
     Drone.IsTurning = FALSE
     Drone.TurnUntilMs = 0
@@ -204,6 +209,17 @@ function DroneSpawn(Drone ref as TDrone,Screen as TSize,World ref as TWorld,Sone
         endif
     endif
 endfunction Success
+
+// D4b: temporary pause-aware scheduler. Chat B will remove this caller,
+// not the position-checked DroneSpawn API.
+function DroneAutoSpawnDo(Drone ref as TDrone,Screen as TSize,World ref as TWorld,Sonec ref as TSonec,Now as integer)
+    if Now >= DroneNextAutoSpawnMs
+        if Drone.Enabled = FALSE
+            DroneSpawn(Drone,Screen,World,Sonec,Now,0)
+        endif
+        DroneNextAutoSpawnMs = Now+random(DRONE_AUTO_SPAWN_MIN_MS,DRONE_AUTO_SPAWN_MAX_MS)
+    endif
+endfunction
 
 function DroneMove(Drone ref as TDrone,Screen as TSize,Sonec ref as TSonec,Shield ref as TShield,Now as integer)
     local DeltaMs as integer
