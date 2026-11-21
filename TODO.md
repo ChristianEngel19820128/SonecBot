@@ -6,7 +6,7 @@ Hier stehen nur unmittelbar nächste, gemeinsam zu bearbeitende Schritte. Höchs
 
 ## Jetzt
 
-- [ ] **D6 – Kleinere Jetfire-Partikel lokal prüfen.** D6-Funktionstest zuvor 8/8 bestanden. Nach Korrektur der Auslasspositionen (−10/0/+10 px) flackerte der Strahl bei 50 ms zu stark. Neuer Versuch: zurück auf 30 ms, ausschließlich Drohnen-Jetfire-Skalierung 0,65; Sonecs Jetfire unverändert. Compile, Dichte, Flackern und Sonecs Flugstrahl prüfen.
+- [ ] **D6 – Kleinere Jetfire-Partikel lokal prüfen.** D6-Funktionstest zuvor 8/8 bestanden. Nach Korrektur der Auslasspositionen (−10/0/+10 px) flackerte der Strahl bei 50 ms zu stark. Neuer Versuch: zurück auf 30 ms, ausschließlich Drohnen-Jetfire-Skalierung 0,65; Sonecs Jetfire unverändert. Entwickler meldet deutlich besseres Bild. Emissionshöhe anschließend um 3 px angehoben (Y+13 statt Y+16); Screenshot und lokale Sichtprüfung stehen noch aus.
 
 **Drohne D1–D5c vorerst abgeschlossen.** D5c vom Entwickler mit **8/8 bestanden** bestätigt: Compile, Trefferblinken, einmalige Zerstörungsexplosion, sauberes Aufräumen, volle Gesundheit beim Respawn, wiederholte Zyklen, keine unerwünschten Explosionsschäden und keine Langzeitauffälligkeiten. Farbabgleich nach D5c: Drohnen-Trefferfeedback an Rumpf, Sensoren und Fallback auf Standardrot RGB (255,0,0) gesetzt; Farbänderung vom Entwickler visuell bestätigt. Kein weiterer Drohnen-Codeauftrag; Chat B übernimmt später die Spawnsteuerung.
 
