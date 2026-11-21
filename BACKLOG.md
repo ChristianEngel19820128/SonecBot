@@ -30,6 +30,8 @@ Bomber, Flarak, hilfreicher Jumppod, Gefahren-/Erfahrungsgrundsystem, kleine Zie
 - **Umfangreichere Missionen, Informationsavatar oder Sprache:** über die kleinen Alpha-Ziele und vorhandenen Warn-/Hilfetexte hinausgehender Ausbau.
 - **Optionale Draufsicht und Multiplayer:** langfristig, ohne zugesagten Release.
 
+- **Trefferfarben nach Schadenshöhe:** Optional später ein einheitliches Farbspektrum für die Höhe eines erlittenen Treffers entwerfen. Derzeit bleibt Standardrot RGB (255,0,0) für alle Gegner bestehen; keine Umsetzung im aktuellen Drohnenschritt.
+
 ## Grafik und Präsentation
 
 - **Weitere Paintball-Flecken:** zusätzliche Grafiken bei Gelegenheit; optionaler Alpha-Mini-Schritt ist bereits auf ein Pixel breite Laufnasen ohne Fleckenrotation begrenzt. Aufwendige organische Tropfen sind kein aktueller Auftrag.
