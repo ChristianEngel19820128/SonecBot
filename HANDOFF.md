@@ -95,7 +95,7 @@ Verbindlicher Planungsrahmen und Details: [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROA
 
 ## Genau ein nächster Schritt
 
-**Bomber B2a – erste Testbombe lokal in AGK/Windows prüfen.** `bomb.png` (25×10 px) ist eingebunden. Einmaliger Abwurf in Bildschirmmitte während des B1-Überflugs; anfänglich linksgerichtet mit −0,40 px/ms, horizontale Dämpfung, vertikale Schwerkraft und geschwindigkeitsabhängige Drehung von 0° gegen −90°. Noch keine Kollision, Explosion, Schaden oder fünfteilige Salve. Compile, Abwurf, Flugbahn, Rotation, Kamera und Regressionen prüfen; Entwicklerlauf ausstehend. Danach B2b planen. Drohnen-Jetstream erst nach Bomberabschluss; `main` unberührt.
+**Bomber B2b – fünf zeitversetzte Bombenabwürfe spezifizieren.** B2a vom Entwickler lokal in AGK mit **6/6 bestanden** bestätigt: Compile, einzelner Abwurf, Flugbahn mit horizontaler Dämpfung und Schwerkraft, geschwindigkeitsabhängige Rotation, korrekte Weltposition bei Kamerabewegung und keine Sonec-/Drohnen-/Spacejet-Regressionen. `bomb.png` (25×10 px) ist eingebunden; noch keine Kollision, Explosion oder Schaden. Als Nächstes nur zeitliche Staffelung und Verwaltung von fünf unabhängigen Bomben vereinbaren, noch keine Codefreigabe. Drohnen-Jetstream erst nach Bomberabschluss; `main` unberührt.
 
 ## Weiterführende Dokumente
 
