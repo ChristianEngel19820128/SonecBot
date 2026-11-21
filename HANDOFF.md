@@ -49,8 +49,8 @@ Zusätzlich in dieser Runde umgesetzt:
 - **D5b abgenommen (7/7):** Entwickler bestätigt Compile, Schaden/Zerstörung durch Flammen, Granaten, Plasma und Explosionen, erneuten Spawn und keine Waffenregressionen.
 - **D5c abgenommen (8/8):** Entwickler bestätigt Compile, rotes Trefferfeedback, genau eine Zerstörungsexplosion, keine verbleibenden Angriffe, vollen HP-Respawn, mehrere Zyklen, keinen unerwünschten Umgebungsschaden und keine Langzeitauffälligkeiten.
 - **Farbabgleich nach D5c bestätigt:** Entwickler hat Standardrot RGB (255,0,0) visuell geprüft und bestätigt. Optionales Schadenshöhen-Farbspektrum steht unverbindlich in `BACKLOG.md`.
-- **D6 Funktionstest abgenommen (8/8):** Entwickler bestätigt Compile, drei sichtbare Strahlen, korrektes Mitbewegen, unveränderte Drohnenfunktionen, Pause, Zerstörung, Respawn und unveränderten Sonec-Jetfire. Nur visuelle Feinheiten: möglicherweise zu dichter Partikelausstoß (30 ms), äußere Strahlen leicht zu weit außen (Offsets −14/0/+14 px). Screenshot folgt, noch keine Werteänderung.
-- **Nächster Schritt:** Screenshot der Jetstreams prüfen und anschließend nur Takt/Position feinabstimmen; danach Übergabe an Chat B.
+- **D6 Funktionstest abgenommen (8/8):** Entwickler bestätigt Compile, drei sichtbare Strahlen, Mitbewegen, Pause, Zerstörung, Respawn und unveränderten Sonec-Jetfire. Screenshot zeigte dichte, seitlich etwas zu breite Strahlen. Feinabstimmung umgesetzt: Jetfire-Intervall 50 statt 30 ms, X-Offsets −10/0/+10 statt −14/0/+14 px; lokaler Nachtest offen.
+- **Nächster Schritt:** Entwickler prüft D6-Jetstream-Feinabstimmung lokal; danach Übergabe an Chat B.
 
 
 ## Bestätigte Alpha-Planung
