@@ -50,8 +50,6 @@ global MotionDebugClockReadGapMs as integer
 global MotionDebugClockGapTotalMs as integer
 global MotionDebugClockGapFrames as integer
 global MotionDebugClockActiveFrames as integer
-// Temporary N1a notification test: KEY_0 alternates two different red warnings.
-global NoticeDebugRedVariant as integer
 
 if GetDeviceBaseName() = "html5"
 	SetVSync(1)
@@ -180,11 +178,7 @@ TowerMotionEveryFrameEnabled = 1
 
 repeat
 	
-	if DroneMotionUseGate = 1
-        SetTextString(FPS,Str(Trunc(ScreenFPS()))+"  DRONE A 10ms")
-    else
-        SetTextString(FPS,Str(Trunc(ScreenFPS()))+"  DRONE B dt")
-    endif
+	SetTextString(FPS,Str(Trunc(ScreenFPS())))
 	
 	// Capture the existing two time samples without changing their call order.
 	ClockPreviousNowMs = Now
@@ -209,7 +203,7 @@ repeat
 	// Debug keys 1-7 work in Windows and HTML5 (click the browser canvas first).
 	// 1 Walker, 2 platforms, 3 K1d outlines, 4 pixel snap,
 	// 5 tower A/B, 6 platform A/B, 7 drone A/B.
-	// Temporary N1a test: 8 duplicate green, 9 duplicate red, 0 alternating red.
+	// Keys 8-0 remain reserved.
 	if Game.IsLost = FALSE
 		if GetKeyPressed(KEY_7) = 1
 			if DroneMotionUseGate = 0
@@ -283,24 +277,6 @@ repeat
 				endif
 			endif
 			if Game.IsPause = FALSE
-                // Test notices only after touchdown; no gameplay/loot changes.
-                if CurrentNow >= Game.TouchdownUntilMs
-                    if GetKeyPressed(KEY_8) = 1
-                        WarningShowPositive(Game.Warning,"N1a TEST GREEN",5000,CurrentNow)
-                    endif
-                    if GetKeyPressed(KEY_9) = 1
-                        WarningShow(Game.Warning,"N1a TEST RED",0,5000,CurrentNow)
-                    endif
-                    if GetKeyPressed(KEY_0) = 1
-                        if NoticeDebugRedVariant = 0
-                            WarningShow(Game.Warning,"N1a TEST RED A",0,5000,CurrentNow)
-                            NoticeDebugRedVariant = 1
-                        else
-                            WarningShow(Game.Warning,"N1a TEST RED B",0,5000,CurrentNow)
-                            NoticeDebugRedVariant = 0
-                        endif
-                    endif
-                endif
 				GameInput(Game,Keys,Options,CurrentNow)
 				GameActionInput(Game,Keys,CurrentNow)
 				GameDo(Game,CurrentNow)		
