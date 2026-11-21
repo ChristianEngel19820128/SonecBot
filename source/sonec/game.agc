@@ -235,6 +235,8 @@ function GameDo(Game ref as TGame,Now as integer)
 	
 	// S3 simple formations run on the pause-aware virtual game clock.
 	SimpleMineSpawnDo(Game,Now)
+	// D4b temporary scheduler; remove this call when Chat B owns spawning.
+	DroneAutoSpawnDo(Game.Drone,Game.Screen,Game.World,Game.Sonec,Now)
 	DroneMove(Game.Drone,Game.Screen,Game.Sonec,Game.Shield,Now)
 	WarningUpdate(Game.Warning,Now)
 	
