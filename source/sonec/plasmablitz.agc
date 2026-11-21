@@ -338,6 +338,26 @@ function PlasmaBlitzCollideWalkers(PlasmaBlitzList ref as TPlasmaBlitzList,Walke
 endfunction
 
 // One collision interval for Orbs, Mines, Chests and Walkers, then reset once.
+// D5b: plasma uses the existing shared collision interval.
+function PlasmaBlitzCollideDrone(PlasmaBlitzList ref as TPlasmaBlitzList,Drone ref as TDrone,Now as integer)
+    local i as integer
+    local MinPos as TPosition
+    local MaxPos as TPosition
+    MinPos.x = Drone.Position.x-23
+    MinPos.y = Drone.Position.y-15
+    MaxPos.x = Drone.Position.x+23
+    MaxPos.y = Drone.Position.y+15
+    for i = 0 to PlasmaBlitzList.PlasmaBlitz.Length
+        if Drone.Enabled = TRUE and PlasmaBlitzList.PlasmaBlitz[i].Enabled = TRUE
+            if TimeGet(PlasmaBlitzList.PlasmaBlitz[i].CollisionData.CollisionTimer,Now) > 0
+                if BoxInBox(PlasmaBlitzList.PlasmaBlitz[i].CollisionData.Position1,PlasmaBlitzList.PlasmaBlitz[i].CollisionData.Position2,MinPos,MaxPos)
+                    DroneTakeDamage(Drone,PlasmaBlitzList.PlasmaBlitz[i].BulletData.Damage)
+                endif
+            endif
+        endif
+    next i
+endfunction
+
 function PlasmaBlitzCollisionTimerReset(PlasmaBlitzList ref as TPlasmaBlitzList,Now as integer)
 
 	local i as integer
