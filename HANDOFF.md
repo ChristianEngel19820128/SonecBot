@@ -95,7 +95,7 @@ Verbindlicher Planungsrahmen und Details: [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROA
 
 ## Genau ein nächster Schritt
 
-**Bomber B2d – Schadensabschirmung durch Plattformoberkante lokal testen.** B2c vom Entwickler **6/6 bestanden**; Screenshot zeigt große Typ-1-Explosion. Neu: optionale Welt-Y-Schadensgrenze in der allgemeinen Explosion; nur Bomben-Aufschläge setzen sie auf die Plattformoberkante. Ziele darunter erhalten von diesen Explosionen keinen Radius-Schaden, andere Explosionen bleiben unverändert. **Visuelles Abschneiden noch nicht implementiert**, folgt separat. Direkter kinetischer Schaden, Bombenabschuss und Bomberzerstörung offen. Lokal Compile, Deckung und Regressionen prüfen. Drohnen-Jetstream nach Bomberabschluss; `main` unberührt.
+**Bomber B2e – sichtbare Explosionsbegrenzung als nächsten Schritt prüfen.** B2d vom Entwickler am 21.11.2026 im lokalen AGK-Test mit **6/6 bestanden** bestätigt: Compile, Bombenaufschläge auf Plattformoberseiten, Schutz für Sonec unterhalb, Schaden oberhalb, unveränderte normale Explosionen sowie keine Regressionen bei Bombenteppich, Spacejet und Drohne. Die optionale Welt-Y-Schadensgrenze ist damit funktional abgenommen. Als Nächstes nur die visuelle Begrenzung der Bombenexplosion an der Plattformoberkante konzipieren/umsetzen; Schadenslogik unverändert lassen. Direkter kinetischer Schaden, Bombenabschuss und Bomberzerstörung bleiben offen. Drohnen-Jetstream erst nach Bomberabschluss; `main` unberührt.
 
 ## Weiterführende Dokumente
 

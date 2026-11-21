@@ -6,7 +6,7 @@ Hier stehen nur unmittelbar nächste, gemeinsam zu bearbeitende Schritte. Höchs
 
 ## Jetzt
 
-- [ ] **Bomber B2d – Plattformabschirmung lokal testen.** B2c **6/6 bestanden**. Bomben-Aufschlagexplosionen erhalten optionale Welt-Y-Schadensgrenze an Plattformoberkante; unterhalb kein Radius-Schaden, andere Explosionen unverändert. Sichtbares Abschneiden folgt später. Compile, Deckung und Regressionen prüfen. Details in [HANDOFF.md](HANDOFF.md).
+- [ ] **Bomber B2e – visuelle Begrenzung der Bombenexplosion an Plattformoberkante.** B2d vom Entwickler lokal **6/6 bestanden**: Abschirmung unterhalb, Schaden oberhalb, normale Explosionen und übrige Spielfunktionen korrekt. Als Nächstes die Darstellung begrenzen, ohne die abgenommene Schadenslogik zu ändern. Details in [HANDOFF.md](HANDOFF.md).
 
 **Drohne D1–D6 abgeschlossen:** D6-Funktionstest 8/8 lokal bestanden. Jetstream-Feinschliff (30 ms, Skalierung 0,65, Auslässe −10/0/+10 px, Y+13 px) zuletzt per Screenshot optisch bestätigt; kein erneuter vollständiger Funktionstest nach der letzten Höhenkorrektur. Chat B ersetzt später den provisorischen Spawn-Timer. Testdetails stehen in [HANDOFF.md](HANDOFF.md).
 
