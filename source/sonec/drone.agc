@@ -1,7 +1,9 @@
-// D1: one unarmed persistent test drone.
+// D4a: one drone, activated by an explicit spawn request.
 // Horizontal patrol inside screen/world X bounds, fixed world-space flight height.
 // Three user-provided 46x30 colored images: left, center (turn), right.
 
+#constant DRONE_SPAWN_OFFSET_X 30
+#constant DRONE_SPAWN_MIN_SONEC_DISTANCE 160
 #constant DRONE_PATROL_MARGIN_X 60
 #constant DRONE_WORLD_MARGIN_Y 80
 #constant DRONE_PATROL_SPEED 0.10
@@ -115,7 +117,7 @@ function DroneProtoLoad(ProtoDrone ref as TProtoDrone)
 endfunction
 
 function DroneInit(Drone ref as TDrone,Screen as TSize,World ref as TWorld,Now as integer)
-    Drone.Enabled = TRUE
+    Drone.Enabled = FALSE
     Drone.Direction = MOVELEFT
     Drone.IsTurning = FALSE
     Drone.TurnUntilMs = 0
@@ -158,6 +160,46 @@ function DroneInit(Drone ref as TDrone,Screen as TSize,World ref as TWorld,Now a
     Drone.SpriteData.Angle = 0
     ColorSet(Drone.SpriteData.Color,255,255,255,255)
 endfunction
+
+// D4a: caller requests one spawn; no wave timing or automatic retries here.
+// Side: 0 = choose, MOVELEFT = enter from right, MOVERIGHT = enter from left.
+// Return FALSE when the current world view offers no safe entry position.
+function DroneSpawn(Drone ref as TDrone,Screen as TSize,World ref as TWorld,Sonec ref as TSonec,Now as integer,Side as integer)
+    local SpawnY as float
+    local SpawnX as float
+    local ChosenSide as integer
+    local MinY as float
+    local MaxY as float
+    local Success as integer
+    Success = FALSE
+    if Drone.Enabled = FALSE
+        MinY = World.Position.y+DRONE_WORLD_MARGIN_Y+DRONE_BOB_AMPLITUDE
+        MaxY = World.Position.y+Screen.Height-DRONE_WORLD_MARGIN_Y-DRONE_BOB_AMPLITUDE
+        if MinY < DRONE_WORLD_MARGIN_Y+DRONE_BOB_AMPLITUDE then MinY = DRONE_WORLD_MARGIN_Y+DRONE_BOB_AMPLITUDE
+        if MaxY > World.Size.Height-DRONE_WORLD_MARGIN_Y-DRONE_BOB_AMPLITUDE then MaxY = World.Size.Height-DRONE_WORLD_MARGIN_Y-DRONE_BOB_AMPLITUDE
+        if MaxY >= MinY and Screen.Width > DRONE_PATROL_MARGIN_X*2
+            SpawnY = (MinY+MaxY)*0.5
+            ChosenSide = Side
+            if ChosenSide <> MOVELEFT and ChosenSide <> MOVERIGHT
+                if random(0,1) = 0 then ChosenSide = MOVELEFT else ChosenSide = MOVERIGHT
+            endif
+            if ChosenSide = MOVELEFT
+                SpawnX = Screen.Width+DRONE_SPAWN_OFFSET_X
+            else
+                SpawnX = -DRONE_SPAWN_OFFSET_X
+            endif
+            if abs(SpawnX-Sonec.ObjectData.Position.x) >= DRONE_SPAWN_MIN_SONEC_DISTANCE
+                DroneInit(Drone,Screen,World,Now)
+                Drone.Position.x = SpawnX
+                Drone.Position.y = SpawnY
+                DroneBaseY = SpawnY
+                Drone.Direction = ChosenSide
+                Drone.Enabled = TRUE
+                Success = TRUE
+            endif
+        endif
+    endif
+endfunction Success
 
 function DroneMove(Drone ref as TDrone,Screen as TSize,Sonec ref as TSonec,Shield ref as TShield,Now as integer)
     local DeltaMs as integer
