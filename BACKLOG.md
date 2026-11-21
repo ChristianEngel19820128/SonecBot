@@ -30,6 +30,11 @@ Bomber, Flarak, hilfreicher Jumppod, Gefahren-/Erfahrungsgrundsystem, kleine Zie
 - **Umfangreichere Missionen, Informationsavatar oder Sprache:** über die kleinen Alpha-Ziele und vorhandenen Warn-/Hilfetexte hinausgehender Ausbau.
 - **Optionale Draufsicht und Multiplayer:** langfristig, ohne zugesagten Release.
 
+## Belohnungs-Balancing: Grenzfälle und Ersatznutzen
+
+- **Keine nutzlosen Pickups (Vorschlag, noch nicht implementiert):** Wenn ein Upgrade oder eine Ressource am Limit ist, soll der Pickup einen sinnvollen Ersatznutzen geben, mindestens eine Energie-Gutschrift. Beispiele: volle Gesundheit -> Energie; Burst am Maximum -> zunächst bestehender Feuerraten-Fallback, danach Energie, sobald auch beide Feuerraten-Limits erreicht sind; volle Munition oder maximale Regeneration -> Energie. Bei voller Energie gesondert festlegen, wie Überlauf und bestehender Energie-Überladungsschaden behandelt werden, damit der Ersatznutzen nicht unbeabsichtigt schadet.
+- **Quellbefund 21.11.2026:** `energie.agc`/`EnergieCollect` Fälle 1–7 enthalten derzeit teils stille Grenzfälle: maximale Regeneration, volle Gesundheit, maximale Feuerraten/Burst, volle MG-/Granatenmunition. Die Nachrichten sind nicht in allen Fällen zentralisiert. Im Balancing alle acht Pickup-Typen, Grenzwerte, Fallback-Reihenfolge und Meldungen als Matrix definieren und gemeinsam testen; bis dahin keine Codeänderung.
+
 ## Grafik und Präsentation
 
 - **Trefferfarben nach Schadenshöhe:** Optional später ein einheitliches Farbspektrum für die Höhe eines erlittenen Treffers entwerfen. Derzeit bleibt Standardrot RGB (255,0,0) für alle Gegner bestehen; keine Umsetzung im aktuellen Drohnenschritt.
