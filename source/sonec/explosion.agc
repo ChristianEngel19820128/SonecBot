@@ -454,6 +454,27 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
+// D5b: each blast has its own cooldown for the single active drone.
+function ExplosionCollideDrone(ExplosionList ref as TExplosionList,Drone ref as TDrone,Now as integer)
+    local i as integer
+    local NearestPoint as TPosition
+    for i = 0 to ExplosionList.Explosion.Length
+        if Drone.Enabled = TRUE and ExplosionList.Explosion[i].Enabled = TRUE
+            NearestPoint = ExplosionList.Explosion[i].ObjectData.Position
+            if NearestPoint.x < Drone.Position.x-23 then NearestPoint.x = Drone.Position.x-23
+            if NearestPoint.x > Drone.Position.x+23 then NearestPoint.x = Drone.Position.x+23
+            if NearestPoint.y < Drone.Position.y-15 then NearestPoint.y = Drone.Position.y-15
+            if NearestPoint.y > Drone.Position.y+15 then NearestPoint.y = Drone.Position.y+15
+            if CalcRadius(ExplosionList.Explosion[i].ObjectData.Position,NearestPoint) < ExplosionList.Explosion[i].ObjectData.Radius
+                if EXPLOSION_TIMED_DAMAGE = 0 or ExplosionList.Explosion[i].LastDroneHitMs = 0 or GetMilliseconds()-ExplosionList.Explosion[i].LastDroneHitMs >= EXPLOSION_DAMAGE_INTERVAL_MS
+                    ExplosionList.Explosion[i].LastDroneHitMs = GetMilliseconds()
+                    DroneTakeDamage(Drone,ExplosionList.Explosion[i].BulletData.Damage)
+                endif
+            endif
+        endif
+    next i
+endfunction
+
 function ExplosionMove(Explosion ref as TExplosion,World ref as TWorld,Now as integer)
 	
 	if Explosion.Enabled = TRUE
