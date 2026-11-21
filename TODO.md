@@ -6,7 +6,8 @@ Hier stehen nur unmittelbar nächste, gemeinsam zu bearbeitende Schritte. Höchs
 
 ## Jetzt
 
-- [ ] **D4b – Automatischen Drohnen-Testspawn lokal prüfen.** Übergangsweise alle 20–35 Sekunden aktiver Spielzeit ein Spawnversuch, höchstens eine aktive Drohne. `DroneAutoSpawnDo` in `drone.agc`, Aufruf in `game.agc`; Chat B entfernt später nur den Timer-Aufruf und übernimmt die Spawnsteuerung. Test: Compile, erster Spawn ohne F6, beide Eintrittsseiten über Neustarts, keine Duplikate, unveränderte Drohnenaktionen, Pause hält Zeit an. Eine zerstörbare Drohne gibt es noch nicht.
+D4b vom Entwickler am 21.11.2026 im lokalen AGK-/Windows-Test mit **6/6 bestanden** bestätigt: Compile, automatischer Spawn nach 20–35 Sekunden, beide Eintrittsseiten, maximal eine Drohne, unveränderte Funktionen, pausierender Timer. Keine Auffälligkeiten. Der Timer bleibt vorläufig aktiv und wird später durch Chat B ersetzt.
+
 - [ ] **D5 – Drohnen-Schaden und Zerstörung (nach D4b-Test).** D5a Gesundheit und Maschinengewehr; D5b Flammenwerfer, Granaten, Plasmablitz **und Explosionen**; D5c Trefferfeedback, Zerstörung, Aufräumen laufender Effekte und erneuter Spawn. Zusätzliche Positionierungsregeln erst bei konkretem Bedarf.
 
 
