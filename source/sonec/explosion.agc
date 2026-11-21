@@ -106,6 +106,7 @@ function ExplosionNew(Explosion ref as TExplosion,ProtoExplosion ref as TProtoEx
 	Explosion.Enabled = TRUE
 	Explosion.MeasureStartMs = GetMilliseconds()
 	Explosion.LastSonecHitMs = 0
+	Explosion.LastDroneHitMs = 0
 	Explosion.LastChestHitMs.Length = -1
 	Explosion.LastOrbHitMs.Length = -1
 	Explosion.LastMineHitMs.Length = -1
