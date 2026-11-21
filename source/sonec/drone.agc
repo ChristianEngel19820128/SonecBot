@@ -438,7 +438,7 @@ function DroneDraw(Drone ref as TDrone,ProtoDrone ref as TProtoDrone,World ref a
     if Drone.Enabled = TRUE
         SpritePositionCalc(Drone.SpriteData.Position,Drone.Position,World.Position)
         if GetMilliseconds() < DroneHitFlashUntilMs
-            ColorSet(Drone.SpriteData.Color,255,65,65,255)
+            ColorSet(Drone.SpriteData.Color,255,0,0,255)
         else
             ColorSet(Drone.SpriteData.Color,255,255,255,255)
         endif
@@ -477,7 +477,7 @@ function DroneDraw(Drone ref as TDrone,ProtoDrone ref as TProtoDrone,World ref a
             // D3a color test: tint torso and sensors independently, without editing PNGs.
             TorsoData = Drone.SpriteData
             if GetMilliseconds() < DroneHitFlashUntilMs
-                ColorSet(TorsoData.Color,255,65,65,255)
+                ColorSet(TorsoData.Color,255,0,0,255)
             else
                 ColorSet(TorsoData.Color,45,140,65,255)
             endif
@@ -503,7 +503,7 @@ function DroneDraw(Drone ref as TDrone,ProtoDrone ref as TProtoDrone,World ref a
 
             SensorData = Drone.SpriteData
             if GetMilliseconds() < DroneHitFlashUntilMs
-                ColorSet(SensorData.Color,255,160,160,255)
+                ColorSet(SensorData.Color,255,0,0,255)
             else
                 ColorSet(SensorData.Color,230,45,45,255)
             endif
