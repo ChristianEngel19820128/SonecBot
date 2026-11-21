@@ -6,19 +6,9 @@ Hier stehen nur unmittelbar nächste, gemeinsam zu bearbeitende Schritte. Höchs
 
 ## Jetzt
 
-- [ ] **D6 – Kleinere Jetfire-Partikel lokal prüfen.** D6-Funktionstest zuvor 8/8 bestanden. Nach Korrektur der Auslasspositionen (−10/0/+10 px) flackerte der Strahl bei 50 ms zu stark. Neuer Versuch: zurück auf 30 ms, ausschließlich Drohnen-Jetfire-Skalierung 0,65; Sonecs Jetfire unverändert. Entwickler meldet deutlich besseres Bild. Emissionshöhe anschließend um 3 px angehoben (Y+13 statt Y+16); Screenshot und lokale Sichtprüfung stehen noch aus.
+- [ ] **Bomber – nächsten kleinen Arbeitsschritt abstimmen.** Nach der Pause voraussichtlich als nächstes Thema. Vorgabe des Entwicklers: höchstens ein Bomber gleichzeitig aktiv. Zunächst Rolle, Bewegungs-/Spawn-Basis und ersten Testumfang gemeinsam festlegen; noch keine Codefreigabe.
 
-**Drohne D1–D5c vorerst abgeschlossen.** D5c vom Entwickler mit **8/8 bestanden** bestätigt: Compile, Trefferblinken, einmalige Zerstörungsexplosion, sauberes Aufräumen, volle Gesundheit beim Respawn, wiederholte Zyklen, keine unerwünschten Explosionsschäden und keine Langzeitauffälligkeiten. Farbabgleich nach D5c: Drohnen-Trefferfeedback an Rumpf, Sensoren und Fallback auf Standardrot RGB (255,0,0) gesetzt; Farbänderung vom Entwickler visuell bestätigt. Kein weiterer Drohnen-Codeauftrag; Chat B übernimmt später die Spawnsteuerung.
-
-D5b vom Entwickler mit **7/7 bestanden** bestätigt: Flammenwerfer, Granat-Direkttreffer, Plasma und Explosionen beschädigen/zerstören Drohne, neuer Spawn und keine Regressionen; keine Auffälligkeiten.
-
-D5a vom Entwickler mit **7/7 bestanden** bestätigt (lokaler AGK-Test): MG trifft und zerstört Drohne, Angriffe enden, Timer erzeugt später neue Drohne, keine Regressionen; keine Auffälligkeiten.
-
-D4b vom Entwickler am 21.11.2026 im lokalen AGK-/Windows-Test mit **6/6 bestanden** bestätigt: Compile, automatischer Spawn nach 20–35 Sekunden, beide Eintrittsseiten, maximal eine Drohne, unveränderte Funktionen, pausierender Timer. Keine Auffälligkeiten. Der Timer bleibt vorläufig aktiv und wird später durch Chat B ersetzt.
-
-
-
-Die Roadmap-Besprechung ist abgeschlossen. Das Paintball-Easter-Egg ist nach dem Windows-Sichttest vom Entwickler abgenommen. Detaillierte Alpha-Umsetzung folgt in Themenchats; eine feste Reihenfolge ist noch nicht beschlossen.
+**Drohne D1–D6 abgeschlossen:** D6-Funktionstest 8/8 lokal bestanden. Jetstream-Feinschliff (30 ms, Skalierung 0,65, Auslässe −10/0/+10 px, Y+13 px) zuletzt per Screenshot optisch bestätigt; kein erneuter vollständiger Funktionstest nach der letzten Höhenkorrektur. Chat B ersetzt später den provisorischen Spawn-Timer. Testdetails stehen in [HANDOFF.md](HANDOFF.md).
 
 ## Pflege
 
