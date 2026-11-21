@@ -6,7 +6,7 @@ Hier stehen nur unmittelbar nächste, gemeinsam zu bearbeitende Schritte. Höchs
 
 ## Jetzt
 
-**Drohne D1–D5c vorerst abgeschlossen.** D5c vom Entwickler mit **8/8 bestanden** bestätigt: Compile, Trefferblinken, einmalige Zerstörungsexplosion, sauberes Aufräumen, volle Gesundheit beim Respawn, wiederholte Zyklen, keine unerwünschten Explosionsschäden und keine Langzeitauffälligkeiten. Farbhinweis: Drohnen-Trefferfeedback RGB (255,65,65) am Rumpf und (255,160,160) an Sensoren, abweichend vom reinen Rot anderer Gegner. Kein weiterer Drohnen-Codeauftrag; Chat B übernimmt später die Spawnsteuerung.
+**Drohne D1–D5c vorerst abgeschlossen.** D5c vom Entwickler mit **8/8 bestanden** bestätigt: Compile, Trefferblinken, einmalige Zerstörungsexplosion, sauberes Aufräumen, volle Gesundheit beim Respawn, wiederholte Zyklen, keine unerwünschten Explosionsschäden und keine Langzeitauffälligkeiten. Farbabgleich nach D5c: Drohnen-Trefferfeedback an Rumpf, Sensoren und Fallback auf Standardrot RGB (255,0,0) gesetzt; lokaler Nachtest dieser Farbänderung noch offen. Kein weiterer Drohnen-Codeauftrag; Chat B übernimmt später die Spawnsteuerung.
 
 D5b vom Entwickler mit **7/7 bestanden** bestätigt: Flammenwerfer, Granat-Direkttreffer, Plasma und Explosionen beschädigen/zerstören Drohne, neuer Spawn und keine Regressionen; keine Auffälligkeiten.
 
