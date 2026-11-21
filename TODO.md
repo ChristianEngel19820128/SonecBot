@@ -6,7 +6,7 @@ Hier stehen nur unmittelbar nächste, gemeinsam zu bearbeitende Schritte. Höchs
 
 ## Jetzt
 
-- [ ] **D3c/1 – Treffererkennung des Drohnenlasers lokal testen.** D3b/3 vom Entwickler mit **4/4 bestanden** bestätigt; neuer ruhiger Rhythmus bleibt. Neuer D3c-Code prüft die horizontal überstrichene Projektilstrecke gegen Sonecs zweikreisige Körperannäherung (Weltkoordinaten); beim Treffer verschwindet das Projektil und `DroneLaserHits` erhöht sich einmal. **Keine Änderung an Leben, Schild, Schaden oder Sounds.** AGK-Test: Compile, Laser trifft Sonec und verschwindet, Vorbeiflug ohne Treffer, keine Lebens-/Schildänderung, Schuss/Scan weiterhin normal. Anschließend Trefferreaktion/Schaden separat besprechen.
+- [ ] **D3c/2 – Drohnenlaser-Schaden lokal testen.** D3c/1 vom Entwickler mit **5/5 bestanden** bestätigt. Bei Lasertreffer werden nun testweise **20 Schaden** über die bestehende `ShieldAbsorbDamage`-Logik verteilt (Schild absorbiert ladungsabhängig bis zu 80 %, Rest trifft Gesundheit). Bestehende Schild-/Sonec-Trefferblitze werden verwendet. Laser verschwindet weiterhin beim Treffer; kein zusätzlicher Sound. AGK-Test: Compile, ohne Schild Gesundheitsschaden, mit Schild Ladungsverlust und reduzierter Gesundheitsschaden, Trefferblitze, keine doppelten Treffer, übrige Drohnenfunktionen unverändert. Danach Balancing separat abstimmen.
 
 Die Roadmap-Besprechung ist abgeschlossen. Das Paintball-Easter-Egg ist nach dem Windows-Sichttest vom Entwickler abgenommen. Detaillierte Alpha-Umsetzung folgt in Themenchats; eine feste Reihenfolge ist noch nicht beschlossen.
 
