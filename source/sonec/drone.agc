@@ -3,6 +3,7 @@
 // Three user-provided 46x30 colored images: left, center (turn), right.
 
 #constant DRONE_HEALTH_MAX 100
+#constant DRONE_HIT_FLASH_MS 150
 #constant DRONE_AUTO_SPAWN_MIN_MS 20000
 #constant DRONE_AUTO_SPAWN_MAX_MS 35000
 #constant DRONE_SPAWN_OFFSET_X 30
@@ -29,6 +30,9 @@
 #constant DRONE_BOB_DEGREES_PER_MS 0.12
 
 // Temporary standalone spawn scheduler; Chat B will replace its call site.
+global DroneHitFlashUntilMs as integer
+global DroneDeathEffectPending as integer
+global DroneDeathPosition as TPosition
 global DroneNextAutoSpawnMs as integer
 global DroneMotionUseGate as integer
 global DroneMotionTimer as TTime
@@ -125,6 +129,7 @@ function DroneInit(Drone ref as TDrone,Screen as TSize,World ref as TWorld,Now a
     Drone.Enabled = FALSE
     Drone.Health.StateMax = DRONE_HEALTH_MAX
     Drone.Health.State = DRONE_HEALTH_MAX
+    DroneHitFlashUntilMs = 0
     DroneNextAutoSpawnMs = Now+random(DRONE_AUTO_SPAWN_MIN_MS,DRONE_AUTO_SPAWN_MAX_MS)
     Drone.Direction = MOVELEFT
     Drone.IsTurning = FALSE
@@ -173,8 +178,11 @@ endfunction
 function DroneTakeDamage(Drone ref as TDrone,Damage as integer)
     if Drone.Enabled = TRUE and Damage > 0
         Drone.Health.State = Drone.Health.State-Damage
+        DroneHitFlashUntilMs = GetMilliseconds()+DRONE_HIT_FLASH_MS
         if Drone.Health.State <= 0
             Drone.Health.State = 0
+            DroneDeathPosition = Drone.Position
+            DroneDeathEffectPending = TRUE
             Drone.Enabled = FALSE
             DroneLaserActive = FALSE
             DroneScanActive = FALSE
@@ -429,6 +437,11 @@ function DroneDraw(Drone ref as TDrone,ProtoDrone ref as TProtoDrone,World ref a
     local LaserData as TSpriteData
     if Drone.Enabled = TRUE
         SpritePositionCalc(Drone.SpriteData.Position,Drone.Position,World.Position)
+        if GetMilliseconds() < DroneHitFlashUntilMs
+            ColorSet(Drone.SpriteData.Color,255,65,65,255)
+        else
+            ColorSet(Drone.SpriteData.Color,255,255,255,255)
+        endif
 
         // Keep the old full-body art as a fallback if the layered torso is unavailable.
         if ProtoDrone.Torso.Sprite.ID = 0
@@ -463,7 +476,11 @@ function DroneDraw(Drone ref as TDrone,ProtoDrone ref as TProtoDrone,World ref a
 
             // D3a color test: tint torso and sensors independently, without editing PNGs.
             TorsoData = Drone.SpriteData
-            ColorSet(TorsoData.Color,45,140,65,255)
+            if GetMilliseconds() < DroneHitFlashUntilMs
+                ColorSet(TorsoData.Color,255,65,65,255)
+            else
+                ColorSet(TorsoData.Color,45,140,65,255)
+            endif
             SpriteDraw(ProtoDrone.Torso.Sprite,TorsoData)
 
             // 46px torso + 30px charge frame: center offset 23+15=38px.
@@ -485,7 +502,11 @@ function DroneDraw(Drone ref as TDrone,ProtoDrone ref as TProtoDrone,World ref a
             endif
 
             SensorData = Drone.SpriteData
-            ColorSet(SensorData.Color,230,45,45,255)
+            if GetMilliseconds() < DroneHitFlashUntilMs
+                ColorSet(SensorData.Color,255,160,160,255)
+            else
+                ColorSet(SensorData.Color,230,45,45,255)
+            endif
             if Drone.IsTurning = TRUE
                 SpriteDraw(ProtoDrone.SensorCenter.Sprite,SensorData)
             else
