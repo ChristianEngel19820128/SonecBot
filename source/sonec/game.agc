@@ -285,6 +285,7 @@ function GameDo(Game ref as TGame,Now as integer)
 	SonecHealthRegenerate(Game.Sonec,Now)
 		
 	PlateMoveAll(Game.PlateList,Game.World,Now)
+    ExplosionFollowPlates(Game.ExplosionList,Game.PlateList,Game.World)
     BomberBombCollidePlate(Game.Bomber,Game.PlateList,Game,Now)
 	WalkerMoveAll(Game.WalkerList,Game.ProtoWalker,Game.PlateList,Game.ChestList,Game.Sonec,Game.World,Now)
 	WalkerHealthRegenerate(Game.WalkerList,Game,Now)

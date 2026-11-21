@@ -105,6 +105,9 @@ function ExplosionNew(Explosion ref as TExplosion,ProtoExplosion ref as TProtoEx
 
 	Explosion.Enabled = TRUE
     Explosion.CompositeUpperVisual = FALSE
+    Explosion.ImpactPlateIndex = -1
+    Explosion.ImpactPlateLastX = 0
+    Explosion.ImpactPlateLastY = 0
     Explosion.ImpactPlateLeftX = 0
     Explosion.ImpactPlateRightX = 0
     Explosion.LimitDamageBelowY = FALSE
@@ -220,7 +223,7 @@ function ExplosionAdd(ExplosionList ref as TExplosionList,ProtoExplosion ref as 
 endfunction
 
 // Only bomb impacts opt into this world-space damage boundary.
-function ExplosionAddAboveY(ExplosionList ref as TExplosionList,ProtoExplosion ref as TProtoExplosion,Game ref as TGame,ExplosionType as integer,Position ref as TPosition,MaxY as float,PlateLeftX as float,PlateRightX as float,Now as integer)
+function ExplosionAddAboveY(ExplosionList ref as TExplosionList,ProtoExplosion ref as TProtoExplosion,Game ref as TGame,ExplosionType as integer,Position ref as TPosition,MaxY as float,PlateLeftX as float,PlateRightX as float,PlateIndex as integer,Now as integer)
     local Explosion as TExplosion
     ExplosionNew(Explosion,ProtoExplosion,Game,ExplosionType,Position,Now)
     Explosion.LimitDamageBelowY = TRUE
@@ -228,6 +231,9 @@ function ExplosionAddAboveY(ExplosionList ref as TExplosionList,ProtoExplosion r
     Explosion.CompositeUpperVisual = TRUE
     Explosion.ImpactPlateLeftX = PlateLeftX
     Explosion.ImpactPlateRightX = PlateRightX
+    Explosion.ImpactPlateIndex = PlateIndex
+    Explosion.ImpactPlateLastX = PlateLeftX
+    Explosion.ImpactPlateLastY = MaxY
     Explosion.SpriteData.Angle = 0
     ColorSet(Explosion.SpriteData.Color,255,255,255,200)
     ExplosionInsert(ExplosionList,Explosion)
@@ -299,7 +305,7 @@ function ExplosionCollideSonec(ExplosionList ref as TExplosionList,Sonec ref as 
 		if ExplosionList.Explosion[i].Enabled = TRUE
 			ExplosionList.Explosion[i].MeasureChecks = ExplosionList.Explosion[i].MeasureChecks + 1
 			Radius = CalcRadius(ExplosionList.Explosion[i].ObjectData.Position,Sonec.ObjectData.Position)
-			if Radius < ExplosionList.Explosion[i].ObjectData.Radius and (ExplosionList.Explosion[i].LimitDamageBelowY = FALSE or Sonec.ObjectData.Position.y <= ExplosionList.Explosion[i].DamageMaxY)
+			if Radius < ExplosionList.Explosion[i].ObjectData.Radius and ExplosionDamageAllowed(ExplosionList.Explosion[i],Sonec.ObjectData.Position)
 				if EXPLOSION_TIMED_DAMAGE = 0 or ExplosionList.Explosion[i].LastSonecHitMs = 0 or GetMilliseconds()-ExplosionList.Explosion[i].LastSonecHitMs >= EXPLOSION_DAMAGE_INTERVAL_MS
 					ExplosionList.Explosion[i].LastSonecHitMs = GetMilliseconds()
 					ExplosionList.Explosion[i].MeasureHits = ExplosionList.Explosion[i].MeasureHits + 1
@@ -330,7 +336,7 @@ function ExplosionCollideChest(ExplosionList ref as TExplosionList,ChestList ref
 			for k = 0 to ChestList.Chest.Length
 				if ChestList.Chest[k].Enabled = TRUE
 					Radius = CalcRadius(ExplosionList.Explosion[i].ObjectData.Position,ChestList.Chest[k].ObjectData.Position)
-					if Radius < ExplosionList.Explosion[i].ObjectData.Radius and (ExplosionList.Explosion[i].LimitDamageBelowY = FALSE or ChestList.Chest[k].ObjectData.Position.y <= ExplosionList.Explosion[i].DamageMaxY)
+					if Radius < ExplosionList.Explosion[i].ObjectData.Radius and ExplosionDamageAllowed(ExplosionList.Explosion[i],ChestList.Chest[k].ObjectData.Position)
 						if ExplosionList.Explosion[i].LastChestHitMs.Length < k
 							ExplosionList.Explosion[i].LastChestHitMs.Length = k
 						endif
@@ -362,7 +368,7 @@ function ExplosionCollideOrb(ExplosionList ref as TExplosionList,OrbList ref as 
 			for k = 0 to OrbList.Orb.Length
 				if OrbList.Orb[k].Enabled = TRUE
 					Radius = CalcRadius(ExplosionList.Explosion[i].ObjectData.Position,OrbList.Orb[k].ObjectData.Position)
-					if Radius < ExplosionList.Explosion[i].ObjectData.Radius and (ExplosionList.Explosion[i].LimitDamageBelowY = FALSE or OrbList.Orb[k].ObjectData.Position.y <= ExplosionList.Explosion[i].DamageMaxY)
+					if Radius < ExplosionList.Explosion[i].ObjectData.Radius and ExplosionDamageAllowed(ExplosionList.Explosion[i],OrbList.Orb[k].ObjectData.Position)
 						if ExplosionList.Explosion[i].LastOrbHitMs.Length < k
 							ExplosionList.Explosion[i].LastOrbHitMs.Length = k
 						endif
@@ -398,7 +404,7 @@ function ExplosionCollideMine(ExplosionList ref as TExplosionList,MineList ref a
 			for k = 0 to MineList.Mine.Length
 				if MineList.Mine[k].Enabled = TRUE
 					Radius = CalcRadius(ExplosionList.Explosion[i].ObjectData.Position,MineList.Mine[k].ObjectData.Position)
-					if Radius < ExplosionList.Explosion[i].ObjectData.Radius and (ExplosionList.Explosion[i].LimitDamageBelowY = FALSE or MineList.Mine[k].ObjectData.Position.y <= ExplosionList.Explosion[i].DamageMaxY)
+					if Radius < ExplosionList.Explosion[i].ObjectData.Radius and ExplosionDamageAllowed(ExplosionList.Explosion[i],MineList.Mine[k].ObjectData.Position)
 						HitNow = GetMilliseconds()
 						HitAllowed = FALSE
 						if IsSimpleMine = 1
@@ -451,7 +457,7 @@ function ExplosionCollideWalkers(ExplosionList ref as TExplosionList,WalkerList 
 					if NearestPoint.x > WalkerList.Walker[k].WalkerCollisionData.Tower.Position2.x then NearestPoint.x = WalkerList.Walker[k].WalkerCollisionData.Tower.Position2.x
 					if NearestPoint.y < WalkerList.Walker[k].WalkerCollisionData.Tower.Position1.y then NearestPoint.y = WalkerList.Walker[k].WalkerCollisionData.Tower.Position1.y
 					if NearestPoint.y > WalkerList.Walker[k].WalkerCollisionData.Tower.Position2.y then NearestPoint.y = WalkerList.Walker[k].WalkerCollisionData.Tower.Position2.y
-					if CalcRadius(ExplosionList.Explosion[i].ObjectData.Position,NearestPoint) < ExplosionList.Explosion[i].ObjectData.Radius and (ExplosionList.Explosion[i].LimitDamageBelowY = FALSE or NearestPoint.y <= ExplosionList.Explosion[i].DamageMaxY)
+					if CalcRadius(ExplosionList.Explosion[i].ObjectData.Position,NearestPoint) < ExplosionList.Explosion[i].ObjectData.Radius and ExplosionDamageAllowed(ExplosionList.Explosion[i],NearestPoint)
 						if ExplosionList.Explosion[i].LastWalkerHitMs.Length < k
 							ExplosionList.Explosion[i].LastWalkerHitMs.Length = k
 						endif
@@ -484,7 +490,7 @@ function ExplosionCollideDrone(ExplosionList ref as TExplosionList,Drone ref as 
             if NearestPoint.x > Drone.Position.x+23 then NearestPoint.x = Drone.Position.x+23
             if NearestPoint.y < Drone.Position.y-15 then NearestPoint.y = Drone.Position.y-15
             if NearestPoint.y > Drone.Position.y+15 then NearestPoint.y = Drone.Position.y+15
-            if CalcRadius(ExplosionList.Explosion[i].ObjectData.Position,NearestPoint) < ExplosionList.Explosion[i].ObjectData.Radius and (ExplosionList.Explosion[i].LimitDamageBelowY = FALSE or NearestPoint.y <= ExplosionList.Explosion[i].DamageMaxY)
+            if CalcRadius(ExplosionList.Explosion[i].ObjectData.Position,NearestPoint) < ExplosionList.Explosion[i].ObjectData.Radius and ExplosionDamageAllowed(ExplosionList.Explosion[i],NearestPoint)
                 if EXPLOSION_TIMED_DAMAGE = 0 or ExplosionList.Explosion[i].LastDroneHitMs = 0 or GetMilliseconds()-ExplosionList.Explosion[i].LastDroneHitMs >= EXPLOSION_DAMAGE_INTERVAL_MS
                     ExplosionList.Explosion[i].LastDroneHitMs = GetMilliseconds()
                     DroneTakeDamage(Drone,ExplosionList.Explosion[i].BulletData.Damage)
@@ -512,6 +518,52 @@ function ExplosionMove(Explosion ref as TExplosion,World ref as TWorld,Now as in
 	endif
 		
 endfunction
+
+//----------------------------------------------------------------------
+// 
+//----------------------------------------------------------------------
+
+// B2f: keep a platform bomb blast attached to its moving impact platform.
+// If the platform disappears, retain the last position rather than follow a reused slot.
+function ExplosionFollowPlates(ExplosionList ref as TExplosionList,PlateList ref as TPlateList,World ref as TWorld)
+    local i as integer
+    local k as integer
+    local DeltaX as float
+    local DeltaY as float
+
+    for i = 0 to ExplosionList.Explosion.Length
+        if ExplosionList.Explosion[i].Enabled = TRUE and ExplosionList.Explosion[i].ImpactPlateIndex >= 0
+            k = ExplosionList.Explosion[i].ImpactPlateIndex
+            if k <= PlateList.Plate.Length and PlateList.Plate[k].Enabled = TRUE
+                DeltaX = PlateList.Plate[k].CollisionData.Position1.x-ExplosionList.Explosion[i].ImpactPlateLastX
+                DeltaY = PlateList.Plate[k].CollisionData.Position1.y-ExplosionList.Explosion[i].ImpactPlateLastY
+                ExplosionList.Explosion[i].ObjectData.Position.x = ExplosionList.Explosion[i].ObjectData.Position.x+DeltaX
+                ExplosionList.Explosion[i].ObjectData.Position.y = ExplosionList.Explosion[i].ObjectData.Position.y+DeltaY
+                ExplosionList.Explosion[i].ImpactPlateLeftX = ExplosionList.Explosion[i].ImpactPlateLeftX+DeltaX
+                ExplosionList.Explosion[i].ImpactPlateRightX = ExplosionList.Explosion[i].ImpactPlateRightX+DeltaX
+                ExplosionList.Explosion[i].DamageMaxY = ExplosionList.Explosion[i].DamageMaxY+DeltaY
+                ExplosionList.Explosion[i].ImpactPlateLastX = PlateList.Plate[k].CollisionData.Position1.x
+                ExplosionList.Explosion[i].ImpactPlateLastY = PlateList.Plate[k].CollisionData.Position1.y
+                SpritePositionCalc(ExplosionList.Explosion[i].SpriteData.Position,ExplosionList.Explosion[i].ObjectData.Position,World.Position)
+            else
+                ExplosionList.Explosion[i].ImpactPlateIndex = -1
+            endif
+        endif
+    next i
+endfunction
+
+// Platform-shaped shielding: below the top only targets beyond either side
+// can be hit. Other explosion types keep their original radius behavior.
+function ExplosionDamageAllowed(Explosion ref as TExplosion,Target ref as TPosition)
+    local Allowed as integer
+    Allowed = TRUE
+    if Explosion.LimitDamageBelowY = TRUE and Target.y > Explosion.DamageMaxY
+        Allowed = FALSE
+        if Target.x < Explosion.ImpactPlateLeftX or Target.x > Explosion.ImpactPlateRightX
+            Allowed = TRUE
+        endif
+    endif
+endfunction Allowed
 
 //----------------------------------------------------------------------
 // 

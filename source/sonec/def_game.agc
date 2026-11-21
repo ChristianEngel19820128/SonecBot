@@ -595,6 +595,9 @@ endtype
 
 type TExplosion
     CompositeUpperVisual as integer
+    ImpactPlateIndex as integer
+    ImpactPlateLastX as float
+    ImpactPlateLastY as float
     ImpactPlateLeftX as float
     ImpactPlateRightX as float
     LimitDamageBelowY as integer
