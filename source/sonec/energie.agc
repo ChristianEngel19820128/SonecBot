@@ -169,11 +169,22 @@ endfunction
 
 #constant NOTICE_ENERGY_COLLECTED "ENERGY COLLECTED"
 #constant NOTICE_ENERGY_COLLECTED_MS 3000
+#constant NOTICE_PICKUP_UPGRADE_MS 6000
+#constant NOTICE_PICKUP_COLLECTED_MS 3000
+#constant NOTICE_ENERGY_REGEN_UPGRADE "ENERGY REGEN UPGRADE"
+#constant NOTICE_HEALTH_COLLECTED "HEALTH COLLECTED"
+#constant NOTICE_HEALTH_REGEN_UPGRADE "HEALTH REGEN UPGRADE"
+#constant NOTICE_FIRE_RATE_UPGRADE "FIRE RATE UPGRADE"
+#constant NOTICE_BURST_UPGRADE "BURST UPGRADE"
+#constant NOTICE_MG_AMMO_COLLECTED "MG AMMO COLLECTED"
+#constant NOTICE_GRENADE_AMMO_COLLECTED "GRENADE AMMO COLLECTED"
 
 function EnergieCollect(EnergieList ref as TEnergieList,Sonec ref as TSonec,Warning ref as TWarning,Now as integer)
 	
 	local i as integer
 	local Radius as float
+    local UpgradeApplied as integer
+    local PreviousValue as integer
 	
 	for i = 0 to EnergieList.Energie.Length
 		if EnergieList.Energie[i].Enabled = TRUE
@@ -193,67 +204,80 @@ function EnergieCollect(EnergieList ref as TEnergieList,Sonec ref as TSonec,Warn
 					case 1
 						if Sonec.Energy.RegRate > 200
 							Sonec.Energy.RegRate = Sonec.Energy.RegRate-1
-							WarningShowPositive(Warning,"ENERGY REGEN UPGRADE",6000,Now)
+							WarningShowPositive(Warning,NOTICE_ENERGY_REGEN_UPGRADE,NOTICE_PICKUP_UPGRADE_MS,Now)
 						endif
 						TimeSet(Sonec.Energy.RegenerationTimer,Sonec.Energy.RegRate,1)
 					endcase
 					case 2
+                        PreviousValue = Sonec.Health.State
 						Sonec.Health.State = Sonec.Health.State + EnergieList.Energie[i].Value
 						if Sonec.Health.State > Sonec.Health.StateMax
 							Sonec.Health.State = Sonec.Health.StateMax
 						endif
+                        if Sonec.Health.State > PreviousValue
+                            WarningShowPositive(Warning,NOTICE_HEALTH_COLLECTED,NOTICE_PICKUP_COLLECTED_MS,Now)
+                        endif
 					endcase
 					case 3
 						if Sonec.Health.RegRate > 200
 							Sonec.Health.RegRate = Sonec.Health.RegRate-1
-							WarningShowPositive(Warning,"HEALTH REGEN UPGRADE",6000,Now)
+							WarningShowPositive(Warning,NOTICE_HEALTH_REGEN_UPGRADE,NOTICE_PICKUP_UPGRADE_MS,Now)
 						endif
 						TimeSet(Sonec.Health.RegenerationTimer,Sonec.Health.RegRate,1)
 					endcase
 					case 4
-						if Sonec.MGun.FireRate > 400
-							Sonec.MGun.FireRate  = Sonec.MGun.FireRate -1
-							WarningShowPositive(Warning,"FIRE RATE UPGRADE",6000,Now)
-						endif
-						if Sonec.MGun.FireBurstRate > 120
-							Sonec.MGun.FireBurstRate  = Sonec.MGun.FireBurstRate -1
-							if Sonec.MGun.FireRate <= 400
-								WarningShowPositive(Warning,"FIRE RATE UPGRADE",6000,Now)
-							endif
-						endif
-						TimeSet(Sonec.MGun.FireTimer,Sonec.MGun.FireRate,1)
-						TimeSet(Sonec.MGun.FireBurstTimer,Sonec.MGun.FireBurstRate,1)
-					endcase
-					case 5
-						if Sonec.MGun.FireBurstMax < Sonec.MGun.FireBurstLimit
-							Sonec.MGun.FireBurstMax  = Sonec.MGun.FireBurstMax +1
-							WarningShowPositive(Warning,"BURST UPGRADE",6000,Now)
-						else
-							// Once burst is capped, apply the existing fire-rate upgrade instead.
-							if Sonec.MGun.FireRate > 400
-								Sonec.MGun.FireRate = Sonec.MGun.FireRate -1
-								WarningShowPositive(Warning,"FIRE RATE UPGRADE",6000,Now)
-							endif
-							if Sonec.MGun.FireBurstRate > 120
-								Sonec.MGun.FireBurstRate = Sonec.MGun.FireBurstRate -1
-								if Sonec.MGun.FireRate <= 400
-									WarningShowPositive(Warning,"FIRE RATE UPGRADE",6000,Now)
-								endif
-							endif
-							TimeSet(Sonec.MGun.FireTimer,Sonec.MGun.FireRate,1)
-							TimeSet(Sonec.MGun.FireBurstTimer,Sonec.MGun.FireBurstRate,1)
-						endif
-					endcase
+                        UpgradeApplied = FALSE
+                        if Sonec.MGun.FireRate > 400
+                            Sonec.MGun.FireRate = Sonec.MGun.FireRate-1
+                            UpgradeApplied = TRUE
+                        endif
+                        if Sonec.MGun.FireBurstRate > 120
+                            Sonec.MGun.FireBurstRate = Sonec.MGun.FireBurstRate-1
+                            UpgradeApplied = TRUE
+                        endif
+                        if UpgradeApplied = TRUE
+                            WarningShowPositive(Warning,NOTICE_FIRE_RATE_UPGRADE,NOTICE_PICKUP_UPGRADE_MS,Now)
+                        endif
+                        TimeSet(Sonec.MGun.FireTimer,Sonec.MGun.FireRate,1)
+                        TimeSet(Sonec.MGun.FireBurstTimer,Sonec.MGun.FireBurstRate,1)
+                    endcase
+                    case 5
+                        if Sonec.MGun.FireBurstMax < Sonec.MGun.FireBurstLimit
+                            Sonec.MGun.FireBurstMax = Sonec.MGun.FireBurstMax+1
+                            WarningShowPositive(Warning,NOTICE_BURST_UPGRADE,NOTICE_PICKUP_UPGRADE_MS,Now)
+                        else
+                            // Preserve the existing capped-burst fallback until balancing.
+                            UpgradeApplied = FALSE
+                            if Sonec.MGun.FireRate > 400
+                                Sonec.MGun.FireRate = Sonec.MGun.FireRate-1
+                                UpgradeApplied = TRUE
+                            endif
+                            if Sonec.MGun.FireBurstRate > 120
+                                Sonec.MGun.FireBurstRate = Sonec.MGun.FireBurstRate-1
+                                UpgradeApplied = TRUE
+                            endif
+                            if UpgradeApplied = TRUE
+                                WarningShowPositive(Warning,NOTICE_FIRE_RATE_UPGRADE,NOTICE_PICKUP_UPGRADE_MS,Now)
+                            endif
+                            TimeSet(Sonec.MGun.FireTimer,Sonec.MGun.FireRate,1)
+                            TimeSet(Sonec.MGun.FireBurstTimer,Sonec.MGun.FireBurstRate,1)
+                        endif
+                    endcase
 					case 6
+                        PreviousValue = Sonec.MGun.Ammo
 						if Sonec.MGun.Ammo + 10 < Sonec.MGun.AmmoMax
 							Sonec.MGun.Ammo = Sonec.MGun.Ammo +10
 						else
 							Sonec.MGun.Ammo = Sonec.MGun.AmmoMax
 						endif
+                        if Sonec.MGun.Ammo > PreviousValue
+                            WarningShowPositive(Warning,NOTICE_MG_AMMO_COLLECTED,NOTICE_PICKUP_COLLECTED_MS,Now)
+                        endif
 					endcase
 					case 7
 						if Sonec.GrenadeLauncher.Ammo < Sonec.GrenadeLauncher.AmmoMax
 							Sonec.GrenadeLauncher.Ammo = Sonec.GrenadeLauncher.Ammo +1
+                            WarningShowPositive(Warning,NOTICE_GRENADE_AMMO_COLLECTED,NOTICE_PICKUP_COLLECTED_MS,Now)
 						endif
 					endcase
 				endselect
