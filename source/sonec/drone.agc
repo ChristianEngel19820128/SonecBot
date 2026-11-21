@@ -2,6 +2,7 @@
 // Horizontal patrol inside screen/world X bounds, fixed world-space flight height.
 // Three user-provided 46x30 colored images: left, center (turn), right.
 
+#constant DRONE_HEALTH_MAX 100
 #constant DRONE_AUTO_SPAWN_MIN_MS 20000
 #constant DRONE_AUTO_SPAWN_MAX_MS 35000
 #constant DRONE_SPAWN_OFFSET_X 30
@@ -122,6 +123,8 @@ endfunction
 
 function DroneInit(Drone ref as TDrone,Screen as TSize,World ref as TWorld,Now as integer)
     Drone.Enabled = FALSE
+    Drone.Health.StateMax = DRONE_HEALTH_MAX
+    Drone.Health.State = DRONE_HEALTH_MAX
     DroneNextAutoSpawnMs = Now+random(DRONE_AUTO_SPAWN_MIN_MS,DRONE_AUTO_SPAWN_MAX_MS)
     Drone.Direction = MOVELEFT
     Drone.IsTurning = FALSE
@@ -164,6 +167,20 @@ function DroneInit(Drone ref as TDrone,Screen as TSize,World ref as TWorld,Now a
     Drone.SpriteData.Scale = 1
     Drone.SpriteData.Angle = 0
     ColorSet(Drone.SpriteData.Color,255,255,255,255)
+endfunction
+
+// D5a: shared entry point for all player weapons.
+function DroneTakeDamage(Drone ref as TDrone,Damage as integer)
+    if Drone.Enabled = TRUE and Damage > 0
+        Drone.Health.State = Drone.Health.State-Damage
+        if Drone.Health.State <= 0
+            Drone.Health.State = 0
+            Drone.Enabled = FALSE
+            DroneLaserActive = FALSE
+            DroneScanActive = FALSE
+            DroneChargeActive = FALSE
+        endif
+    endif
 endfunction
 
 // D4a: caller requests one spawn; no wave timing or automatic retries here.
