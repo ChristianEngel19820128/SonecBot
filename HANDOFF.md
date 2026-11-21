@@ -43,7 +43,7 @@ Zusätzlich in dieser Runde umgesetzt:
 - D1–D3c lokal vom Entwickler abgenommen; D3c/2 mit **6/6 bestanden**. Laser verursacht testweise 20 Schaden unter Nutzung der bestehenden Schildabsorption; endgültiges Balancing später.
 - **D4a – Spawn** vom Entwickler mit **6/6 bestanden** bestätigt (lokaler Windows-/AGK-Test): kein automatischer Spawn bei Spielstart; F6-Testspawn von beiden Bildschirmseiten, keine zweite aktive Drohne, Patrouille/Scan/Laden/Laser/Schaden unverändert; keine Auffälligkeiten.
 - Der **temporäre F6-Testhook ist nach der Abnahme entfernt**. `DroneSpawn` in `source/sonec/drone.agc` bleibt für spätere Aufrufe erhalten. Chat B regelt Wellen/Anzahl; die Drohnenfunktion prüft Position und aktiviert höchstens eine Drohne. Umfassende Hindernisprüfung und Mehrfachdrohnen sind noch nicht implementiert.
-- **D4b zur lokalen Prüfung bereit:** vorläufiger Spawnversuch alle 20–35 Sekunden aktiver Spielzeit, maximal eine aktive Drohne; Chat B ersetzt später den Timer-Aufruf, `DroneSpawn` bleibt. Noch kein lokaler AGK-Test für D4b.
+- **D4b abgenommen (6/6):** Entwickler bestätigt lokalen AGK-/Windows-Test am 21.11.2026: Compile, Spawn nach 20–35 Sekunden, beide Eintrittsseiten, höchstens eine Drohne, unveränderte Aktionen und pausierender Timer; keine Auffälligkeiten. Timer bleibt vorläufig aktiv, bis Chat B den Aufruf ersetzt; `DroneSpawn` bleibt.
 - **Vereinbarte Folge:** D5a Gesundheit/Maschinengewehr; D5b Flammenwerfer, Granaten, Plasmablitz und Explosionstreffer; D5c Trefferfeedback, Zerstörung und erneuter Spawn. Zusätzliche Positionierungsregeln erst nach Beobachtungen. Drohnenschild nur unverbindliche BACKLOG-Idee.
 - **Nächster Schritt:** Entwickler testet D4b lokal, anschließend D5a.
 
