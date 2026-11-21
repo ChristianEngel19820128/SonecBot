@@ -774,6 +774,14 @@ type TProtoBomber
     Bomb as TProtoData
 endtype
 
+type TBomberBomb
+    Enabled as integer
+    Position as TPosition
+    Velocity as TPosition
+    LastMoveMs as integer
+    SpriteData as TSpriteData
+endtype
+
 type TBomber
     Enabled as integer
     Phase as integer
@@ -784,12 +792,9 @@ type TBomber
     LastJetX as float
     Position as TPosition
     SpriteData as TSpriteData
-    BombDropped as integer
-    BombEnabled as integer
-    BombPosition as TPosition
-    BombVelocity as TPosition
-    BombLastMoveMs as integer
-    BombSpriteData as TSpriteData
+    BombCount as integer
+    NextBombAtMs as integer
+    Bomb as TBomberBomb[4]
 endtype
 
 type TGame

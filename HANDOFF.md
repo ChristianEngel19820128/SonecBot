@@ -95,7 +95,7 @@ Verbindlicher Planungsrahmen und Details: [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROA
 
 ## Genau ein nächster Schritt
 
-**Bomber B2b – fünf zeitversetzte Bombenabwürfe spezifizieren.** B2a vom Entwickler lokal in AGK mit **6/6 bestanden** bestätigt: Compile, einzelner Abwurf, Flugbahn mit horizontaler Dämpfung und Schwerkraft, geschwindigkeitsabhängige Rotation, korrekte Weltposition bei Kamerabewegung und keine Sonec-/Drohnen-/Spacejet-Regressionen. `bomb.png` (25×10 px) ist eingebunden; noch keine Kollision, Explosion oder Schaden. Als Nächstes nur zeitliche Staffelung und Verwaltung von fünf unabhängigen Bomben vereinbaren, noch keine Codefreigabe. Drohnen-Jetstream erst nach Bomberabschluss; `main` unberührt.
+**Bomber B2b – Fünfer-Bombenteppich lokal in AGK/Windows testen.** B2a vom Entwickler mit **6/6 bestanden** bestätigt. B2b im Code: fünf unabhängige Bomben im 250-ms-Abstand, erste Freigabe ca. 400 px rechts der früheren B2a-Abwurfposition; die fünfte startet ungefähr bei der bisherigen Bildschirmmitte. Flugphysik und Rotation je Bombe wie B2a. Bomben werden **vor** dem Spacejet gezeichnet, sodass er sie verdecken kann. Noch keine Kollision, Explosion oder Schaden. Compile, Anzahl, Abstände, Flugbahnen, Sichtbarkeit und Regressionen lokal prüfen. Drohnen-Jetstream erst nach Bomberabschluss; `main` unberührt.
 
 ## Weiterführende Dokumente
 

@@ -14,10 +14,12 @@
 #constant BOMBER_JET_LOWER_X_FROM_RIGHT 8
 #constant BOMBER_JET_UPPER_Y_FROM_CENTER 1
 #constant BOMBER_JET_LOWER_Y_FROM_CENTER 11
-// B2a: one visual-only test bomb; values are provisional.
+// B2b: five visual-only test bombs; physics values are provisional.
 #constant BOMBER_BOMB_GRAVITY_PX_PER_MS2 0.00022
 #constant BOMBER_BOMB_DRAG_PER_MS 0.0005
 #constant BOMBER_BOMB_RELEASE_Y 20
+#constant BOMBER_BOMB_COUNT 5
+#constant BOMBER_BOMB_INTERVAL_MS 250
 
 // Phase: 0 = waiting for a visible flight corridor, 1 = warning,
 // 2 = flying, 3 = finished. At most one bomber; no bomber array.
@@ -35,6 +37,7 @@ function BomberProtoLoad(ProtoBomber ref as TProtoBomber)
 endfunction
 
 function BomberInit(Bomber ref as TBomber,Now as integer)
+    local i as integer
     Bomber.Enabled = FALSE
     Bomber.Phase = 0
     Bomber.NextWarningMs = Now+BOMBER_TEST_WAIT_MS
@@ -42,17 +45,20 @@ function BomberInit(Bomber ref as TBomber,Now as integer)
     Bomber.LastMoveMs = Now
     Bomber.NextJetMs = Now
     Bomber.LastJetX = 0
-    Bomber.BombDropped = FALSE
-    Bomber.BombEnabled = FALSE
-    Bomber.BombLastMoveMs = Now
-    Bomber.BombPosition.x = 0
-    Bomber.BombPosition.y = 0
-    Bomber.BombVelocity.x = 0
-    Bomber.BombVelocity.y = 0
-    Bomber.BombSpriteData.Angle = 0
-    Bomber.BombSpriteData.Scale = 1
-    Bomber.BombSpriteData.Center = TRUE
-    ColorSet(Bomber.BombSpriteData.Color,255,255,255,255)
+    Bomber.BombCount = 0
+    Bomber.NextBombAtMs = 0
+    for i = 0 to BOMBER_BOMB_COUNT-1
+        Bomber.Bomb[i].Enabled = FALSE
+        Bomber.Bomb[i].LastMoveMs = Now
+        Bomber.Bomb[i].Position.x = 0
+        Bomber.Bomb[i].Position.y = 0
+        Bomber.Bomb[i].Velocity.x = 0
+        Bomber.Bomb[i].Velocity.y = 0
+        Bomber.Bomb[i].SpriteData.Angle = 0
+        Bomber.Bomb[i].SpriteData.Scale = 1
+        Bomber.Bomb[i].SpriteData.Center = TRUE
+        ColorSet(Bomber.Bomb[i].SpriteData.Color,255,255,255,255)
+    next i
     Bomber.Position.x = 0
     Bomber.Position.y = 0
     Bomber.SpriteData.Angle = 0
@@ -164,6 +170,8 @@ function BomberDo(Bomber ref as TBomber,ProtoBomber ref as TProtoBomber,Warning 
         Bomber.LastJetX = Bomber.Position.x+GetSpriteWidth(ProtoBomber.Body.Sprite.ID)*0.5-BOMBER_JET_UPPER_X_FROM_RIGHT
         Bomber.Enabled = TRUE
         Bomber.Phase = 2
+        Bomber.BombCount = 0
+        Bomber.NextBombAtMs = 0
     endif
 
     if Bomber.Enabled = TRUE
@@ -181,49 +189,64 @@ function BomberDo(Bomber ref as TBomber,ProtoBomber ref as TProtoBomber,Warning 
     endif
 endfunction
 
-// B2a: independent world-space motion, no collisions or damage yet.
+// B2b: five independent bombs, spaced by time along the overflight.
+// The fifth drop is near the former B2a screen-center release point.
 function BomberBombDo(Bomber ref as TBomber,ProtoBomber ref as TProtoBomber,World ref as TWorld,Screen as TSize,Now as integer)
     local DeltaMs as integer
     local DragFactor as float
     local HorizontalSpeed as float
+    local FirstDropX as float
+    local i as integer
 
-    if Bomber.Enabled = TRUE and Bomber.BombDropped = FALSE and ProtoBomber.Bomb.Sprite.ID > 0
-        if Bomber.Position.x <= Screen.Width*0.5
-            Bomber.BombDropped = TRUE
-            Bomber.BombEnabled = TRUE
-            Bomber.BombPosition.x = Bomber.Position.x
-            Bomber.BombPosition.y = Bomber.Position.y+BOMBER_BOMB_RELEASE_Y
-            Bomber.BombVelocity.x = -BOMBER_SPEED_PX_PER_MS
-            Bomber.BombVelocity.y = 0
-            Bomber.BombLastMoveMs = Now
-            Bomber.BombSpriteData.Angle = 0
+    FirstDropX = Screen.Width*0.5+BOMBER_SPEED_PX_PER_MS*BOMBER_BOMB_INTERVAL_MS*(BOMBER_BOMB_COUNT-1)
+
+    if Bomber.Enabled = TRUE and Bomber.BombCount < BOMBER_BOMB_COUNT and ProtoBomber.Bomb.Sprite.ID > 0
+        if Bomber.NextBombAtMs = 0 and Bomber.Position.x <= FirstDropX
+            Bomber.NextBombAtMs = Now
+        endif
+        if Bomber.NextBombAtMs > 0 and Now >= Bomber.NextBombAtMs
+            i = Bomber.BombCount
+            Bomber.Bomb[i].Enabled = TRUE
+            Bomber.Bomb[i].Position.x = Bomber.Position.x
+            Bomber.Bomb[i].Position.y = Bomber.Position.y+BOMBER_BOMB_RELEASE_Y
+            Bomber.Bomb[i].Velocity.x = -BOMBER_SPEED_PX_PER_MS
+            Bomber.Bomb[i].Velocity.y = 0
+            Bomber.Bomb[i].LastMoveMs = Now
+            Bomber.Bomb[i].SpriteData.Angle = 0
+            Bomber.BombCount = Bomber.BombCount+1
+            Bomber.NextBombAtMs = Now+BOMBER_BOMB_INTERVAL_MS
         endif
     endif
 
-    if Bomber.BombEnabled = TRUE
-        DeltaMs = Now-Bomber.BombLastMoveMs
-        if DeltaMs > 0
-            // Exponential-like horizontal damping, bounded for long frames.
-            DragFactor = 1.0/(1.0+BOMBER_BOMB_DRAG_PER_MS*DeltaMs)
-            Bomber.BombVelocity.x = Bomber.BombVelocity.x*DragFactor
-            Bomber.BombVelocity.y = Bomber.BombVelocity.y+BOMBER_BOMB_GRAVITY_PX_PER_MS2*DeltaMs
-            Bomber.BombPosition.x = Bomber.BombPosition.x+Bomber.BombVelocity.x*DeltaMs
-            Bomber.BombPosition.y = Bomber.BombPosition.y+Bomber.BombVelocity.y*DeltaMs
-            // Sprite points left at 0 degrees; lean toward -90 as it falls.
-            HorizontalSpeed = Abs(Bomber.BombVelocity.x)
-            Bomber.BombSpriteData.Angle = -90.0*Bomber.BombVelocity.y/(HorizontalSpeed+Bomber.BombVelocity.y+0.00001)
-            Bomber.BombLastMoveMs = Now
+    for i = 0 to BOMBER_BOMB_COUNT-1
+        if Bomber.Bomb[i].Enabled = TRUE
+            DeltaMs = Now-Bomber.Bomb[i].LastMoveMs
+            if DeltaMs > 0
+                DragFactor = 1.0/(1.0+BOMBER_BOMB_DRAG_PER_MS*DeltaMs)
+                Bomber.Bomb[i].Velocity.x = Bomber.Bomb[i].Velocity.x*DragFactor
+                Bomber.Bomb[i].Velocity.y = Bomber.Bomb[i].Velocity.y+BOMBER_BOMB_GRAVITY_PX_PER_MS2*DeltaMs
+                Bomber.Bomb[i].Position.x = Bomber.Bomb[i].Position.x+Bomber.Bomb[i].Velocity.x*DeltaMs
+                Bomber.Bomb[i].Position.y = Bomber.Bomb[i].Position.y+Bomber.Bomb[i].Velocity.y*DeltaMs
+                HorizontalSpeed = Abs(Bomber.Bomb[i].Velocity.x)
+                Bomber.Bomb[i].SpriteData.Angle = -90.0*Bomber.Bomb[i].Velocity.y/(HorizontalSpeed+Bomber.Bomb[i].Velocity.y+0.00001)
+                Bomber.Bomb[i].LastMoveMs = Now
+            endif
+            if Bomber.Bomb[i].Position.y > World.Size.Height+32 or Bomber.Bomb[i].Position.x < -32
+                Bomber.Bomb[i].Enabled = FALSE
+            endif
         endif
-        if Bomber.BombPosition.y > World.Size.Height+32 or Bomber.BombPosition.x < -32
-            Bomber.BombEnabled = FALSE
-        endif
-    endif
+    next i
 endfunction
 
 function BomberBombDraw(Bomber ref as TBomber,ProtoBomber ref as TProtoBomber,World ref as TWorld)
-    if Bomber.BombEnabled = TRUE and ProtoBomber.Bomb.Sprite.ID > 0
-        SpritePositionCalc(Bomber.BombSpriteData.Position,Bomber.BombPosition,World.Position)
-        SpriteDraw(ProtoBomber.Bomb.Sprite,Bomber.BombSpriteData)
+    local i as integer
+    if ProtoBomber.Bomb.Sprite.ID > 0
+        for i = 0 to BOMBER_BOMB_COUNT-1
+            if Bomber.Bomb[i].Enabled = TRUE
+                SpritePositionCalc(Bomber.Bomb[i].SpriteData.Position,Bomber.Bomb[i].Position,World.Position)
+                SpriteDraw(ProtoBomber.Bomb.Sprite,Bomber.Bomb[i].SpriteData)
+            endif
+        next i
     endif
 endfunction
 
