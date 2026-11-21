@@ -46,10 +46,10 @@ Zusätzlich in dieser Runde umgesetzt:
 - **D4b abgenommen (6/6):** Entwickler bestätigt lokalen AGK-/Windows-Test am 21.11.2026: Compile, Spawn nach 20–35 Sekunden, beide Eintrittsseiten, höchstens eine Drohne, unveränderte Aktionen und pausierender Timer; keine Auffälligkeiten. Timer bleibt vorläufig aktiv, bis Chat B den Aufruf ersetzt; `DroneSpawn` bleibt.
 - **Vereinbarte Folge:** D5a Gesundheit/Maschinengewehr; D5b Flammenwerfer, Granaten, Plasmablitz und Explosionstreffer; D5c Trefferfeedback, Zerstörung und erneuter Spawn. Zusätzliche Positionierungsregeln erst nach Beobachtungen. Drohnenschild nur unverbindliche BACKLOG-Idee.
 - **D5a abgenommen (7/7):** Entwickler bestätigt Compile, MG-Treffer, Zerstörung, Ende der Angriffe, erneuten Timer-Spawn und unveränderte andere Geschosskollisionen. Umsetzung: Drohne mit 100 HP; Spieler-MG-Geschosse treffen sie in derselben Nearest-Hit-Auswahl wie andere Ziele (46×30 px), beschädigen sie und verschwinden. Bei 0 HP deaktiviert; Laser und laufende Aktionen beendet. Späterer Timer-Spawn setzt HP zurück. Explosion/Zerstörungseffekt und andere Waffen folgen D5b/D5c.
-- **D5b implementiert, lokaler AGK-Test offen:** Flammen, Granat-Direkttreffer, Plasma und Explosionen beschädigen Drohne über `DroneTakeDamage`; Explosionsschaden hat eigenen Cooldown pro Explosion. Noch keine AGK-Bestätigung.
 - **D5b abgenommen (7/7):** Entwickler bestätigt Compile, Schaden/Zerstörung durch Flammen, Granaten, Plasma und Explosionen, erneuten Spawn und keine Waffenregressionen.
-- **D5c implementiert, lokaler Test offen:** rotes Trefferfeedback für 150 ms; bei Zerstörung einmaliger bestehender Explosionseffekt über `GameDo`, Laser/Scan/Laden bereits bei Tod beendet. Die bestehende Explosion besitzt reguläre Spielwirkung; im Test auf unerwünschten Umgebungsschaden achten.
-- **Nächster Schritt:** Entwickler testet D5c inklusive Langzeitverhalten lokal.
+- **D5c abgenommen (8/8):** Entwickler bestätigt Compile, rotes Trefferfeedback, genau eine Zerstörungsexplosion, keine verbleibenden Angriffe, vollen HP-Respawn, mehrere Zyklen, keinen unerwünschten Umgebungsschaden und keine Langzeitauffälligkeiten.
+- **Farbhinweis:** Drohnenrumpf/Fallback blinkt RGB (255,65,65), Sensoren RGB (255,160,160), anders als das reine Rot RGB (255,0,0) anderer Gegner. Keine Farbänderung beschlossen.
+- **Nächster Schritt:** Chat B übernimmt zu gegebener Zeit die Drohnen-Spawnsteuerung und entfernt den provisorischen Timer-Aufruf; bis dahin kein weiterer Drohnen-Codeauftrag.
 
 ## Bestätigte Alpha-Planung
 
