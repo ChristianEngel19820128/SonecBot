@@ -594,6 +594,7 @@ type TProtoExplosion
 endtype
 
 type TExplosion
+	LastDroneHitMs as integer
 	LastSonecHitMs as integer
 	LastChestHitMs as integer[-1]
 	LastOrbHitMs as integer[-1]
