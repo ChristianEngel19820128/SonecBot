@@ -235,7 +235,8 @@ function ExplosionAddAboveY(ExplosionList ref as TExplosionList,ProtoExplosion r
     Explosion.ImpactPlateLastX = PlateLeftX
     Explosion.ImpactPlateLastY = MaxY
     Explosion.SpriteData.Angle = 0
-    ColorSet(Explosion.SpriteData.Color,255,255,255,200)
+    // Bomb-platform composite only: tint both existing layers green.
+    ColorSet(Explosion.SpriteData.Color,0,255,0,200)
     ExplosionInsert(ExplosionList,Explosion)
 endfunction
 
