@@ -6,7 +6,7 @@ Hier stehen nur unmittelbar nächste, gemeinsam zu bearbeitende Schritte. Höchs
 
 ## Jetzt
 
-- [ ] **B1 – Jetfire-Kamerakorrektur lokal in AGK/Windows testen.** Doppeljet mit zwei angepassten Auslässen optisch bestätigt. Neu: Jetfire-Bildschirmposition jedes aktive Partikels pro Zeichenframe aus Welt- und Kameraposition berechnen. Vertikales Scrollen, Sonec-/Drohnen-/Bomber-Jetfire, Pause und Lebensdauer prüfen. Noch keine Bomben. Details in [HANDOFF.md](HANDOFF.md).
+- [ ] **Bomber B2 – ersten Bombenprototyp spezifizieren.** B1 mit Doppeljet abgeschlossen; gemeinsame Jetfire-Kamerakorrektur vom Entwickler lokal **6/6 bestanden**. Nächster kleiner Schritt: Grafik/Platzhalter und Bewegungsphysik (übernommene Bombergeschwindigkeit, Luftwiderstand) gemeinsam festlegen; noch keine Codefreigabe. Details in [HANDOFF.md](HANDOFF.md).
 
 **Drohne D1–D6 abgeschlossen:** D6-Funktionstest 8/8 lokal bestanden. Jetstream-Feinschliff (30 ms, Skalierung 0,65, Auslässe −10/0/+10 px, Y+13 px) zuletzt per Screenshot optisch bestätigt; kein erneuter vollständiger Funktionstest nach der letzten Höhenkorrektur. Chat B ersetzt später den provisorischen Spawn-Timer. Testdetails stehen in [HANDOFF.md](HANDOFF.md).
 

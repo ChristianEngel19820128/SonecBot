@@ -44,8 +44,9 @@ Zusätzlich in dieser Runde umgesetzt:
 - **Entwicklerabnahmen:** D4a 6/6, D4b 6/6, D5a 7/7, D5b 7/7, D5c 8/8 und D6-Funktionstest 8/8. Letzter Jetstream-Feinschliff: X-Offsets −10/0/+10 px, Y+13 px, 30-ms-Takt und Partikelskalierung 0,65. Der Entwickler bestätigt anhand eines Screenshots die optische Ausrichtung; kein zusätzlicher vollständiger Funktionstest nach der letzten 3-px-Verschiebung gemeldet.
 - **Temporärer Spawn:** Der pausierbare 20–35-Sekunden-Timer bleibt vorerst aktiv. Der F6-Testhook wurde entfernt. Chat B soll später den Timer-Aufruf durch die zentrale Spawn-/Wellensteuerung ersetzen; `DroneSpawn` bleibt als API bestehen und lässt maximal eine aktive Drohne zu.
 - **Bewusst offen:** Endgültiges Balancing und optionaler Art-Pass; Schadenshöhen-Farbspektrum und Drohnenschild sind nur BACKLOG-Ideen. Ein gelegentliches Biep ist geplant, aber nicht als implementiert bestätigt.
+- **Nach Abschluss des Bombers vormerken (Entwicklerbeobachtung):** Drohnen-Jetstream sitzt optisch nicht optimal. Zuerst Auslasspositionen prüfen und anpassen; Drohnen-Sprite möglichst unverändert lassen. Kein aktueller Codeauftrag und keine Vermischung mit der behobenen Kamerakorrektur.
 
-## Bomber B1 – Überflug (6/6 bestanden; Feinabstimmung offen)
+## Bomber B1 – Überflug und Doppeljet abgeschlossen
 
 - **Quellstand auf `develop`:** `source/sonec/media/gfx/enemies/spacejet.png` (176×64 px); einzelner `TBomber`, noch keine Bomben/Schadenslogik.
 - **B1 vom Entwickler lokal in AGK/Windows mit 6/6 bestanden:** Compile, Vorwarnung, Welt-Y-Höhenbereich, kompletter Überflug, Jetstream ohne Sonec-/Drohnenregression und höchstens ein Testanflug pro Spielstart bestätigt.
@@ -53,7 +54,7 @@ Zusätzlich in dieser Runde umgesetzt:
 - **B1-Jetstream-Nachbesserung vom Entwickler mit 5/5 bestanden:** Compile, dichte gleichmäßige Spur, Skalierung 1,0, vertikal mittiger Auslass und unveränderte übrige Spielfunktionen. Zwei Screenshots optisch beurteilt; Einzelstrahl ist die bewährte Referenz.
 - **B1-Doppeljet-Experiment vom Entwickler mit 5/5 bestanden:** Compile, beide Heckstrahlen sichtbar/getrennt und proportional, keine Regressionen. Entwickler bevorzugt Doppeljet, wünscht beide Austritte 3 px tiefer. **Nur diese Korrektur im Code, Sichtvergleich offen:** oberer x=Breite−5/y=Mitte+1, unterer x=Breite−8/y=Mitte+11. Partikelverteilung, Größe 1,0 und Lebensdauer unverändert. Zwei Vergleichsscreenshots folgen.
 - **Doppeljet-Optik anhand dreier Screenshots vom Entwickler bestätigt:** Die angepassten Auspufföffnungen passen zu den zwei Strahlen; diese Variante soll bleiben.
-- **Jetfire-Kamerakorrektur im Code, lokaler AGK-Test offen:** Gemeinsame `JetfireDraw`-/`JetfireDrawAll`-Funktionen berechnen die Bildschirmposition aktiver Partikel jetzt in jedem Zeichenframe neu aus Weltposition und aktueller `World.Position`. Bisher geschah das nur beim Erzeugen, sodass alte Partikel bei vertikaler Kamerabewegung scheinbar am Bildschirm klebten. Betrifft Sonec, Drohne und Bomber; keine Änderungen an Partikeldauer, -bewegung, -farbe, Bomberdüsen oder Timing.
+- **Jetfire-Kamerakorrektur vom Entwickler lokal mit 6/6 bestanden:** Compile, korrektes Mitscrollen bereits erzeugter Partikel, beide Spacejet-Auslässe, Sonec- und Drohnen-Jetfire sowie Pause/Lebensdauer bestätigt. Gemeinsame `JetfireDraw`-/`JetfireDrawAll`-Funktionen berechnen Bildschirmpositionen pro Zeichenframe aus Welt- und Kameraposition. B1 ist damit abgenommen.
 - **Spätere Bombenentscheidung:** Fünf zeitversetzte Bomben mit Bomber-Anfangsgeschwindigkeit und Luftwiderstand. Direkttreffer: kinetischer Schaden **plus** Explosion; abgeschossene Bomben explodieren ebenfalls. Echte Plattformdeckung und gegebenenfalls sichtbar beschnittene Explosionsanimation erfordern eine gesonderte Erweiterung der allgemeinen Explosionsphysik. Bomber selbst soll abschießbar, sein Abschuss aber selten sein.
 
 ## Bestätigte Alpha-Planung
@@ -94,7 +95,7 @@ Verbindlicher Planungsrahmen und Details: [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROA
 
 ## Genau ein nächster Schritt
 
-**Jetfire-Kamerakorrektur lokal in AGK/Windows testen.** Beim vertikalen Scrollen prüfen, dass vorhandene Partikel mit der Welt mitwandern und nicht an Bildschirmkoordinaten kleben; Sonec-, Drohnen- und Bomber-Jetfire sowie Pause und unveränderte Lebensdauer gegenprüfen. Erst nach Rückmeldung B1 abschließen und B2 planen. Keine Bomben; `main` bleibt unberührt.
+**Bomber B2 – Bombenprototyp gemeinsam spezifizieren.** B1 einschließlich Doppeljet und Kamerakorrektur ist vom Entwickler abgenommen. Als Nächstes die erste einfache Bombe (Grafik/Platzhalter, Bewegung, Geschwindigkeitsübernahme und Luftwiderstand) im kleinen Umfang vereinbaren; noch kein neuer Codeauftrag. Die Drohnen-Jetstream-Position erst nach Abschluss des Bombers bearbeiten. `main` bleibt unberührt.
 
 ## Weiterführende Dokumente
 
