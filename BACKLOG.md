@@ -1,6 +1,6 @@
 # SonecBot – Ideen für vielleicht später
 
-**Stand:** 20. November 2026  
+**Stand:** 21. November 2026  
 **Status:** Unverbindliche Sammlung; ohne feste Reihenfolge, Termin oder Implementierungsfreigabe.
 
 Die beschlossenen Real-Alpha-Grundversionen stehen in [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROADMAP.md), nächste Schritte in [TODO.md](TODO.md).
@@ -11,6 +11,7 @@ Bomber, Flarak, hilfreicher Jumppod, Gefahren-/Erfahrungsgrundsystem, kleine Zie
 - **Quadrokopter:** eigenständiges, noch offenes Konzept. Möglich sind zeitweilige verbündete Unterstützung, etwa als Belohnung nach zerstörten Flaraks, ein auf Abstand angreifender Verfolger oder Aufklärung. Keine Rolle endgültig gewählt; keine weitere Kamikaze-Kopie der intelligenten Mine als Vorgabe.
 - **Jumppod-Falle:** sehr seltene explodierende Attrappe. Nur erwägen, wenn ein kleiner erkennbarer Unterschied bzw. eine rechtzeitige Aktivierungsbewegung faire Gegenwehr erlaubt. Idee: bei Annäherung etwa einen Pixel ausfahren, Kontakt löst Explosion aus. Nicht auf alle vorhandenen Minentypen übertragen.
 - **Flarak-Massenwerfer:** ungenaue Raketensalve ohne Zielsuchraketen als spätere Modifikation.
+- **Drohnen-Schildfunktion:** Später ein eigenes Schildkonzept für Drohnen entwerfen (Aktivierung, Schutzwirkung, Trefferfeedback und Gegenmaßnahmen); keine aktuelle Implementierung oder Balancevorgabe.
 - **Drohnen-Dauerlaser:** seltener, zeitlich begrenzter, über den Boden schwenkender Strahl; sichtbares Aufladen vor dem Angriff. Alpha-Basis sind kurze Laserprojektile.
 - **Flammenfalle:** stationäre Modifikation mit berechenbarem Feuerraum. Flammenwerfer müssen nicht exklusiv Sonec gehören.
 - **Luftunterstützung als Aufgabe/Belohnung:** Flaraks zerstören, um Unterstützung zu ermöglichen; mögliche Hilfe gegen ein oder zwei Bomber. Konkrete Aufgabe und Unterstützungsfunktion offen, kein Pflichtumfang der ersten kleinen Ziele.
