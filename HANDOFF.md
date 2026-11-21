@@ -50,7 +50,8 @@ Zusätzlich in dieser Runde umgesetzt:
 - **Quellstand auf `develop`:** `source/sonec/media/gfx/enemies/spacejet.png` (176×64 px); einzelner `TBomber`, noch keine Bomben/Schadenslogik.
 - **B1 vom Entwickler lokal in AGK/Windows mit 6/6 bestanden:** Compile, Vorwarnung, Welt-Y-Höhenbereich, kompletter Überflug, Jetstream ohne Sonec-/Drohnenregression und höchstens ein Testanflug pro Spielstart bestätigt.
 - **B1-Feinschliff vom Entwickler mit 4/5 geprüft:** 10–30 % Welt-Y, 0,40 px/ms, Grün RGB (80,232,80) und unveränderte Warnung/Einmal-Spawn bestätigt. Einzig der Jetstream ist im Screenshot noch lückenhaft.
-- **Jetstream-Nachbesserung im Code, AGK-Test offen:** Skalierung 0,85 → **1,0**; statt einer Emission alle 20 ms mindestens zwei gleichmäßig entlang der zurückgelegten Strecke verteilte Partikel, bei längeren Frames entsprechend mehr (maximal 16). Austritt um eine halbe Jetfire-Partikelhöhe nach unten versetzt. Partikellebensdauer und Bomberfarbe unverändert.
+- **B1-Jetstream-Nachbesserung vom Entwickler mit 5/5 bestanden:** Compile, dichte gleichmäßige Spur, Skalierung 1,0, vertikal mittiger Auslass und unveränderte übrige Spielfunktionen. Zwei Screenshots optisch beurteilt; Einzelstrahl ist die bewährte Referenz.
+- **B1-Doppeljet-Experiment im Code, lokaler Test offen:** Nach überarbeiteter Spacejet-PNG (176×64 px) zwei Emissionspunkte nahe der sichtbaren Heckkante: oberer x=Breite−5/y=Mitte−2, unterer x=Breite−8/y=Mitte+8. Jeweils gleiche räumliche Partikelverteilung, Größe 1,0 und Lebensdauer; nur Bomber-Jetstream geändert. Optisch mit dem abgenommenen Einzelstrahl vergleichen; bei Nichtgefallen zurückwechseln.
 - **Spätere Bombenentscheidung:** Fünf zeitversetzte Bomben mit Bomber-Anfangsgeschwindigkeit und Luftwiderstand. Direkttreffer: kinetischer Schaden **plus** Explosion; abgeschossene Bomben explodieren ebenfalls. Echte Plattformdeckung und gegebenenfalls sichtbar beschnittene Explosionsanimation erfordern eine gesonderte Erweiterung der allgemeinen Explosionsphysik. Bomber selbst soll abschießbar, sein Abschuss aber selten sein.
 
 ## Bestätigte Alpha-Planung
@@ -91,7 +92,7 @@ Verbindlicher Planungsrahmen und Details: [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROA
 
 ## Genau ein nächster Schritt
 
-**B1-Jetstream-Nachbesserung lokal in AGK/Windows testen.** Prüfen: Compile, räumlich gleichmäßiger dichter Jetstream, Partikelgröße 1,0, vertikal mittiger Auslass und unveränderte Bomber-/Drohnen-/Sonec-Funktionen. Erst nach Rückmeldung B1 abschließen und B2 (Bombenprototyp) planen. `main` bleibt unberührt.
+**B1-Doppeljet-Experiment lokal in AGK/Windows testen.** Prüfen: Compile, beide Strahlen beginnen an den sichtbaren Heckdüsen, bleiben getrennt und wirken nicht zu wuchtig; Flug, Warnung, Sonec und Drohne unverändert. Screenshot mit abgenommenem Einzelstrahl vergleichen und erst dann behalten oder zurückwechseln. Keine Bomben; `main` bleibt unberührt.
 
 ## Weiterführende Dokumente
 

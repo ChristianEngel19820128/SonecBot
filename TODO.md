@@ -6,7 +6,7 @@ Hier stehen nur unmittelbar nächste, gemeinsam zu bearbeitende Schritte. Höchs
 
 ## Jetzt
 
-- [ ] **B1 – Jetstream-Nachbesserung lokal in AGK/Windows testen.** B1-Basis 6/6, erster Feinschliff 4/5: Höhe, Tempo, Grün und Warnung bestätigt, Jetstream lückenhaft. Jetzt Partikelgröße 1,0, räumliche Zwischenpartikel und um eine halbe Partikelhöhe abgesenkten Auslass prüfen. Keine Bomben. Details in [HANDOFF.md](HANDOFF.md).
+- [ ] **B1 – Doppeljet-Experiment lokal vergleichen.** Der abgenommene Einzelstrahl hat **5/5** bestanden. Jetzt zwei Heckdüsen mit unveränderter Partikelgröße/-lebensdauer testen: Position, Abstand und Wirkung mit Screenshot beurteilen. Bei Nichtgefallen zum Einzelstrahl zurückkehren; noch keine Bomben. Details in [HANDOFF.md](HANDOFF.md).
 
 **Drohne D1–D6 abgeschlossen:** D6-Funktionstest 8/8 lokal bestanden. Jetstream-Feinschliff (30 ms, Skalierung 0,65, Auslässe −10/0/+10 px, Y+13 px) zuletzt per Screenshot optisch bestätigt; kein erneuter vollständiger Funktionstest nach der letzten Höhenkorrektur. Chat B ersetzt später den provisorischen Spawn-Timer. Testdetails stehen in [HANDOFF.md](HANDOFF.md).
 
