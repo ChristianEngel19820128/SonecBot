@@ -4,8 +4,9 @@
 
 ## Jetzt
 
-- [ ] **N2 – Pickup-Nachrichten zentralisiert, lokaler Test offen.** Konstanten für alle acht Pickup-Typen, neue Meldungen für Gesundheit/MG-/Granatenmunition nur bei tatsächlichem Zuwachs; Upgrade-Meldungen nur bei tatsächlicher Verbesserung, maximal eine pro Pickup. Balancing und volle-Pickup-Fallbacks bleiben später.
 - [ ] **Menü-Hilfetexte später erweitern.** Nur vormerken; gehört nicht in den aktuellen N1-/Cloud-Arbeitsschritt.
+
+**N2 abgenommen:** Entwickler bestätigt AGK-Compile und alle neun Tests 9/9: Energie/xN, Gesundheit, MG-/Granatenmunition, Regeneration, Feuerrate/Burst, keine falschen Max-Meldungen, Animationen und Gameplay. Nachrichtentexte zentralisiert; Balancing/Fallbacks bleiben separat.
 
 **Nachrichten-Polishing abgeschlossen:** N1b 9/9, N1c 6/6 und N1d 5/5 lokal vom Entwickler bestanden; Einflug rechts, Ausflug links, 24-Pixel-Abstand, ruhiger Duplikatrahmen. AGK nicht vom Assistenten ausgeführt.
 
