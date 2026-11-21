@@ -47,7 +47,9 @@ Zusätzlich in dieser Runde umgesetzt:
 - **Vereinbarte Folge:** D5a Gesundheit/Maschinengewehr; D5b Flammenwerfer, Granaten, Plasmablitz und Explosionstreffer; D5c Trefferfeedback, Zerstörung und erneuter Spawn. Zusätzliche Positionierungsregeln erst nach Beobachtungen. Drohnenschild nur unverbindliche BACKLOG-Idee.
 - **D5a abgenommen (7/7):** Entwickler bestätigt Compile, MG-Treffer, Zerstörung, Ende der Angriffe, erneuten Timer-Spawn und unveränderte andere Geschosskollisionen. Umsetzung: Drohne mit 100 HP; Spieler-MG-Geschosse treffen sie in derselben Nearest-Hit-Auswahl wie andere Ziele (46×30 px), beschädigen sie und verschwinden. Bei 0 HP deaktiviert; Laser und laufende Aktionen beendet. Späterer Timer-Spawn setzt HP zurück. Explosion/Zerstörungseffekt und andere Waffen folgen D5b/D5c.
 - **D5b implementiert, lokaler AGK-Test offen:** Flammen, Granat-Direkttreffer, Plasma und Explosionen beschädigen Drohne über `DroneTakeDamage`; Explosionsschaden hat eigenen Cooldown pro Explosion. Noch keine AGK-Bestätigung.
-- **Nächster Schritt:** Entwickler testet D5b lokal.
+- **D5b abgenommen (7/7):** Entwickler bestätigt Compile, Schaden/Zerstörung durch Flammen, Granaten, Plasma und Explosionen, erneuten Spawn und keine Waffenregressionen.
+- **D5c implementiert, lokaler Test offen:** rotes Trefferfeedback für 150 ms; bei Zerstörung einmaliger bestehender Explosionseffekt über `GameDo`, Laser/Scan/Laden bereits bei Tod beendet. Die bestehende Explosion besitzt reguläre Spielwirkung; im Test auf unerwünschten Umgebungsschaden achten.
+- **Nächster Schritt:** Entwickler testet D5c inklusive Langzeitverhalten lokal.
 
 ## Bestätigte Alpha-Planung
 
