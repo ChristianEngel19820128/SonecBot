@@ -6,14 +6,16 @@
 #constant DRONE_WORLD_MARGIN_Y 80
 #constant DRONE_PATROL_SPEED 0.10
 #constant DRONE_TURN_MS 400
-#constant DRONE_SCAN_MIN_INTERVAL_MS 2400
-#constant DRONE_SCAN_MAX_INTERVAL_MS 5000
+#constant DRONE_SCAN_MIN_INTERVAL_MS 3500
+#constant DRONE_SCAN_MAX_INTERVAL_MS 6500
 #constant DRONE_SCAN_MIN_DURATION_MS 500
 #constant DRONE_SCAN_MAX_DURATION_MS 1000
 #constant DRONE_SCAN_NEAR_X 220
-#constant DRONE_CHARGE_MIN_INTERVAL_MS 4500
-#constant DRONE_CHARGE_MAX_INTERVAL_MS 8000
+#constant DRONE_CHARGE_MIN_INTERVAL_MS 6000
+#constant DRONE_CHARGE_MAX_INTERVAL_MS 10000
 #constant DRONE_CHARGE_DURATION_MS 900
+// Prevent scan and charge from following one another immediately.
+#constant DRONE_ACTION_REST_MS 1200
 #constant DRONE_LASER_SPEED 0.35
 #constant DRONE_LASER_START_OFFSET_X 53
 // D2.1 temporary visibility test: exaggerated hover, not final balancing.
@@ -35,6 +37,7 @@ global DroneChargeStartMs as integer
 global DroneChargeUntilMs as integer
 global DroneNextChargeMs as integer
 global DroneChargeFrame as integer
+global DroneActionRestUntilMs as integer
 global DroneLaserActive as integer
 global DroneLaserX as float
 global DroneLaserY as float
@@ -125,6 +128,7 @@ function DroneInit(Drone ref as TDrone,Screen as TSize,World ref as TWorld,Now a
     DroneChargeUntilMs = 0
     DroneNextChargeMs = Now + random(DRONE_CHARGE_MIN_INTERVAL_MS,DRONE_CHARGE_MAX_INTERVAL_MS)
     DroneChargeFrame = 1
+    DroneActionRestUntilMs = Now
     DroneLaserActive = FALSE
     DroneLaserX = 0
     DroneLaserY = 0
@@ -181,6 +185,7 @@ function DroneMove(Drone ref as TDrone,Screen as TSize,SonecX as float,Now as in
         if DroneChargeActive = TRUE
             if Now >= DroneChargeUntilMs
                 DroneChargeActive = FALSE
+                DroneActionRestUntilMs = Now+DRONE_ACTION_REST_MS
                 // Spawn a single visual projectile at the charge tip.
                 DroneLaserActive = TRUE
                 DroneLaserDirection = Drone.Direction
@@ -212,6 +217,7 @@ function DroneMove(Drone ref as TDrone,Screen as TSize,SonecX as float,Now as in
         if DroneScanActive = TRUE
             if Now >= DroneScanUntilMs
                 DroneScanActive = FALSE
+                DroneActionRestUntilMs = Now+DRONE_ACTION_REST_MS
                 DroneNextScanMs = Now + random(DRONE_SCAN_MIN_INTERVAL_MS,DRONE_SCAN_MAX_INTERVAL_MS)
                 // Proximity can influence a turn, but never guarantees one.
                 TurnChance = 5
@@ -227,7 +233,7 @@ function DroneMove(Drone ref as TDrone,Screen as TSize,SonecX as float,Now as in
                 endif
             endif
         else
-            if DroneChargeActive = FALSE and Drone.IsTurning = FALSE and Now >= DroneNextScanMs
+            if DroneChargeActive = FALSE and Drone.IsTurning = FALSE and Now >= DroneNextScanMs and Now >= DroneActionRestUntilMs
                 DroneScanActive = TRUE
                 DroneScanStartMs = Now
                 DroneScanFrame = 1
@@ -235,7 +241,7 @@ function DroneMove(Drone ref as TDrone,Screen as TSize,SonecX as float,Now as in
             endif
         endif
 
-        if DroneChargeActive = FALSE and DroneScanActive = FALSE and Drone.IsTurning = FALSE and Now >= DroneNextChargeMs
+        if DroneChargeActive = FALSE and DroneScanActive = FALSE and Drone.IsTurning = FALSE and Now >= DroneNextChargeMs and Now >= DroneActionRestUntilMs
             DroneChargeActive = TRUE
             DroneChargeStartMs = Now
             DroneChargeUntilMs = Now+DRONE_CHARGE_DURATION_MS
