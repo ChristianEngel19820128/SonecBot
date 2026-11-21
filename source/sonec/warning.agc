@@ -143,7 +143,7 @@ function WarningPush(Warning ref as TWarning,MessageString as string,Kind as int
         endif
     next i
     // A new danger supersedes the current panel, including an older danger.
-    // N1b will animate this transition; for now it is immediate.
+    // Keep the outgoing panel separate while the replacement enters.
     if Kind = 0 and Warning.Count > 0
         WarningCaptureOutgoing(Warning,Now)
         WarningRemove(Warning,0)
@@ -214,7 +214,7 @@ function WarningDraw(Warning ref as TWarning)
             SlideOffset = 0
             Elapsed = Warning.Now-Warning.SlideStartMs
             if Elapsed >= 0 and Elapsed < NOTICE_SLIDE_MS
-                SlideOffset = -NOTICE_WIDTH*(NOTICE_SLIDE_MS-Elapsed)/NOTICE_SLIDE_MS
+                SlideOffset = NOTICE_WIDTH*(NOTICE_SLIDE_MS-Elapsed)/NOTICE_SLIDE_MS
             endif
             SetSpriteSize(Warning.Notice[i].BarSpriteID,NOTICE_WIDTH,NOTICE_HEIGHT)
             SetSpriteColor(Warning.Notice[i].BarSpriteID,12,12,24,NOTICE_BAR_ALPHA)
@@ -242,9 +242,17 @@ function WarningDraw(Warning ref as TWarning)
             Elapsed = Warning.Now-Warning.RepeatStartMs
             if Elapsed >= 0 and Elapsed < NOTICE_REPEAT_MS
                 RepeatAlpha = (NOTICE_REPEAT_MS-Elapsed)*70/NOTICE_REPEAT_MS
-                SetSpriteSize(Warning.RepeatSpriteID,NOTICE_WIDTH,NOTICE_HEIGHT)
+                // Draw a thin outline instead of flashing the entire panel.
                 SetSpriteColor(Warning.RepeatSpriteID,r,g,b,RepeatAlpha)
+                SetSpriteSize(Warning.RepeatSpriteID,NOTICE_WIDTH,2)
                 SetSpritePosition(Warning.RepeatSpriteID,Warning.CenterX-NOTICE_WIDTH*0.5+SlideOffset,y)
+                DrawSprite(Warning.RepeatSpriteID)
+                SetSpritePosition(Warning.RepeatSpriteID,Warning.CenterX-NOTICE_WIDTH*0.5+SlideOffset,y+NOTICE_HEIGHT-2)
+                DrawSprite(Warning.RepeatSpriteID)
+                SetSpriteSize(Warning.RepeatSpriteID,2,NOTICE_HEIGHT-4)
+                SetSpritePosition(Warning.RepeatSpriteID,Warning.CenterX-NOTICE_WIDTH*0.5+SlideOffset,y+2)
+                DrawSprite(Warning.RepeatSpriteID)
+                SetSpritePosition(Warning.RepeatSpriteID,Warning.CenterX+NOTICE_WIDTH*0.5-2+SlideOffset,y+2)
                 DrawSprite(Warning.RepeatSpriteID)
             endif
             y = y+NOTICE_HEIGHT+NOTICE_GAP
