@@ -48,8 +48,10 @@ Zusätzlich in dieser Runde umgesetzt:
 - **D5a abgenommen (7/7):** Entwickler bestätigt Compile, MG-Treffer, Zerstörung, Ende der Angriffe, erneuten Timer-Spawn und unveränderte andere Geschosskollisionen. Umsetzung: Drohne mit 100 HP; Spieler-MG-Geschosse treffen sie in derselben Nearest-Hit-Auswahl wie andere Ziele (46×30 px), beschädigen sie und verschwinden. Bei 0 HP deaktiviert; Laser und laufende Aktionen beendet. Späterer Timer-Spawn setzt HP zurück. Explosion/Zerstörungseffekt und andere Waffen folgen D5b/D5c.
 - **D5b abgenommen (7/7):** Entwickler bestätigt Compile, Schaden/Zerstörung durch Flammen, Granaten, Plasma und Explosionen, erneuten Spawn und keine Waffenregressionen.
 - **D5c abgenommen (8/8):** Entwickler bestätigt Compile, rotes Trefferfeedback, genau eine Zerstörungsexplosion, keine verbleibenden Angriffe, vollen HP-Respawn, mehrere Zyklen, keinen unerwünschten Umgebungsschaden und keine Langzeitauffälligkeiten.
-- **Farbabgleich nach D5c:** Auf Entwicklerwunsch blinkt die Drohne jetzt an Rumpf, Sensoren und Fallback in Standardrot RGB (255,0,0). Nur diese Farbänderung ist noch nicht lokal nachgetestet.
-- **Nächster Schritt:** Chat B übernimmt zu gegebener Zeit die Drohnen-Spawnsteuerung und entfernt den provisorischen Timer-Aufruf; bis dahin kein weiterer Drohnen-Codeauftrag.
+- **Farbabgleich nach D5c bestätigt:** Entwickler hat Standardrot RGB (255,0,0) visuell geprüft und bestätigt. Optionales Schadenshöhen-Farbspektrum steht unverbindlich in `BACKLOG.md`.
+- **D6 umgesetzt, lokaler AGK-Test offen:** Drei Drohnen-Jetstreams an X-Offsets −14/0/+14 und Y+16 mit Sonecs Jetfire-Grafik und Lebenszyklus, eigener 30-ms-Takt auf Spieluhr. Keine Energiekosten; vorhandene Jetfire-Partikel verblassen nach Tod regulär.
+- **Nächster Schritt:** Entwickler testet D6 lokal, danach Drohnenübergabe an Chat B.
+
 
 ## Bestätigte Alpha-Planung
 
