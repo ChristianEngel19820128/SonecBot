@@ -4,7 +4,7 @@
 
 ## Jetzt
 
-- [ ] **Belohnungen/Nachrichten inventarisieren.** Jede Zerstörung soll eine Belohnung geben; Energie am häufigsten, genaue Art/Menge Balancing. Fehlende Meldungen erfassen; Energie-Sammelmeldung `ENERGY COLLECTED xN` per bestehender N1a-Queue als kleiner erster Schritt eingebaut, Entwickler bestätigt E1 lokal 5/5. E2a: zentraler `RewardDrop`-Dispatcher mit Objekt-Konstanten und `select/case` für Smart-/SimpleMine eingebaut; lokaler Test offen, keine Balancingänderung. Weitere Objekttypen später einzeln migrieren; übrige Meldungen und Textkonstanten später vereinheitlichen.
+- [ ] **Belohnungen/Nachrichten inventarisieren.** Jede Zerstörung soll eine Belohnung geben; Energie am häufigsten, genaue Art/Menge Balancing. Fehlende Meldungen erfassen; Energie-Sammelmeldung `ENERGY COLLECTED xN` per bestehender N1a-Queue als kleiner erster Schritt eingebaut, Entwickler bestätigt E1 lokal 5/5. E2a: zentraler `RewardDrop`-Dispatcher mit Objekt-Konstanten und `select/case` für Smart-/SimpleMine eingebaut; lokal 6/6 bestanden, keine Balancingänderung. Weitere Objekttypen später einzeln migrieren; übrige Meldungen und Textkonstanten später vereinheitlichen.
 - [ ] **N1b – Animation und Darstellung nach N1a.** Seitliches Verdrängen, Duplikatanimation, Textzentrierung, transparente Balken.
 - [ ] **Menü-Hilfetexte später erweitern.** Nur vormerken; gehört nicht in den aktuellen N1-/Cloud-Arbeitsschritt.
 
