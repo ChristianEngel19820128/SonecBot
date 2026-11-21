@@ -4,7 +4,7 @@
 
 ## Jetzt
 
-- [ ] **Belohnungen/Nachrichten inventarisieren.** Jede Zerstörung soll eine Belohnung geben; Energie am häufigsten, genaue Art/Menge Balancing. Fehlende Meldungen erfassen; erste aggregierende Energienachricht und wiederverwendbare Nachrichtenkonstanten abstimmen.
+- [ ] **Belohnungen/Nachrichten inventarisieren.** Jede Zerstörung soll eine Belohnung geben; Energie am häufigsten, genaue Art/Menge Balancing. Fehlende Meldungen erfassen; Energie-Sammelmeldung `ENERGY COLLECTED xN` per bestehender N1a-Queue als kleiner erster Schritt eingebaut, lokaler Test offen. Zentrale Belohnungsvergabe für alle Zerstörungen als gesonderten Entwurf abstimmen; übrige Meldungen und Textkonstanten später vereinheitlichen.
 - [ ] **N1b – Animation und Darstellung nach N1a.** Seitliches Verdrängen, Duplikatanimation, Textzentrierung, transparente Balken.
 - [ ] **Menü-Hilfetexte später erweitern.** Nur vormerken; gehört nicht in den aktuellen N1-/Cloud-Arbeitsschritt.
 

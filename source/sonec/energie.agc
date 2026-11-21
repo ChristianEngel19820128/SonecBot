@@ -167,6 +167,9 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
+#constant NOTICE_ENERGY_COLLECTED "ENERGY COLLECTED"
+#constant NOTICE_ENERGY_COLLECTED_MS 3000
+
 function EnergieCollect(EnergieList ref as TEnergieList,Sonec ref as TSonec,Warning ref as TWarning,Now as integer)
 	
 	local i as integer
@@ -184,6 +187,8 @@ function EnergieCollect(EnergieList ref as TEnergieList,Sonec ref as TSonec,Warn
 							Sonec.Health.State = Sonec.Health.State - ((Sonec.Energy.State + EnergieList.Energie[i].Value)-(Sonec.Energy.State*150/Sonec.Energy.StateMax))
 							Sonec.Energy.State = Sonec.Energy.State*150/Sonec.Energy.StateMax
 						endif						
+						// Merge successive energy orbs using the existing N1a queue.
+                        WarningShowPositive(Warning,NOTICE_ENERGY_COLLECTED,NOTICE_ENERGY_COLLECTED_MS,Now)
 					endcase
 					case 1
 						if Sonec.Energy.RegRate > 200
