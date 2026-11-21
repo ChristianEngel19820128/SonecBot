@@ -307,6 +307,7 @@ function GameDo(Game ref as TGame,Now as integer)
 	
 	FlameLifeCycle(Game.FlameList,Now)
 	FlameMoveall(Game.FlameList,Game.World,Now)
+    BomberBombCollideFlames(Game.Bomber,Game.FlameList,Game,Now)
 	FlameCollideOrbs(Game.FlameList,Game.OrbList)
 	FlameCollideMine(Game.FlameList,Game.MineList)
 	FlameCollideMine(Game.FlameList,Game.SimpleMineList)

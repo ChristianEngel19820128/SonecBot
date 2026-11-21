@@ -250,6 +250,35 @@ endfunction
 // Sweep the bullet's last movement segment against a small bomb hit circle.
 #constant BOMBER_BOMB_SHOT_RADIUS 7
 
+// B3b: use the existing growing flame radius to intercept bomber bombs.
+// Consume one flame and one bomb; use the same red airborne explosion as B3a.
+function BomberBombCollideFlames(Bomber ref as TBomber,FlameList ref as TFlameList,Game ref as TGame,Now as integer)
+    local i as integer
+    local k as integer
+    local Radius as float
+    local HitPosition as TPosition
+
+    for i = 0 to FlameList.Flame.Length
+        if FlameList.Flame[i].Enabled = TRUE
+            Radius = FlameCollisionRadius(FlameList.Flame[i])+BOMBER_BOMB_SHOT_RADIUS
+            for k = 0 to BOMBER_BOMB_COUNT-1
+                if FlameList.Flame[i].Enabled = TRUE and Bomber.Bomb[k].Enabled = TRUE
+                    if CalcRadius(FlameList.Flame[i].ObjectData.Position,Bomber.Bomb[k].Position) <= Radius
+                        HitPosition = Bomber.Bomb[k].Position
+                        Bomber.Bomb[k].Enabled = FALSE
+                        FlameDelete(FlameList,i)
+                        ExplosionAdd(Game.ExplosionList,Game.ProtoExplosion,Game,1,HitPosition,Now)
+                    endif
+                endif
+            next k
+        endif
+    next i
+endfunction
+
+//----------------------------------------------------------------------
+// 
+//----------------------------------------------------------------------
+
 function BomberBombCollideBullets(Bomber ref as TBomber,BulletList ref as TBulletList,ExplosionList ref as TExplosionList,ProtoExplosion ref as TProtoExplosion,Game ref as TGame,Now as integer)
     local i as integer
     local k as integer
