@@ -95,7 +95,7 @@ Verbindlicher Planungsrahmen und Details: [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROA
 
 ## Genau ein nächster Schritt
 
-**Bomber B2b – Abwurfbeginn korrigiert, AGK-Nachtest offen.** Entwickler meldet **6/7 bestanden**: Compile, fünf Bomben, ca. 250-ms-Abstände, unabhängige Physik/Rotation, Layering hinter Spacejet und Regressionen bestätigt. Die letzte Bombe begann zu spät; Ziel ist ein mittig abgedeckter Spielbereich. **Kleine Korrektur im Code:** Erste Bombe wird abgeworfen, sobald der Spacejet vollständig rechts im Bild ist (`Screen.Width − halbe Spritebreite`); weitere vier folgen alle 250 ms. Physik, Rotation und Zeichenreihenfolge unverändert. Noch keine Kollision, Explosion oder Schaden. Nachtest: Abwurfbeginn und räumliche Abdeckung beobachten; erst danach ggf. Timing geringfügig anpassen. Drohnen-Jetstream erst nach Bomberabschluss; `main` unberührt.
+**Bomber B2b – früherer Abwurfstart, AGK-Nachtest offen.** Entwickler bestätigte **6/7** für fünf Bomben, ca. 250-ms-Abstände, Physik/Rotation, Layering und Regressionen. Screenshot zeigt den Teppich noch zu weit links. Im Code beginnt Bombe 1 jetzt **eine halbe Spritebreite (ca. 88 px) früher**: Bombermittelpunkt erreicht `Screen.Width`, während das Heck noch rechts außerhalb liegt. Die erste Bombe fällt ohne zusätzliche Timerwartezeit; ab Bombe 2 gelten unverändert 250 ms. Physik, Rotation, Zeichenreihenfolge unverändert; noch keine Kollision, Explosion oder Schaden. Nächster lokaler Sichttest: Abwurfstart und mittige räumliche Abdeckung beurteilen; erst danach ggf. Abstände anpassen. Drohnen-Jetstream erst nach Bomberabschluss; `main` unberührt.
 
 ## Weiterführende Dokumente
 

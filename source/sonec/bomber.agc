@@ -190,7 +190,8 @@ function BomberDo(Bomber ref as TBomber,ProtoBomber ref as TProtoBomber,Warning 
 endfunction
 
 // B2b: five independent bombs, spaced by time along the overflight.
-// Start when the bomber's entire sprite is visible at the right screen edge.
+// Start half a sprite-width earlier than the fully visible threshold.
+// The first bomb is immediate; the 250-ms timer governs subsequent drops.
 function BomberBombDo(Bomber ref as TBomber,ProtoBomber ref as TProtoBomber,World ref as TWorld,Screen as TSize,Now as integer)
     local DeltaMs as integer
     local DragFactor as float
@@ -198,7 +199,7 @@ function BomberBombDo(Bomber ref as TBomber,ProtoBomber ref as TProtoBomber,Worl
     local FirstDropX as float
     local i as integer
 
-    FirstDropX = Screen.Width-GetSpriteWidth(ProtoBomber.Body.Sprite.ID)*0.5
+    FirstDropX = Screen.Width
 
     if Bomber.Enabled = TRUE and Bomber.BombCount < BOMBER_BOMB_COUNT and ProtoBomber.Bomb.Sprite.ID > 0
         if Bomber.NextBombAtMs = 0 and Bomber.Position.x <= FirstDropX
