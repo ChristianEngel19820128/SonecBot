@@ -219,9 +219,6 @@ endfunction
 function OrbHealthRegenerate(OrbList ref as TOrbList,Game ref as TGame,Now as integer)
 	
 	local i as integer
-	local k as integer
-	local EnergieType as integer
-	local Position as TPosition
 	
 	for i = 0 to OrbList.Orb.Length
 		if OrbList.Orb[i].Enabled = TRUE
@@ -237,15 +234,7 @@ function OrbHealthRegenerate(OrbList ref as TOrbList,Game ref as TGame,Now as in
 				TimeReset(OrbList.Orb[i].Health.RegenerationTimer,Now)
 			endif
 			if OrbList.Orb[i].Health.State < 0
-				for k = 0 to random(0,12)
-					EnergieType = 0
-					if random(0,8) > 5
-						EnergieType = random(0,Game.ProtoEnergie.AnimEnergie.Length)
-					endif
-					Position.x = OrbList.Orb[i].ObjectData.Position.x + random(0,20) - 10
-					Position.y = OrbList.Orb[i].ObjectData.Position.y + random(0,20) - 10
-					EnergieAdd(Game.EnergieList,Game.ProtoEnergie,Game.World,EnergieType,Position,Now)
-				next k
+				RewardDrop(Game,REWARD_OBJECT_ORB,OrbList.Orb[i].ObjectData.Position,Now)
 				OrbDestroy(OrbList,i,Game.ExplosionList,Game.ProtoExplosion,Game,OrbList.Orb[i].ObjectData.Position,Now)
 			endif
 		endif
