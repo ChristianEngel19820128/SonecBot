@@ -45,7 +45,8 @@ Zusätzlich in dieser Runde umgesetzt:
 - Der **temporäre F6-Testhook ist nach der Abnahme entfernt**. `DroneSpawn` in `source/sonec/drone.agc` bleibt für spätere Aufrufe erhalten. Chat B regelt Wellen/Anzahl; die Drohnenfunktion prüft Position und aktiviert höchstens eine Drohne. Umfassende Hindernisprüfung und Mehrfachdrohnen sind noch nicht implementiert.
 - **D4b abgenommen (6/6):** Entwickler bestätigt lokalen AGK-/Windows-Test am 21.11.2026: Compile, Spawn nach 20–35 Sekunden, beide Eintrittsseiten, höchstens eine Drohne, unveränderte Aktionen und pausierender Timer; keine Auffälligkeiten. Timer bleibt vorläufig aktiv, bis Chat B den Aufruf ersetzt; `DroneSpawn` bleibt.
 - **Vereinbarte Folge:** D5a Gesundheit/Maschinengewehr; D5b Flammenwerfer, Granaten, Plasmablitz und Explosionstreffer; D5c Trefferfeedback, Zerstörung und erneuter Spawn. Zusätzliche Positionierungsregeln erst nach Beobachtungen. Drohnenschild nur unverbindliche BACKLOG-Idee.
-- **Nächster Schritt:** Entwickler testet D4b lokal, anschließend D5a.
+- **D5a implementiert, lokaler AGK-Test offen:** Drohne mit 100 HP; Spieler-MG-Geschosse treffen sie in derselben Nearest-Hit-Auswahl wie andere Ziele (46×30 px), beschädigen sie und verschwinden. Bei 0 HP deaktiviert; Laser und laufende Aktionen beendet. Späterer Timer-Spawn setzt HP zurück. Explosion/Zerstörungseffekt und andere Waffen folgen D5b/D5c.
+- **Nächster Schritt:** Entwickler testet D5a lokal.
 
 ## Bestätigte Alpha-Planung
 
