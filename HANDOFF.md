@@ -95,7 +95,7 @@ Verbindlicher Planungsrahmen und Details: [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROA
 
 ## Genau ein nächster Schritt
 
-**Bomber B2e/1 – Blau-Rot-Explosionskombination lokal testen.** B2d vom Entwickler **6/6 bestanden** (Schadensabschirmung). Experimenteller visueller Pfad ausschließlich für Bomben-Aufschläge auf Plattformen: vorhandene blaue Animationsframes zuerst, rote darüber, synchronisiert nach Fortschritt, ohne Rotation, per Sprite-Scissor an der Plattformoberkante auf den oberen Bereich begrenzt. Die Kombination wird **noch zur Laufzeit gezeichnet, nicht vorab in Texturen gebacken**; damit zunächst Wirkung und AGK-Scissor-Kompatibilität prüfen, bevor ein Pre-Render-Pfad erwogen wird. Schadenslogik, Bombenphysik und normale Explosionen unverändert. Lokaler AGK-Test offen: Compile, Blau+Rot, Clipping, Kamera und Regressionen. Direkter kinetischer Schaden, Bombenabschuss und Bomberzerstörung bleiben offen; Drohnen-Jetstream nach Bomberabschluss; `main` unberührt.
+**Bomber B2e/2 – Rot-Blau-Reihenfolge lokal prüfen.** Entwickler-Test B2e/1: **5/6**, AGK-Compile, interessante Optik, Clipping samt Kamerabewegung und Schadensabschirmung bestanden. Screenshot: rote Ebene überdeckt die blaue fast vollständig. Für B2e/2 ausschließlich Reihenfolge geändert: **Rot zuerst, Blau darüber**; gleiche Animation, Scissor-Begrenzung und Schadenslogik. Lokaler Test offen: beide Farben sichtbar, Clipping und Regressionen. Vorab-Rendern in neue Texturen bleibt eine spätere Option, nicht implementiert. Direkter kinetischer Schaden, Bombenabschuss und Bomberzerstörung offen; Drohnen-Jetstream nach Bomberabschluss; `main` unberührt.
 
 ## Weiterführende Dokumente
 

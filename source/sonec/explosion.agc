@@ -530,7 +530,7 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-// B2e/1: experimental blue-then-red upper-half composite at draw time.
+// B2e/1: experimental red-then-blue upper-half composite at draw time.
 // This is deliberately limited to platform bomb impacts; no damage changes.
 // Use the same animation progress to sample both source sequences.
 function ExplosionDraw(Explosion ref as TExplosion,ProtoExplosion ref as TProtoExplosion)
@@ -553,12 +553,13 @@ function ExplosionDraw(Explosion ref as TExplosion,ProtoExplosion ref as TProtoE
             if CutY > 0
                 if CutY > GetVirtualHeight() then CutY = GetVirtualHeight()
                 // Scissor clips the lower half at the world-space impact surface.
-                SetSpriteScissor(BlueSpriteID,0,0,GetVirtualWidth(),CutY)
-                SpriteDraw(ProtoExplosion.AnimExplosion[0,BlueFrame].Sprite,Explosion.SpriteData)
-                SetSpriteScissor(BlueSpriteID,0,0,0,0)
+                // B2e/2: red base, blue foreground; both retain the same clip.
                 SetSpriteScissor(RedSpriteID,0,0,GetVirtualWidth(),CutY)
                 SpriteDraw(ProtoExplosion.AnimExplosion[1,Explosion.AnimationData.Frame].Sprite,Explosion.SpriteData)
                 SetSpriteScissor(RedSpriteID,0,0,0,0)
+                SetSpriteScissor(BlueSpriteID,0,0,GetVirtualWidth(),CutY)
+                SpriteDraw(ProtoExplosion.AnimExplosion[0,BlueFrame].Sprite,Explosion.SpriteData)
+                SetSpriteScissor(BlueSpriteID,0,0,0,0)
             endif
         else
             SpriteDraw(ProtoExplosion.AnimExplosion[Explosion.ExplosionType,Explosion.AnimationData.Frame].Sprite,Explosion.SpriteData)
