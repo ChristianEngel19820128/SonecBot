@@ -95,7 +95,7 @@ Verbindlicher Planungsrahmen und Details: [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROA
 
 ## Genau ein nächster Schritt
 
-**B4c vom Entwickler lokal 6/6 bestanden (21.11.2026):** AGK kompiliert/startet, PlasmaBlitz nach links und rechts zeigt roten Trefferblitz, beide Richtungen verursachen Schaden, Spacejet zerstörbar, Explosion und Bombenverhalten korrekt. **50 TP vorerst beibehalten** (Entwicklerentscheidung), roter Trefferblitz `255,0,0,255` und Plasma-Intervall 100 ms unverändert. Entwickler vermutet möglicherweise verzögerte rote Anzeige; **nicht bestätigt und kein offener Blocker**, daher keine weiteren Codeänderungen. B4b zuvor 7/7 bei 20 TP; B3e 5/5 lokal und HTML5-Sichttest ohne Auffälligkeiten. **Nächster Schritt:** Touchdown-Countdown ('Touchdown in 3 Sekunden.', 3→2→1) vor Sonecs Erscheinen gemeinsam konkretisieren; noch nicht implementiert. Später Drohnen-Jetstream; `main` unberührt.
+**T1 – Touchdown-Countdown implementiert; lokaler AGK-Test offen.** Quellprüfung: `SonecInit` setzt Spawn auf **X = Screen.Width/4, Y = 0** (Weltkoordinaten), Fallzustand TRUE. Vor Sonecs Erscheinen nun 3 Sekunden `Touchdown in 3/2/1 Sekunden.`; Sonec und Schild werden nicht gezeichnet, Eingaben und gesamte `GameDo`-Simulation bleiben bis Ablauf angehalten (dadurch keine Angriffe/Schäden). Der Countdown nutzt den bestehenden pausierbaren `Now`-Spielzeitwert; kein AGK-Build durch Assistenten. **B4c lokal 6/6 bestanden**, Spacejet vorerst 50 TP, beide Plasma-Richtungen und Trefferblitz korrekt. **Nächster Schritt:** T1 lokal prüfen: Spawnposition, 3→2→1, Sichtbarkeit/Unverwundbarkeit, Eingaben, Pause und normales Spiel nach Ablauf. `main` unberührt.
 
 ## Weiterführende Dokumente
 

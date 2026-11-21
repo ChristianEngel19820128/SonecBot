@@ -1,4 +1,6 @@
 
+#constant TOUCHDOWN_COUNTDOWN_MS 3000
+
 //----------------------------------------------------------------------
 // 
 //----------------------------------------------------------------------
@@ -24,6 +26,11 @@ function GameCreate(Game ref as TGame,vx as integer,vy as integer)
 	SetTextPosition(Game.DebugText[1],10,55)
 	SetTextSize(Game.DebugText[1],16)
 	SetTextColor(Game.DebugText[1],255,255,255,255)
+	Game.TouchdownTextID = CreateText("")
+    SetTextAlignment(Game.TouchdownTextID,1)
+    SetTextPosition(Game.TouchdownTextID,Game.Screen.Width*0.5,Game.Screen.Height*0.4)
+    SetTextSize(Game.TouchdownTextID,28)
+    SetTextColor(Game.TouchdownTextID,255,255,255,255)
 	Game.IsLost = TRUE
 	Game.IsPause = FALSE
 	
@@ -116,6 +123,8 @@ function GameInit(Game ref as TGame,Now as integer)
 
 	Game.IsPause = FALSE
 	Game.IsLost = FALSE
+    Game.TouchdownUntilMs = Now+TOUCHDOWN_COUNTDOWN_MS
+    Game.TouchdownNowMs = Now
 
 	WorldInit(Game.World,Game.ProtoBackground,Game.Screen)
 	TowerInit(Game.TowerList)
@@ -157,6 +166,7 @@ endfunction
 
 function GameInput(Game ref as TGame,Keys ref as TKeys,Options ref as TGameOptions,Now as integer)
 
+	if Now < Game.TouchdownUntilMs then exitfunction
 	SonecInput(Game.Sonec,Game.JetfireList,Game.ProtoJetfire,Game.World,Keys,Options,Game.JoystickIndex,Now)
 	// Back/Select is handled only while paused in main.agc.
 
@@ -168,6 +178,7 @@ endfunction
 
 function GameActionInput(Game ref as TGame,Keys ref as TKeys,Now as integer)
 
+	if Now < Game.TouchdownUntilMs then exitfunction
 	SonecFlameGunInput(Game.Sonec,Game.FlameList,Game.ProtoFlame,Game.World,Game.Sound,Keys,Game.JoystickIndex,Now)
 	SonecPlasmaBlitzGunInput(Game.Sonec,Game.FlashList,Game.ProtoFlash,Game.PlasmaBlitzList,Game.ProtoPlasmaBlitz,Game.World,Keys,Game.JoystickIndex,Now)
 	SonecMGunInput(Game.Sonec,Game.FlashList,Game.ProtoFlash,Game.BulletList,Game.ProtoBullet,Game.World,Game.Sound,Keys,Game.JoystickIndex,Now)
@@ -186,6 +197,9 @@ function GameDo(Game ref as TGame,Now as integer)
 	local WalkerChance as integer
 	local Index as integer
 	local i as integer
+    Game.TouchdownNowMs = Now
+    // Hold all gameplay, movement and damage until Sonec becomes visible.
+    if Now < Game.TouchdownUntilMs then exitfunction
 	
 	BackgroundDo(Game.Background,Game.World,Now)
 	if CloudCountAll(Game.CloudList) < 50
@@ -460,9 +474,11 @@ function GameDraw(Game ref as TGame)
 	FlashDrawAll(Game.FlashList,Game.ProtoFlash)
 	// Debug muzzle markers remain visible above bullets and flashes.
 	WalkerMuzzleDebugDrawAll(Game.WalkerList,Game.ProtoWalker,Game.World)
-	SonecDraw(Game.Sonec,Game.ProtoSonec)
-	SonecCollisionDebugDraw(Game.Sonec,Game.World)
-	ShieldDraw(Game.Shield,Game.ProtoShield)
+	if Game.TouchdownNowMs >= Game.TouchdownUntilMs
+        SonecDraw(Game.Sonec,Game.ProtoSonec)
+        SonecCollisionDebugDraw(Game.Sonec,Game.World)
+        ShieldDraw(Game.Shield,Game.ProtoShield)
+    endif
 
 
 	ExplosionDrawAll(Game.ExplosionList,Game.ProtoExplosion)
@@ -472,6 +488,10 @@ function GameDraw(Game ref as TGame)
 	WarningPickupStarDraw(Game.Warning,Game.Sonec)
 
 	GuiEnergyDraw(Game.Gui,Game.Sonec,Game.Screen,GetMilliseconds())
+    if Game.TouchdownNowMs < Game.TouchdownUntilMs
+        SetTextString(Game.TouchdownTextID,"Touchdown in "+Str((Game.TouchdownUntilMs-Game.TouchdownNowMs+999)/1000)+" Sekunden.")
+        DrawText(Game.TouchdownTextID)
+    endif
 	// S4: top warning overlay draws above gameplay and before main.agc Swap().
 	WarningDraw(Game.Warning)
 	// F2 compares one platform and one visible skyscraper without affecting movement.
