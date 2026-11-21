@@ -255,6 +255,25 @@ endfunction
 // 
 //-----------------------------------------------------------------------
 
+// D5b: direct grenade impact damages the drone and creates the normal blast.
+function GrenadeCollideDrone(GrenadeList ref as TGrenadeList,Drone ref as TDrone,Game ref as TGame,Now as integer)
+    local i as integer
+    local MinPos as TPosition
+    local MaxPos as TPosition
+    MinPos.x = Drone.Position.x-23
+    MinPos.y = Drone.Position.y-15
+    MaxPos.x = Drone.Position.x+23
+    MaxPos.y = Drone.Position.y+15
+    for i = 0 to GrenadeList.Grenade.Length
+        if Drone.Enabled = TRUE and GrenadeList.Grenade[i].Enabled = TRUE
+            if BoxInBox(GrenadeList.Grenade[i].CollisionData.Position1,GrenadeList.Grenade[i].CollisionData.Position2,MinPos,MaxPos)
+                DroneTakeDamage(Drone,GrenadeList.Grenade[i].BulletData.Damage)
+                GrenadeDestroy(GrenadeList,i,Game.ExplosionList,Game.ProtoExplosion,Game,GrenadeList.Grenade[i].ObjectData.Position,Now)
+            endif
+        endif
+    next i
+endfunction
+
 function GrenadeCollidePlate(GrenadeList ref as TGrenadeList,PlateList ref as TPlateList,Game ref as TGame,Now as integer)
 	
 	local i as integer
