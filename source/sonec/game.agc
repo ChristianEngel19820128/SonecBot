@@ -209,6 +209,8 @@ function GameDo(Game ref as TGame,Now as integer)
     Game.TouchdownNowMs = Now
     // Display the countdown in the existing warning panel, replacing the same notice.
     if Now < Game.TouchdownUntilMs
+        // Keep the sky positioned during countdown while gameplay stays frozen.
+        BackgroundDo(Game.Background,Game.World,Now)
         Game.Warning.Now = Now
         Game.Warning.Count = 1
         Game.Warning.Notice[0].Kind = 0

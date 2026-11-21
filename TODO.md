@@ -4,7 +4,7 @@
 
 ## Jetzt
 
-- [ ] **F1 – Foreground-Clouds beim Touchdown prüfen.** Entwickler sieht sie beim Touchdown nicht. Quellprüfung: Draw-Aufruf ist vorhanden; Zufall, Weltposition und sehr niedriger Alpha-Wert sind mögliche Ursachen, noch nicht bestätigt. Erst gezielt reproduzieren, dann Fix abstimmen.
+- [ ] **F1 – Foreground-Clouds beim Touchdown prüfen.** Entwickler sieht sie beim Touchdown nicht. Quellprüfung: Draw-Aufruf ist vorhanden; Zufall, Weltposition und sehr niedriger Alpha-Wert sind mögliche Ursachen, noch nicht bestätigt. F1-Minimalfix: `BackgroundDo` läuft nun auch während des Countdowns; lokaler Helligkeits-/Wolkentest steht aus.
 - [ ] **N1a – Drei offene Fälle gezielt prüfen.** Entwickler 7/10 bestätigt; Dubletten Grün/Rot xN und Verdrängung Rot durch anderes Rot kamen nicht vor. Keine bestätigten Fehler in diesen drei Fällen.
 - [ ] **Belohnungen/Nachrichten inventarisieren.** Jede Zerstörung soll eine Belohnung geben; Energie am häufigsten, genaue Art/Menge Balancing. Fehlende Meldungen erfassen; erste aggregierende Energienachricht und wiederverwendbare Nachrichtenkonstanten abstimmen.
 - [ ] **N1b – Animation und Darstellung nach N1a.** Seitliches Verdrängen, Duplikatanimation, Textzentrierung, transparente Balken.
