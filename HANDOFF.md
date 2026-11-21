@@ -49,8 +49,8 @@ Zusätzlich in dieser Runde umgesetzt:
 - **D5b abgenommen (7/7):** Entwickler bestätigt Compile, Schaden/Zerstörung durch Flammen, Granaten, Plasma und Explosionen, erneuten Spawn und keine Waffenregressionen.
 - **D5c abgenommen (8/8):** Entwickler bestätigt Compile, rotes Trefferfeedback, genau eine Zerstörungsexplosion, keine verbleibenden Angriffe, vollen HP-Respawn, mehrere Zyklen, keinen unerwünschten Umgebungsschaden und keine Langzeitauffälligkeiten.
 - **Farbabgleich nach D5c bestätigt:** Entwickler hat Standardrot RGB (255,0,0) visuell geprüft und bestätigt. Optionales Schadenshöhen-Farbspektrum steht unverbindlich in `BACKLOG.md`.
-- **D6 Funktionstest abgenommen (8/8):** Entwickler bestätigt Compile, drei sichtbare Strahlen, Mitbewegen, Pause, Zerstörung, Respawn und unveränderten Sonec-Jetfire. Screenshot zeigte zu breite/dichte Strahlen; Auslasspositionen −10/0/+10 px sind im Nachtest bestätigt. Bei 50 ms flackert der Strahl zu stark. Neuer Feinabstimmungsversuch: 30 ms mit Skalierung 0,65 nur für Drohnen-Jetfire. Lokaler Nachtest offen.
-- **Nächster Schritt:** Entwickler prüft den 30-ms-/0,65-Skalierungsversuch lokal; danach Drohnenübergabe an Chat B.
+- **D6 Funktionstest abgenommen (8/8):** Entwickler bestätigt Compile, drei sichtbare Strahlen, Mitbewegen, Pause, Zerstörung, Respawn und unveränderten Sonec-Jetfire. Screenshot zeigte zu breite/dichte Strahlen; Auslasspositionen −10/0/+10 px sind im Nachtest bestätigt. Bei 50 ms flackert der Strahl zu stark. Neuer Feinabstimmungsversuch: 30 ms mit Skalierung 0,65 nur für Drohnen-Jetfire. Entwickler meldet optisch bessere Strahlen; Emissionshöhe danach um 3 px auf Y+13 angehoben, Screenshot und Sichtprüfung stehen noch aus.
+- **Nächster Schritt:** Entwickler sendet Screenshot nach der um 3 px erhöhten Jetfire-Emission; anschließend Abschluss/Übergabe an Chat B.
 
 
 ## Bestätigte Alpha-Planung
