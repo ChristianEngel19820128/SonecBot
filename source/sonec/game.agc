@@ -331,6 +331,11 @@ function GameDo(Game ref as TGame,Now as integer)
 	PlasmaBlitzCollideWalkers(Game.PlasmaBlitzList,Game.WalkerList,Now)
 	PlasmaBlitzCollideDrone(Game.PlasmaBlitzList,Game.Drone,Now)
 	PlasmaBlitzCollisionTimerReset(Game.PlasmaBlitzList,Now)
+	// D5c: consume one destruction event after all weapon collisions.
+	if DroneDeathEffectPending = TRUE
+		ExplosionAdd(Game.ExplosionList,Game.ProtoExplosion,Game,0,DroneDeathPosition,Now)
+		DroneDeathEffectPending = FALSE
+	endif
 	
 	// Attack hit flashes are triggered by bullet/explosion damage, not energy overload.
 	SonecVisualUpdate(Game.Sonec,Now)
