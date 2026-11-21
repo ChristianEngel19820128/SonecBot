@@ -51,7 +51,8 @@ Zusätzlich in dieser Runde umgesetzt:
 - **B1 vom Entwickler lokal in AGK/Windows mit 6/6 bestanden:** Compile, Vorwarnung, Welt-Y-Höhenbereich, kompletter Überflug, Jetstream ohne Sonec-/Drohnenregression und höchstens ein Testanflug pro Spielstart bestätigt.
 - **B1-Feinschliff vom Entwickler mit 4/5 geprüft:** 10–30 % Welt-Y, 0,40 px/ms, Grün RGB (80,232,80) und unveränderte Warnung/Einmal-Spawn bestätigt. Einzig der Jetstream ist im Screenshot noch lückenhaft.
 - **B1-Jetstream-Nachbesserung vom Entwickler mit 5/5 bestanden:** Compile, dichte gleichmäßige Spur, Skalierung 1,0, vertikal mittiger Auslass und unveränderte übrige Spielfunktionen. Zwei Screenshots optisch beurteilt; Einzelstrahl ist die bewährte Referenz.
-- **B1-Doppeljet-Experiment im Code, lokaler Test offen:** Nach überarbeiteter Spacejet-PNG (176×64 px) zwei Emissionspunkte nahe der sichtbaren Heckkante: oberer x=Breite−5/y=Mitte−2, unterer x=Breite−8/y=Mitte+8. Jeweils gleiche räumliche Partikelverteilung, Größe 1,0 und Lebensdauer; nur Bomber-Jetstream geändert. Optisch mit dem abgenommenen Einzelstrahl vergleichen; bei Nichtgefallen zurückwechseln.
+- **B1-Doppeljet-Experiment vom Entwickler mit 5/5 bestanden:** Compile, beide Heckstrahlen sichtbar/getrennt und proportional, keine Regressionen. Entwickler bevorzugt Doppeljet, wünscht beide Austritte 3 px tiefer. **Nur diese Korrektur im Code, Sichtvergleich offen:** oberer x=Breite−5/y=Mitte+1, unterer x=Breite−8/y=Mitte+11. Partikelverteilung, Größe 1,0 und Lebensdauer unverändert. Zwei Vergleichsscreenshots folgen.
+- **Separat danach untersuchen:** Jetfire-Darstellung bei vertikaler Kamerabewegung wirkt fehlerhaft; Ursache offen. Erst nach den Vergleichsbildern gemeinsame Jetfire-/Kamerakoordinaten prüfen; keine voreilige Änderung an Sonec-/Drohnen-Jetfire.
 - **Spätere Bombenentscheidung:** Fünf zeitversetzte Bomben mit Bomber-Anfangsgeschwindigkeit und Luftwiderstand. Direkttreffer: kinetischer Schaden **plus** Explosion; abgeschossene Bomben explodieren ebenfalls. Echte Plattformdeckung und gegebenenfalls sichtbar beschnittene Explosionsanimation erfordern eine gesonderte Erweiterung der allgemeinen Explosionsphysik. Bomber selbst soll abschießbar, sein Abschuss aber selten sein.
 
 ## Bestätigte Alpha-Planung
@@ -92,7 +93,7 @@ Verbindlicher Planungsrahmen und Details: [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROA
 
 ## Genau ein nächster Schritt
 
-**B1-Doppeljet-Experiment lokal in AGK/Windows testen.** Prüfen: Compile, beide Strahlen beginnen an den sichtbaren Heckdüsen, bleiben getrennt und wirken nicht zu wuchtig; Flug, Warnung, Sonec und Drohne unverändert. Screenshot mit abgenommenem Einzelstrahl vergleichen und erst dann behalten oder zurückwechseln. Keine Bomben; `main` bleibt unberührt.
+**B1 – Zwei Vergleichsscreenshots des Doppeljets ansehen.** Vorher-/Nachher-Bilder für die 3-px-Absenkung abwarten und Austrittsposition beurteilen. Danach die gemeldete Jetfire-Auffälligkeit bei vertikaler Kamerabewegung gesondert untersuchen. Keine Bomben und keine weiteren Codeänderungen bis dahin; `main` bleibt unberührt.
 
 ## Weiterführende Dokumente
 

@@ -12,8 +12,8 @@
 // Upper nozzle ends near x=171,y=30; lower near x=168,y=40.
 #constant BOMBER_JET_UPPER_X_FROM_RIGHT 5
 #constant BOMBER_JET_LOWER_X_FROM_RIGHT 8
-#constant BOMBER_JET_UPPER_Y_FROM_CENTER -2
-#constant BOMBER_JET_LOWER_Y_FROM_CENTER 8
+#constant BOMBER_JET_UPPER_Y_FROM_CENTER 1
+#constant BOMBER_JET_LOWER_Y_FROM_CENTER 11
 
 // Phase: 0 = waiting for a visible flight corridor, 1 = warning,
 // 2 = flying, 3 = finished. At most one bomber; no bomber array.
