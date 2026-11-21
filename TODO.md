@@ -6,7 +6,7 @@ Hier stehen nur unmittelbar nächste, gemeinsam zu bearbeitende Schritte. Höchs
 
 ## Jetzt
 
-- [ ] **Bomber B2e/4 – Explosion um Plattformkanten herum lokal testen.** Rot+Weiß beibehalten; oberhalb sichtbar, unterhalb nur seitlich außerhalb der getroffenen Plattform. AGK-Compile, linke/rechte Kante, Kamerabewegung, Schadensabschirmung und Regressionen prüfen. Details in [HANDOFF.md](HANDOFF.md).
+- [ ] **Bomber B2e/4 – rechte Plattformkante bei Gelegenheit beobachten.** Lokaler AGK-Test **5/6 bestätigt**: Compile, linke Kante, Abschirmung unterhalb, Kamera und Regressionen korrekt. Rechte Kante **nicht getestet**, kein bestätigter Fehler; kein erzwungener Sondertest nötig. Details in [HANDOFF.md](HANDOFF.md).
 
 **Drohne D1–D6 abgeschlossen:** D6-Funktionstest 8/8 lokal bestanden. Jetstream-Feinschliff (30 ms, Skalierung 0,65, Auslässe −10/0/+10 px, Y+13 px) zuletzt per Screenshot optisch bestätigt; kein erneuter vollständiger Funktionstest nach der letzten Höhenkorrektur. Chat B ersetzt später den provisorischen Spawn-Timer. Testdetails stehen in [HANDOFF.md](HANDOFF.md).
 
