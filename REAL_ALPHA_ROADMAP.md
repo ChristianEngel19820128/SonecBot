@@ -42,10 +42,9 @@ Der Draft-Test vom 18.11. belegt keine Auslieferung späterer Alpha-Änderungen.
 
 ### Drohne
 
-- D1 zu einem eigenständigen bewaffneten Luftgegner ausbauen: **kurze grüne Laserimpulse mit Projektilverhalten**.
-- Sichtbare Aufladung kündigt den Angriff an; gelegentliches charakteristisches **Biep-Biep** gibt der Drohne eine eigene Wirkung.
-- Bewegung, Angriffstakt, Verwundbarkeit, Eintritt/Austritt und Spawnbegrenzung im kleinen Umsetzungsschritt konkretisieren.
-- Grafischer Art-Pass und separater Sensor bleiben eigene Aufgaben; vorhandene Grafiken dienen als Basis. Dauerlaser ist eine spätere Variante.
+- **D1–D6 als funktionsfähiger Luftgegner abgeschlossen:** Patrouille/Schweben, Scan, sichtbares Aufladen, kurze grüne Laserprojektile, Gesundheit und Treffer durch alle vorgesehenen Spielerwaffen, Zerstörung/Respawn sowie drei Jetstreams.
+- **Teststand:** D4b 6/6, D5a 7/7, D5b 7/7, D5c 8/8 und D6 8/8 lokal abgenommen. Letzte Jetstream-Positionierung per Screenshot optisch bestätigt; ein vollständiger erneuter Funktionstest nach der letzten Höhenkorrektur ist nicht separat dokumentiert.
+- **Integration später:** Provisorischer 20–35-Sekunden-Spawn-Timer wird durch Chat B bei der Wellensteuerung ersetzt; maximal eine Drohne gleichzeitig. Grafischer Art-Pass, Biep-Sound und Dauerlaser sind nicht als abgeschlossene Basisfunktionen belegt; Dauerlaser bleibt spätere Variante.
 
 ### Flarakstellung
 
