@@ -325,6 +325,7 @@ function GameDo(Game ref as TGame,Now as integer)
 	BulletCollideChest(Game.BulletList,Game.ChestList)
 	
 	GrenadeMoveall(Game.GrenadeList,Game.World,Now)
+    BomberBombCollideGrenades(Game.Bomber,Game.GrenadeList,Game,Now)
 	GrenadeCollideOrbs(Game.GrenadeList,Game.OrbList,Game,Now)
 	GrenadeCollideMine(Game.GrenadeList,Game.MineList,Game,Now)
 	GrenadeCollideMine(Game.GrenadeList,Game.SimpleMineList,Game,Now)

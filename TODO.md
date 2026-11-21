@@ -6,7 +6,7 @@ Hier stehen nur unmittelbar nächste, gemeinsam zu bearbeitende Schritte. Höchs
 
 ## Jetzt
 
-- [ ] **Bomber B3c – PlasmaBlitz gegen Bomben lokal testen.** Bestehende Plasma-AABB fängt Bomben ab, rote Explosion; Plasma bleibt aktiv. Compile, Treffer, mehrere Bomben, Regressionen prüfen. Danach B3d Granatwerfer gegen Bomben. Details in [HANDOFF.md](HANDOFF.md).
+- [ ] **Bomber B3d – Granatwerfer gegen Bomben lokal testen.** Granate trifft Bombe mit bestehendem Radius, beide verschwinden, rote Explosion. Compile, Treffer, Einmaligkeit und Regressionen prüfen. B3c-PlasmaBlitz lokal **6/6 bestanden**; gegen Bomben Sofortzerstörung, gegen andere Ziele weiterhin Schaden über Zeit.
 - [ ] **Spacejet selbst später mit allen vier Waffen in einem Schritt abschießbar machen.** MG, Flammenwerfer, PlasmaBlitz, Granatwerfer gemeinsam implementieren und vom Entwickler durchtesten.
 - [ ] **Später: Touchdown-Countdown beim Spielstart.** 'Touchdown in 3 Sekunden.' mit 3→2→1, Sonec erst danach sichtbar und verwundbar; noch nicht implementieren.
 

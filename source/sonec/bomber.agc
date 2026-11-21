@@ -254,6 +254,35 @@ endfunction
 // Consume one flame and one bomb; use the same red airborne explosion as B3a.
 // B3c: a plasma discharge intercepts bombs inside its existing hit area.
 // Plasma persists, as it does against other targets; each bomb can explode once.
+// B3d: a player grenade directly intercepts a falling bomb.
+// Both projectiles are consumed and one normal red blast is created.
+function BomberBombCollideGrenades(Bomber ref as TBomber,GrenadeList ref as TGrenadeList,Game ref as TGame,Now as integer)
+    local i as integer
+    local k as integer
+    local Radius as float
+    local HitPosition as TPosition
+
+    for i = 0 to GrenadeList.Grenade.Length
+        if GrenadeList.Grenade[i].Enabled = TRUE
+            Radius = GrenadeList.Grenade[i].ObjectData.Radius+BOMBER_BOMB_SHOT_RADIUS
+            for k = 0 to BOMBER_BOMB_COUNT-1
+                if GrenadeList.Grenade[i].Enabled = TRUE and Bomber.Bomb[k].Enabled = TRUE
+                    if CalcRadius(GrenadeList.Grenade[i].ObjectData.Position,Bomber.Bomb[k].Position) <= Radius
+                        HitPosition = Bomber.Bomb[k].Position
+                        Bomber.Bomb[k].Enabled = FALSE
+                        GrenadeDelete(GrenadeList,i)
+                        ExplosionAdd(Game.ExplosionList,Game.ProtoExplosion,Game,1,HitPosition,Now)
+                    endif
+                endif
+            next k
+        endif
+    next i
+endfunction
+
+//----------------------------------------------------------------------
+// 
+//----------------------------------------------------------------------
+
 function BomberBombCollidePlasmaBlitz(Bomber ref as TBomber,PlasmaBlitzList ref as TPlasmaBlitzList,Game ref as TGame,Now as integer)
     local i as integer
     local k as integer
