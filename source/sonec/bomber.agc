@@ -585,6 +585,11 @@ endfunction
 function BomberDraw(Bomber ref as TBomber,ProtoBomber ref as TProtoBomber,World ref as TWorld)
     if Bomber.Enabled = TRUE
         SpritePositionCalc(Bomber.SpriteData.Position,Bomber.Position,World.Position)
+        if GetMilliseconds() < Bomber.HitFlashUntil
+            ColorSet(Bomber.SpriteData.Color,255,255,255,255)
+        else
+            ColorSet(Bomber.SpriteData.Color,80,232,80,255)
+        endif
         SpriteDraw(ProtoBomber.Body.Sprite,Bomber.SpriteData)
     endif
 endfunction
