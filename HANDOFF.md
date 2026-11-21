@@ -23,7 +23,7 @@ Die folgenden Angaben beruhen auf dokumentierten Entwicklertests. Der Assistent 
 | Tastatur / Pre-Alpha | Belegung, Umbelegung und Wiederherstellung der Standardtasten umgesetzt; lokaler HTML5-Abschluss und itch.io-Draft-Smoke-Test gemeldet, letzterer am 18.11. mit 12/12. |
 | Einfache Minen | S1–S3 umgesetzt und mit 9/9, 10/10, 12/12 unter Windows und lokalem HTML5 bestätigt. Minen verfolgen Sonec nicht und reagieren nicht auf Energieanziehung. |
 | Warnsystem | S4-Minenfeldwarnung funktional unter Windows/HTML5 gesehen; daraus keine vollständige nummerierte S4-Abnahme ableiten. |
-| Drohne D1 | Unbewaffnete Patrouillenbasis, 11/11 unter Windows/HTML5 gemeldet. In der Abendrunde kein weiterer inhaltlicher Gegnerausbau; A/B-Diagnostik zählt nicht als neue Ausbaustufe. |
+| Drohne D1–D6 | D1 ursprünglich 11/11 unter Windows/HTML5; D4b 6/6, D5a 7/7, D5b 7/7, D5c 8/8 und D6 8/8 lokal abgenommen. Aktueller Stand unten; letzter Jetstream-Feinschliff visuell bestätigt. |
 | K1b / K1c | Zuverlässigere Projektiltreffer per Segmentprüfung gegen Zielklassen bzw. Sonec; jeweils 12/12 gemeldet, einschließlich lokalem HTML5. |
 | E1b | Unabhängige Explosions-Schadenszeitpunkte für einfache/intelligente Minen; 9/9 einschließlich unabhängiger Treffer beider Minenarten innerhalb derselben Explosion und lokalem HTML5 gemeldet. |
 | K1d | Zwei-Kreis-Körperkollision gegen Gegnerbullets aktiv; Waffenbereich ausgeschlossen. Frühere Diagnose-only-Notizen sind überholt. |
@@ -40,18 +40,10 @@ Zusätzlich in dieser Runde umgesetzt:
 
 ## Aktueller Drohnenstand (21.11.2026)
 
-- D1–D3c lokal vom Entwickler abgenommen; D3c/2 mit **6/6 bestanden**. Laser verursacht testweise 20 Schaden unter Nutzung der bestehenden Schildabsorption; endgültiges Balancing später.
-- **D4a – Spawn** vom Entwickler mit **6/6 bestanden** bestätigt (lokaler Windows-/AGK-Test): kein automatischer Spawn bei Spielstart; F6-Testspawn von beiden Bildschirmseiten, keine zweite aktive Drohne, Patrouille/Scan/Laden/Laser/Schaden unverändert; keine Auffälligkeiten.
-- Der **temporäre F6-Testhook ist nach der Abnahme entfernt**. `DroneSpawn` in `source/sonec/drone.agc` bleibt für spätere Aufrufe erhalten. Chat B regelt Wellen/Anzahl; die Drohnenfunktion prüft Position und aktiviert höchstens eine Drohne. Umfassende Hindernisprüfung und Mehrfachdrohnen sind noch nicht implementiert.
-- **D4b abgenommen (6/6):** Entwickler bestätigt lokalen AGK-/Windows-Test am 21.11.2026: Compile, Spawn nach 20–35 Sekunden, beide Eintrittsseiten, höchstens eine Drohne, unveränderte Aktionen und pausierender Timer; keine Auffälligkeiten. Timer bleibt vorläufig aktiv, bis Chat B den Aufruf ersetzt; `DroneSpawn` bleibt.
-- **Vereinbarte Folge:** D5a Gesundheit/Maschinengewehr; D5b Flammenwerfer, Granaten, Plasmablitz und Explosionstreffer; D5c Trefferfeedback, Zerstörung und erneuter Spawn. Zusätzliche Positionierungsregeln erst nach Beobachtungen. Drohnenschild nur unverbindliche BACKLOG-Idee.
-- **D5a abgenommen (7/7):** Entwickler bestätigt Compile, MG-Treffer, Zerstörung, Ende der Angriffe, erneuten Timer-Spawn und unveränderte andere Geschosskollisionen. Umsetzung: Drohne mit 100 HP; Spieler-MG-Geschosse treffen sie in derselben Nearest-Hit-Auswahl wie andere Ziele (46×30 px), beschädigen sie und verschwinden. Bei 0 HP deaktiviert; Laser und laufende Aktionen beendet. Späterer Timer-Spawn setzt HP zurück. Explosion/Zerstörungseffekt und andere Waffen folgen D5b/D5c.
-- **D5b abgenommen (7/7):** Entwickler bestätigt Compile, Schaden/Zerstörung durch Flammen, Granaten, Plasma und Explosionen, erneuten Spawn und keine Waffenregressionen.
-- **D5c abgenommen (8/8):** Entwickler bestätigt Compile, rotes Trefferfeedback, genau eine Zerstörungsexplosion, keine verbleibenden Angriffe, vollen HP-Respawn, mehrere Zyklen, keinen unerwünschten Umgebungsschaden und keine Langzeitauffälligkeiten.
-- **Farbabgleich nach D5c bestätigt:** Entwickler hat Standardrot RGB (255,0,0) visuell geprüft und bestätigt. Optionales Schadenshöhen-Farbspektrum steht unverbindlich in `BACKLOG.md`.
-- **D6 Funktionstest abgenommen (8/8):** Entwickler bestätigt Compile, drei sichtbare Strahlen, Mitbewegen, Pause, Zerstörung, Respawn und unveränderten Sonec-Jetfire. Screenshot zeigte zu breite/dichte Strahlen; Auslasspositionen −10/0/+10 px sind im Nachtest bestätigt. Bei 50 ms flackert der Strahl zu stark. Neuer Feinabstimmungsversuch: 30 ms mit Skalierung 0,65 nur für Drohnen-Jetfire. Entwickler meldet optisch bessere Strahlen; Emissionshöhe danach um 3 px auf Y+13 angehoben, Screenshot und Sichtprüfung stehen noch aus.
-- **Nächster Schritt:** Entwickler sendet Screenshot nach der um 3 px erhöhten Jetfire-Emission; anschließend Abschluss/Übergabe an Chat B.
-
+- **D1–D6 funktional abgeschlossen:** Patrouille/Schweben, Scan, grüne Ladeanimation und Laser, 100 HP, Schaden durch Maschinengewehr, Flammen, Granaten, Plasma und Explosionen, rotes Trefferfeedback (RGB 255/0/0), einmaliger Zerstörungseffekt sowie drei Jetstreams.
+- **Entwicklerabnahmen:** D4a 6/6, D4b 6/6, D5a 7/7, D5b 7/7, D5c 8/8 und D6-Funktionstest 8/8. Letzter Jetstream-Feinschliff: X-Offsets −10/0/+10 px, Y+13 px, 30-ms-Takt und Partikelskalierung 0,65. Der Entwickler bestätigt anhand eines Screenshots die optische Ausrichtung; kein zusätzlicher vollständiger Funktionstest nach der letzten 3-px-Verschiebung gemeldet.
+- **Temporärer Spawn:** Der pausierbare 20–35-Sekunden-Timer bleibt vorerst aktiv. Der F6-Testhook wurde entfernt. Chat B soll später den Timer-Aufruf durch die zentrale Spawn-/Wellensteuerung ersetzen; `DroneSpawn` bleibt als API bestehen und lässt maximal eine aktive Drohne zu.
+- **Bewusst offen:** Endgültiges Balancing und optionaler Art-Pass; Schadenshöhen-Farbspektrum und Drohnenschild sind nur BACKLOG-Ideen. Ein gelegentliches Biep ist geplant, aber nicht als implementiert bestätigt.
 
 ## Bestätigte Alpha-Planung
 
@@ -78,7 +70,7 @@ Verbindlicher Planungsrahmen und Details: [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROA
 - **M1 / Bewegungsruckeln:** Ursachenuntersuchung ausdrücklich zurückgestellt. Bei 75 Hz war das Ruckeln laut Entwickler nicht mehr vorhanden; Ursache und plattformübergreifende Wirkung sind unbewiesen. Umgang mit dem früher vereinbarten Alpha-Gate vor Release gesondert entscheiden; keine automatische Wiederaufnahme oder Abnahme.
 - **Browserlaufzeit:** Nach längerem Testen half laut Entwickler ein Browserneustart gegen Performance-Einbußen. Bei Vergleichen frischen Start und längere Sitzung getrennt beobachten; ein Neustart klärt die Ursache nicht. Siehe [TECHNICAL.md](TECHNICAL.md).
 - **Paintball-Optik abgeschlossen:** Entwickler bestätigt unter Windows mit Screenshot korrekte Fleckenausrichtung nach AGK-UV-Korrektur, ein Pixel breite farblich passende Laufnasen nach unten sowie normales Orb-/Menüverhalten. Kein weiterer Paintball-Schritt offen.
-- **Drohne/Assets:** D1 bleibt tatsächlicher Codebestand; der geplante Laserangriff ist noch nicht implementiert. Art-Pass separat. Legacy-Grafiken belegen keine fertigen früheren Gegnerfunktionen.
+- **Drohne/Assets:** D1–D6 sind funktional abgeschlossen; optionaler Art-Pass bleibt getrennt. Legacy-Grafiken belegen keine fertigen früheren Gegnerfunktionen.
 - Weitere Qualitätsbefunde und technische Detailentscheidungen stehen in der [Real-Alpha-Roadmap](REAL_ALPHA_ROADMAP.md); keine Wiederholung als zweite Aufgabenliste.
 
 ## Arbeitsaufteilung und Tests
@@ -91,7 +83,7 @@ Verbindlicher Planungsrahmen und Details: [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROA
 
 ## Genau ein nächster Schritt
 
-**D3b/1 – Grüne Drohnenaufladung lokal in AGK testen.** D3a Scan und Layering vom Entwickler mit 4/4 bestätigt; anschließender D3a-Farbtest ebenfalls 4/4 bestanden: dunkelgrüner Torso, rote Sensoren, eishellblauer Scan, Compile erfolgreich. Neuer Code auf `develop`: Torso testweise etwas heller (RGB 45/140/65); nach zufälligem Intervall hält die Drohne für 900 ms horizontal an und zeigt eine dreistufige grüne Ladeanimation (RGB 30/255/60, Alpha 190) in fester Links-/Rechtsrichtung. Vertikales Wippen läuft weiter, Scan bleibt eigenständig. **Noch kein Laserprojektil und kein Schaden.** AGK-Compile und optische Positionierung sind noch ungetestet. Danach D3b/2 Projektil/Trefferlogik gemeinsam konkretisieren. Torso-PNG wird vom Entwickler separat aktualisiert. `main` bleibt unberührt.
+**Bomber-Konzept im nächsten Themenchat gemeinsam festlegen.** Der Entwickler möchte nach einer Pause voraussichtlich den Bomber angehen; dabei soll höchstens ein Bomber gleichzeitig aktiv sein. Noch kein Umsetzungsauftrag. Zunächst Bewegungs-/Spawn-Basis ohne Waffen und die konkrete Rolle abstimmen. Chat B übernimmt die zentrale Drohnen-Spawnsteuerung später separat. `main` bleibt unberührt.
 
 ## Weiterführende Dokumente
 
