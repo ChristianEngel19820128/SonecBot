@@ -22,7 +22,7 @@
 #constant BOMBER_BOMB_COUNT 5
 #constant BOMBER_BOMB_INTERVAL_MS 250
 // B4: provisional bomber durability and per-weapon damage.
-#constant BOMBER_HEALTH_MAX 200
+#constant BOMBER_HEALTH_MAX 100
 #constant BOMBER_PLASMA_HIT_INTERVAL_MS 100
 #constant BOMBER_HIT_FLASH_MS 150
 #constant BOMBER_HIT_HALF_WIDTH 78
@@ -586,7 +586,7 @@ function BomberDraw(Bomber ref as TBomber,ProtoBomber ref as TProtoBomber,World 
     if Bomber.Enabled = TRUE
         SpritePositionCalc(Bomber.SpriteData.Position,Bomber.Position,World.Position)
         if GetMilliseconds() < Bomber.HitFlashUntil
-            ColorSet(Bomber.SpriteData.Color,255,255,255,255)
+            ColorSet(Bomber.SpriteData.Color,255,0,0,255)
         else
             ColorSet(Bomber.SpriteData.Color,80,232,80,255)
         endif

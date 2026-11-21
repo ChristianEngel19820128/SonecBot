@@ -6,7 +6,7 @@ Hier stehen nur unmittelbar nächste, gemeinsam zu bearbeitende Schritte. Höchs
 
 ## Jetzt
 
-- [ ] **Bomber B4 – Spacejet mit allen vier Waffen lokal testen.** MG, Flammenwerfer, PlasmaBlitz (Schaden über Zeit), Granatwerfer; HP, Tod/Explosion, keine weiteren Abwürfe, bereits fallende Bomben, Regressionen. B3e lokal 5/5 und HTML5-Sichttest ohne Auffälligkeiten.
+- [ ] **Bomber B4a – 100 TP und roten Trefferblitz lokal testen.** B4 mit 200 TP bisher 6/9 bestätigt (alle vier Waffen und Trefferreaktion funktionieren). Nun gezielt Zerstörung/Explosion, Ende weiterer Bombenabwürfe, bereits fallende Bomben, rote Trefferfarbe und Regressionen prüfen. B3e lokal 5/5; HTML5-Sichttest ohne Auffälligkeiten.
 - [ ] **Später: Touchdown-Countdown beim Spielstart.** 'Touchdown in 3 Sekunden.' mit 3→2→1, Sonec erst danach sichtbar und verwundbar; noch nicht implementieren.
 
 **Drohne D1–D6 abgeschlossen:** D6-Funktionstest 8/8 lokal bestanden. Jetstream-Feinschliff (30 ms, Skalierung 0,65, Auslässe −10/0/+10 px, Y+13 px) zuletzt per Screenshot optisch bestätigt; kein erneuter vollständiger Funktionstest nach der letzten Höhenkorrektur. Chat B ersetzt später den provisorischen Spawn-Timer. Testdetails stehen in [HANDOFF.md](HANDOFF.md).
