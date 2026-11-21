@@ -158,9 +158,10 @@ function DroneInit(Drone ref as TDrone,Screen as TSize,World ref as TWorld,Now a
     ColorSet(Drone.SpriteData.Color,255,255,255,255)
 endfunction
 
-function DroneMove(Drone ref as TDrone,Screen as TSize,SonecX as float,Now as integer)
+function DroneMove(Drone ref as TDrone,Screen as TSize,Sonec ref as TSonec,Now as integer)
     local DeltaMs as integer
     local TurnChance as integer
+    local LaserOldX as float
 
     if Drone.Enabled = TRUE
         if DroneMotionLastMode <> DroneMotionUseGate
@@ -206,12 +207,14 @@ function DroneMove(Drone ref as TDrone,Screen as TSize,SonecX as float,Now as in
 
         // The projectile flies independently of subsequent drone movement.
         if DroneLaserActive = TRUE
+            LaserOldX = DroneLaserX
             if DroneLaserDirection = MOVELEFT
                 DroneLaserX = DroneLaserX-(Now-DroneLaserLastMs)*DRONE_LASER_SPEED
             else
                 DroneLaserX = DroneLaserX+(Now-DroneLaserLastMs)*DRONE_LASER_SPEED
             endif
             DroneLaserLastMs = Now
+            DroneLaserDetectHit(Sonec,LaserOldX,DroneLaserX)
             if DroneLaserX < -30 or DroneLaserX > Screen.Width+30
                 DroneLaserActive = FALSE
             endif
@@ -224,7 +227,7 @@ function DroneMove(Drone ref as TDrone,Screen as TSize,SonecX as float,Now as in
                 DroneNextScanMs = Now + random(DRONE_SCAN_MIN_INTERVAL_MS,DRONE_SCAN_MAX_INTERVAL_MS)
                 // Proximity can influence a turn, but never guarantees one.
                 TurnChance = 5
-                if abs(Drone.Position.x-SonecX) <= DRONE_SCAN_NEAR_X then TurnChance = 25
+                if abs(Drone.Position.x-Sonec.ObjectData.Position.x) <= DRONE_SCAN_NEAR_X then TurnChance = 25
                 if random(1,100) <= TurnChance
                     if Drone.Direction = MOVELEFT
                         Drone.Direction = MOVERIGHT
