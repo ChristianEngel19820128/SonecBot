@@ -793,6 +793,9 @@ endtype
 
 type TBomber
     Enabled as integer
+    Health as integer
+    HitFlashUntil as integer
+    LastPlasmaHitMs as integer
     Phase as integer
     NextWarningMs as integer
     SpawnAtMs as integer

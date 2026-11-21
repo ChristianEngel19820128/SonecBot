@@ -336,6 +336,8 @@ function GameDo(Game ref as TGame,Now as integer)
 	
 	PlasmaBlitzLifeCycle(Game.PlasmaBlitzList,Now)
     BomberBombCollidePlasmaBlitz(Game.Bomber,Game.PlasmaBlitzList,Game,Now)
+    // B4: all four weapon pools have moved/updated before this check.
+    BomberCollideWeapons(Game.Bomber,Game,Now)
 	PlasmaBlitzCollideOrbs(Game.PlasmaBlitzList,Game.OrbList,Now)
 	PlasmaBlitzCollideMine(Game.PlasmaBlitzList,Game.MineList,Now)
 	PlasmaBlitzCollideMine(Game.PlasmaBlitzList,Game.SimpleMineList,Now)

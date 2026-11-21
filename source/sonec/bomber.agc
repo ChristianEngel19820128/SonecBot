@@ -21,6 +21,12 @@
 #constant BOMBER_BOMB_RELEASE_Y 20
 #constant BOMBER_BOMB_COUNT 5
 #constant BOMBER_BOMB_INTERVAL_MS 250
+// B4: provisional bomber durability and per-weapon damage.
+#constant BOMBER_HEALTH_MAX 200
+#constant BOMBER_PLASMA_HIT_INTERVAL_MS 100
+#constant BOMBER_HIT_FLASH_MS 150
+#constant BOMBER_HIT_HALF_WIDTH 78
+#constant BOMBER_HIT_HALF_HEIGHT 24
 
 // Phase: 0 = waiting for a visible flight corridor, 1 = warning,
 // 2 = flying, 3 = finished. At most one bomber; no bomber array.
@@ -40,6 +46,9 @@ endfunction
 function BomberInit(Bomber ref as TBomber,Now as integer)
     local i as integer
     Bomber.Enabled = FALSE
+    Bomber.Health = BOMBER_HEALTH_MAX
+    Bomber.HitFlashUntil = 0
+    Bomber.LastPlasmaHitMs = 0
     Bomber.Phase = 0
     Bomber.NextWarningMs = Now+BOMBER_TEST_WAIT_MS
     Bomber.SpawnAtMs = 0
@@ -171,6 +180,9 @@ function BomberDo(Bomber ref as TBomber,ProtoBomber ref as TProtoBomber,Warning 
         Bomber.NextJetMs = Now
         Bomber.LastJetX = Bomber.Position.x+GetSpriteWidth(ProtoBomber.Body.Sprite.ID)*0.5-BOMBER_JET_UPPER_X_FROM_RIGHT
         Bomber.Enabled = TRUE
+        Bomber.Health = BOMBER_HEALTH_MAX
+        Bomber.HitFlashUntil = 0
+        Bomber.LastPlasmaHitMs = 0
         Bomber.Phase = 2
         Bomber.BombCount = 0
         // First release is timed from the actual spawn.
@@ -463,6 +475,99 @@ function BomberBombCollidePlate(Bomber ref as TBomber,PlateList ref as TPlateLis
             next k
         endif
     next i
+endfunction
+
+// B4: one shared damage/death path for all four Sonec weapons.
+function BomberTakeDamage(Bomber ref as TBomber,Game ref as TGame,Damage as integer,Now as integer)
+    local i as integer
+    local Position as TPosition
+    if Bomber.Enabled = FALSE then exitfunction
+    Bomber.Health = Bomber.Health-Damage
+    Bomber.HitFlashUntil = Now+BOMBER_HIT_FLASH_MS
+    if Bomber.Health <= 0
+        Position = Bomber.Position
+        Bomber.Enabled = FALSE
+        Bomber.Phase = 3
+        // Already released bombs continue to fall; no further bombs are released.
+        ExplosionAdd(Game.ExplosionList,Game.ProtoExplosion,Game,1,Position,Now)
+    endif
+endfunction
+
+function BomberCollideWeapons(Bomber ref as TBomber,Game ref as TGame,Now as integer)
+    local i as integer
+    local MinPos as TPosition
+    local MaxPos as TPosition
+    local Dx as float
+    local Dy as float
+    local LengthSq as float
+    local Fraction as float
+    local NearX as float
+    local NearY as float
+    local Radius as float
+
+    if Bomber.Enabled = FALSE then exitfunction
+    MinPos.x = Bomber.Position.x-BOMBER_HIT_HALF_WIDTH
+    MinPos.y = Bomber.Position.y-BOMBER_HIT_HALF_HEIGHT
+    MaxPos.x = Bomber.Position.x+BOMBER_HIT_HALF_WIDTH
+    MaxPos.y = Bomber.Position.y+BOMBER_HIT_HALF_HEIGHT
+
+    // MG: swept segment versus enlarged body rectangle.
+    for i = 0 to Game.BulletList.Bullet.Length
+        if Bomber.Enabled = TRUE and Game.BulletList.Bullet[i].Enabled = TRUE and Game.BulletList.Bullet[i].CollisionData.CollisionType = TYPEPLAYERONE
+            Dx = Game.BulletList.Bullet[i].ObjectData.Position.x-Game.BulletList.Bullet[i].PreviousPosition.x
+            Dy = Game.BulletList.Bullet[i].ObjectData.Position.y-Game.BulletList.Bullet[i].PreviousPosition.y
+            LengthSq = Dx*Dx+Dy*Dy
+            Fraction = 0
+            if LengthSq > 0
+                Fraction = ((Bomber.Position.x-Game.BulletList.Bullet[i].PreviousPosition.x)*Dx+(Bomber.Position.y-Game.BulletList.Bullet[i].PreviousPosition.y)*Dy)/LengthSq
+                if Fraction < 0 then Fraction = 0
+                if Fraction > 1 then Fraction = 1
+            endif
+            NearX = Game.BulletList.Bullet[i].PreviousPosition.x+Fraction*Dx
+            NearY = Game.BulletList.Bullet[i].PreviousPosition.y+Fraction*Dy
+            Radius = Game.BulletList.Bullet[i].ObjectData.Radius
+            if NearX >= MinPos.x-Radius and NearX <= MaxPos.x+Radius and NearY >= MinPos.y-Radius and NearY <= MaxPos.y+Radius
+                BomberTakeDamage(Bomber,Game,Game.BulletList.Bullet[i].BulletData.Damage,Now)
+                BulletDelete(Game.BulletList,i)
+            endif
+        endif
+    next i
+
+    // Flamethrower: each contacting particle deals its normal damage once.
+    for i = 0 to Game.FlameList.Flame.Length
+        if Bomber.Enabled = TRUE and Game.FlameList.Flame[i].Enabled = TRUE
+            Radius = FlameCollisionRadius(Game.FlameList.Flame[i])
+            NearX = Game.FlameList.Flame[i].ObjectData.Position.x
+            NearY = Game.FlameList.Flame[i].ObjectData.Position.y
+            if NearX >= MinPos.x-Radius and NearX <= MaxPos.x+Radius and NearY >= MinPos.y-Radius and NearY <= MaxPos.y+Radius
+                BomberTakeDamage(Bomber,Game,Game.FlameList.Flame[i].BulletData.Damage,Now)
+                FlameDelete(Game.FlameList,i)
+            endif
+        endif
+    next i
+
+    // Grenades: impact consumes the grenade, creating its usual blast.
+    for i = 0 to Game.GrenadeList.Grenade.Length
+        if Bomber.Enabled = TRUE and Game.GrenadeList.Grenade[i].Enabled = TRUE
+            if BoxInBox(Game.GrenadeList.Grenade[i].CollisionData.Position1,Game.GrenadeList.Grenade[i].CollisionData.Position2,MinPos,MaxPos)
+                BomberTakeDamage(Bomber,Game,Game.GrenadeList.Grenade[i].BulletData.Damage,Now)
+                GrenadeDestroy(Game.GrenadeList,i,Game.ExplosionList,Game.ProtoExplosion,Game,Game.GrenadeList.Grenade[i].ObjectData.Position,Now)
+            endif
+        endif
+    next i
+
+    // Plasma: sustained contact damages at the existing 100 ms interval.
+    if Bomber.Enabled = TRUE and (Bomber.LastPlasmaHitMs = 0 or Now-Bomber.LastPlasmaHitMs >= BOMBER_PLASMA_HIT_INTERVAL_MS)
+        for i = 0 to Game.PlasmaBlitzList.PlasmaBlitz.Length
+            if Bomber.Enabled = TRUE and Game.PlasmaBlitzList.PlasmaBlitz[i].Enabled = TRUE
+                if BoxInBox(Game.PlasmaBlitzList.PlasmaBlitz[i].CollisionData.Position1,Game.PlasmaBlitzList.PlasmaBlitz[i].CollisionData.Position2,MinPos,MaxPos)
+                    BomberTakeDamage(Bomber,Game,Game.PlasmaBlitzList.PlasmaBlitz[i].BulletData.Damage,Now)
+                    Bomber.LastPlasmaHitMs = Now
+                    exitfunction
+                endif
+            endif
+        next i
+    endif
 endfunction
 
 function BomberBombDraw(Bomber ref as TBomber,ProtoBomber ref as TProtoBomber,World ref as TWorld)
