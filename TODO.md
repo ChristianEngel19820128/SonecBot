@@ -4,11 +4,11 @@
 
 ## Jetzt
 
-- [ ] **Belohnungen/Nachrichten inventarisieren.** Jede Zerstörung soll eine Belohnung geben; Energie am häufigsten, genaue Art/Menge Balancing. Fehlende Meldungen erfassen; Energie-Sammelmeldung `ENERGY COLLECTED xN` per bestehender N1a-Queue als kleiner erster Schritt eingebaut, lokaler Test offen. Zentrale Belohnungsvergabe für alle Zerstörungen als gesonderten Entwurf abstimmen; übrige Meldungen und Textkonstanten später vereinheitlichen.
+- [ ] **Belohnungen/Nachrichten inventarisieren.** Jede Zerstörung soll eine Belohnung geben; Energie am häufigsten, genaue Art/Menge Balancing. Fehlende Meldungen erfassen; Energie-Sammelmeldung `ENERGY COLLECTED xN` per bestehender N1a-Queue als kleiner erster Schritt eingebaut, Entwickler bestätigt E1 lokal 5/5. Zentrale Belohnungsvergabe für alle Zerstörungen als gesonderten Entwurf abstimmen; übrige Meldungen und Textkonstanten später vereinheitlichen.
 - [ ] **N1b – Animation und Darstellung nach N1a.** Seitliches Verdrängen, Duplikatanimation, Textzentrierung, transparente Balken.
 - [ ] **Menü-Hilfetexte später erweitern.** Nur vormerken; gehört nicht in den aktuellen N1-/Cloud-Arbeitsschritt.
 
-**Abgenommen:** T4 vom Entwickler lokal 5/5, F1-Fix `09e1063` lokal 6/6 bestanden; N1a vollständig bestätigt: ursprünglich 7/10, gezielter Resttest 5/5 bestanden. Temporäre Testtasten 8–0 entfernt; FPS bleibt, Drohnen-Debug-Zusatz entfernt. Lokale Prüfung dieser Aufräumänderung offen. AGK wurde nicht vom Assistenten ausgeführt.
+**Abgenommen:** T4 vom Entwickler lokal 5/5, F1-Fix `09e1063` lokal 6/6 bestanden; N1a vollständig bestätigt: ursprünglich 7/10, gezielter Resttest 5/5 bestanden. Temporäre Testtasten 8–0 entfernt; FPS bleibt, Drohnen-Debug-Zusatz entfernt. Aufräumänderung lokal bestätigt (Spiel normal, Debug-Anzeige weg, Tasten 8–0 inaktiv). AGK wurde nicht vom Assistenten ausgeführt.
 
 ## Pflege
 
