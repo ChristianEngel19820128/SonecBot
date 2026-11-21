@@ -8,7 +8,8 @@ Hier stehen nur unmittelbar nächste, gemeinsam zu bearbeitende Schritte. Höchs
 
 D4b vom Entwickler am 21.11.2026 im lokalen AGK-/Windows-Test mit **6/6 bestanden** bestätigt: Compile, automatischer Spawn nach 20–35 Sekunden, beide Eintrittsseiten, maximal eine Drohne, unveränderte Funktionen, pausierender Timer. Keine Auffälligkeiten. Der Timer bleibt vorläufig aktiv und wird später durch Chat B ersetzt.
 
-- [ ] **D5 – Drohnen-Schaden und Zerstörung (nach D4b-Test).** D5a Gesundheit und Maschinengewehr; D5b Flammenwerfer, Granaten, Plasmablitz **und Explosionen**; D5c Trefferfeedback, Zerstörung, Aufräumen laufender Effekte und erneuter Spawn. Zusätzliche Positionierungsregeln erst bei konkretem Bedarf.
+- [ ] **D5a – Gesundheit und Maschinengewehr lokal prüfen.** Drohne hat 100 HP, MG-Geschosse nutzen die bestehende Nearest-Hit-Sweep-Prüfung (46×30 px Drohnenbox), richten ihren vorhandenen Waffenschaden an und werden beim Treffer entfernt. Bei 0 HP wird die Drohne deaktiviert und ihre Laser-/Aktionszustände beendet; späterer Timer-Spawn setzt Gesundheit zurück. Test: Compile, Treffer, mehrere Treffer, Zerstörung, erneuter Spawn, keine Doppeltreffer/Regression. Explosion und weitere Waffen folgen D5b; visuelles Zerstörungsfeedback D5c.
+- [ ] **D5b/D5c – Weitere Waffen und Abschluss.** Flammenwerfer, Granaten, Plasmablitz und Explosionen; danach Trefferfeedback, Zerstörungseffekt und längerer Spieltest. Zusätzliche Positionierungsregeln erst bei konkretem Bedarf.
 
 
 Die Roadmap-Besprechung ist abgeschlossen. Das Paintball-Easter-Egg ist nach dem Windows-Sichttest vom Entwickler abgenommen. Detaillierte Alpha-Umsetzung folgt in Themenchats; eine feste Reihenfolge ist noch nicht beschlossen.
