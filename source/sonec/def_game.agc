@@ -757,6 +757,7 @@ type TProtoDrone
 endtype
 
 type TDrone
+    Health as THealth
     Enabled as integer
     Direction as integer
     IsTurning as integer
