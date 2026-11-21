@@ -243,6 +243,7 @@ function GameDo(Game ref as TGame,Now as integer)
 	DroneJetfireDo(Game.Drone,Game.JetfireList,Game.ProtoJetfire,Game.World,Now)
 	WarningUpdate(Game.Warning,Now)
 	BomberDo(Game.Bomber,Game.ProtoBomber,Game.Warning,Game.JetfireList,Game.ProtoJetfire,Game.World,Game.Screen,Now)
+    BomberBombDo(Game.Bomber,Game.ProtoBomber,Game.World,Game.Screen,Now)
 	
 	if MineCountAll(Game.MineList) < 15
 		if random(0,10000) < 5
@@ -437,6 +438,7 @@ function GameDraw(Game ref as TGame)
 	MineDrawAll(Game.SimpleMineList,Game.ProtoSimpleMine)
 	DroneDraw(Game.Drone,Game.ProtoDrone,Game.World)
 	BomberDraw(Game.Bomber,Game.ProtoBomber,Game.World)
+    BomberBombDraw(Game.Bomber,Game.ProtoBomber,Game.World)
 	WalkerDrawAll(Game.WalkerList,Game.ProtoWalker,Game.World)
 	
 	InenergieDraw(Game.Inenergie,Game.ProtoInenergie)

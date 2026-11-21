@@ -6,7 +6,7 @@ Hier stehen nur unmittelbar nächste, gemeinsam zu bearbeitende Schritte. Höchs
 
 ## Jetzt
 
-- [ ] **Bomber B2 – ersten Bombenprototyp spezifizieren.** B1 mit Doppeljet abgeschlossen; gemeinsame Jetfire-Kamerakorrektur vom Entwickler lokal **6/6 bestanden**. Nächster kleiner Schritt: Grafik/Platzhalter und Bewegungsphysik (übernommene Bombergeschwindigkeit, Luftwiderstand) gemeinsam festlegen; noch keine Codefreigabe. Details in [HANDOFF.md](HANDOFF.md).
+- [ ] **Bomber B2a – einzelne Testbombe lokal in AGK/Windows prüfen.** `bomb.png` (25×10 px) eingebunden: einmaliger Abwurf während des Überflugs, Bomber-Anfangsgeschwindigkeit, Luftwiderstand, Schwerkraft, allmähliche Drehung nach unten. Noch ohne Treffer/Explosion und ohne Fünfer-Salve. Compile, Bewegung, Rotation, Kamera und Regressionen prüfen. Details in [HANDOFF.md](HANDOFF.md).
 
 **Drohne D1–D6 abgeschlossen:** D6-Funktionstest 8/8 lokal bestanden. Jetstream-Feinschliff (30 ms, Skalierung 0,65, Auslässe −10/0/+10 px, Y+13 px) zuletzt per Screenshot optisch bestätigt; kein erneuter vollständiger Funktionstest nach der letzten Höhenkorrektur. Chat B ersetzt später den provisorischen Spawn-Timer. Testdetails stehen in [HANDOFF.md](HANDOFF.md).
 

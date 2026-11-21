@@ -14,6 +14,10 @@
 #constant BOMBER_JET_LOWER_X_FROM_RIGHT 8
 #constant BOMBER_JET_UPPER_Y_FROM_CENTER 1
 #constant BOMBER_JET_LOWER_Y_FROM_CENTER 11
+// B2a: one visual-only test bomb; values are provisional.
+#constant BOMBER_BOMB_GRAVITY_PX_PER_MS2 0.00022
+#constant BOMBER_BOMB_DRAG_PER_MS 0.0005
+#constant BOMBER_BOMB_RELEASE_Y 20
 
 // Phase: 0 = waiting for a visible flight corridor, 1 = warning,
 // 2 = flying, 3 = finished. At most one bomber; no bomber array.
@@ -22,6 +26,11 @@ function BomberProtoLoad(ProtoBomber ref as TProtoBomber)
     ProtoBomber.Body.Image.File.Name = "spacejet.png"
     if ImageLoad(ProtoBomber.Body.Image) = TRUE
         SpriteLoad(ProtoBomber.Body)
+    endif
+    ProtoBomber.Bomb.Image.File.Path = "/media/gfx/weapons"
+    ProtoBomber.Bomb.Image.File.Name = "bomb.png"
+    if ImageLoad(ProtoBomber.Bomb.Image) = TRUE
+        SpriteLoad(ProtoBomber.Bomb)
     endif
 endfunction
 
@@ -33,6 +42,17 @@ function BomberInit(Bomber ref as TBomber,Now as integer)
     Bomber.LastMoveMs = Now
     Bomber.NextJetMs = Now
     Bomber.LastJetX = 0
+    Bomber.BombDropped = FALSE
+    Bomber.BombEnabled = FALSE
+    Bomber.BombLastMoveMs = Now
+    Bomber.BombPosition.x = 0
+    Bomber.BombPosition.y = 0
+    Bomber.BombVelocity.x = 0
+    Bomber.BombVelocity.y = 0
+    Bomber.BombSpriteData.Angle = 0
+    Bomber.BombSpriteData.Scale = 1
+    Bomber.BombSpriteData.Center = TRUE
+    ColorSet(Bomber.BombSpriteData.Color,255,255,255,255)
     Bomber.Position.x = 0
     Bomber.Position.y = 0
     Bomber.SpriteData.Angle = 0
@@ -158,6 +178,52 @@ function BomberDo(Bomber ref as TBomber,ProtoBomber ref as TProtoBomber,Warning 
         else
             BomberJetfireDo(Bomber,ProtoBomber,JetfireList,ProtoJetfire,World,Now)
         endif
+    endif
+endfunction
+
+// B2a: independent world-space motion, no collisions or damage yet.
+function BomberBombDo(Bomber ref as TBomber,ProtoBomber ref as TProtoBomber,World ref as TWorld,Screen as TSize,Now as integer)
+    local DeltaMs as integer
+    local DragFactor as float
+    local HorizontalSpeed as float
+
+    if Bomber.Enabled = TRUE and Bomber.BombDropped = FALSE and ProtoBomber.Bomb.Sprite.ID > 0
+        if Bomber.Position.x <= Screen.Width*0.5
+            Bomber.BombDropped = TRUE
+            Bomber.BombEnabled = TRUE
+            Bomber.BombPosition.x = Bomber.Position.x
+            Bomber.BombPosition.y = Bomber.Position.y+BOMBER_BOMB_RELEASE_Y
+            Bomber.BombVelocity.x = -BOMBER_SPEED_PX_PER_MS
+            Bomber.BombVelocity.y = 0
+            Bomber.BombLastMoveMs = Now
+            Bomber.BombSpriteData.Angle = 0
+        endif
+    endif
+
+    if Bomber.BombEnabled = TRUE
+        DeltaMs = Now-Bomber.BombLastMoveMs
+        if DeltaMs > 0
+            // Exponential-like horizontal damping, bounded for long frames.
+            DragFactor = 1.0/(1.0+BOMBER_BOMB_DRAG_PER_MS*DeltaMs)
+            Bomber.BombVelocity.x = Bomber.BombVelocity.x*DragFactor
+            Bomber.BombVelocity.y = Bomber.BombVelocity.y+BOMBER_BOMB_GRAVITY_PX_PER_MS2*DeltaMs
+            Bomber.BombPosition.x = Bomber.BombPosition.x+Bomber.BombVelocity.x*DeltaMs
+            Bomber.BombPosition.y = Bomber.BombPosition.y+Bomber.BombVelocity.y*DeltaMs
+            // Sprite points left at 0 degrees; lean toward -90 as it falls.
+            HorizontalSpeed = Abs(Bomber.BombVelocity.x)
+            Bomber.BombSpriteData.Angle = -90.0*Bomber.BombVelocity.y/(HorizontalSpeed+Bomber.BombVelocity.y+0.00001)
+            Bomber.BombLastMoveMs = Now
+        endif
+        if Bomber.BombPosition.y > World.Size.Height+32 or Bomber.BombPosition.x < -32
+            Bomber.BombEnabled = FALSE
+        endif
+    endif
+endfunction
+
+function BomberBombDraw(Bomber ref as TBomber,ProtoBomber ref as TProtoBomber,World ref as TWorld)
+    if Bomber.BombEnabled = TRUE and ProtoBomber.Bomb.Sprite.ID > 0
+        SpritePositionCalc(Bomber.BombSpriteData.Position,Bomber.BombPosition,World.Position)
+        SpriteDraw(ProtoBomber.Bomb.Sprite,Bomber.BombSpriteData)
     endif
 endfunction
 

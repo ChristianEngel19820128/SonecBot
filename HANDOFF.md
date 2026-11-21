@@ -95,7 +95,7 @@ Verbindlicher Planungsrahmen und Details: [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROA
 
 ## Genau ein nächster Schritt
 
-**Bomber B2 – Bombenprototyp gemeinsam spezifizieren.** B1 einschließlich Doppeljet und Kamerakorrektur ist vom Entwickler abgenommen. Als Nächstes die erste einfache Bombe (Grafik/Platzhalter, Bewegung, Geschwindigkeitsübernahme und Luftwiderstand) im kleinen Umfang vereinbaren; noch kein neuer Codeauftrag. Die Drohnen-Jetstream-Position erst nach Abschluss des Bombers bearbeiten. `main` bleibt unberührt.
+**Bomber B2a – erste Testbombe lokal in AGK/Windows prüfen.** `bomb.png` (25×10 px) ist eingebunden. Einmaliger Abwurf in Bildschirmmitte während des B1-Überflugs; anfänglich linksgerichtet mit −0,40 px/ms, horizontale Dämpfung, vertikale Schwerkraft und geschwindigkeitsabhängige Drehung von 0° gegen −90°. Noch keine Kollision, Explosion, Schaden oder fünfteilige Salve. Compile, Abwurf, Flugbahn, Rotation, Kamera und Regressionen prüfen; Entwicklerlauf ausstehend. Danach B2b planen. Drohnen-Jetstream erst nach Bomberabschluss; `main` unberührt.
 
 ## Weiterführende Dokumente
 

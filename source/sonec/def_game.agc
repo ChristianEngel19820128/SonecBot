@@ -771,6 +771,7 @@ endtype
 // B1: a single spacejet, with a temporary one-pass test scheduler.
 type TProtoBomber
     Body as TProtoData
+    Bomb as TProtoData
 endtype
 
 type TBomber
@@ -783,6 +784,12 @@ type TBomber
     LastJetX as float
     Position as TPosition
     SpriteData as TSpriteData
+    BombDropped as integer
+    BombEnabled as integer
+    BombPosition as TPosition
+    BombVelocity as TPosition
+    BombLastMoveMs as integer
+    BombSpriteData as TSpriteData
 endtype
 
 type TGame
