@@ -43,6 +43,8 @@ global DroneLaserX as float
 global DroneLaserY as float
 global DroneLaserDirection as integer
 global DroneLaserLastMs as integer
+// D3c: detection-only counter; no shield, health or damage changes.
+global DroneLaserHits as integer
 
 function DroneProtoLoad(ProtoDrone ref as TProtoDrone)
     ProtoDrone.Left.Image.File.Path = "/media/gfx/enemies/drone"
@@ -134,6 +136,7 @@ function DroneInit(Drone ref as TDrone,Screen as TSize,World ref as TWorld,Now a
     DroneLaserY = 0
     DroneLaserDirection = MOVELEFT
     DroneLaserLastMs = Now
+    DroneLaserHits = 0
     TimeSet(DroneMotionTimer,10,10)
     TimeReset(DroneMotionTimer,Now)
     DroneMotionLastMode = DroneMotionUseGate
@@ -284,6 +287,40 @@ function DroneMove(Drone ref as TDrone,Screen as TSize,SonecX as float,Now as in
         endif
     endif
 endfunction
+
+// D3c: swept horizontal segment against Sonec's two-circle body approximation.
+// Return a hit only once per projectile; never modify Sonec health or shield.
+function DroneLaserDetectHit(Sonec ref as TSonec,OldX as float,NewX as float)
+    local ClosestX as float
+    local Dx as float
+    local Dy as float
+    local Radius as float
+    local OffsetY as float
+    local Hit as integer
+    Hit = FALSE
+    if DroneLaserActive = TRUE and Sonec.IsLost = FALSE
+        // Include the 30px-long sprite, avoiding gaps at high frame times.
+        ClosestX = Sonec.ObjectData.Position.x
+        if DroneLaserDirection = MOVELEFT
+            if ClosestX > OldX+15 then ClosestX = OldX+15
+            if ClosestX < NewX-15 then ClosestX = NewX-15
+        else
+            if ClosestX < OldX-15 then ClosestX = OldX-15
+            if ClosestX > NewX+15 then ClosestX = NewX+15
+        endif
+        Dx = Sonec.ObjectData.Position.x-ClosestX
+        Radius = Sonec.ObjectData.Size.Width*0.30
+        OffsetY = Sonec.ObjectData.Size.Height*0.18
+        Dy = Sonec.ObjectData.Position.y-OffsetY-DroneLaserY
+        if Dx*Dx+Dy*Dy <= Radius*Radius then Hit = TRUE
+        Dy = Sonec.ObjectData.Position.y+OffsetY-DroneLaserY
+        if Dx*Dx+Dy*Dy <= Radius*Radius then Hit = TRUE
+        if Hit = TRUE
+            DroneLaserActive = FALSE
+            DroneLaserHits = DroneLaserHits+1
+        endif
+    endif
+endfunction Hit
 
 // Draw the charge frames at native size, with a centered 30x30 pivot.
 function DroneChargeDraw(SpriteID as integer,Frame as integer,Position as TPosition)
