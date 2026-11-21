@@ -181,7 +181,11 @@ function DroneSpawn(Drone ref as TDrone,Screen as TSize,World ref as TWorld,Sone
             SpawnY = (MinY+MaxY)*0.5
             ChosenSide = Side
             if ChosenSide <> MOVELEFT and ChosenSide <> MOVERIGHT
-                if random(0,1) = 0 then ChosenSide = MOVELEFT else ChosenSide = MOVERIGHT
+                if random(0,1) = 0
+                    ChosenSide = MOVELEFT
+                else
+                    ChosenSide = MOVERIGHT
+                endif
             endif
             if ChosenSide = MOVELEFT
                 SpawnX = Screen.Width+DRONE_SPAWN_OFFSET_X
