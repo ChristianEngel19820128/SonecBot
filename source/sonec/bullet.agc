@@ -463,7 +463,7 @@ endfunction Entry
 // K1b: choose one earliest player-bullet hit across ALL supported targets.
 // Tie priority is stable: orb, Walker turret, intelligent mine, simple mine,
 // chest. Enemy bullets continue to use their existing collision functions.
-function BulletCollidePlayerTargets(BulletList ref as TBulletList,OrbList ref as TOrbList,WalkerList ref as TWalkerList,MineList ref as TMineList,SimpleMineList ref as TMineList,ChestList ref as TChestList,Now as integer)
+function BulletCollidePlayerTargets(BulletList ref as TBulletList,OrbList ref as TOrbList,WalkerList ref as TWalkerList,MineList ref as TMineList,SimpleMineList ref as TMineList,ChestList ref as TChestList,Drone ref as TDrone,Now as integer)
     local i as integer
     local k as integer
     local BestType as integer
@@ -532,6 +532,21 @@ function BulletCollidePlayerTargets(BulletList ref as TBulletList,OrbList ref as
                 endif
             next k
 
+            // Drone joins the same nearest-hit sweep as all other player targets.
+            if Drone.Enabled = TRUE
+                local DroneMin as TPosition
+                local DroneMax as TPosition
+                DroneMin.x = Drone.Position.x-23
+                DroneMin.y = Drone.Position.y-15
+                DroneMax.x = Drone.Position.x+23
+                DroneMax.y = Drone.Position.y+15
+                Entry = BulletBoxSweepEntry(BulletList.Bullet[i],DroneMin,DroneMax)
+                if Entry >= 0 and Entry < BestEntry
+                    BestEntry = Entry
+                    BestType = 6
+                endif
+            endif
+
             if BestType = 1
                 OrbList.Orb[BestIndex].Health.State = OrbList.Orb[BestIndex].Health.State - BulletList.Bullet[i].BulletData.Damage
                 ColorSet(OrbList.Orb[BestIndex].SpriteData.Color,255,0,0,255)
@@ -551,6 +566,10 @@ function BulletCollidePlayerTargets(BulletList ref as TBulletList,OrbList ref as
             if BestType = 4
                 SimpleMineList.Mine[BestIndex].Health.State = SimpleMineList.Mine[BestIndex].Health.State - BulletList.Bullet[i].BulletData.Damage
                 ColorSet(SimpleMineList.Mine[BestIndex].SpriteData.Color,255,0,0,255)
+                BulletDelete(BulletList,i)
+            endif
+            if BestType = 6
+                DroneTakeDamage(Drone,BulletList.Bullet[i].BulletData.Damage)
                 BulletDelete(BulletList,i)
             endif
             if BestType = 5
