@@ -8,6 +8,9 @@
 #constant NOTICE_LINE_HEIGHT 8
 #constant NOTICE_PREVIEW 1800
 #constant PICKUP_STAR_MS 1100
+#constant NOTICE_SLIDE_MS 500
+#constant NOTICE_REPEAT_MS 250
+#constant NOTICE_BAR_ALPHA 89
 
 function WarningCreate(Warning ref as TWarning,Screen as TSize)
     local i as integer
@@ -37,6 +40,12 @@ function WarningCreate(Warning ref as TWarning,Screen as TSize)
         SetTextSize(Warning.Notice[i].TextID,23)
         SetTextBold(Warning.Notice[i].TextID,1)
     next i
+    Warning.OutBarSpriteID = CreateSprite(0)
+    Warning.OutTextID = CreateText("")
+    SetTextAlignment(Warning.OutTextID,1)
+    SetTextSize(Warning.OutTextID,23)
+    SetTextBold(Warning.OutTextID,1)
+    Warning.RepeatSpriteID = CreateSprite(0)
     WarningReset(Warning)
 endfunction
 
@@ -46,6 +55,10 @@ function WarningReset(Warning ref as TWarning)
     Warning.OverflowCount = 0
     Warning.PickupStarStartMs = 0
     Warning.PickupStarUntilMs = 0
+    Warning.SlideStartMs = -NOTICE_SLIDE_MS
+    Warning.RepeatStartMs = -NOTICE_REPEAT_MS
+    Warning.OutUntilMs = 0
+    Warning.OutMessage = ""
     for i = 0 to NOTICE_QUEUE_MAX-1
         Warning.Notice[i].DurationMs = 0
         Warning.Notice[i].RepeatCount = 0
@@ -80,13 +93,26 @@ function WarningUpdate(Warning ref as TWarning,Now as integer)
     Warning.Now = Now
     if Warning.Count > 0
         if Now >= Warning.Notice[0].UntilMs
+            WarningCaptureOutgoing(Warning,Now)
             WarningRemove(Warning,0)
             if Warning.Count > 0
                 // Waiting messages receive their full display duration on promotion.
                 Warning.Notice[0].UntilMs = Now+Warning.Notice[0].DurationMs
+                Warning.SlideStartMs = Now
             endif
         endif
     endif
+endfunction
+
+// Snapshot the departing active panel before queue data shifts.
+function WarningCaptureOutgoing(Warning ref as TWarning,Now as integer)
+    if Warning.Count <= 0 then exitfunction
+    Warning.OutMessage = Warning.Notice[0].MessageString
+    if Warning.Notice[0].RepeatCount > 1
+        Warning.OutMessage = Warning.OutMessage+" x"+Str(Warning.Notice[0].RepeatCount)
+    endif
+    Warning.OutKind = Warning.Notice[0].Kind
+    Warning.OutUntilMs = Now+NOTICE_SLIDE_MS
 endfunction
 
 // Retain the original call signature for existing warning producers.
@@ -110,6 +136,7 @@ function WarningPush(Warning ref as TWarning,MessageString as string,Kind as int
         if Warning.Notice[i].Kind = Kind and Warning.Notice[i].MessageString = MessageString
             Warning.Notice[i].RepeatCount = Warning.Notice[i].RepeatCount+1
             if i = 0
+                Warning.RepeatStartMs = Now
                 Warning.Notice[i].UntilMs = Now+DurationMs
             endif
             exitfunction
@@ -118,6 +145,7 @@ function WarningPush(Warning ref as TWarning,MessageString as string,Kind as int
     // A new danger supersedes the current panel, including an older danger.
     // N1b will animate this transition; for now it is immediate.
     if Kind = 0 and Warning.Count > 0
+        WarningCaptureOutgoing(Warning,Now)
         WarningRemove(Warning,0)
     endif
     if Warning.Count >= NOTICE_QUEUE_MAX
@@ -148,6 +176,7 @@ function WarningPush(Warning ref as TWarning,MessageString as string,Kind as int
     Warning.Notice[i].UntilMs = Now+DurationMs
     Warning.Notice[i].PreviewUntilMs = Now+NOTICE_PREVIEW
     Warning.Count = Warning.Count+1
+    if i = 0 then Warning.SlideStartMs = Now
 endfunction
 
 function WarningDraw(Warning ref as TWarning)
@@ -157,6 +186,11 @@ function WarningDraw(Warning ref as TWarning)
     local g as integer
     local b as integer
     local VisibleCount as integer
+    local SlideOffset as float
+    local Elapsed as integer
+    local RepeatAlpha as integer
+    local OutX as float
+
     VisibleCount = Warning.Count
     if VisibleCount > NOTICE_MAX then VisibleCount = NOTICE_MAX
     y = NOTICE_TOP
@@ -172,14 +206,19 @@ function WarningDraw(Warning ref as TWarning)
         endif
         if i > 0
             SetSpriteSize(Warning.Notice[i].BarSpriteID,NOTICE_WIDTH,NOTICE_LINE_HEIGHT)
-            SetSpriteColor(Warning.Notice[i].BarSpriteID,r,g,b,240)
+            SetSpriteColor(Warning.Notice[i].BarSpriteID,r,g,b,NOTICE_BAR_ALPHA)
             SetSpritePosition(Warning.Notice[i].BarSpriteID,Warning.CenterX-NOTICE_WIDTH*0.5,y)
             DrawSprite(Warning.Notice[i].BarSpriteID)
             y = y+NOTICE_LINE_HEIGHT+NOTICE_GAP
         else
+            SlideOffset = 0
+            Elapsed = Warning.Now-Warning.SlideStartMs
+            if Elapsed >= 0 and Elapsed < NOTICE_SLIDE_MS
+                SlideOffset = -NOTICE_WIDTH*(NOTICE_SLIDE_MS-Elapsed)/NOTICE_SLIDE_MS
+            endif
             SetSpriteSize(Warning.Notice[i].BarSpriteID,NOTICE_WIDTH,NOTICE_HEIGHT)
-            SetSpriteColor(Warning.Notice[i].BarSpriteID,12,12,24,180)
-            SetSpritePosition(Warning.Notice[i].BarSpriteID,Warning.CenterX-NOTICE_WIDTH*0.5,y)
+            SetSpriteColor(Warning.Notice[i].BarSpriteID,12,12,24,NOTICE_BAR_ALPHA)
+            SetSpritePosition(Warning.Notice[i].BarSpriteID,Warning.CenterX-NOTICE_WIDTH*0.5+SlideOffset,y)
             DrawSprite(Warning.Notice[i].BarSpriteID)
             if Warning.Notice[i].RepeatCount > 1
                 SetTextString(Warning.Notice[i].TextID,Warning.Notice[i].MessageString+" x"+Str(Warning.Notice[i].RepeatCount))
@@ -187,18 +226,53 @@ function WarningDraw(Warning ref as TWarning)
                 SetTextString(Warning.Notice[i].TextID,Warning.Notice[i].MessageString)
             endif
             SetTextColor(Warning.Notice[i].TextID,r,g,b,255)
-            SetTextPosition(Warning.Notice[i].TextID,Warning.CenterX+20,y+NOTICE_HEIGHT*0.5-23*0.55)
+            SetTextPosition(Warning.Notice[i].TextID,Warning.CenterX+SlideOffset,y+NOTICE_HEIGHT*0.5-23*0.55)
             if Warning.Notice[i].Kind = 1
+                Warning.StarData.Position.x = Warning.CenterX-171+SlideOffset
                 Warning.StarData.Position.y = y+NOTICE_HEIGHT*0.5
                 SpriteDraw(Warning.StarIcon.Sprite,Warning.StarData)
+                Warning.StarData.Position.x = Warning.CenterX-171
             else
+                Warning.IconData.Position.x = Warning.CenterX-171+SlideOffset
                 Warning.IconData.Position.y = y+NOTICE_HEIGHT*0.5
                 SpriteDraw(Warning.Icon.Sprite,Warning.IconData)
+                Warning.IconData.Position.x = Warning.CenterX-171
             endif
             DrawText(Warning.Notice[i].TextID)
+            Elapsed = Warning.Now-Warning.RepeatStartMs
+            if Elapsed >= 0 and Elapsed < NOTICE_REPEAT_MS
+                RepeatAlpha = (NOTICE_REPEAT_MS-Elapsed)*70/NOTICE_REPEAT_MS
+                SetSpriteSize(Warning.RepeatSpriteID,NOTICE_WIDTH,NOTICE_HEIGHT)
+                SetSpriteColor(Warning.RepeatSpriteID,r,g,b,RepeatAlpha)
+                SetSpritePosition(Warning.RepeatSpriteID,Warning.CenterX-NOTICE_WIDTH*0.5+SlideOffset,y)
+                DrawSprite(Warning.RepeatSpriteID)
+            endif
             y = y+NOTICE_HEIGHT+NOTICE_GAP
         endif
     next i
+    // The old panel slides out independently while the new one enters.
+    if Warning.OutUntilMs > Warning.Now
+        Elapsed = NOTICE_SLIDE_MS-(Warning.OutUntilMs-Warning.Now)
+        if Elapsed < 0 then Elapsed = 0
+        OutX = Warning.CenterX-NOTICE_WIDTH*0.5-NOTICE_WIDTH*Elapsed/NOTICE_SLIDE_MS
+        SetSpriteSize(Warning.OutBarSpriteID,NOTICE_WIDTH,NOTICE_HEIGHT)
+        SetSpriteColor(Warning.OutBarSpriteID,12,12,24,NOTICE_BAR_ALPHA)
+        SetSpritePosition(Warning.OutBarSpriteID,OutX,NOTICE_TOP)
+        DrawSprite(Warning.OutBarSpriteID)
+        if Warning.OutKind = 1
+            r = 140
+            g = 230
+            b = 173
+        else
+            r = 255
+            g = 100
+            b = 100
+        endif
+        SetTextString(Warning.OutTextID,Warning.OutMessage)
+        SetTextColor(Warning.OutTextID,r,g,b,255)
+        SetTextPosition(Warning.OutTextID,OutX+NOTICE_WIDTH*0.5,NOTICE_TOP+NOTICE_HEIGHT*0.5-23*0.55)
+        DrawText(Warning.OutTextID)
+    endif
 endfunction
 
 // A small local pickup confirmation; reuse the same star image as the top notice.

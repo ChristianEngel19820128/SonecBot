@@ -751,6 +751,14 @@ type TWarning
     Now as integer
     PickupStarStartMs as integer
     PickupStarUntilMs as integer
+    SlideStartMs as integer
+    RepeatStartMs as integer
+    OutUntilMs as integer
+    OutMessage as string
+    OutKind as integer
+    OutBarSpriteID as integer
+    OutTextID as integer
+    RepeatSpriteID as integer
 endtype
 
 // D1: one persistent unarmed hover drone; no collisions or attack logic yet.
