@@ -87,7 +87,9 @@ function SonecInit(Sonec ref as TSonec,ProtoSonec ref as TProtoSonec,World ref a
 	Sonec.State.Alignment = MOVERIGHT
 	
 	Sonec.ObjectData.Position.x = Screen.Width/4
-	Sonec.ObjectData.Position.y = 0//Screen.Height/8
+	// Start completely above the visible world; enter naturally after touchdown.
+    Sonec.ObjectData.Position.y = -GetSpriteHeight(ProtoSonec.AnimRight.Stand.Sprite.ID)*0.5-8
+    Sonec.SpawnEntering = TRUE
 	
 	Sonec.ObjectData.MoveSpeedMax.x = 5
 	Sonec.ObjectData.MoveSpeedMax.y = 8
@@ -1096,10 +1098,14 @@ function SonecMove(Sonec ref as TSonec,World ref as TWorld,Screen as TSize,Now a
 			Sonec.ObjectData.MoveSpeed.y = Sonec.ObjectData.MoveSpeed.y * 0.20
 		endif
 		
-		if Sonec.ObjectData.Position.y < Sonec.ObjectData.Size.Height*0.5
-			Sonec.ObjectData.Position.y = Sonec.ObjectData.Size.Height*0.5
-			Sonec.ObjectData.MoveSpeed.y = 0
-		endif
+		// Allow the first descent from off-screen; restore the top boundary afterwards.
+        if Sonec.SpawnEntering = TRUE and Sonec.ObjectData.Position.y >= Sonec.ObjectData.Size.Height*0.5
+            Sonec.SpawnEntering = FALSE
+        endif
+        if Sonec.SpawnEntering = FALSE and Sonec.ObjectData.Position.y < Sonec.ObjectData.Size.Height*0.5
+            Sonec.ObjectData.Position.y = Sonec.ObjectData.Size.Height*0.5
+            Sonec.ObjectData.MoveSpeed.y = 0
+        endif
 		
 		if Sonec.ObjectData.Position.y > World.Size.Height + Sonec.ObjectData.Size.Height*0.5
 			Sonec.IsLost = TRUE

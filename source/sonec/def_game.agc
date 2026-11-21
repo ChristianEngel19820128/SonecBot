@@ -521,6 +521,7 @@ type TFlameGun
 endtype
 
 type TSonec
+    SpawnEntering as integer
 	ObjectData as TObjectData
 	SpriteData as TSpriteData
 	State as TObjectState

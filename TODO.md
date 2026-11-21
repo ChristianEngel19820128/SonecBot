@@ -6,7 +6,8 @@ Hier stehen nur unmittelbar nächste, gemeinsam zu bearbeitende Schritte. Höchs
 
 ## Jetzt
 
-- [ ] **T2 – Countdown-Nachricht und Startbeschleunigung lokal testen.** T1 7/7 bestätigt; Countdown jetzt im bestehenden Warnfeld ohne Stapelung, separater Text entfernt, Sonec-Bewegungstimer beim Übergang zurückgesetzt. AGK-Compile, normale Fallbeschleunigung, Pause/Neustart und reguläre Warnmeldungen prüfen.
+- [ ] **T3 – Eintritt von oben lokal testen.** T2 8/8 bestanden. Sonec startet vollständig oberhalb des Bildschirms und fällt nach Countdown sichtbar hinein; danach normale obere Begrenzung. AGK-Compile, Pause/Neustart, Bewegung und Waffen prüfen.
+- [ ] **N1 – Nachrichtenanzeige begrenzen (nach T3).** Nur erste Meldung groß, weitere sofort kompakt; bestehende FIFO-Funktion erhalten. Vor Umsetzung separat vereinbaren.
 
 **Drohne D1–D6 abgeschlossen:** D6-Funktionstest 8/8 lokal bestanden. Jetstream-Feinschliff (30 ms, Skalierung 0,65, Auslässe −10/0/+10 px, Y+13 px) zuletzt per Screenshot optisch bestätigt; kein erneuter vollständiger Funktionstest nach der letzten Höhenkorrektur. Chat B ersetzt später den provisorischen Spawn-Timer. Testdetails stehen in [HANDOFF.md](HANDOFF.md).
 
