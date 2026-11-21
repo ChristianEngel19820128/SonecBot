@@ -17,6 +17,7 @@
 // Prevent scan and charge from following one another immediately.
 #constant DRONE_ACTION_REST_MS 1200
 #constant DRONE_LASER_SPEED 0.35
+#constant DRONE_LASER_DAMAGE 20
 #constant DRONE_LASER_START_OFFSET_X 53
 // D2.1 temporary visibility test: exaggerated hover, not final balancing.
 #constant DRONE_BOB_AMPLITUDE 8
@@ -43,7 +44,7 @@ global DroneLaserX as float
 global DroneLaserY as float
 global DroneLaserDirection as integer
 global DroneLaserLastMs as integer
-// D3c: detection-only counter; no shield, health or damage changes.
+// D3c: count successful drone laser impacts.
 global DroneLaserHits as integer
 
 function DroneProtoLoad(ProtoDrone ref as TProtoDrone)
@@ -158,7 +159,7 @@ function DroneInit(Drone ref as TDrone,Screen as TSize,World ref as TWorld,Now a
     ColorSet(Drone.SpriteData.Color,255,255,255,255)
 endfunction
 
-function DroneMove(Drone ref as TDrone,Screen as TSize,Sonec ref as TSonec,Now as integer)
+function DroneMove(Drone ref as TDrone,Screen as TSize,Sonec ref as TSonec,Shield ref as TShield,Now as integer)
     local DeltaMs as integer
     local TurnChance as integer
     local LaserOldX as float
@@ -214,7 +215,7 @@ function DroneMove(Drone ref as TDrone,Screen as TSize,Sonec ref as TSonec,Now a
                 DroneLaserX = DroneLaserX+(Now-DroneLaserLastMs)*DRONE_LASER_SPEED
             endif
             DroneLaserLastMs = Now
-            DroneLaserDetectHit(Sonec,LaserOldX,DroneLaserX)
+            DroneLaserDetectHit(Sonec,Shield,LaserOldX,DroneLaserX,Now)
             if DroneLaserX < -30 or DroneLaserX > Screen.Width+30
                 DroneLaserActive = FALSE
             endif
@@ -292,14 +293,15 @@ function DroneMove(Drone ref as TDrone,Screen as TSize,Sonec ref as TSonec,Now a
 endfunction
 
 // D3c: swept horizontal segment against Sonec's two-circle body approximation.
-// Return a hit only once per projectile; never modify Sonec health or shield.
-function DroneLaserDetectHit(Sonec ref as TSonec,OldX as float,NewX as float)
+// Apply damage once per projectile, using the existing shield rules.
+function DroneLaserDetectHit(Sonec ref as TSonec,Shield ref as TShield,OldX as float,NewX as float,Now as integer)
     local ClosestX as float
     local Dx as float
     local Dy as float
     local Radius as float
     local OffsetY as float
     local Hit as integer
+    local HealthBeforeHit as integer
     Hit = FALSE
     if DroneLaserActive = TRUE and Sonec.IsLost = FALSE
         // Include the 30px-long sprite, avoiding gaps at high frame times.
@@ -321,6 +323,10 @@ function DroneLaserDetectHit(Sonec ref as TSonec,OldX as float,NewX as float)
         if Hit = TRUE
             DroneLaserActive = FALSE
             DroneLaserHits = DroneLaserHits+1
+            // Same proportional shield absorption and hit flash as enemy bullets.
+            HealthBeforeHit = Sonec.Health.State
+            Sonec.Health.State = Sonec.Health.State - (DRONE_LASER_DAMAGE - ShieldAbsorbDamage(Shield,Sonec,DRONE_LASER_DAMAGE,Now))
+            if Sonec.Health.State < HealthBeforeHit then SonecHitFlashUntil = Now+SONEC_HIT_FLASH_MS
         endif
     endif
 endfunction Hit
