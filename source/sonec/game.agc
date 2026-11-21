@@ -334,6 +334,7 @@ function GameDo(Game ref as TGame,Now as integer)
 	GrenadeCollidePlate(Game.GrenadeList,Game.PlateList,Game,Now)
 	
 	PlasmaBlitzLifeCycle(Game.PlasmaBlitzList,Now)
+    BomberBombCollidePlasmaBlitz(Game.Bomber,Game.PlasmaBlitzList,Game,Now)
 	PlasmaBlitzCollideOrbs(Game.PlasmaBlitzList,Game.OrbList,Now)
 	PlasmaBlitzCollideMine(Game.PlasmaBlitzList,Game.MineList,Now)
 	PlasmaBlitzCollideMine(Game.PlasmaBlitzList,Game.SimpleMineList,Now)

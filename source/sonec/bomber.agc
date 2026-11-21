@@ -252,6 +252,38 @@ endfunction
 
 // B3b: use the existing growing flame radius to intercept bomber bombs.
 // Consume one flame and one bomb; use the same red airborne explosion as B3a.
+// B3c: a plasma discharge intercepts bombs inside its existing hit area.
+// Plasma persists, as it does against other targets; each bomb can explode once.
+function BomberBombCollidePlasmaBlitz(Bomber ref as TBomber,PlasmaBlitzList ref as TPlasmaBlitzList,Game ref as TGame,Now as integer)
+    local i as integer
+    local k as integer
+    local BombMin as TPosition
+    local BombMax as TPosition
+    local HitPosition as TPosition
+
+    for i = 0 to PlasmaBlitzList.PlasmaBlitz.Length
+        if PlasmaBlitzList.PlasmaBlitz[i].Enabled = TRUE
+            for k = 0 to BOMBER_BOMB_COUNT-1
+                if Bomber.Bomb[k].Enabled = TRUE
+                    BombMin.x = Bomber.Bomb[k].Position.x-BOMBER_BOMB_SHOT_RADIUS
+                    BombMin.y = Bomber.Bomb[k].Position.y-BOMBER_BOMB_SHOT_RADIUS
+                    BombMax.x = Bomber.Bomb[k].Position.x+BOMBER_BOMB_SHOT_RADIUS
+                    BombMax.y = Bomber.Bomb[k].Position.y+BOMBER_BOMB_SHOT_RADIUS
+                    if BoxInBox(PlasmaBlitzList.PlasmaBlitz[i].CollisionData.Position1,PlasmaBlitzList.PlasmaBlitz[i].CollisionData.Position2,BombMin,BombMax)
+                        HitPosition = Bomber.Bomb[k].Position
+                        Bomber.Bomb[k].Enabled = FALSE
+                        ExplosionAdd(Game.ExplosionList,Game.ProtoExplosion,Game,1,HitPosition,Now)
+                    endif
+                endif
+            next k
+        endif
+    next i
+endfunction
+
+//----------------------------------------------------------------------
+// 
+//----------------------------------------------------------------------
+
 function BomberBombCollideFlames(Bomber ref as TBomber,FlameList ref as TFlameList,Game ref as TGame,Now as integer)
     local i as integer
     local k as integer

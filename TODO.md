@@ -6,7 +6,8 @@ Hier stehen nur unmittelbar nächste, gemeinsam zu bearbeitende Schritte. Höchs
 
 ## Jetzt
 
-- [ ] **Bomber – Abschuss des Spacejets als nächsten Schritt abstimmen.** B3b-Flammenwerfer vom Entwickler lokal **6/6 bestanden**. Trefferpunkte, Trefferreaktion und Zerstörung vor Implementierung festlegen. B3a-MG-Test vertagt (2/6 bestätigt, kein bestätigter Fehler). Details in [HANDOFF.md](HANDOFF.md).
+- [ ] **Bomber B3c – PlasmaBlitz gegen Bomben lokal testen.** Bestehende Plasma-AABB fängt Bomben ab, rote Explosion; Plasma bleibt aktiv. Compile, Treffer, mehrere Bomben, Regressionen prüfen. Danach B3d Granatwerfer gegen Bomben. Details in [HANDOFF.md](HANDOFF.md).
+- [ ] **Spacejet selbst später mit allen vier Waffen in einem Schritt abschießbar machen.** MG, Flammenwerfer, PlasmaBlitz, Granatwerfer gemeinsam implementieren und vom Entwickler durchtesten.
 - [ ] **Später: Touchdown-Countdown beim Spielstart.** 'Touchdown in 3 Sekunden.' mit 3→2→1, Sonec erst danach sichtbar und verwundbar; noch nicht implementieren.
 
 **Drohne D1–D6 abgeschlossen:** D6-Funktionstest 8/8 lokal bestanden. Jetstream-Feinschliff (30 ms, Skalierung 0,65, Auslässe −10/0/+10 px, Y+13 px) zuletzt per Screenshot optisch bestätigt; kein erneuter vollständiger Funktionstest nach der letzten Höhenkorrektur. Chat B ersetzt später den provisorischen Spawn-Timer. Testdetails stehen in [HANDOFF.md](HANDOFF.md).
