@@ -160,9 +160,21 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
+// Initialize Sonec at the countdown boundary, before the first gameplay input.
+function GameTouchdownStart(Game ref as TGame,Now as integer)
+    if Game.TouchdownStarted = FALSE and Now >= Game.TouchdownUntilMs
+        SonecInit(Game.Sonec,Game.ProtoSonec,Game.World,Game.Screen,Now)
+        ShieldRefresh(Game.Shield,Game.World,Game.Sonec.ObjectData.Position,Now)
+        InenergieRefresh(Game.Inenergie,Game.World,Game.Sonec.ObjectData.Position,Now)
+        WarningReset(Game.Warning)
+        Game.TouchdownStarted = TRUE
+    endif
+endfunction
+
 function GameInput(Game ref as TGame,Keys ref as TKeys,Options ref as TGameOptions,Now as integer)
 
 	if Now < Game.TouchdownUntilMs then exitfunction
+    GameTouchdownStart(Game,Now)
 	SonecInput(Game.Sonec,Game.JetfireList,Game.ProtoJetfire,Game.World,Keys,Options,Game.JoystickIndex,Now)
 	// Back/Select is handled only while paused in main.agc.
 
@@ -175,6 +187,7 @@ endfunction
 function GameActionInput(Game ref as TGame,Keys ref as TKeys,Now as integer)
 
 	if Now < Game.TouchdownUntilMs then exitfunction
+    GameTouchdownStart(Game,Now)
 	SonecFlameGunInput(Game.Sonec,Game.FlameList,Game.ProtoFlame,Game.World,Game.Sound,Keys,Game.JoystickIndex,Now)
 	SonecPlasmaBlitzGunInput(Game.Sonec,Game.FlashList,Game.ProtoFlash,Game.PlasmaBlitzList,Game.ProtoPlasmaBlitz,Game.World,Keys,Game.JoystickIndex,Now)
 	SonecMGunInput(Game.Sonec,Game.FlashList,Game.ProtoFlash,Game.BulletList,Game.ProtoBullet,Game.World,Game.Sound,Keys,Game.JoystickIndex,Now)
@@ -204,12 +217,7 @@ function GameDo(Game ref as TGame,Now as integer)
         Game.Warning.Notice[0].PreviewUntilMs = Game.TouchdownUntilMs
         exitfunction
     endif
-    if Game.TouchdownStarted = FALSE
-        // No accumulated 3-second movement step on the first playable frame.
-        TimeReset(Game.Sonec.ObjectData.MoveTimer,Now)
-        WarningReset(Game.Warning)
-        Game.TouchdownStarted = TRUE
-    endif
+    GameTouchdownStart(Game,Now)
 	
 	BackgroundDo(Game.Background,Game.World,Now)
 	if CloudCountAll(Game.CloudList) < 50
