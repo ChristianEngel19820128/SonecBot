@@ -322,6 +322,27 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
+// D5b: player flames damage the drone using the existing growing flame radius.
+function FlameCollideDrone(FlameList ref as TFlameList,Drone ref as TDrone)
+    local i as integer
+    local NearestPoint as TPosition
+    local Radius as float
+    for i = 0 to FlameList.Flame.Length
+        if Drone.Enabled = TRUE and FlameList.Flame[i].Enabled = TRUE
+            NearestPoint = FlameList.Flame[i].ObjectData.Position
+            if NearestPoint.x < Drone.Position.x-23 then NearestPoint.x = Drone.Position.x-23
+            if NearestPoint.x > Drone.Position.x+23 then NearestPoint.x = Drone.Position.x+23
+            if NearestPoint.y < Drone.Position.y-15 then NearestPoint.y = Drone.Position.y-15
+            if NearestPoint.y > Drone.Position.y+15 then NearestPoint.y = Drone.Position.y+15
+            Radius = FlameCollisionRadius(FlameList.Flame[i])
+            if CalcRadius(FlameList.Flame[i].ObjectData.Position,NearestPoint) <= Radius
+                DroneTakeDamage(Drone,FlameList.Flame[i].BulletData.Damage)
+                FlameDelete(FlameList,i)
+            endif
+        endif
+    next i
+endfunction
+
 function FlameMove(Flame ref as TFlame,World ref as TWorld,Now as integer)
 
 	if Flame.Enabled = TRUE
