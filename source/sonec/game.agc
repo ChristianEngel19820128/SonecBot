@@ -156,11 +156,6 @@ endfunction
 function GameInput(Game ref as TGame,Keys ref as TKeys,Options ref as TGameOptions,Now as integer)
 
 	SonecInput(Game.Sonec,Game.JetfireList,Game.ProtoJetfire,Game.World,Keys,Options,Game.JoystickIndex,Now)
-	// D4a temporary Windows-only manual spawn test (F6 = virtual key 117).
-	// Remove this input hook after local spawn validation; keep DroneSpawn for waves.
-	if Device$ = "windows" and GetRawKeyPressed(117) = 1
-		DroneSpawn(Game.Drone,Game.Screen,Game.World,Game.Sonec,Now,0)
-	endif
 	// Back/Select is handled only while paused in main.agc.
 
 endfunction
