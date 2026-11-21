@@ -6,7 +6,7 @@ Hier stehen nur unmittelbar nächste, gemeinsam zu bearbeitende Schritte. Höchs
 
 ## Jetzt
 
-- [ ] **Spacejet-Balancing und Plasma-Trefferfeedback entscheiden.** B4b lokal **7/7 bestanden**, beide Plasma-Richtungen beschädigen den Jet. 20 TP sind nur ein Testwert; bei Schuss nach rechts ist laut Entwickler sofort die Explosion sichtbar (Anzeigeproblem nicht bestätigt). Kein akuter Richtungs-Kollisionsfehler belegt.
+- [ ] **B4c – Plasma-Trefferfeedback mit 50 TP testen.** Nur Bomber-Testlebenspunkte von 20 auf 50 geändert. Roten Trefferblitz beim PlasmaBlitz nach links und rechts vergleichen, Zerstörung und Bomben-Regression beobachten. Ursache der rechtsseitigen Wahrnehmung noch offen.
 - [ ] **Später: Touchdown-Countdown beim Spielstart.** 'Touchdown in 3 Sekunden.' mit 3→2→1, Sonec erst danach sichtbar und verwundbar; noch nicht implementieren.
 
 **Drohne D1–D6 abgeschlossen:** D6-Funktionstest 8/8 lokal bestanden. Jetstream-Feinschliff (30 ms, Skalierung 0,65, Auslässe −10/0/+10 px, Y+13 px) zuletzt per Screenshot optisch bestätigt; kein erneuter vollständiger Funktionstest nach der letzten Höhenkorrektur. Chat B ersetzt später den provisorischen Spawn-Timer. Testdetails stehen in [HANDOFF.md](HANDOFF.md).
