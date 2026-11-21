@@ -6,7 +6,8 @@
 #constant BOMBER_ENTRY_MARGIN_X 65
 #constant BOMBER_VIEW_MARGIN_Y 16
 #constant BOMBER_JET_INTERVAL_MS 20
-#constant BOMBER_JET_PARTICLE_SCALE 0.85
+#constant BOMBER_JET_PARTICLE_SCALE 1.0
+#constant BOMBER_JET_SPACING_PX 4.0
 
 // Phase: 0 = waiting for a visible flight corridor, 1 = warning,
 // 2 = flying, 3 = finished. At most one bomber; no bomber array.
@@ -25,6 +26,7 @@ function BomberInit(Bomber ref as TBomber,Now as integer)
     Bomber.SpawnAtMs = 0
     Bomber.LastMoveMs = Now
     Bomber.NextJetMs = Now
+    Bomber.LastJetX = 0
     Bomber.Position.x = 0
     Bomber.Position.y = 0
     Bomber.SpriteData.Angle = 0
@@ -39,32 +41,50 @@ function BomberJetfireDo(Bomber ref as TBomber,ProtoBomber ref as TProtoBomber,J
     local Position as TPosition
     local Jetfire as TJetfire
     local i as integer
+    local j as integer
+    local Count as integer
     local Found as integer
+    local EngineX as float
+    local Distance as float
 
     if Bomber.Enabled = TRUE and Now >= Bomber.NextJetMs and ProtoJetfire.AnimJetfire.Sprite.ID > 0
-        // The ship faces left; the engine is near its right-hand tail.
-        Position.x = Bomber.Position.x+GetSpriteWidth(ProtoBomber.Body.Sprite.ID)*0.42
-        Position.y = Bomber.Position.y
-        JetfireNew(Jetfire,ProtoJetfire,World,Position,Now)
-        Jetfire.SpriteData.Angle = -90
-        Jetfire.SpriteData.Scale = BOMBER_JET_PARTICLE_SCALE
-
-        Found = FALSE
-        i = JetfireList.FirstFree
-        while Found = FALSE and i <= JetfireList.Jetfire.Length
-            if JetfireList.Jetfire[i].Enabled = FALSE
-                Found = TRUE
-            else
-                i = i+1
-            endif
-        endwhile
-        if Found = FALSE
-            JetfireList.Jetfire.Insert(Jetfire)
-            JetfireList.FirstFree = JetfireList.Jetfire.Length
-        else
-            JetfireList.Jetfire[i] = Jetfire
-            JetfireList.FirstFree = i+1
+        // Spacejet faces left. Distribute exhaust across the distance
+        // travelled since the previous emission, not at one frame position.
+        EngineX = Bomber.Position.x+GetSpriteWidth(ProtoBomber.Body.Sprite.ID)*0.42
+        Distance = Bomber.LastJetX-EngineX
+        Count = 2
+        if Distance > BOMBER_JET_SPACING_PX*2
+            Count = Floor(Distance/BOMBER_JET_SPACING_PX)+1
         endif
+        if Count > 16 then Count = 16
+
+        for j = 1 to Count
+            Position.x = Bomber.LastJetX+(EngineX-Bomber.LastJetX)*j/Count
+            // Shift down by half the jetfire sprite's current height.
+            Position.y = Bomber.Position.y+GetSpriteHeight(ProtoJetfire.AnimJetfire.Sprite.ID)*BOMBER_JET_PARTICLE_SCALE*0.5
+            JetfireNew(Jetfire,ProtoJetfire,World,Position,Now)
+            Jetfire.SpriteData.Angle = -90
+            Jetfire.SpriteData.Scale = BOMBER_JET_PARTICLE_SCALE
+
+            Found = FALSE
+            i = JetfireList.FirstFree
+            while Found = FALSE and i <= JetfireList.Jetfire.Length
+                if JetfireList.Jetfire[i].Enabled = FALSE
+                    Found = TRUE
+                else
+                    i = i+1
+                endif
+            endwhile
+            if Found = FALSE
+                JetfireList.Jetfire.Insert(Jetfire)
+                JetfireList.FirstFree = JetfireList.Jetfire.Length
+            else
+                JetfireList.Jetfire[i] = Jetfire
+                JetfireList.FirstFree = i+1
+            endif
+        next j
+
+        Bomber.LastJetX = EngineX
         Bomber.NextJetMs = Now+BOMBER_JET_INTERVAL_MS
     endif
 endfunction
@@ -104,6 +124,7 @@ function BomberDo(Bomber ref as TBomber,ProtoBomber ref as TProtoBomber,Warning 
         Bomber.Position.x = Screen.Width+HalfWidth+BOMBER_ENTRY_MARGIN_X
         Bomber.LastMoveMs = Now
         Bomber.NextJetMs = Now
+        Bomber.LastJetX = Bomber.Position.x+GetSpriteWidth(ProtoBomber.Body.Sprite.ID)*0.42
         Bomber.Enabled = TRUE
         Bomber.Phase = 2
     endif

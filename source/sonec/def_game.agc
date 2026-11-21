@@ -780,6 +780,7 @@ type TBomber
     SpawnAtMs as integer
     LastMoveMs as integer
     NextJetMs as integer
+    LastJetX as float
     Position as TPosition
     SpriteData as TSpriteData
 endtype

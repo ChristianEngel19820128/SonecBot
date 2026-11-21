@@ -49,7 +49,8 @@ Zusätzlich in dieser Runde umgesetzt:
 
 - **Quellstand auf `develop`:** `source/sonec/media/gfx/enemies/spacejet.png` (176×64 px); einzelner `TBomber`, noch keine Bomben/Schadenslogik.
 - **B1 vom Entwickler lokal in AGK/Windows mit 6/6 bestanden:** Compile, Vorwarnung, Welt-Y-Höhenbereich, kompletter Überflug, Jetstream ohne Sonec-/Drohnenregression und höchstens ein Testanflug pro Spielstart bestätigt.
-- **B1-Feinschliff im Code, Nachtest offen:** Flughöhe von 20–40 % auf **10–30 % der Welt-Y-Höhe** verschoben, Geschwindigkeit 0,30 → **0,40 px/ms**, Jetfire-Takt 30 → **20 ms** (engere Partikelabstände trotz höherer Geschwindigkeit), Bomberfarbe **RGB (80,232,80)**. Weiterhin frühestens 4 s nach Spielstart, 2,2 s Warnung und nur bei sichtbarem Flughöhenkorridor.
+- **B1-Feinschliff vom Entwickler mit 4/5 geprüft:** 10–30 % Welt-Y, 0,40 px/ms, Grün RGB (80,232,80) und unveränderte Warnung/Einmal-Spawn bestätigt. Einzig der Jetstream ist im Screenshot noch lückenhaft.
+- **Jetstream-Nachbesserung im Code, AGK-Test offen:** Skalierung 0,85 → **1,0**; statt einer Emission alle 20 ms mindestens zwei gleichmäßig entlang der zurückgelegten Strecke verteilte Partikel, bei längeren Frames entsprechend mehr (maximal 16). Austritt um eine halbe Jetfire-Partikelhöhe nach unten versetzt. Partikellebensdauer und Bomberfarbe unverändert.
 - **Spätere Bombenentscheidung:** Fünf zeitversetzte Bomben mit Bomber-Anfangsgeschwindigkeit und Luftwiderstand. Direkttreffer: kinetischer Schaden **plus** Explosion; abgeschossene Bomben explodieren ebenfalls. Echte Plattformdeckung und gegebenenfalls sichtbar beschnittene Explosionsanimation erfordern eine gesonderte Erweiterung der allgemeinen Explosionsphysik. Bomber selbst soll abschießbar, sein Abschuss aber selten sein.
 
 ## Bestätigte Alpha-Planung
@@ -90,7 +91,7 @@ Verbindlicher Planungsrahmen und Details: [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROA
 
 ## Genau ein nächster Schritt
 
-**B1-Feinschliff lokal in AGK/Windows nachtesten.** Prüfen: 10–30 % Welt-Y, 0,40 px/ms, dichterer Jetstream (20 ms), grüne Spacejet-Färbung sowie unveränderte Warnung und maximal ein Überflug. Erst nach Rückmeldung B1 abschließen und B2 (Bombenprototyp) planen. `main` bleibt unberührt.
+**B1-Jetstream-Nachbesserung lokal in AGK/Windows testen.** Prüfen: Compile, räumlich gleichmäßiger dichter Jetstream, Partikelgröße 1,0, vertikal mittiger Auslass und unveränderte Bomber-/Drohnen-/Sonec-Funktionen. Erst nach Rückmeldung B1 abschließen und B2 (Bombenprototyp) planen. `main` bleibt unberührt.
 
 ## Weiterführende Dokumente
 
