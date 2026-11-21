@@ -2,6 +2,7 @@
 // Horizontal patrol inside screen/world X bounds, fixed world-space flight height.
 // Three user-provided 46x30 colored images: left, center (turn), right.
 
+#constant DRONE_JET_INTERVAL_MS 30
 #constant DRONE_HEALTH_MAX 100
 #constant DRONE_HIT_FLASH_MS 150
 #constant DRONE_AUTO_SPAWN_MIN_MS 20000
@@ -30,6 +31,7 @@
 #constant DRONE_BOB_DEGREES_PER_MS 0.12
 
 // Temporary standalone spawn scheduler; Chat B will replace its call site.
+global DroneNextJetMs as integer
 global DroneHitFlashUntilMs as integer
 global DroneDeathEffectPending as integer
 global DroneDeathPosition as TPosition
@@ -130,6 +132,7 @@ function DroneInit(Drone ref as TDrone,Screen as TSize,World ref as TWorld,Now a
     Drone.Health.StateMax = DRONE_HEALTH_MAX
     Drone.Health.State = DRONE_HEALTH_MAX
     DroneHitFlashUntilMs = 0
+    DroneNextJetMs = Now
     DroneNextAutoSpawnMs = Now+random(DRONE_AUTO_SPAWN_MIN_MS,DRONE_AUTO_SPAWN_MAX_MS)
     Drone.Direction = MOVELEFT
     Drone.IsTurning = FALSE
@@ -427,6 +430,40 @@ function DroneChargeDraw(SpriteID as integer,Frame as integer,Position as TPosit
         SetSpritePositionByOffset(SpriteID,Position.x,Position.y)
         SetSpriteColor(SpriteID,30,255,60,190)
         DrawSprite(SpriteID)
+    endif
+endfunction
+
+// D6: three exhaust streams use Sonec's existing jetfire sprites and lifecycle.
+// Separate emission clock avoids competing with Sonec's shared JetfireAdd timer.
+function DroneJetfireDo(Drone ref as TDrone,JetfireList ref as TJetfireList,ProtoJetfire ref as TProtoJetfire,World ref as TWorld,Now as integer)
+    local Outlet as integer
+    local Position as TPosition
+    local Jetfire as TJetfire
+    local i as integer
+    local Found as integer
+    if Drone.Enabled = TRUE and Now >= DroneNextJetMs and ProtoJetfire.AnimJetfire.Sprite.ID > 0
+        for Outlet = 0 to 2
+            Position.x = Drone.Position.x+(Outlet-1)*14
+            Position.y = Drone.Position.y+16
+            JetfireNew(Jetfire,ProtoJetfire,World,Position,Now)
+            Found = FALSE
+            i = JetfireList.FirstFree
+            while Found = FALSE and i <= JetfireList.Jetfire.Length
+                if JetfireList.Jetfire[i].Enabled = FALSE
+                    Found = TRUE
+                else
+                    i = i+1
+                endif
+            endwhile
+            if Found = FALSE
+                JetfireList.Jetfire.Insert(Jetfire)
+                JetfireList.FirstFree = JetfireList.Jetfire.Length
+            else
+                JetfireList.Jetfire[i] = Jetfire
+                JetfireList.FirstFree = i+1
+            endif
+        next Outlet
+        DroneNextJetMs = Now+DRONE_JET_INTERVAL_MS
     endif
 endfunction
 
