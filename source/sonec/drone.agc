@@ -445,7 +445,7 @@ function DroneJetfireDo(Drone ref as TDrone,JetfireList ref as TJetfireList,Prot
     if Drone.Enabled = TRUE and Now >= DroneNextJetMs and ProtoJetfire.AnimJetfire.Sprite.ID > 0
         for Outlet = 0 to 2
             Position.x = Drone.Position.x+(Outlet-1)*10
-            Position.y = Drone.Position.y+16
+            Position.y = Drone.Position.y+13
             JetfireNew(Jetfire,ProtoJetfire,World,Position,Now)
             // Only drone exhaust particles are smaller; Sonec's effect is unchanged.
             Jetfire.SpriteData.Scale = DRONE_JET_PARTICLE_SCALE
