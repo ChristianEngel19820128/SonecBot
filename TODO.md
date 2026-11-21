@@ -4,6 +4,8 @@
 
 ## Jetzt
 
+- [ ] **B5 – Bomben zerstören genau eine getroffene Kiste, lokaler Test offen.** Sweep gegen aktuelle Kisten-Rechtecke, normaler Chest-Reward einmalig, vorhandene plattformbegrenzte Explosion; keine neue Zerstörungsanimation. 
+
 - [ ] **Menü-Hilfetexte später erweitern.** Nur vormerken; gehört nicht in den aktuellen N1-/Cloud-Arbeitsschritt.
 
 **N2 abgenommen:** Entwickler bestätigt AGK-Compile und alle neun Tests 9/9: Energie/xN, Gesundheit, MG-/Granatenmunition, Regeneration, Feuerrate/Burst, keine falschen Max-Meldungen, Animationen und Gameplay. Nachrichtentexte zentralisiert; Balancing/Fallbacks bleiben separat.
