@@ -530,36 +530,36 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-// B2e/1: experimental red-then-blue upper-half composite at draw time.
+// B2e/3: experimental red-then-white upper-half composite at draw time.
 // This is deliberately limited to platform bomb impacts; no damage changes.
 // Use the same animation progress to sample both source sequences.
 function ExplosionDraw(Explosion ref as TExplosion,ProtoExplosion ref as TProtoExplosion)
-    local BlueFrame as integer
-    local BlueSpriteID as integer
+    local WhiteFrame as integer
+    local WhiteSpriteID as integer
     local RedSpriteID as integer
     local CutY as integer
-    local BlueFrames as integer
+    local WhiteFrames as integer
     local RedFrames as integer
 
     if Explosion.Enabled = TRUE
         if Explosion.CompositeUpperVisual = TRUE
-            BlueFrames = ProtoExplosion.AnimExplosion[0].Length+1
+            WhiteFrames = ProtoExplosion.AnimExplosion[2].Length+1
             RedFrames = ProtoExplosion.AnimExplosion[1].Length+1
-            BlueFrame = floor(Explosion.AnimationData.Frame*BlueFrames*1.0/RedFrames)
-            if BlueFrame >= BlueFrames then BlueFrame = BlueFrames-1
-            BlueSpriteID = ProtoExplosion.AnimExplosion[0,BlueFrame].Sprite.ID
+            WhiteFrame = floor(Explosion.AnimationData.Frame*WhiteFrames*1.0/RedFrames)
+            if WhiteFrame >= WhiteFrames then WhiteFrame = WhiteFrames-1
+            WhiteSpriteID = ProtoExplosion.AnimExplosion[2,WhiteFrame].Sprite.ID
             RedSpriteID = ProtoExplosion.AnimExplosion[1,Explosion.AnimationData.Frame].Sprite.ID
             CutY = floor(Explosion.SpriteData.Position.y)
             if CutY > 0
                 if CutY > GetVirtualHeight() then CutY = GetVirtualHeight()
                 // Scissor clips the lower half at the world-space impact surface.
-                // B2e/2: red base, blue foreground; both retain the same clip.
+                // B2e/3: red base, white foreground; both retain the same clip.
                 SetSpriteScissor(RedSpriteID,0,0,GetVirtualWidth(),CutY)
                 SpriteDraw(ProtoExplosion.AnimExplosion[1,Explosion.AnimationData.Frame].Sprite,Explosion.SpriteData)
                 SetSpriteScissor(RedSpriteID,0,0,0,0)
-                SetSpriteScissor(BlueSpriteID,0,0,GetVirtualWidth(),CutY)
-                SpriteDraw(ProtoExplosion.AnimExplosion[0,BlueFrame].Sprite,Explosion.SpriteData)
-                SetSpriteScissor(BlueSpriteID,0,0,0,0)
+                SetSpriteScissor(WhiteSpriteID,0,0,GetVirtualWidth(),CutY)
+                SpriteDraw(ProtoExplosion.AnimExplosion[2,WhiteFrame].Sprite,Explosion.SpriteData)
+                SetSpriteScissor(WhiteSpriteID,0,0,0,0)
             endif
         else
             SpriteDraw(ProtoExplosion.AnimExplosion[Explosion.ExplosionType,Explosion.AnimationData.Frame].Sprite,Explosion.SpriteData)

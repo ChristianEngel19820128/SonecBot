@@ -95,7 +95,7 @@ Verbindlicher Planungsrahmen und Details: [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROA
 
 ## Genau ein nächster Schritt
 
-**Bomber B2e/2 – Rot-Blau-Reihenfolge lokal prüfen.** Entwickler-Test B2e/1: **5/6**, AGK-Compile, interessante Optik, Clipping samt Kamerabewegung und Schadensabschirmung bestanden. Screenshot: rote Ebene überdeckt die blaue fast vollständig. Für B2e/2 ausschließlich Reihenfolge geändert: **Rot zuerst, Blau darüber**; gleiche Animation, Scissor-Begrenzung und Schadenslogik. Lokaler Test offen: beide Farben sichtbar, Clipping und Regressionen. Vorab-Rendern in neue Texturen bleibt eine spätere Option, nicht implementiert. Direkter kinetischer Schaden, Bombenabschuss und Bomberzerstörung offen; Drohnen-Jetstream nach Bomberabschluss; `main` unberührt.
+**Bomber B2e/3 – Rot-Weiß-Kombination lokal testen.** B2e/1 vom Entwickler 5/6 (Blau von Rot verdeckt); B2e/2 Screenshot zeigt Blau sichtbar, aber die kleinen Partikel bleiben kaum erkennbar. Experiment B2e/3 tauscht ausschließlich die blaue Vordergrund-Animation gegen die vorhandene **weiße** aus: Rot zuerst, Weiß darüber, Frames nach Fortschritt zugeordnet. Scissor-Begrenzung an Plattformoberkante, Bombenphysik und bestätigte Schadensabschirmung unverändert. Lokaler AGK-Test offen: Compile, Sichtbarkeit, Optik, Clipping und Regressionen. Vorab-Rendering in neue Texturen noch nicht implementiert. Direkter kinetischer Schaden, Bombenabschuss und Bomberzerstörung offen; Drohnen-Jetstream nach Bomberabschluss; `main` unberührt.
 
 ## Weiterführende Dokumente
 

@@ -6,7 +6,7 @@ Hier stehen nur unmittelbar nächste, gemeinsam zu bearbeitende Schritte. Höchs
 
 ## Jetzt
 
-- [ ] **Bomber B2e/2 – Rot zuerst, Blau darüber lokal testen.** B2e/1 **5/6**: blaue Ebene im Screenshot praktisch verdeckt, sonst AGK-Compile, Optik, Clipping, Kamera und Abschirmung bestanden. Nur Zeichenreihenfolge geändert; beide Farben, Clipping und Regressionen erneut prüfen. Details in [HANDOFF.md](HANDOFF.md).
+- [ ] **Bomber B2e/3 – Rot mit weißer Vordergrundexplosion lokal testen.** Nach B2e/2-Screenshot ist Blau zwar sichtbar, aber Partikel bleiben schwach. Nur Vordergrund-Animation auf Weiß gewechselt; Rot, Clipping und Schadensabschirmung unverändert. AGK-Compile, Sichtbarkeit, Optik und Regressionen prüfen. Details in [HANDOFF.md](HANDOFF.md).
 
 **Drohne D1–D6 abgeschlossen:** D6-Funktionstest 8/8 lokal bestanden. Jetstream-Feinschliff (30 ms, Skalierung 0,65, Auslässe −10/0/+10 px, Y+13 px) zuletzt per Screenshot optisch bestätigt; kein erneuter vollständiger Funktionstest nach der letzten Höhenkorrektur. Chat B ersetzt später den provisorischen Spawn-Timer. Testdetails stehen in [HANDOFF.md](HANDOFF.md).
 
