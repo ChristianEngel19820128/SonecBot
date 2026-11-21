@@ -108,6 +108,7 @@ UseNewDefaultFonts(1)
 #include "simplemine.agc"
 #include "warning.agc"
 #include "drone.agc"
+#include "bomber.agc"
 #include "explosion.agc"
 #include "world.agc"
 #include "gui.agc"

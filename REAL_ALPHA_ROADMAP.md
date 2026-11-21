@@ -55,11 +55,12 @@ Der Draft-Test vom 18.11. belegt keine Auslieferung späterer Alpha-Änderungen.
 
 ### Bomber
 
-- Schneller Höhengegner ohne vorgesehene Tiefflüge; genauer Bezug zum obersten Drittel/Viertel der Welt bleibt technische Detailentscheidung.
-- Gezielte, bewusst ungenaue **Bombensalven mit Flächenschaden**; einzelner Auftritt statt Bombergruppen.
-- Charakteristischer Ankündigungssound laut Entwickler aus Legacy vorhanden. Keine eigene Animation nötig; Sonecs Jetstream kann gegebenenfalls wiederverwendet werden.
-- Abschießbar, aber schwer erreichbar; Vernichtung ist keine Voraussetzung zum Weiterkommen. Deckung unter Plattformen, Ausweichen und Fliehen sind vorgesehene Antworten.
-- Bomben-/Plattform-/Explosionsinteraktion gezielt entwerfen und testen; wirksame Deckung ist damit noch nicht als implementiert belegt.
+- **B1 im Code, lokaler AGK-Test offen:** Der 176×64-px-Spacejet fliegt einmalig von rechts nach links, mit Vorwarnung und eigenem Jetstream-Takt. Testgeschwindigkeit 0,30 px/ms; zunächst keine Waffen oder Kollisionen.
+- **Flughöhe:** zwischen 1/5 und 2/5 der gesamten Welt-Y-Höhe, nicht relativ zur Kameraposition. Der einmalige B1-Testanflug wartet auf einen sichtbaren Teil dieses Höhenbands.
+- **Bombenteppich:** fünf zeitversetzt abgeworfene Bomben. Sie übernehmen beim Abwurf die horizontale Geschwindigkeit des Bombers und werden danach durch Luftwiderstand gebremst.
+- **Kampfmodell für spätere Schritte:** Bomben sind durch Sonec zerstörbar und explodieren dabei; ein direkter Bombentreffer erzeugt kinetischen Schaden **und** eine Explosion. Bomber selbst ist abschießbar, aber ein Abschuss soll selten bleiben. Kein Vernichtungszwang.
+- **Deckung:** Plattformen sollen Bomben und Explosionsschaden abschirmen. Dafür die allgemeine Explosionsphysik und eine eventuell sichtbar an Plattformen gekappte Explosionsanimation separat prüfen; noch nicht implementiert.
+- Charakteristischer Ankündigungssound laut Entwickler aus Legacy vorhanden; noch nicht in B1 eingebaut. Keine eigene Fluganimation nötig. Unterschiedliche Explosionstypen bei Aufschlag und Abschuss sind spätere Politur.
 
 ### Jumppod
 

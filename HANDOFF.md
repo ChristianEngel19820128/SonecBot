@@ -45,6 +45,12 @@ Zusätzlich in dieser Runde umgesetzt:
 - **Temporärer Spawn:** Der pausierbare 20–35-Sekunden-Timer bleibt vorerst aktiv. Der F6-Testhook wurde entfernt. Chat B soll später den Timer-Aufruf durch die zentrale Spawn-/Wellensteuerung ersetzen; `DroneSpawn` bleibt als API bestehen und lässt maximal eine aktive Drohne zu.
 - **Bewusst offen:** Endgültiges Balancing und optionaler Art-Pass; Schadenshöhen-Farbspektrum und Drohnenschild sind nur BACKLOG-Ideen. Ein gelegentliches Biep ist geplant, aber nicht als implementiert bestätigt.
 
+## Bomber B1 – erster Überflug (AGK-Test offen)
+
+- **Quellstand auf `develop`:** `source/sonec/media/gfx/enemies/spacejet.png` (176×64 px); einzelner `TBomber`, noch keine Bomben/Schadenslogik.
+- **Vorläufiger Sichttest:** Einmal pro Spielstart, frühestens nach 4 s und sobald der 20–40-%-Welt-Y-Korridor in der Kamera sichtbar ist. Dann 2,2 s `SPACEJET INCOMING!`, Eintritt von rechts, Flug nach links mit 0,30 px/ms und eigenem Jetfire-Takt; nach Austritt kein erneuter Testspawn. Die Zeitwerte sind noch nicht abgenommen.
+- **Spätere Bombenentscheidung:** Fünf zeitversetzte Bomben mit Bomber-Anfangsgeschwindigkeit und Luftwiderstand. Direkttreffer: kinetischer Schaden **plus** Explosion; abgeschossene Bomben explodieren ebenfalls. Echte Plattformdeckung und gegebenenfalls sichtbar beschnittene Explosionsanimation erfordern eine gesonderte Erweiterung der allgemeinen Explosionsphysik. Bomber selbst soll abschießbar, sein Abschuss aber selten sein.
+
 ## Bestätigte Alpha-Planung
 
 Verbindlicher Planungsrahmen und Details: [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROADMAP.md). Einzelne Codeeingriffe werden weiterhin im jeweiligen Themenchat vereinbart.
@@ -83,7 +89,7 @@ Verbindlicher Planungsrahmen und Details: [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROA
 
 ## Genau ein nächster Schritt
 
-**Bomber-Konzept im nächsten Themenchat gemeinsam festlegen.** Der Entwickler möchte nach einer Pause voraussichtlich den Bomber angehen; dabei soll höchstens ein Bomber gleichzeitig aktiv sein. Noch kein Umsetzungsauftrag. Zunächst Bewegungs-/Spawn-Basis ohne Waffen und die konkrete Rolle abstimmen. Chat B übernimmt die zentrale Drohnen-Spawnsteuerung später separat. `main` bleibt unberührt.
+**B1 – Spacejet-Überflug vom Entwickler lokal in AGK/Windows testen.** Prüfen: Compile, Ankündigung vor Eintritt, richtige Flughöhe (20–40 % Welt-Y), vollständiger Rechts-links-Überflug, sichtbarer Jetstream ohne Sonec-/Drohnenregression und kein zweiter Bomber pro Spielstart. Nach Feedback Geschwindigkeit, Höhe und Jetstream abstimmen; keine Bomben in B1. `main` bleibt unberührt.
 
 ## Weiterführende Dokumente
 

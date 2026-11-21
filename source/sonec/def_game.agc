@@ -768,6 +768,22 @@ type TDrone
     SpriteData as TSpriteData
 endtype
 
+// B1: a single spacejet, with a temporary one-pass test scheduler.
+type TProtoBomber
+    Body as TProtoData
+endtype
+
+type TBomber
+    Enabled as integer
+    Phase as integer
+    NextWarningMs as integer
+    SpawnAtMs as integer
+    LastMoveMs as integer
+    NextJetMs as integer
+    Position as TPosition
+    SpriteData as TSpriteData
+endtype
+
 type TGame
 	DebugText as integer[-1]
 	
@@ -797,6 +813,7 @@ type TGame
 	ProtoMine as TProtoMine
 	ProtoSimpleMine as TProtoMine
 	ProtoDrone as TProtoDrone
+	ProtoBomber as TProtoBomber
 	ProtoExplosion as TProtoExplosion
 	
 	WalkerList as TWalkerList
@@ -805,6 +822,7 @@ type TGame
 	SimpleMineList as TMineList
 	SimpleMineNextSpawnMs as integer
 	Drone as TDrone
+	Bomber as TBomber
 	Shield as TShield
 	Inenergie as TInenergie
 	Sonec as TSonec
