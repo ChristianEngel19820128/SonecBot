@@ -105,6 +105,8 @@ function ExplosionNew(Explosion ref as TExplosion,ProtoExplosion ref as TProtoEx
 
 	Explosion.Enabled = TRUE
     Explosion.CompositeUpperVisual = FALSE
+    Explosion.ImpactPlateLeftX = 0
+    Explosion.ImpactPlateRightX = 0
     Explosion.LimitDamageBelowY = FALSE
     Explosion.DamageMaxY = 0
 	Explosion.MeasureStartMs = GetMilliseconds()
@@ -218,12 +220,14 @@ function ExplosionAdd(ExplosionList ref as TExplosionList,ProtoExplosion ref as 
 endfunction
 
 // Only bomb impacts opt into this world-space damage boundary.
-function ExplosionAddAboveY(ExplosionList ref as TExplosionList,ProtoExplosion ref as TProtoExplosion,Game ref as TGame,ExplosionType as integer,Position ref as TPosition,MaxY as float,Now as integer)
+function ExplosionAddAboveY(ExplosionList ref as TExplosionList,ProtoExplosion ref as TProtoExplosion,Game ref as TGame,ExplosionType as integer,Position ref as TPosition,MaxY as float,PlateLeftX as float,PlateRightX as float,Now as integer)
     local Explosion as TExplosion
     ExplosionNew(Explosion,ProtoExplosion,Game,ExplosionType,Position,Now)
     Explosion.LimitDamageBelowY = TRUE
     Explosion.DamageMaxY = MaxY
     Explosion.CompositeUpperVisual = TRUE
+    Explosion.ImpactPlateLeftX = PlateLeftX
+    Explosion.ImpactPlateRightX = PlateRightX
     Explosion.SpriteData.Angle = 0
     ColorSet(Explosion.SpriteData.Color,255,255,255,200)
     ExplosionInsert(ExplosionList,Explosion)
@@ -530,14 +534,18 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-// B2e/3: experimental red-then-white upper-half composite at draw time.
-// This is deliberately limited to platform bomb impacts; no damage changes.
-// Use the same animation progress to sample both source sequences.
+// B2e/4: red base, white foreground. Draw the upper blast normally,
+// and allow lower portions only beyond the impacted platform's two edges.
+// Platform edges are stored in world coordinates; convert to screen each frame.
 function ExplosionDraw(Explosion ref as TExplosion,ProtoExplosion ref as TProtoExplosion)
     local WhiteFrame as integer
     local WhiteSpriteID as integer
     local RedSpriteID as integer
     local CutY as integer
+    local LeftX as integer
+    local RightX as integer
+    local ScreenWidth as integer
+    local ScreenHeight as integer
     local WhiteFrames as integer
     local RedFrames as integer
 
@@ -549,18 +557,52 @@ function ExplosionDraw(Explosion ref as TExplosion,ProtoExplosion ref as TProtoE
             if WhiteFrame >= WhiteFrames then WhiteFrame = WhiteFrames-1
             WhiteSpriteID = ProtoExplosion.AnimExplosion[2,WhiteFrame].Sprite.ID
             RedSpriteID = ProtoExplosion.AnimExplosion[1,Explosion.AnimationData.Frame].Sprite.ID
+
+            ScreenWidth = GetVirtualWidth()
+            ScreenHeight = GetVirtualHeight()
             CutY = floor(Explosion.SpriteData.Position.y)
+            LeftX = floor(Explosion.ImpactPlateLeftX+Explosion.SpriteData.Position.x-Explosion.ObjectData.Position.x)
+            RightX = floor(Explosion.ImpactPlateRightX+Explosion.SpriteData.Position.x-Explosion.ObjectData.Position.x)
+            if CutY < 0 then CutY = 0
+            if CutY > ScreenHeight then CutY = ScreenHeight
+            if LeftX < 0 then LeftX = 0
+            if LeftX > ScreenWidth then LeftX = ScreenWidth
+            if RightX < 0 then RightX = 0
+            if RightX > ScreenWidth then RightX = ScreenWidth
+
+            // Layer 1: red. The scissors never overlap, so alpha isn't doubled.
             if CutY > 0
-                if CutY > GetVirtualHeight() then CutY = GetVirtualHeight()
-                // Scissor clips the lower half at the world-space impact surface.
-                // B2e/3: red base, white foreground; both retain the same clip.
-                SetSpriteScissor(RedSpriteID,0,0,GetVirtualWidth(),CutY)
+                SetSpriteScissor(RedSpriteID,0,0,ScreenWidth,CutY)
                 SpriteDraw(ProtoExplosion.AnimExplosion[1,Explosion.AnimationData.Frame].Sprite,Explosion.SpriteData)
-                SetSpriteScissor(RedSpriteID,0,0,0,0)
-                SetSpriteScissor(WhiteSpriteID,0,0,GetVirtualWidth(),CutY)
-                SpriteDraw(ProtoExplosion.AnimExplosion[2,WhiteFrame].Sprite,Explosion.SpriteData)
-                SetSpriteScissor(WhiteSpriteID,0,0,0,0)
             endif
+            if CutY < ScreenHeight
+                if LeftX > 0
+                    SetSpriteScissor(RedSpriteID,0,CutY,LeftX,ScreenHeight)
+                    SpriteDraw(ProtoExplosion.AnimExplosion[1,Explosion.AnimationData.Frame].Sprite,Explosion.SpriteData)
+                endif
+                if RightX < ScreenWidth
+                    SetSpriteScissor(RedSpriteID,RightX,CutY,ScreenWidth,ScreenHeight)
+                    SpriteDraw(ProtoExplosion.AnimExplosion[1,Explosion.AnimationData.Frame].Sprite,Explosion.SpriteData)
+                endif
+            endif
+            SetSpriteScissor(RedSpriteID,0,0,0,0)
+
+            // Layer 2: white, with the identical platform-shaped mask.
+            if CutY > 0
+                SetSpriteScissor(WhiteSpriteID,0,0,ScreenWidth,CutY)
+                SpriteDraw(ProtoExplosion.AnimExplosion[2,WhiteFrame].Sprite,Explosion.SpriteData)
+            endif
+            if CutY < ScreenHeight
+                if LeftX > 0
+                    SetSpriteScissor(WhiteSpriteID,0,CutY,LeftX,ScreenHeight)
+                    SpriteDraw(ProtoExplosion.AnimExplosion[2,WhiteFrame].Sprite,Explosion.SpriteData)
+                endif
+                if RightX < ScreenWidth
+                    SetSpriteScissor(WhiteSpriteID,RightX,CutY,ScreenWidth,ScreenHeight)
+                    SpriteDraw(ProtoExplosion.AnimExplosion[2,WhiteFrame].Sprite,Explosion.SpriteData)
+                endif
+            endif
+            SetSpriteScissor(WhiteSpriteID,0,0,0,0)
         else
             SpriteDraw(ProtoExplosion.AnimExplosion[Explosion.ExplosionType,Explosion.AnimationData.Frame].Sprite,Explosion.SpriteData)
         endif
