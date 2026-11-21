@@ -22,7 +22,7 @@
 #constant BOMBER_BOMB_COUNT 5
 #constant BOMBER_BOMB_INTERVAL_MS 250
 // B4: provisional bomber durability and per-weapon damage.
-#constant BOMBER_HEALTH_MAX 100
+#constant BOMBER_HEALTH_MAX 20
 #constant BOMBER_PLASMA_HIT_INTERVAL_MS 100
 #constant BOMBER_HIT_FLASH_MS 150
 #constant BOMBER_HIT_HALF_WIDTH 78
