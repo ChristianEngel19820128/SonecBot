@@ -2,7 +2,7 @@
 // Horizontal patrol inside screen/world X bounds, fixed world-space flight height.
 // Three user-provided 46x30 colored images: left, center (turn), right.
 
-#constant DRONE_JET_INTERVAL_MS 30
+#constant DRONE_JET_INTERVAL_MS 50
 #constant DRONE_HEALTH_MAX 100
 #constant DRONE_HIT_FLASH_MS 150
 #constant DRONE_AUTO_SPAWN_MIN_MS 20000
@@ -443,7 +443,7 @@ function DroneJetfireDo(Drone ref as TDrone,JetfireList ref as TJetfireList,Prot
     local Found as integer
     if Drone.Enabled = TRUE and Now >= DroneNextJetMs and ProtoJetfire.AnimJetfire.Sprite.ID > 0
         for Outlet = 0 to 2
-            Position.x = Drone.Position.x+(Outlet-1)*14
+            Position.x = Drone.Position.x+(Outlet-1)*10
             Position.y = Drone.Position.y+16
             JetfireNew(Jetfire,ProtoJetfire,World,Position,Now)
             Found = FALSE
