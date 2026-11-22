@@ -8,7 +8,8 @@
 #constant FLARAK_TEST_LAUNCHER_PIVOT_X 40
 #constant FLARAK_TEST_LAUNCHER_PIVOT_Y 42
 #constant FLARAK_TEST_TILT_DEGREES 60
-#constant FLARAK_TEST_FRAME_MS 220
+// Slow F1 animation for visual inspection: 500 ms per base frame.
+#constant FLARAK_TEST_FRAME_MS 500
 // F2 visual launch test: straight flight, no homing, damage or collision.
 #constant FLARAK_TEST_ROCKET_INTERVAL_MS 2400
 #constant FLARAK_TEST_ROCKET_LIFETIME_MS 1500
@@ -73,6 +74,7 @@ function FlarakVisualTestDraw(Screen as TSize)
     X = Screen.Width*0.5
     Y = Screen.Height-45
     SetSpritePositionByOffset(FlarakTestBaseSprite,X,Y)
+    // Frame 5 stays visible as the base while frame 6 rotates above it.
     DrawSprite(FlarakTestBaseSprite)
 
     if Frame = 5
