@@ -501,9 +501,12 @@ function FlarakDo(F ref as TFlarak,Game ref as TGame,JetfireList ref as TJetfire
     if Game.Sonec.IsLost = TRUE then ValidRange = FALSE
     if Distance < FLARAK_MIN_DISTANCE then ValidRange = FALSE
     if Distance > FLARAK_RETRACT_DISTANCE then ValidRange = FALSE
+    // Flak cannot engage targets below its platform: retract instead of
+    // remaining deployed at the +/-80 degree firing limit.
+    if F.Variant = FLARAK_VARIANT_FLAK and Dy > 0 then ValidRange = FALSE
     // Hysteresis: a closed silo only opens in the narrower safe range.
     if F.State = FLARAK_CLOSED
-        if Game.Sonec.IsLost = FALSE and Distance >= FLARAK_REOPEN_DISTANCE and Distance <= FLARAK_DETECT_DISTANCE
+        if Game.Sonec.IsLost = FALSE and Distance >= FLARAK_REOPEN_DISTANCE and Distance <= FLARAK_DETECT_DISTANCE and (F.Variant <> FLARAK_VARIANT_FLAK or Dy <= 0)
             F.State = FLARAK_OPENING
             F.FrameStampMs = NowMs
             F.CurrentLauncherAngle = 0
