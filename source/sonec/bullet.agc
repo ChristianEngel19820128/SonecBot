@@ -174,6 +174,9 @@ global SonecTwoCircleOldOnly as integer
 global SonecTwoCircleNewOnly as integer
 // F3 only controls the visible outlines; comparison remains active.
 global SonecCollisionDebugVisible as integer
+// Debug-only: briefly highlight the two-circle outline on an enemy bullet hit.
+#constant SONEC_COLLISION_DEBUG_HIT_MS 200
+global SonecCollisionDebugHitUntil as integer
 
 function BulletSweepHitsSonecCircle(Bullet ref as TBullet,CenterX as float,CenterY as float,Radius as float)
     local Dx as float
@@ -268,6 +271,7 @@ function BulletCollide(BulletList ref as TBulletList,Sonec ref as TSonec,Shield 
                     endif
                 endif
                 if DamageHit = TRUE
+                    SonecCollisionDebugHitUntil = Now + SONEC_COLLISION_DEBUG_HIT_MS
                     // Keep the established proportional shield protection and health damage.
                     local HealthBeforeHit as integer
                     HealthBeforeHit = Sonec.Health.State
