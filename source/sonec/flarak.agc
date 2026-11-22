@@ -2,8 +2,8 @@
 // Seven 80x64 cells: 1-5 base, 6 shared rotating launcher, 7 Flak overlay.
 #constant FLARAK_VARIANT_ROCKET 0
 #constant FLARAK_VARIANT_FLAK 1
-#constant FLARAK_FLAK_RISE_PX 54
-#constant FLARAK_FLAK_FINAL_OFFSET_Y -14
+#constant FLARAK_FLAK_RISE_PX 12
+#constant FLARAK_FLAK_FINAL_OFFSET_Y -12
 #constant FLARAK_FLAK_RISE_MS 500
 #constant FLARAK_TEST_CELL_W 80
 #constant FLARAK_TEST_CELL_H 64
