@@ -360,6 +360,8 @@ function GameDo(Game ref as TGame,Now as integer)
 	FlameCollideDrone(Game.FlameList,Game.Drone)
 	
 	BulletMoveall(Game.BulletList,Game.World,Now)
+    // Flak diagnostic: see whether a freshly added bullet survives world-bound checks.
+    FlarakDebugAfterBulletMove(Game.BulletList,Now)
     BomberBombCollideBullets(Game.Bomber,Game.BulletList,Game.ExplosionList,Game.ProtoExplosion,Game,Now)
 	BulletCollide(Game.BulletList,Game.Sonec,Game.Shield,Now)
 	// K1b: one nearest-hit sweep across all player-bullet target types.
@@ -535,6 +537,8 @@ function GameDraw(Game ref as TGame)
 		SetTextString(Game.DebugText[1],"K1d checks "+Str(SonecTwoCircleChecks)+" both "+Str(SonecTwoCircleBoth)+" old-only "+Str(SonecTwoCircleOldOnly)+" new-only "+Str(SonecTwoCircleNewOnly))
 		DrawText(Game.DebugText[1])
 	endif
+	// Temporary developer HUD for Flak firing from either side.
+    FlarakDebugDrawAll(Game.World)
 
 endfunction
 
