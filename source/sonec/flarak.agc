@@ -40,6 +40,7 @@ type TFlarakTestRocket
     LastMs as integer
     Angle as float
     SpriteAngle as float
+    TipDistance as float
     NextJetMs as integer
 endtype
 
@@ -85,9 +86,11 @@ function FlarakVisualTestCreate()
         FlarakTestRocket1.Sprite = CreateSprite(Image.ID)
         SetSpriteOffset(FlarakTestRocket1.Sprite,GetSpriteWidth(FlarakTestRocket1.Sprite)*0.5,GetSpriteHeight(FlarakTestRocket1.Sprite)*0.5)
         SetSpriteColor(FlarakTestRocket1.Sprite,170,215,170,255)
+        FlarakTestRocket1.TipDistance = GetSpriteWidth(FlarakTestRocket1.Sprite)*0.5
         FlarakTestRocket2.Sprite = CreateSprite(Image.ID)
         SetSpriteOffset(FlarakTestRocket2.Sprite,GetSpriteWidth(FlarakTestRocket2.Sprite)*0.5,GetSpriteHeight(FlarakTestRocket2.Sprite)*0.5)
         SetSpriteColor(FlarakTestRocket2.Sprite,170,215,170,255)
+        FlarakTestRocket2.TipDistance = GetSpriteWidth(FlarakTestRocket2.Sprite)*0.5
     endif
     // Small warning lamp; it steps across three points on the barrel.
     FlarakTestWarningSprite = CreateSprite(0)
@@ -123,6 +126,7 @@ function FlarakRocketDo(Rocket ref as TFlarakTestRocket,Sonec ref as TSonec,Jetf
     local RocketDeltaMs as integer
     local OldX as float
     local OldY as float
+    local OldAngle as float
     local TargetAngle as float
     local AngleDiff as float
     local MaxTurn as float
@@ -141,6 +145,7 @@ function FlarakRocketDo(Rocket ref as TFlarakTestRocket,Sonec ref as TSonec,Jetf
     if RocketDeltaMs < 0 then RocketDeltaMs = 0
     if RocketDeltaMs > 50 then RocketDeltaMs = 50
     Rocket.LastMs = NowMs
+    OldAngle = Rocket.Angle
     if NowMs-Rocket.LaunchMs >= FLARAK_TEST_HOMING_DELAY_MS
         TargetAngle = ATan2(Sonec.ObjectData.Position.x-Rocket.PosX,Rocket.PosY-(Sonec.ObjectData.Position.y-World.Position.y))
         AngleDiff = TargetAngle-Rocket.Angle
@@ -161,7 +166,7 @@ function FlarakRocketDo(Rocket ref as TFlarakTestRocket,Sonec ref as TSonec,Jetf
     Rocket.PosY = Rocket.PosY-Cos(Rocket.Angle)*FLARAK_TEST_ROCKET_SPEED_PX_PER_MS*RocketDeltaMs
     Rocket.SpriteAngle = Rocket.Angle+90
     // Swept impact fuse: test the movement segment against both Sonec circles.
-    if FlarakRocketHitsSonec(Rocket,OldX,OldY,Sonec,World.Position.y) = TRUE
+    if FlarakRocketHitsSonec(Rocket,OldX,OldY,OldAngle,Sonec,World.Position.y) = TRUE
         Rocket.Active = FALSE
         exitfunction
     endif
@@ -195,7 +200,11 @@ function FlarakRocketDo(Rocket ref as TFlarakTestRocket,Sonec ref as TSonec,Jetf
 endfunction
 
 // Use Sonec's shared two-circle geometry, in screen coordinates.
-function FlarakRocketHitsSonec(Rocket ref as TFlarakTestRocket,OldX as float,OldY as float,Sonec ref as TSonec,WorldY as float)
+function FlarakRocketHitsSonec(Rocket ref as TFlarakTestRocket,OldX as float,OldY as float,OldAngle as float,Sonec ref as TSonec,WorldY as float)
+    local TipOldX as float
+    local TipOldY as float
+    local TipNewX as float
+    local TipNewY as float
     local Dx as float
     local Dy as float
     local LengthSquared as float
@@ -208,20 +217,26 @@ function FlarakRocketHitsSonec(Rocket ref as TFlarakTestRocket,OldX as float,Old
     local Radius as float
     local CircleIndex as integer
     if Sonec.IsLost = TRUE then exitfunction FALSE
-    Dx = Rocket.PosX-OldX
-    Dy = Rocket.PosY-OldY
+    // The image is centered; its nose is half a sprite width ahead along flight.
+    // Rotate both the previous and current nose points to sweep the actual fuse.
+    TipOldX = OldX+Sin(OldAngle)*Rocket.TipDistance
+    TipOldY = OldY-Cos(OldAngle)*Rocket.TipDistance
+    TipNewX = Rocket.PosX+Sin(Rocket.Angle)*Rocket.TipDistance
+    TipNewY = Rocket.PosY-Cos(Rocket.Angle)*Rocket.TipDistance
+    Dx = TipNewX-TipOldX
+    Dy = TipNewY-TipOldY
     LengthSquared = Dx*Dx+Dy*Dy
     Radius = SonecHitCircleRadius(Sonec)
     for CircleIndex = 0 to 1
         CircleY = SonecHitCircleY(Sonec,CircleIndex)-WorldY
         T = 0
         if LengthSquared > 0
-            T = ((Sonec.ObjectData.Position.x-OldX)*Dx+(CircleY-OldY)*Dy)/LengthSquared
+            T = ((Sonec.ObjectData.Position.x-TipOldX)*Dx+(CircleY-TipOldY)*Dy)/LengthSquared
             if T < 0 then T = 0
             if T > 1 then T = 1
         endif
-        ClosestX = OldX+Dx*T
-        ClosestY = OldY+Dy*T
+        ClosestX = TipOldX+Dx*T
+        ClosestY = TipOldY+Dy*T
         DistanceX = Sonec.ObjectData.Position.x-ClosestX
         DistanceY = CircleY-ClosestY
         if DistanceX*DistanceX+DistanceY*DistanceY <= Radius*Radius then exitfunction TRUE
