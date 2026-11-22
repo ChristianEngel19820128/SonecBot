@@ -13,7 +13,7 @@ function ProtoExplosionLoad(ProtoExplosion ref as TProtoExplosion)
 	local min as integer
 	local max as integer
 	
-	ProtoExplosion.AnimExplosion.length = 2
+	ProtoExplosion.AnimExplosion.length = 4
 	
 	for k = 0 to ProtoExplosion.AnimExplosion.length
 		select k
@@ -35,6 +35,18 @@ function ProtoExplosionLoad(ProtoExplosion ref as TProtoExplosion)
 				min = 3
 				max = 46
 			endcase
+			case 3
+				File.Path = "/media/gfx/explosions/RedSmall"
+				File.Name = "RedSmall00"
+				min = 1
+				max = 5
+			endcase
+			case 4
+				File.Path = "/media/gfx/explosions/shiphit"
+				File.Name = "shiphit00"
+				min = 5
+				max = 44
+			endcase
 		endselect
 		
 		for i = min to max
@@ -42,10 +54,10 @@ function ProtoExplosionLoad(ProtoExplosion ref as TProtoExplosion)
 			Anim.Image.File.Path = File.Path
 			
 			if i < 10
-				ten = "0"
-			else
-				ten = ""
-			endif
+                ten = "0"
+            else
+                ten = ""
+            endif
 			
 			Anim.Image.File.Name = File.Name + ten + str(i) + ".png"
 			
@@ -148,6 +160,7 @@ function ExplosionNew(Explosion ref as TExplosion,ProtoExplosion ref as TProtoEx
 	Explosion.SpriteData.Angle  = random(0,360)
 	Explosion.SpriteData.Center = TRUE
 	Explosion.SpriteData.Scale  = 1.0
+    // Types 3/4 are visual-only effects; collision handlers ignore them.
 	
 	// The blast starts at zero and reaches the design radius halfway through the animation.
 	Explosion.ObjectData.Radius = 0
@@ -307,7 +320,7 @@ function ExplosionCollideSonec(ExplosionList ref as TExplosionList,Sonec ref as 
     local Hit as integer
 
     for i = 0 to ExplosionList.Explosion.Length
-        if ExplosionList.Explosion[i].Enabled = TRUE
+        if ExplosionList.Explosion[i].Enabled = TRUE and ExplosionList.Explosion[i].ExplosionType < 3
             ExplosionList.Explosion[i].MeasureChecks = ExplosionList.Explosion[i].MeasureChecks + 1
             // S4: explosion radius reaches either shared Sonec body circle.
             // Keep the existing strict radius test (no extra Sonec-radius padding).
@@ -499,7 +512,7 @@ function ExplosionCollideDrone(ExplosionList ref as TExplosionList,Drone ref as 
     local i as integer
     local NearestPoint as TPosition
     for i = 0 to ExplosionList.Explosion.Length
-        if Drone.Enabled = TRUE and ExplosionList.Explosion[i].Enabled = TRUE
+        if Drone.Enabled = TRUE and ExplosionList.Explosion[i].Enabled = TRUE and ExplosionList.Explosion[i].ExplosionType < 3
             NearestPoint = ExplosionList.Explosion[i].ObjectData.Position
             if NearestPoint.x < Drone.Position.x-23 then NearestPoint.x = Drone.Position.x-23
             if NearestPoint.x > Drone.Position.x+23 then NearestPoint.x = Drone.Position.x+23
