@@ -22,6 +22,7 @@ Ein Dokumenteintrag oder eine Idee ist für sich noch kein Implementierungsauftr
 - Bewegung, Energie, Waffen, Schild, Kollisionen, Gegner, Animation, Eingabe und Sound vor unbeabsichtigten Nebenwirkungen schützen.
 - Unfertige, deaktivierte oder experimentelle Funktionen können beabsichtigt sein; unbekanntes Sollverhalten klären.
 - Keine beiläufigen Refaktorierungen, Grafikänderungen oder Balancekorrekturen. Technisch eleganter bedeutet nicht automatisch spielerisch besser.
+- Neue gegnerische Schadensquellen gegen Sonec müssen die zentralen Zwei-Kreis-Hitbox-Funktionen aus `sonec.agc` wiederverwenden; keine neue lokale Sonec-Ein-Kreis-Hitbox anlegen. Details, abweichende Quellradien und Explosions-Plattformschutz stehen in `TECHNICAL.md` unter „Sonec-Treffergeometrie“.
 - `main`, `source/legacy/`, Lizenz, Git-Historie, Releases und Veröffentlichung nur mit einem eigenen ausdrücklichen Auftrag verändern.
 - `.gitignore` beachten; keine kompilierten Programme, temporären Builds oder Testartefakte einchecken.
 - Commit-Nachrichten beschreiben die tatsächliche Änderung. Kein automatischer Wechsel auf ein anderes Repository.
