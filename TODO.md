@@ -4,10 +4,6 @@
 
 ## Jetzt
 
-- [ ] **Drohnenverhalten – Feinschliff lokal testen:** Voriger Scan-vor-Laser-Schritt vom Entwickler 8/8 bestanden. Neue Erfassungschance linear 50 % bei 0 px bis 0 % ab 500 px (nur in Flugrichtung); Schussfreigabe bis 120 px Y-Abstand. Voriger Test: Scanentfernung 5/8 bestätigt, Schuss zu selten; Korrektur: nach erfolgreichem Scan Aufladen direkt nach 1,2 s Pause, Zufallswende nur bei Fehlscan. AGK-Compile, Schussfrequenz, Y-Abbruch und Regression prüfen.
-
-
-- [x] **S5 Drohnenlaser – lokal bestanden (7/7):** `DroneLaserDetectHit` nutzt `SonecHitCircleRadius` und beide `SonecHitCircleY`-Mittelpunkte; Sweep, 30-px-Laserlänge, Schaden, Schild und Einmal-Treffer bleiben unverändert. Entwicklercheck: AGK-Compile/Start, Stehen, Ducken, knappe Fehlschüsse, ein Treffer pro Laser, Schild/Health, Laserflug/Animation.
 
 
 - [x] **S1 und S1b lokal bestanden.** S1 vom Entwickler lokal bestanden: ursprüngliche sechs Prüfungen plus korrigierte rote Trefferanzeige; gezielter Debug-Nachtest 4/4 bestanden. Umgesetzt: Nur tatsächlich vom Gegnergeschoss getroffene Kreise rot markieren, beide nur bei Treffer beider Kreise; je Kreis 200 ms; rein visuell, keine Änderung der Schadenslogik. Nächster separater Schritt: direkte Bomberbomben-Treffer auf zentrale Zwei-Kreis-Fläche umstellen, nach Abstimmung. Weitere Angriffe (Bomberbombe, Mine, Explosion) erst nach Abnahme einzeln umstellen; Walker, Spielerwaffen, Pickups ausgeschlossen.
