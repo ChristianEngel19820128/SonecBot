@@ -19,7 +19,7 @@
 #constant DRONE_SCAN_MIN_DURATION_MS 500
 #constant DRONE_SCAN_MAX_DURATION_MS 1000
 #constant DRONE_SCAN_NEAR_X 220
-#constant DRONE_SCAN_MAX_DISTANCE_X 500
+#constant DRONE_SCAN_PEAK_DISTANCE_X 100
 #constant DRONE_SCAN_MAX_SUCCESS_PERCENT 50
 // Temporary diagnostic: force acquisition only for a valid target ahead and within range.
 #constant DRONE_DEBUG_FORCE_ACQUIRE 0
@@ -270,6 +270,8 @@ function DroneMove(Drone ref as TDrone,Screen as TSize,Sonec ref as TSonec,Shiel
     local ScanChance as float
     local ScanRoll as integer
     local ScanAhead as integer
+    local ScanCurve as float
+    local ScanT as float
 
     if Drone.Enabled = TRUE
         if DroneMotionLastMode <> DroneMotionUseGate
@@ -341,8 +343,8 @@ function DroneMove(Drone ref as TDrone,Screen as TSize,Sonec ref as TSonec,Shiel
                 DroneScanActive = FALSE
                 DroneActionRestUntilMs = Now+DRONE_ACTION_REST_MS
                 DroneNextScanMs = Now + random(DRONE_SCAN_MIN_INTERVAL_MS,DRONE_SCAN_MAX_INTERVAL_MS)
-                // A completed scan can acquire a target ahead with a linearly
-                // decreasing chance: 50% nearby, 0% at 500px or farther.
+                // Scan peaks at 100px ahead; beyond that, a smooth curve falls
+                // to zero at the screen width. At 0px it starts at 70% of peak.
                 TargetDx = Sonec.ObjectData.Position.x-Drone.Position.x
                 DroneTargetAcquired = FALSE
                 ScanChance = 0
@@ -350,12 +352,18 @@ function DroneMove(Drone ref as TDrone,Screen as TSize,Sonec ref as TSonec,Shiel
                 ScanAhead = FALSE
                 if (Drone.Direction = MOVELEFT and TargetDx < 0) or (Drone.Direction = MOVERIGHT and TargetDx > 0) then ScanAhead = TRUE
                 if Sonec.IsLost = FALSE and ScanAhead = TRUE
-                    if abs(TargetDx) < DRONE_SCAN_MAX_DISTANCE_X
-                        ScanChance = DRONE_SCAN_MAX_SUCCESS_PERCENT*(DRONE_SCAN_MAX_DISTANCE_X-abs(TargetDx))/DRONE_SCAN_MAX_DISTANCE_X
-                        // Active energy suction increases scan probability by up to 25 percentage points.
-                        // Bonus tapers with distance, preserving zero detection at maximum range.
+                    if abs(TargetDx) < Screen.Width and Screen.Width > DRONE_SCAN_PEAK_DISTANCE_X
+                        if abs(TargetDx) < DRONE_SCAN_PEAK_DISTANCE_X
+                            ScanT = abs(TargetDx)/DRONE_SCAN_PEAK_DISTANCE_X
+                            ScanCurve = 0.7+0.3*(ScanT*ScanT*(3-2*ScanT))
+                        else
+                            ScanT = (abs(TargetDx)-DRONE_SCAN_PEAK_DISTANCE_X)/(Screen.Width-DRONE_SCAN_PEAK_DISTANCE_X)
+                            ScanCurve = 1-ScanT*ScanT*(3-2*ScanT)
+                        endif
+                        ScanChance = DRONE_SCAN_MAX_SUCCESS_PERCENT*ScanCurve
+                        // Suction follows the same curve: maximum 75% at 100px.
                         if Inenergie.Enabled = TRUE
-                            ScanChance = ScanChance+25*(DRONE_SCAN_MAX_DISTANCE_X-abs(TargetDx))/DRONE_SCAN_MAX_DISTANCE_X
+                            ScanChance = ScanChance+25*ScanCurve
                         endif
                         // Diagnostic: use a 10000-step roll without changing the intended probability.
                         ScanRoll = random(1,10000)
