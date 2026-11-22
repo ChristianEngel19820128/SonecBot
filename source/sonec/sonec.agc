@@ -1,3 +1,31 @@
+// Shared Sonec damage hitbox: two body circles, including the ducking pose.
+// Keep these values aligned with the locally tested K1d enemy-bullet geometry.
+#constant SONEC_DUCK_SECOND_CIRCLE_Y 10
+
+function SonecHitCircleRadius(Sonec ref as TSonec)
+    local Radius as float
+    Radius = Sonec.ObjectData.Size.Width*0.30
+    if Sonec.State.Stand = TRUE and Sonec.State.Duck = TRUE
+        Radius = Sonec.ObjectData.Size.Width*0.32
+    endif
+endfunction Radius
+
+function SonecHitCircleY(Sonec ref as TSonec,Index as integer)
+    local CenterY as float
+    local OffsetY as float
+    CenterY = Sonec.ObjectData.Position.y
+    if Sonec.State.Stand = TRUE and Sonec.State.Duck = TRUE
+        if Index = 1 then CenterY = CenterY+SONEC_DUCK_SECOND_CIRCLE_Y
+    else
+        OffsetY = Sonec.ObjectData.Size.Height*0.18
+        if Index = 0
+            CenterY = CenterY-OffsetY
+        else
+            CenterY = CenterY+OffsetY
+        endif
+    endif
+endfunction CenterY
+
 
 //----------------------------------------------------------------------
 // 
