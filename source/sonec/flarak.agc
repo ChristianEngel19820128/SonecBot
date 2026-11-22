@@ -45,8 +45,9 @@
 #constant FLARAK_TEST_HOMING_TURN_DEG_PER_MS 0.06
 #constant FLARAK_TEST_ROCKET_SPEED_PX_PER_MS 0.32
 #constant FLARAK_TEST_MUZZLE_DISTANCE 22
-// Each rocket is 5 px thick in its source image; 12 px center spacing
-// keeps the two parallel lanes visibly separated at all firing angles.
+// Keep the rocket attached while its rear half is still passing the muzzle.
+#constant FLARAK_TEST_ROCKET_CLEAR_DISTANCE 14
+// Perpendicular offset per rocket (8 px between their center lines).
 #constant FLARAK_TEST_ROCKET_LANE_OFFSET 3
 #constant FLARAK_TEST_SECOND_ROCKET_DELAY_MS 120
 #constant FLARAK_TEST_JET_INTERVAL_MS 20
@@ -72,6 +73,10 @@ type TFlarakTestRocket
     SpriteAngle as float
     TipDistance as float
     NextJetMs as integer
+    Attached as integer
+    LauncherX as float
+    LauncherY as float
+    ClearDistance as float
 endtype
 
 type TFlarak
@@ -299,7 +304,21 @@ function FlarakRocketLaunch(Rocket ref as TFlarakTestRocket,X as float,Y as floa
     Rocket.LastMs = NowMs
     Rocket.NextJetMs = NowMs
     Rocket.LaunchMs = NowMs
+    Rocket.Attached = TRUE
+    Rocket.LauncherX = X
+    Rocket.LauncherY = Y
+    Rocket.ClearDistance = 0
     Rocket.Active = TRUE
+endfunction
+
+// Follow platform translation only while the rocket still clears the muzzle.
+// The launch angle stays locked; once detached, position is world-independent.
+function FlarakRocketFollowLauncher(Rocket ref as TFlarakTestRocket,X as float,Y as float)
+    if Rocket.Active = FALSE or Rocket.Attached = FALSE then exitfunction
+    Rocket.PosX = Rocket.PosX+X-Rocket.LauncherX
+    Rocket.PosY = Rocket.PosY+Y-Rocket.LauncherY
+    Rocket.LauncherX = X
+    Rocket.LauncherY = Y
 endfunction
 
 function FlarakRocketDo(Rocket ref as TFlarakTestRocket,Game ref as TGame,JetfireList ref as TJetfireList,ProtoJetfire ref as TProtoJetfire,World ref as TWorld,NowMs as integer)
@@ -348,6 +367,10 @@ function FlarakRocketDo(Rocket ref as TFlarakTestRocket,Game ref as TGame,Jetfir
     OldY = Rocket.PosY
     Rocket.PosX = Rocket.PosX+Sin(Rocket.Angle)*FLARAK_TEST_ROCKET_SPEED_PX_PER_MS*RocketDeltaMs
     Rocket.PosY = Rocket.PosY-Cos(Rocket.Angle)*FLARAK_TEST_ROCKET_SPEED_PX_PER_MS*RocketDeltaMs
+    if Rocket.Attached = TRUE
+        Rocket.ClearDistance = Rocket.ClearDistance+FLARAK_TEST_ROCKET_SPEED_PX_PER_MS*RocketDeltaMs
+        if Rocket.ClearDistance >= FLARAK_TEST_ROCKET_CLEAR_DISTANCE then Rocket.Attached = FALSE
+    endif
     Rocket.SpriteAngle = Rocket.Angle+90
     // Remove rockets at world bounds, independently of the six-second fuse.
     if Rocket.PosX < 0 or Rocket.PosX > World.Size.Width or Rocket.PosY < 0 or Rocket.PosY > World.Size.Height
@@ -620,6 +643,9 @@ function FlarakDo(F ref as TFlarak,Game ref as TGame,JetfireList ref as TJetfire
             F.State = FLARAK_CLOSED
         endif
     endif
+    // Rockets inherit platform translation only until their tail clears the muzzle.
+    FlarakRocketFollowLauncher(F.Rocket1,F.WorldX,F.WorldY)
+    FlarakRocketFollowLauncher(F.Rocket2,F.WorldX,F.WorldY)
     // Missiles keep moving regardless of the silo state.
     FlarakRocketDo(F.Rocket1,Game,JetfireList,ProtoJetfire,World,NowMs)
     FlarakRocketDo(F.Rocket2,Game,JetfireList,ProtoJetfire,World,NowMs)
@@ -705,6 +731,9 @@ function FlarakDoAll(Game ref as TGame,JetfireList ref as TJetfireList,ProtoJetf
         endif
         // Fired rockets continue even after their platform disappears.
         if FlarakList[i].Enabled = FALSE
+            // A removed platform cannot anchor an in-barrel rocket.
+            FlarakList[i].Rocket1.Attached = FALSE
+            FlarakList[i].Rocket2.Attached = FALSE
             FlarakRocketDo(FlarakList[i].Rocket1,Game,JetfireList,ProtoJetfire,World,NowMs)
             FlarakRocketDo(FlarakList[i].Rocket2,Game,JetfireList,ProtoJetfire,World,NowMs)
         endif
