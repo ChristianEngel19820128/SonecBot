@@ -21,8 +21,8 @@
 #constant FLARAK_TEST_LAUNCHER_PIVOT_X 40
 #constant FLARAK_TEST_LAUNCHER_PIVOT_Y 42
 // Adjustable silo behavior (degrees are launcher sprite angles).
-#constant FLARAK_DETECT_DISTANCE 550
-#constant FLARAK_RETRACT_DISTANCE 650
+#constant FLARAK_DETECT_DISTANCE 650
+#constant FLARAK_RETRACT_DISTANCE 750
 #constant FLARAK_MIN_DISTANCE 95
 #constant FLARAK_REOPEN_DISTANCE 120
 #constant FLARAK_RIGHT_MIN_ANGLE -60
