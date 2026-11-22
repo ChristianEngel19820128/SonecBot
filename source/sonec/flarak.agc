@@ -17,7 +17,8 @@
 #constant FLARAK_TEST_HOMING_TURN_DEG_PER_MS 0.06
 #constant FLARAK_TEST_ROCKET_SPEED_PX_PER_MS 0.32
 #constant FLARAK_TEST_MUZZLE_DISTANCE 22
-#constant FLARAK_TEST_JET_INTERVAL_MS 25
+#constant FLARAK_TEST_JET_INTERVAL_MS 20
+#constant FLARAK_TEST_JET_SIDE_SPACING 3
 #constant FLARAK_TEST_JET_SCALE 0.35
 #constant FLARAK_TEST_JET_TAIL_DISTANCE 8
 #constant FLARAK_TEST_AIM_HOLD_MS 1000
@@ -102,6 +103,8 @@ function FlarakVisualTestDraw(Screen as TSize,SonecX as float,SonecY as float,Je
     local Jetfire as TJetfire
     local JetIndex as integer
     local JetFound as integer
+    local JetOutlet as integer
+    local JetSideOffset as float
     if FlarakTestBaseSprite = 0 or FlarakTestLauncherSprite = 0 then exitfunction
 
     NowMs = GetMilliseconds()
@@ -181,30 +184,33 @@ function FlarakVisualTestDraw(Screen as TSize,SonecX as float,SonecY as float,Je
                 FlarakTestRocketPosY = FlarakTestRocketPosY-Cos(FlarakTestRocketAngle)*FLARAK_TEST_ROCKET_SPEED_PX_PER_MS*RocketDeltaMs
                 // The rocket art is 90 degrees offset from the travel vector.
                 FlarakTestRocketSpriteAngle = FlarakTestRocketAngle+90
-                // Emit a small existing jetfire particle behind the rocket.
-                // Convert the screen-space test position back to world space.
+                // Three parallel exhaust outlets behind the rocket.
+                // Rotate the sideways offsets with the current flight angle.
                 if NowMs >= FlarakTestNextJetMs and ProtoJetfire.AnimJetfire.Sprite.ID > 0
-                    JetPosition.x = FlarakTestRocketPosX-Sin(FlarakTestRocketAngle)*FLARAK_TEST_JET_TAIL_DISTANCE
-                    JetPosition.y = FlarakTestRocketPosY+Cos(FlarakTestRocketAngle)*FLARAK_TEST_JET_TAIL_DISTANCE+World.Position.y
-                    JetfireNew(Jetfire,ProtoJetfire,World,JetPosition,NowMs)
-                    Jetfire.SpriteData.Angle = FlarakTestRocketAngle
-                    Jetfire.SpriteData.Scale = FLARAK_TEST_JET_SCALE
-                    JetFound = FALSE
-                    JetIndex = JetfireList.FirstFree
-                    while JetFound = FALSE and JetIndex <= JetfireList.Jetfire.Length
-                        if JetfireList.Jetfire[JetIndex].Enabled = FALSE
-                            JetFound = TRUE
+                    for JetOutlet = -1 to 1
+                        JetSideOffset = JetOutlet*FLARAK_TEST_JET_SIDE_SPACING
+                        JetPosition.x = FlarakTestRocketPosX-Sin(FlarakTestRocketAngle)*FLARAK_TEST_JET_TAIL_DISTANCE+Cos(FlarakTestRocketAngle)*JetSideOffset
+                        JetPosition.y = FlarakTestRocketPosY+Cos(FlarakTestRocketAngle)*FLARAK_TEST_JET_TAIL_DISTANCE+Sin(FlarakTestRocketAngle)*JetSideOffset+World.Position.y
+                        JetfireNew(Jetfire,ProtoJetfire,World,JetPosition,NowMs)
+                        Jetfire.SpriteData.Angle = FlarakTestRocketAngle
+                        Jetfire.SpriteData.Scale = FLARAK_TEST_JET_SCALE
+                        JetFound = FALSE
+                        JetIndex = JetfireList.FirstFree
+                        while JetFound = FALSE and JetIndex <= JetfireList.Jetfire.Length
+                            if JetfireList.Jetfire[JetIndex].Enabled = FALSE
+                                JetFound = TRUE
+                            else
+                                JetIndex = JetIndex+1
+                            endif
+                        endwhile
+                        if JetFound = FALSE
+                            JetfireList.Jetfire.Insert(Jetfire)
+                            JetfireList.FirstFree = JetfireList.Jetfire.Length
                         else
-                            JetIndex = JetIndex+1
+                            JetfireList.Jetfire[JetIndex] = Jetfire
+                            JetfireList.FirstFree = JetIndex+1
                         endif
-                    endwhile
-                    if JetFound = FALSE
-                        JetfireList.Jetfire.Insert(Jetfire)
-                        JetfireList.FirstFree = JetfireList.Jetfire.Length
-                    else
-                        JetfireList.Jetfire[JetIndex] = Jetfire
-                        JetfireList.FirstFree = JetIndex+1
-                    endif
+                    next JetOutlet
                     FlarakTestNextJetMs = NowMs+FLARAK_TEST_JET_INTERVAL_MS
                 endif
                 SetSpriteAngle(FlarakTestRocketSprite,FlarakTestRocketSpriteAngle)
