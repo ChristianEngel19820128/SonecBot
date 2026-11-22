@@ -127,6 +127,12 @@ function FlarakSpawn(PlateList ref as TPlateList,PlateIndex as integer,NowMs as 
     F.CurrentFrame = 1
     for i = 0 to FlarakList.Length
         if FlarakList[i].Enabled = FALSE and FlarakList[i].Rocket1.Active = FALSE and FlarakList[i].Rocket2.Active = FALSE
+            // Recycle the old instance's five sprites before replacing the slot.
+            if FlarakList[i].BaseSprite > 0 then DeleteSprite(FlarakList[i].BaseSprite)
+            if FlarakList[i].LauncherSprite > 0 then DeleteSprite(FlarakList[i].LauncherSprite)
+            if FlarakList[i].Rocket1.Sprite > 0 then DeleteSprite(FlarakList[i].Rocket1.Sprite)
+            if FlarakList[i].Rocket2.Sprite > 0 then DeleteSprite(FlarakList[i].Rocket2.Sprite)
+            if FlarakList[i].WarningSprite > 0 then DeleteSprite(FlarakList[i].WarningSprite)
             FlarakList[i] = F
             exitfunction
         endif
