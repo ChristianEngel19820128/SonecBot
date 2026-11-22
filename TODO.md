@@ -22,3 +22,5 @@
 
 - Erledigtes nach dokumentierter Abnahme entfernen. Weitere Releasearbeit in Roadmap, unverbindliche Ideen in BACKLOG.
 - Wiedereinstieg: [HANDOFF.md](HANDOFF.md).
+
+- [ ] **S2 direkte Bomberbomben-Kollision – lokaler AGK-Test offen:** `BomberBombCollideSonec` verwendet nun die gemeinsame Sonec-Zwei-Kreis-Geometrie mit dem bisherigen Bombenradius und Swept-Segment; Schild/Schaden/Explosion bleiben im bisherigen Ablauf. Explosionstreffer/Plattformschutz nicht geändert. Prüfen: Stehen, Ducken, Randtreffer/Fehlschüsse, Schild/Health, Bombenexplosion und Plattformschutz.
