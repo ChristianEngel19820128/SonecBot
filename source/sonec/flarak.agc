@@ -3,10 +3,10 @@
 #constant FLARAK_TEST_CELL_W 80
 #constant FLARAK_TEST_CELL_H 64
 #constant FLARAK_TEST_BASE_OFFSET_X 40
-#constant FLARAK_TEST_BASE_OFFSET_Y 52
+#constant FLARAK_TEST_BASE_OFFSET_Y 42
 // Approximate red-dot joint in the launcher cell; refine after visual test.
-#constant FLARAK_TEST_LAUNCHER_PIVOT_X 46
-#constant FLARAK_TEST_LAUNCHER_PIVOT_Y 38
+#constant FLARAK_TEST_LAUNCHER_PIVOT_X 40
+#constant FLARAK_TEST_LAUNCHER_PIVOT_Y 42
 #constant FLARAK_TEST_TILT_DEGREES 60
 #constant FLARAK_TEST_FRAME_MS 220
 
