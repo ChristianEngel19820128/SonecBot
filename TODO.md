@@ -26,3 +26,5 @@
 - [x] **S2 direkte Bomberbomben-Kollision – lokal bestanden (7/7):** `BomberBombCollideSonec` verwendet nun die gemeinsame Sonec-Zwei-Kreis-Geometrie mit dem bisherigen Bombenradius und Swept-Segment; Schild/Schaden/Explosion bleiben im bisherigen Ablauf. Explosionstreffer/Plattformschutz nicht geändert. Prüfen: Stehen, Ducken, Randtreffer/Fehlschüsse, Schild/Health, Bombenexplosion und Plattformschutz.
 
 - [ ] **Später: zentrale Debug-Treffermarkierung für alle gegnerischen Schadensquellen.** Aktuell färben nur Gegnergeschosse die getroffenen Sonec-Kreise rot; Bomberbomben-Kollision ist trotzdem korrekt. Erweiterung getrennt von Schadenslogik planen, auch für Minen/Explosionen.
+
+- [ ] **S3 Minenkontakt – lokaler AGK-Test offen:** `MineCollideSonec` prüft bei intelligenten und einfachen Minen beide zentralen Sonec-Kreise mit unverändertem Minenradius. Bestehende Zerstörung, Reward und Explosion bleiben erhalten; keine Änderung an Minenbewegung oder Explosionsschaden. Test: Stehen, Ducken, Randtreffer/Fehlschüsse, je genau eine Zerstörung/Explosion, Schaden/Schild über Explosion.
