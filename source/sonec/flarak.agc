@@ -14,8 +14,8 @@
 #constant FLARAK_REOPEN_DISTANCE 120
 #constant FLARAK_RIGHT_MIN_ANGLE -60
 #constant FLARAK_RIGHT_MAX_ANGLE 0
-#constant FLARAK_LEFT_MIN_ANGLE -180
-#constant FLARAK_LEFT_MAX_ANGLE -120
+#constant FLARAK_LEFT_MIN_ANGLE 0
+#constant FLARAK_LEFT_MAX_ANGLE 60
 #constant FLARAK_TURN_DEG_PER_MS 0.18
 #constant FLARAK_AIM_TOLERANCE_DEG 9
 #constant FLARAK_TEST_FRAME_MS 140
@@ -391,11 +391,13 @@ function FlarakDo(F ref as TFlarak,Game ref as TGame,JetfireList ref as TJetfire
         if F.AimSide <> 0 and TargetSide <> F.AimSide and F.AimLocked = FALSE and F.SecondPending = FALSE
             F.State = FLARAK_SWITCHING
         endif
-        // The sprite's barrel points right at 0 degrees. Both permitted sectors
-        // are negative so transitions via 0 degrees sweep UP, never into the floor.
+        // Mirror the launcher visually on the left: both sides lift from 0
+        // without the former 180-degree rotation.
         DesiredAngle = ATan2(Dx,-Dy)-FLARAK_TEST_BARREL_ANGLE_OFFSET
         if TargetSide < 0
+            // Convert the old left-side negative angle into a small mirrored lift.
             if DesiredAngle > 0 then DesiredAngle = DesiredAngle-360
+            DesiredAngle = DesiredAngle+180
             if DesiredAngle < FLARAK_LEFT_MIN_ANGLE then DesiredAngle = FLARAK_LEFT_MIN_ANGLE
             if DesiredAngle > FLARAK_LEFT_MAX_ANGLE then DesiredAngle = FLARAK_LEFT_MAX_ANGLE
         else
@@ -417,7 +419,9 @@ function FlarakDo(F ref as TFlarak,Game ref as TGame,JetfireList ref as TJetfire
             if F.AimLocked = TRUE then F.CurrentLauncherAngle = F.LockedLauncherAngle
         endif
         if F.State = FLARAK_READY and F.AimLocked = TRUE and F.Rocket1.Sprite > 0 and F.SecondPending = FALSE and F.Rocket1.Active = FALSE and F.Rocket2.Active = FALSE and F.VolleyFired = FALSE and NowMs-F.AimLockMs >= FLARAK_TEST_AIM_HOLD_MS
+            // Keep the original rocket flight angles while only mirroring the launcher artwork.
             F.VolleyAngle = F.CurrentLauncherAngle+FLARAK_TEST_BARREL_ANGLE_OFFSET
+            if F.AimSide < 0 then F.VolleyAngle = F.CurrentLauncherAngle-180+FLARAK_TEST_BARREL_ANGLE_OFFSET
             FlarakRocketLaunch(F.Rocket1,F.WorldX,F.WorldY,F.VolleyAngle,-FLARAK_TEST_ROCKET_LANE_OFFSET,NowMs)
             F.SecondFireMs = NowMs+FLARAK_TEST_SECOND_ROCKET_DELAY_MS
             F.SecondPending = TRUE
@@ -473,6 +477,11 @@ function FlarakDraw(F ref as TFlarak,World ref as TWorld)
     SetSpritePositionByOffset(F.BaseSprite,X,Y)
     DrawSprite(F.BaseSprite)
     if F.CurrentFrame = 5
+        if F.AimSide < 0
+            SetSpriteFlip(F.LauncherSprite,1,0)
+        else
+            SetSpriteFlip(F.LauncherSprite,0,0)
+        endif
         SetSpriteAngle(F.LauncherSprite,F.CurrentLauncherAngle)
         SetSpritePositionByOffset(F.LauncherSprite,X+FLARAK_TEST_LAUNCHER_PIVOT_X-FLARAK_TEST_BASE_OFFSET_X,Y+FLARAK_TEST_LAUNCHER_PIVOT_Y-FLARAK_TEST_BASE_OFFSET_Y)
         DrawSprite(F.LauncherSprite)
@@ -480,6 +489,7 @@ function FlarakDraw(F ref as TFlarak,World ref as TWorld)
             WarningStep = (F.NowMs-F.AimLockMs-(FLARAK_TEST_AIM_HOLD_MS-FLARAK_TEST_WARNING_MS))/100
             if WarningStep > 2 then WarningStep = 2
             MuzzleAngle = F.LockedLauncherAngle+FLARAK_TEST_BARREL_ANGLE_OFFSET
+            if F.AimSide < 0 then MuzzleAngle = F.LockedLauncherAngle-180+FLARAK_TEST_BARREL_ANGLE_OFFSET
             for WarningLamp = 0 to WarningStep
                 WarningDistance = 3+WarningLamp*4
                 SetSpritePositionByOffset(F.WarningSprite,X+Sin(MuzzleAngle)*WarningDistance,Y-Cos(MuzzleAngle)*WarningDistance)
