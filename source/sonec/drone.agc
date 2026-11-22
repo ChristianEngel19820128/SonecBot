@@ -390,7 +390,7 @@ function DroneLaserDetectHit(Sonec ref as TSonec,Shield ref as TShield,OldX as f
     local Dx as float
     local Dy as float
     local Radius as float
-    local OffsetY as float
+    local CircleIndex as integer
     local Hit as integer
     local HealthBeforeHit as integer
     Hit = FALSE
@@ -405,12 +405,12 @@ function DroneLaserDetectHit(Sonec ref as TSonec,Shield ref as TShield,OldX as f
             if ClosestX > NewX+15 then ClosestX = NewX+15
         endif
         Dx = Sonec.ObjectData.Position.x-ClosestX
-        Radius = Sonec.ObjectData.Size.Width*0.30
-        OffsetY = Sonec.ObjectData.Size.Height*0.18
-        Dy = Sonec.ObjectData.Position.y-OffsetY-DroneLaserY
-        if Dx*Dx+Dy*Dy <= Radius*Radius then Hit = TRUE
-        Dy = Sonec.ObjectData.Position.y+OffsetY-DroneLaserY
-        if Dx*Dx+Dy*Dy <= Radius*Radius then Hit = TRUE
+        // S5: reuse Sonec's shared standing/ducking two-circle geometry.
+        Radius = SonecHitCircleRadius(Sonec)
+        for CircleIndex = 0 to 1
+            Dy = SonecHitCircleY(Sonec,CircleIndex)-DroneLaserY
+            if Dx*Dx+Dy*Dy <= Radius*Radius then Hit = TRUE
+        next CircleIndex
         if Hit = TRUE
             DroneLaserActive = FALSE
             DroneLaserHits = DroneLaserHits+1
