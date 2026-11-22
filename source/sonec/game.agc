@@ -273,7 +273,7 @@ function GameDo(Game ref as TGame,Now as integer)
 	SimpleMineSpawnDo(Game,Now)
 	// D4b temporary scheduler; remove this call when Chat B owns spawning.
 	DroneAutoSpawnDo(Game.Drone,Game.Screen,Game.World,Game.Sonec,Now)
-	DroneMove(Game.Drone,Game.Screen,Game.Sonec,Game.Shield,Now)
+	DroneMove(Game.Drone,Game.Screen,Game.Sonec,Game.Shield,Game.Inenergie,Now)
 	DroneJetfireDo(Game.Drone,Game.JetfireList,Game.ProtoJetfire,Game.World,Now)
 	WarningUpdate(Game.Warning,Now)
 	BomberDo(Game.Bomber,Game.ProtoBomber,Game.Warning,Game.JetfireList,Game.ProtoJetfire,Game.World,Game.Screen,Now)
