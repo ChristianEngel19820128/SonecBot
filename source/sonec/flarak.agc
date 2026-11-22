@@ -514,7 +514,7 @@ if DesiredAngle > 80 then DesiredAngle = 80
                 endif
             endif
         else
-            if F.AimLocked = TRUE then F.CurrentLauncherAngle = F.LockedLauncherAngle
+            if F.AimLocked = TRUE and F.Variant = FLARAK_VARIANT_ROCKET then F.CurrentLauncherAngle = F.LockedLauncherAngle
         endif
         // Four straight bullets: left, right, left, right; lock the aim for the burst.
         if F.Variant = FLARAK_VARIANT_FLAK and F.State = FLARAK_READY and F.AimLocked = FALSE and NowMs >= F.FlakNextVolleyMs and NowMs-F.FlakRiseStartMs >= FLARAK_FLAK_RISE_MS
