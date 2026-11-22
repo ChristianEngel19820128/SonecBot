@@ -246,6 +246,8 @@ function GameDo(Game ref as TGame,Now as integer)
 			Index = PlateAdd(Game.PlateList,Game.ProtoPlate,Game.World,Now)
 			if Index >= 0
 				ChestAdd(Game.ChestList,Game.ProtoChest,Game.World,Game.PlateList.Plate[Index],Index,Now)
+                // Provisional spawn chance; balance later.
+                if random(0,10000) < 3500 then FlarakSpawn(Game.PlateList,Index,Now)
 				if WalkerCountAll(Game.WalkerList) < 5
 					// Longer platforms provide more room for walkers (35% at 200 px).
 					WalkerChance = 3500 * Game.PlateList.Plate[Index].ObjectData.Size.Width / 200
@@ -300,7 +302,7 @@ function GameDo(Game ref as TGame,Now as integer)
 	MineCollideSonec(Game.SimpleMineList,Game.Sonec,Game,Now)
 	
 	
-	FlarakVisualTestDo(Game.Screen,Game,Game.JetfireList,Game.ProtoJetfire,Game.World,Now)
+	// Flaraks follow platforms after PlateMoveAll below.
 	JetfireLifeCycle(Game.JetfireList,Now)
 	EnergieMoveAll(Game.EnergieList,Game.World,Now)
 	EnergieLifeCycle(Game.EnergieList,Now)
@@ -321,6 +323,7 @@ function GameDo(Game ref as TGame,Now as integer)
 	SonecHealthRegenerate(Game.Sonec,Now)
 		
 	PlateMoveAll(Game.PlateList,Game.World,Now)
+    FlarakDoAll(Game,Game.JetfireList,Game.ProtoJetfire,Game.World,Game.PlateList,Now)
     ExplosionFollowPlates(Game.ExplosionList,Game.PlateList,Game.World)
     BomberBombCollideSonec(Game.Bomber,Game,Now)
 	WalkerMoveAll(Game.WalkerList,Game.ProtoWalker,Game.PlateList,Game.ChestList,Game.Sonec,Game.World,Now)
@@ -486,7 +489,7 @@ function GameDraw(Game ref as TGame)
 	OrbDrawAll(Game.OrbList,Game.ProtoOrb)
 	MineDrawAll(Game.MineList,Game.ProtoMine)
 	MineDrawAll(Game.SimpleMineList,Game.ProtoSimpleMine)
-	FlarakVisualTestDraw(Game.World)
+	FlarakDrawAll(Game.World)
 	DroneDraw(Game.Drone,Game.ProtoDrone,Game.World)
     BomberBombDraw(Game.Bomber,Game.ProtoBomber,Game.World)
 	BomberDraw(Game.Bomber,Game.ProtoBomber,Game.World)
