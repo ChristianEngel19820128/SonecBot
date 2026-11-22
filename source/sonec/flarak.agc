@@ -9,10 +9,22 @@
 #constant FLARAK_TEST_LAUNCHER_PIVOT_Y 42
 #constant FLARAK_TEST_TILT_DEGREES 60
 #constant FLARAK_TEST_FRAME_MS 220
+// F2 visual launch test: straight flight, no homing, damage or collision.
+#constant FLARAK_TEST_ROCKET_INTERVAL_MS 2400
+#constant FLARAK_TEST_ROCKET_LIFETIME_MS 1500
+#constant FLARAK_TEST_ROCKET_SPEED_PX_PER_MS 0.24
+#constant FLARAK_TEST_MUZZLE_DISTANCE 22
 
 global FlarakTestBaseSprite as integer
 global FlarakTestLauncherSprite as integer
 global FlarakTestStartMs as integer
+global FlarakTestRocketSprite as integer
+global FlarakTestRocketActive as integer
+global FlarakTestRocketLaunchMs as integer
+global FlarakTestRocketNextMs as integer
+global FlarakTestRocketStartX as float
+global FlarakTestRocketStartY as float
+global FlarakTestRocketAngle as float
 
 function FlarakVisualTestCreate()
     local Image as TImage
@@ -30,7 +42,15 @@ function FlarakVisualTestCreate()
         SetSpriteColor(FlarakTestBaseSprite,80,232,80,255)
         SetSpriteColor(FlarakTestLauncherSprite,80,232,80,255)
     endif
+    Image.File.Path = "/media/gfx/weapons"
+    Image.File.Name = "rocket.png"
+    if ImageLoad(Image) = TRUE
+        FlarakTestRocketSprite = CreateSprite(Image.ID)
+        SetSpriteOffset(FlarakTestRocketSprite,GetSpriteWidth(FlarakTestRocketSprite)*0.5,GetSpriteHeight(FlarakTestRocketSprite)*0.5)
+    endif
+    FlarakTestRocketActive = FALSE
     FlarakTestStartMs = GetMilliseconds()
+    FlarakTestRocketNextMs = FlarakTestStartMs+1500
 endfunction
 
 function FlarakVisualTestDraw(Screen as TSize)
@@ -39,6 +59,7 @@ function FlarakVisualTestDraw(Screen as TSize)
     local Angle as float
     local X as float
     local Y as float
+    local RocketDistance as float
     if FlarakTestBaseSprite = 0 or FlarakTestLauncherSprite = 0 then exitfunction
 
     Elapsed = GetMilliseconds()-FlarakTestStartMs
@@ -56,6 +77,26 @@ function FlarakVisualTestDraw(Screen as TSize)
         SetSpriteAngle(FlarakTestLauncherSprite,Angle)
         // Preserve the unrotated overlay while moving the pivot to the joint.
         SetSpritePositionByOffset(FlarakTestLauncherSprite,X+FLARAK_TEST_LAUNCHER_PIVOT_X-FLARAK_TEST_BASE_OFFSET_X,Y+FLARAK_TEST_LAUNCHER_PIVOT_Y-FLARAK_TEST_BASE_OFFSET_Y)
+        // Capture the launcher angle when firing; the projectile does not turn.
+        if FlarakTestRocketSprite > 0 and FlarakTestRocketActive = FALSE and GetMilliseconds() >= FlarakTestRocketNextMs
+            FlarakTestRocketAngle = Angle
+            FlarakTestRocketStartX = X+Sin(Angle)*FLARAK_TEST_MUZZLE_DISTANCE
+            FlarakTestRocketStartY = Y-Cos(Angle)*FLARAK_TEST_MUZZLE_DISTANCE
+            FlarakTestRocketLaunchMs = GetMilliseconds()
+            FlarakTestRocketActive = TRUE
+            FlarakTestRocketNextMs = GetMilliseconds()+FLARAK_TEST_ROCKET_INTERVAL_MS
+        endif
+        // Draw between base and launcher: the launcher masks the emerging rocket.
+        if FlarakTestRocketActive = TRUE
+            RocketDistance = (GetMilliseconds()-FlarakTestRocketLaunchMs)*FLARAK_TEST_ROCKET_SPEED_PX_PER_MS
+            if GetMilliseconds()-FlarakTestRocketLaunchMs >= FLARAK_TEST_ROCKET_LIFETIME_MS
+                FlarakTestRocketActive = FALSE
+            else
+                SetSpriteAngle(FlarakTestRocketSprite,FlarakTestRocketAngle)
+                SetSpritePositionByOffset(FlarakTestRocketSprite,FlarakTestRocketStartX+Sin(FlarakTestRocketAngle)*RocketDistance,FlarakTestRocketStartY-Cos(FlarakTestRocketAngle)*RocketDistance)
+                DrawSprite(FlarakTestRocketSprite)
+            endif
+        endif
         DrawSprite(FlarakTestLauncherSprite)
     endif
 endfunction
