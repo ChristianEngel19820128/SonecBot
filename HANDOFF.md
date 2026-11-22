@@ -157,4 +157,4 @@ Verbindlicher Planungsrahmen und Details: [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROA
 
 ## Nächster vereinbarter Schritt
 
-**Flarakstellung konzipieren:** Entwickler bereitet Bilder vor. Nach Eingang zunächst Grafik-/Animationsphasen und Angriffsablauf gemeinsam prüfen, ohne vorzeitige Codeänderung. `TODO.md` ist auf die nächsten Aufgaben bereinigt; Drohnenneigung aus dem Backlog entfernt. Weitere offene Real-Alpha-Themen bleiben in der Roadmap, spätere Ideen im Backlog.
+**Flarak F1 – lokaler Grafiktest ausstehend:** `flarak.png` (480×64, sechs Zellen à 80×64): Frames 1–5 Sockel-Ausfahren, Frame 6 separater Werfer. `flarak.agc` neu und in `main.agc`/`game.agc` eingebunden; Test zeigt Sockel mittig unten und schwenkt Werfer mit vorläufigem Offset (40,52) und ±60° rein optisch. Kein Zieltracking, keine Raketen, keine Kollision. Entwickler soll Kompilierung, Sockelüberlagerung und Schwenkbewegung prüfen; Pivot danach ggf. korrigieren. Nächste Phasen: F2 begrenztes Zielen/Seitenwechsel; F3 Raketenstart im Werferwinkel, später zwei Zielsuche- bzw. Salvenvarianten. `TODO.md` aktualisiert.
