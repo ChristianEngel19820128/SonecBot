@@ -1,10 +1,10 @@
-// Flarak visual test: dual homing rockets with impact fuses; no damage yet.
+// Flarak silo enemy: deploy, aim and fire independent homing rocket pairs; no damage yet.
 // The 480x64 sheet contains six 80x64 cells: 1-5 base, 6 launcher.
 #constant FLARAK_TEST_CELL_W 80
 #constant FLARAK_TEST_CELL_H 64
 #constant FLARAK_TEST_BASE_OFFSET_X 40
 #constant FLARAK_TEST_BASE_OFFSET_Y 42
-// Approximate red-dot joint in the launcher cell; refine after visual test.
+// Approved base and launcher pivots; do not change for spawn alignment.
 #constant FLARAK_TEST_LAUNCHER_PIVOT_X 40
 #constant FLARAK_TEST_LAUNCHER_PIVOT_Y 42
 // Adjustable silo behavior (degrees are launcher sprite angles).
@@ -114,8 +114,7 @@ function FlarakSpawn(PlateList ref as TPlateList,PlateIndex as integer,NowMs as 
     F.Enabled = TRUE
     F.PlateIndex = PlateIndex
     F.PlateOffsetX = Plate.ObjectData.Size.Width*0.5
-    // Platform position is its vertical center (8 px high); align the sprite bottom to its top.
-    // Keep the approved sprite pivot (40,42) separate from platform anchoring.
+    // Developer-verified platform alignment; no extra platform-height correction.
     F.PlateOffsetY = -(FLARAK_TEST_CELL_H-FLARAK_TEST_BASE_OFFSET_Y)
     F.WorldX = Plate.ObjectData.Position.x+F.PlateOffsetX
     F.WorldY = Plate.ObjectData.Position.y+F.PlateOffsetY
