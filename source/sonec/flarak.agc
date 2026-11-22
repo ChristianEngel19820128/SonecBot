@@ -105,17 +105,56 @@ function FlarakVisualTestCreate()
     if ImageLoad(Image) = TRUE then FlarakRocketImage = Image.ID
 endfunction
 
-function FlarakSpawn(PlateList ref as TPlateList,PlateIndex as integer,NowMs as integer)
+// Find the free 80px footprint nearest the platform center, avoiding chests.
+function FlarakFindFreeOffsetX(Plate ref as TPlate,PlateIndex as integer,ChestList ref as TChestList)
+    local Candidate as integer
+    local MaxLeft as integer
+    local ChestIndex as integer
+    local Blocked as integer
+    local BestLeft as integer
+    local BestDistance as float
+    local Distance as float
+    local ChestLeft as float
+    local ChestRight as float
+    MaxLeft = Floor(Plate.ObjectData.Size.Width-FLARAK_TEST_CELL_W)
+    BestLeft = -1
+    BestDistance = Plate.ObjectData.Size.Width+1
+    for Candidate = 0 to MaxLeft
+        Blocked = FALSE
+        for ChestIndex = 0 to ChestList.Chest.Length
+            if ChestList.Chest[ChestIndex].Enabled = TRUE and ChestList.Chest[ChestIndex].CollisionData.Index = PlateIndex
+                ChestLeft = ChestList.Chest[ChestIndex].CollisionData.Position.x
+                ChestRight = ChestLeft+ChestList.Chest[ChestIndex].ObjectData.Size.Width
+                if Candidate < ChestRight and Candidate+FLARAK_TEST_CELL_W > ChestLeft
+                    Blocked = TRUE
+                    exit
+                endif
+            endif
+        next ChestIndex
+        if Blocked = FALSE
+            Distance = Abs(Candidate+FLARAK_TEST_CELL_W*0.5-Plate.ObjectData.Size.Width*0.5)
+            if Distance < BestDistance
+                BestDistance = Distance
+                BestLeft = Candidate
+            endif
+        endif
+    next Candidate
+endfunction BestLeft
+
+function FlarakSpawn(PlateList ref as TPlateList,ChestList ref as TChestList,PlateIndex as integer,NowMs as integer)
     local F as TFlarak
     local Plate as TPlate
     local i as integer
+    local FreeLeft as integer
     if FlarakBaseImage = 0 or FlarakRocketImage = 0 then exitfunction
     if PlateIndex < 0 or PlateIndex > PlateList.Plate.Length then exitfunction
     Plate = PlateList.Plate[PlateIndex]
     if Plate.Enabled = FALSE or Plate.ObjectData.Size.Width < FLARAK_TEST_CELL_W+20 then exitfunction
+    FreeLeft = FlarakFindFreeOffsetX(Plate,PlateIndex,ChestList)
+    if FreeLeft < 0 then exitfunction
     F.Enabled = TRUE
     F.PlateIndex = PlateIndex
-    F.PlateOffsetX = Plate.ObjectData.Size.Width*0.5
+    F.PlateOffsetX = FreeLeft+FLARAK_TEST_BASE_OFFSET_X
     // Developer-verified platform alignment; no extra platform-height correction.
     F.PlateOffsetY = -(FLARAK_TEST_CELL_H-FLARAK_TEST_BASE_OFFSET_Y)
     F.WorldX = Plate.ObjectData.Position.x+F.PlateOffsetX
