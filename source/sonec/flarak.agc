@@ -12,7 +12,6 @@
 #constant FLARAK_TEST_FRAME_MS 500
 // Dual-rocket launch and homing test; impact detection does not deal damage yet.
 #constant FLARAK_TEST_ROCKET_INTERVAL_MS 2400
-#constant FLARAK_TEST_ROCKET_LIFETIME_MS 3000
 #constant FLARAK_TEST_HOMING_DELAY_MS 600
 #constant FLARAK_TEST_HOMING_TURN_DEG_PER_MS 0.06
 #constant FLARAK_TEST_ROCKET_SPEED_PX_PER_MS 0.32
@@ -140,10 +139,6 @@ function FlarakRocketDo(Rocket ref as TFlarakTestRocket,Game ref as TGame,Jetfir
     local JetOutlet as integer
     local JetBackDistance as float
     if Rocket.Active = FALSE then exitfunction
-    if NowMs-Rocket.LaunchMs >= FLARAK_TEST_ROCKET_LIFETIME_MS
-        Rocket.Active = FALSE
-        exitfunction
-    endif
     RocketDeltaMs = NowMs-Rocket.LastMs
     if RocketDeltaMs < 0 then RocketDeltaMs = 0
     if RocketDeltaMs > 50 then RocketDeltaMs = 50
@@ -168,6 +163,11 @@ function FlarakRocketDo(Rocket ref as TFlarakTestRocket,Game ref as TGame,Jetfir
     Rocket.PosX = Rocket.PosX+Sin(Rocket.Angle)*FLARAK_TEST_ROCKET_SPEED_PX_PER_MS*RocketDeltaMs
     Rocket.PosY = Rocket.PosY-Cos(Rocket.Angle)*FLARAK_TEST_ROCKET_SPEED_PX_PER_MS*RocketDeltaMs
     Rocket.SpriteAngle = Rocket.Angle+90
+    // Rocket lifetime follows world bounds, not a fixed time or camera viewport.
+    if Rocket.PosX < 0 or Rocket.PosX > World.Size.Width or Rocket.PosY < 0 or Rocket.PosY > World.Size.Height
+        Rocket.Active = FALSE
+        exitfunction
+    endif
     // Swept impact fuse: test the movement segment against both Sonec circles.
     if FlarakRocketHitsSonec(Rocket,OldX,OldY,OldAngle,Game.Sonec) = TRUE
         ImpactPosition.x = Rocket.PosX+Sin(Rocket.Angle)*Rocket.TipDistance
