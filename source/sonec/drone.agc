@@ -484,9 +484,9 @@ function DroneJetfireDo(Drone ref as TDrone,JetfireList ref as TJetfireList,Prot
         for Outlet = 0 to 2
             // Match the three visible exhaust outlets of the 46x30 drone sprite.
             // The center outlet extends slightly farther downward.
-            Position.x = Drone.Position.x+(Outlet-1)*15
-            Position.y = Drone.Position.y+13
-            if Outlet = 1 then Position.y = Drone.Position.y+16
+            Position.x = Drone.Position.x+(Outlet-1)*7
+            Position.y = Drone.Position.y+8
+            if Outlet = 1 then Position.y = Drone.Position.y+10
             JetfireNew(Jetfire,ProtoJetfire,World,Position,Now)
             // Only drone exhaust particles are smaller; Sonec's effect is unchanged.
             Jetfire.SpriteData.Scale = DRONE_JET_PARTICLE_SCALE
