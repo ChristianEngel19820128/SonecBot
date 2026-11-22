@@ -464,9 +464,13 @@ function FlarakDo(F ref as TFlarak,Game ref as TGame,JetfireList ref as TJetfire
         // separate signed elevation: lower targets tilt down on either side.
         // VisualAngle is -CurrentLauncherAngle for Flak in FlarakDraw.
         if F.Variant = FLARAK_VARIANT_FLAK
-            DesiredAngle = -TargetSide*ATan2(Dy,Abs(Dx))
-            if DesiredAngle < -60 then DesiredAngle = -60
-            if DesiredAngle > 60 then DesiredAngle = 60
+            //DesiredAngle = ATan2(Dy,Abs(Dx))
+if TargetSide < 0 then DesiredAngle = ATan2(Dy,Abs(Dx)) + 90
+if TargetSide > 0 then DesiredAngle = -ATan2(Dy,Abs(Dx)) - 90
+if DesiredAngle < -80 then DesiredAngle = -80
+if DesiredAngle > 80 then DesiredAngle = 80
+            //if DesiredAngle < -60 then DesiredAngle = -60
+            //if DesiredAngle > 60 then DesiredAngle = 60
         endif
         if F.State = FLARAK_READY and F.AimSide = 0 then F.AimSide = TargetSide
         if F.State = FLARAK_READY and F.AimLocked = FALSE

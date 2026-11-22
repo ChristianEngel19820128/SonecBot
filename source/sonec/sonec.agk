@@ -46,7 +46,7 @@ prov_profile_path=
 [html5_settings]
 commands_used=0
 dynamic_memory=0
-output_path=
+output_path=C:/Users/satyr/Desktop/nest/agk_test/sonec/html5
 
 [projectfiles]
 FILE_0=background.agc;-1
@@ -87,14 +87,6 @@ FILE_34=walker.agc;-1
 FILE_35=world.agc;-1
 
 [files]
-FILE_NAME_0=0;def_game.agc;101;0
-FILE_NAME_1=0;game.agc;155;1
-FILE_NAME_2=1;main.agc;32;2
-FILE_NAME_3=0;math.agc;107;3
-FILE_NAME_4=0;orb.agc;0;4
-FILE_NAME_5=0;sonec.agc;238;5
-FILE_NAME_6=0;sprite.agc;84;6
-FILE_NAME_7=0;walker.agc;478;7
 
 [watchvariables]
 watch_variable=@Version;

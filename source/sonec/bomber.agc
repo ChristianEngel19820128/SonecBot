@@ -4,7 +4,8 @@
 #constant BOMBER_WARNING_LEAD_MS 2200
 #constant BOMBER_SPEED_PX_PER_MS 0.40
 #constant BOMBER_ENTRY_MARGIN_X 65
-#constant BOMBER_SPAWN_EXTRA_SCREEN_FRACTION 0.25
+#constant BOMBER_SPAWN_EXTRA_SCREEN_FRACTION1 15
+#constant BOMBER_SPAWN_EXTRA_SCREEN_FRACTION2 55
 #constant BOMBER_VIEW_MARGIN_Y 16
 #constant BOMBER_JET_INTERVAL_MS 20
 #constant BOMBER_JET_PARTICLE_SCALE 1.0
@@ -173,8 +174,8 @@ function BomberDo(Bomber ref as TBomber,ProtoBomber ref as TProtoBomber,Warning 
     if Bomber.Phase = 0 and Now >= Bomber.NextWarningMs
         // World-relative altitude 10%-30%; only preview while the whole
         // ship can be seen in the current camera view.
-        MinY = World.Size.Height*0.10
-        MaxY = World.Size.Height*0.30
+        MinY = World.Size.Height*0.1
+        MaxY = World.Size.Height*0.2
         if MinY < World.Position.y+HalfHeight+BOMBER_VIEW_MARGIN_Y
             MinY = World.Position.y+HalfHeight+BOMBER_VIEW_MARGIN_Y
         endif
@@ -190,7 +191,7 @@ function BomberDo(Bomber ref as TBomber,ProtoBomber ref as TProtoBomber,Warning 
     endif
 
     if Bomber.Phase = 1 and Now >= Bomber.SpawnAtMs
-        Bomber.Position.x = Screen.Width+HalfWidth+BOMBER_ENTRY_MARGIN_X+Screen.Width*BOMBER_SPAWN_EXTRA_SCREEN_FRACTION
+        Bomber.Position.x = Screen.Width+HalfWidth+BOMBER_ENTRY_MARGIN_X+Screen.Width*0.01*random(BOMBER_SPAWN_EXTRA_SCREEN_FRACTION1,BOMBER_SPAWN_EXTRA_SCREEN_FRACTION2)
         Bomber.LastMoveMs = Now
         Bomber.NextJetMs = Now
         Bomber.LastJetX = Bomber.Position.x+GetSpriteWidth(ProtoBomber.Body.Sprite.ID)*0.5-BOMBER_JET_UPPER_X_FROM_RIGHT

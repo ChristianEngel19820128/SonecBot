@@ -249,7 +249,7 @@ function GameDo(Game ref as TGame,Now as integer)
 				ChestAdd(Game.ChestList,Game.ProtoChest,Game.World,Game.PlateList.Plate[Index],Index,Now)
                 // Smaller platforms favor Flak/Flarak; larger ones favor walkers.
                 // Chance: 70% at 100px, 35% at 200px, 17.5% at 400px.
-                FlarakChance = 700000 / Game.PlateList.Plate[Index].ObjectData.Size.Width
+                FlarakChance = 700000 / (Game.PlateList.Plate[Index].ObjectData.Size.Width * 0.25)
                 if FlarakChance > 7000 then FlarakChance = 7000
                 if random(0,10000) < FlarakChance then FlarakSpawn(Game.PlateList,Game.ChestList,Index,Now)
 				if WalkerCountAll(Game.WalkerList) < 5
