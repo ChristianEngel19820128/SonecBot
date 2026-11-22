@@ -4,7 +4,7 @@
 
 ## Jetzt
 
-- [ ] **B5 – Grafische Explosionsbegrenzung B5b lokal bestätigt; tatsächliche Schutz-/Schadensgrenze auf Plattformhöhe noch separat prüfen.** Kistenkontakt, Rewards und übriges Gameplay in vorigem B5-Test 5/6 bestätigt; der sechste Grafikpunkt wurde nach Korrektur vom Entwickler als funktionierend gemeldet. Temporäre Bomber-Testauftritte 8–15 s bleiben vorerst erhalten.
+- [ ] **B5c – Schutzgrenze als Langzeitbeobachtung (kein akuter Blocker).** Lokaler Test 4/5 bestätigt; Schutz direkt unter der getroffenen Plattform mangels reproduzierbarer Spielsituation nicht beobachtbar (nicht fehlgeschlagen). Statische Prüfung auf `develop`: Kistentreffer übergibt Plattformoberkante, `ExplosionAddAboveY` aktiviert `LimitDamageBelowY`, `ExplosionDamageAllowed` wird für Sonec und andere Ziele bei Radiusprüfung verwendet; mitbewegte Plattformgrenze wird aktualisiert. Einschränkung: Sonec-Positionspunkt statt kompletter Kollisionsfläche. Kein Fix ohne beobachteten Fehler; temporäre Bomber-Testauftritte 8–15 s vorerst erhalten.
 
 - [ ] **Balancing-Merkpunkt – Space Jet:** Aktiviert sich weiterhin beim Betreten des hohen Luftraums. Für weitere Tests bewusst unverändert lassen; später Aktivierungsverhalten balancieren.
 
