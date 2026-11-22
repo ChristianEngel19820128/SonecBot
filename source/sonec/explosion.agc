@@ -139,7 +139,12 @@ function ExplosionNew(Explosion ref as TExplosion,ProtoExplosion ref as TProtoEx
 	Explosion.MeasureOrbHits = 0
 	Explosion.MeasureMineHits = 0
 	
-	TimeSet(Explosion.AnimationData.AnimTimer,random(20,30),1)
+	if ExplosionType = 3
+        // RedSmall: five frames at a steady 50 ms each.
+        TimeSet(Explosion.AnimationData.AnimTimer,50,1)
+    else
+        TimeSet(Explosion.AnimationData.AnimTimer,random(20,30),1)
+    endif
 	TimeReset(Explosion.AnimationData.AnimTimer,Now)
 	
 	Explosion.AnimationData.Frame = 0
@@ -303,7 +308,7 @@ function ExplosionAnimateAll(ExplosionList ref as TExplosionList,ProtoExplosion 
 				endif
 				ExplosionList.Explosion[i].ObjectData.Radius = MaxRadius * RadiusFactor
 			endif
-			if ExplosionList.Explosion[i].AnimationData.AnimTimer.Span > 15
+			if ExplosionList.Explosion[i].ExplosionType <> 3 and ExplosionList.Explosion[i].AnimationData.AnimTimer.Span > 15
 				TimeSet(ExplosionList.Explosion[i].AnimationData.AnimTimer,floor(ExplosionList.Explosion[i].AnimationData.AnimTimer.Span*0.9),1)
 			endif
 			TimeReset(ExplosionList.Explosion[i].AnimationData.AnimTimer,Now)
