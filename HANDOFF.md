@@ -1,6 +1,6 @@
 # SonecBot – Aktuelle Übergabe
 
-**Stand:** 21. November 2026 · **Arbeitszweig:** `develop`
+**Stand:** 22. November 2026 · **Arbeitszweig:** `develop`
 
 Diese Datei ermöglicht den nächsten Chatwechsel. Sie wird aktualisiert und gekürzt, nicht um Chatprotokolle erweitert.
 
@@ -38,13 +38,11 @@ Zusätzlich in dieser Runde umgesetzt:
 - Mintfarbener Upgrade-Stern; ausgeschöpfte Burst-Pickups wechseln zu Fire-Rate-Upgrades.
 - Paintball-Easter-Egg im Hauptmenü mit anklickbaren Energie-Orbs, bleibenden Spritzflecken und animierten Laufspuren.
 
-## Aktueller Drohnenstand (21.11.2026)
+## Drohne – aktueller Abschluss (22.11.2026)
 
-- **D1–D6 funktional abgeschlossen:** Patrouille/Schweben, Scan, grüne Ladeanimation und Laser, 100 HP, Schaden durch Maschinengewehr, Flammen, Granaten, Plasma und Explosionen, rotes Trefferfeedback (RGB 255/0/0), einmaliger Zerstörungseffekt sowie drei Jetstreams.
-- **Entwicklerabnahmen:** D4a 6/6, D4b 6/6, D5a 7/7, D5b 7/7, D5c 8/8 und D6-Funktionstest 8/8. Letzter Jetstream-Feinschliff: X-Offsets −10/0/+10 px, Y+13 px, 30-ms-Takt und Partikelskalierung 0,65. Der Entwickler bestätigt anhand eines Screenshots die optische Ausrichtung; kein zusätzlicher vollständiger Funktionstest nach der letzten 3-px-Verschiebung gemeldet.
-- **Temporärer Spawn:** Der pausierbare 20–35-Sekunden-Timer bleibt vorerst aktiv. Der F6-Testhook wurde entfernt. Chat B soll später den Timer-Aufruf durch die zentrale Spawn-/Wellensteuerung ersetzen; `DroneSpawn` bleibt als API bestehen und lässt maximal eine aktive Drohne zu.
-- **Bewusst offen:** Endgültiges Balancing und optionaler Art-Pass; Schadenshöhen-Farbspektrum und Drohnenschild sind nur BACKLOG-Ideen. Ein gelegentliches Biep ist geplant, aber nicht als implementiert bestätigt.
-- **Nach Abschluss des Bombers vormerken (Entwicklerbeobachtung):** Drohnen-Jetstream sitzt optisch nicht optimal. Zuerst Auslasspositionen prüfen und anpassen; Drohnen-Sprite möglichst unverändert lassen. Kein aktueller Codeauftrag und keine Vermischung mit der behobenen Kamerakorrektur.
+- D1–D6 zuvor lokal funktional abgenommen; Scan/Schuss vom Entwickler erneut bestätigt. Scanintervall jetzt 1,5–3 s, Scan-Erfolgskurve mit 100-px-Maximum (50 % ohne, 75 % mit Energieansaugung), ab Bildschirmbreite 0 %. Die Lade-/Schussbedingungen sind unverändert.
+- Gelbe Scan-Diagnose und erzwungene Zielerfassung aus `drone.agc` entfernt; Entwickler bestätigt, dass die Debuganzeige weg ist. 10° Flugneigung (links −10°, rechts +10°) nur beim Patrouillieren, Jetstream-Auslässe optisch mitgedreht. Screenshot vom Entwickler positiv beurteilt; kein zusätzlicher vollständiger AGK-Regressionstest für diese Änderung protokolliert.
+- Provisorischer 20–35-s-Spawn-Timer bleibt bis zur zentralen Gefahren-/Wellensteuerung bestehen. Feintuning, gelegentliches Biep und optionaler Art-Pass später; Schild/Dauerlaser bleiben Backlog-Ideen.
 
 ## Bomber B1 – Überflug und Doppeljet abgeschlossen
 
@@ -157,4 +155,6 @@ Verbindlicher Planungsrahmen und Details: [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROA
 
 **Nächster Scan-Test (22.11.2026):** Entwickler bestätigt Schuss bei erzwungener Zielerfassung; Diagnose zeigte `chance=8`, `roll=3`, `found=1`, `force=1`. Auf Wunsch Testbalancing: Grundchance 50→62.5 % (+25 % relativ), Energieansaugung addiert maximal 25 Prozentpunkte (gesamt maximal 87.5 %). `DRONE_DEBUG_FORCE_ACQUIRE=0`, gelbe Anzeige bleibt. Entwickler soll natürliche `found=1`-Scans und Lade-/Schussverhalten mit/ohne Ansaugung prüfen. Danach Diagnose entfernen; Flugneigung noch nicht beginnen.
 
-**Drohnen-Scan abgeschlossen (22.11.2026):** Entwickler bestätigt, dass die Drohne scannt und schießt und das verkürzte Scanintervall (1500–3000 ms) besser wirkt. Smoothstep-Erkennungskurve mit Maximum bei 100 px (50 % ohne, 75 % mit Energieansaugung), 0 % bei `Screen.Width`; 500–1000 ms Scandauer, 1200 ms Ruhezeit, 900 ms Laden, finale Schussbahnprüfung unverändert. Gelbe Diagnoseanzeige und Debug-Zwangserkennung aus `drone.agc` entfernt (Commit `1943490`); Zufallswurf 1–10000 bleibt. **Lokaler Kompilier-/Regressionstest nach Debugentfernung noch offen.** Weiteres Feintuning ins spätere Balancing verschoben. **Aktueller visueller Test:** 10° Flugneigung beim horizontalen Patrouillieren implementiert (`ae0e548`), links −10°/rechts +10°, während Wenden/Scan/Laden 0°. Drei Jetstream-Auslasspositionen um den Drohnenmittelpunkt passend rotiert; Scan, Schuss, Bewegung und Partikelparameter unverändert. **Nächster Schritt:** Entwickler kompiliert und beurteilt optisch Neigung, Jetstream-Ausrichtung und Übergänge; ggf. Winkel erhöhen.
+## Nächster vereinbarter Schritt
+
+**Flarakstellung konzipieren:** Entwickler bereitet Bilder vor. Nach Eingang zunächst Grafik-/Animationsphasen und Angriffsablauf gemeinsam prüfen, ohne vorzeitige Codeänderung. `TODO.md` ist auf die nächsten Aufgaben bereinigt; Drohnenneigung aus dem Backlog entfernt. Weitere offene Real-Alpha-Themen bleiben in der Roadmap, spätere Ideen im Backlog.
