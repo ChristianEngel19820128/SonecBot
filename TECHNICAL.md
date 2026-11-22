@@ -342,3 +342,7 @@ Das gesamte ältere Untersuchungs-/Testprotokoll bleibt [hier im Git-Stand vor K
 
 Knowledge-Base-Kandidaten stehen in [BACKLOG.md](BACKLOG.md); Beiträge separat vereinbaren und Quellen-/Evidenzstatus erhalten. Arbeitsregeln in [AGENTS.md](AGENTS.md).
 
+
+### Drohnen-Verhaltenslogik – Scan vor Laser (lokaler Test offen)
+
+`DroneMove` in `source/sonec/drone.agc`: Nur ein abgeschlossener Scan mit Sonec vor der Drohne und in der horizontalen Laserbahn autorisiert das Aufladen. Vor Abschuss werden Richtung und vertikale Zielnähe erneut geprüft; sonst kein Projektil. Bei Richtungswechsel wird die Zielerfassung gelöscht und nach Abschluss der 400-ms-Wende ein neuer Scan fällig. Zufällige Wendewahrscheinlichkeit nach Scan leicht erhöht: 5→10 %, in 220 px Nähe 25→30 %. Scan-/Ladeanimation, Projektil, Schaden und Schild ansonsten unverändert. **AGK-Compile und Verhaltenstest durch Entwickler ausstehend.**
