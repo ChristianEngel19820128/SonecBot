@@ -271,7 +271,7 @@ function BulletCollide(BulletList ref as TBulletList,Sonec ref as TSonec,Shield 
                     endif
                 endif
                 if DamageHit = TRUE
-                    SonecCollisionDebugHitUntil = Now + SONEC_COLLISION_DEBUG_HIT_MS
+                    SonecCollisionDebugHitUntil = GetMilliseconds() + SONEC_COLLISION_DEBUG_HIT_MS
                     // Keep the established proportional shield protection and health damage.
                     local HealthBeforeHit as integer
                     HealthBeforeHit = Sonec.Health.State
