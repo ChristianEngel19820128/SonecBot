@@ -12,7 +12,9 @@
 #constant FLARAK_TEST_FRAME_MS 500
 // F2 visual launch test: straight flight, no homing, damage or collision.
 #constant FLARAK_TEST_ROCKET_INTERVAL_MS 2400
-#constant FLARAK_TEST_ROCKET_LIFETIME_MS 1500
+#constant FLARAK_TEST_ROCKET_LIFETIME_MS 3000
+#constant FLARAK_TEST_HOMING_DELAY_MS 300
+#constant FLARAK_TEST_HOMING_TURN_DEG_PER_MS 0.10
 #constant FLARAK_TEST_ROCKET_SPEED_PX_PER_MS 0.24
 #constant FLARAK_TEST_MUZZLE_DISTANCE 22
 #constant FLARAK_TEST_AIM_HOLD_MS 1000
@@ -30,6 +32,9 @@ global FlarakTestRocketLaunchMs as integer
 global FlarakTestRocketNextMs as integer
 global FlarakTestRocketStartX as float
 global FlarakTestRocketStartY as float
+global FlarakTestRocketPosX as float
+global FlarakTestRocketPosY as float
+global FlarakTestRocketLastMs as integer
 global FlarakTestRocketAngle as float
 global FlarakTestRocketSpriteAngle as float
 global FlarakTestAimLocked as integer
@@ -67,18 +72,22 @@ function FlarakVisualTestCreate()
     SetSpriteColor(FlarakTestWarningSprite,255,155,45,255)
     FlarakTestAimLocked = FALSE
     FlarakTestRocketActive = FALSE
+    FlarakTestRocketLastMs = GetMilliseconds()
     FlarakTestStartMs = GetMilliseconds()
     FlarakTestRocketNextMs = FlarakTestStartMs+1500
 endfunction
 
-function FlarakVisualTestDraw(Screen as TSize)
+function FlarakVisualTestDraw(Screen as TSize,SonecX as float,SonecY as float)
     local Elapsed as integer
     local Frame as integer
     local Angle as float
     local LauncherAngle as float
     local X as float
     local Y as float
-    local RocketDistance as float
+    local RocketDeltaMs as integer
+    local TargetAngle as float
+    local AngleDiff as float
+    local MaxTurn as float
     local NowMs as integer
     local MuzzleAngle as float
     local WarningStep as integer
@@ -126,19 +135,44 @@ function FlarakVisualTestDraw(Screen as TSize)
             FlarakTestRocketSpriteAngle = LauncherAngle+180
             FlarakTestRocketStartX = X+Sin(FlarakTestRocketAngle)*FLARAK_TEST_MUZZLE_DISTANCE
             FlarakTestRocketStartY = Y-Cos(FlarakTestRocketAngle)*FLARAK_TEST_MUZZLE_DISTANCE
+            FlarakTestRocketPosX = FlarakTestRocketStartX
+            FlarakTestRocketPosY = FlarakTestRocketStartY
+            FlarakTestRocketLastMs = NowMs
             FlarakTestRocketLaunchMs = NowMs
             FlarakTestRocketActive = TRUE
             FlarakTestRocketNextMs = NowMs+FLARAK_TEST_ROCKET_INTERVAL_MS
         endif
          // Draw between base and launcher: the launcher masks the emerging rocket.
         if FlarakTestRocketActive = TRUE
-            RocketDistance = (GetMilliseconds()-FlarakTestRocketLaunchMs)*FLARAK_TEST_ROCKET_SPEED_PX_PER_MS
-            if GetMilliseconds()-FlarakTestRocketLaunchMs >= FLARAK_TEST_ROCKET_LIFETIME_MS
+            if NowMs-FlarakTestRocketLaunchMs >= FLARAK_TEST_ROCKET_LIFETIME_MS
                 FlarakTestRocketActive = FALSE
             else
-                // Rocket sprite orientation is independent of its launch vector.
+                RocketDeltaMs = NowMs-FlarakTestRocketLastMs
+                if RocketDeltaMs < 0 then RocketDeltaMs = 0
+                if RocketDeltaMs > 50 then RocketDeltaMs = 50
+                FlarakTestRocketLastMs = NowMs
+                // The first 300 ms remain straight. Then steer toward Sonec's
+                // current screen position, with a limited turn rate.
+                if NowMs-FlarakTestRocketLaunchMs >= FLARAK_TEST_HOMING_DELAY_MS
+                    TargetAngle = ATan2(SonecX-FlarakTestRocketPosX,FlarakTestRocketPosY-SonecY)
+                    AngleDiff = TargetAngle-FlarakTestRocketAngle
+                    while AngleDiff > 180
+                        AngleDiff = AngleDiff-360
+                    endwhile
+                    while AngleDiff < -180
+                        AngleDiff = AngleDiff+360
+                    endwhile
+                    MaxTurn = FLARAK_TEST_HOMING_TURN_DEG_PER_MS*RocketDeltaMs
+                    if AngleDiff > MaxTurn then AngleDiff = MaxTurn
+                    if AngleDiff < -MaxTurn then AngleDiff = -MaxTurn
+                    FlarakTestRocketAngle = FlarakTestRocketAngle+AngleDiff
+                endif
+                FlarakTestRocketPosX = FlarakTestRocketPosX+Sin(FlarakTestRocketAngle)*FLARAK_TEST_ROCKET_SPEED_PX_PER_MS*RocketDeltaMs
+                FlarakTestRocketPosY = FlarakTestRocketPosY-Cos(FlarakTestRocketAngle)*FLARAK_TEST_ROCKET_SPEED_PX_PER_MS*RocketDeltaMs
+                // The rocket art is 90 degrees offset from the travel vector.
+                FlarakTestRocketSpriteAngle = FlarakTestRocketAngle+90
                 SetSpriteAngle(FlarakTestRocketSprite,FlarakTestRocketSpriteAngle)
-                SetSpritePositionByOffset(FlarakTestRocketSprite,FlarakTestRocketStartX+Sin(FlarakTestRocketAngle)*RocketDistance,FlarakTestRocketStartY-Cos(FlarakTestRocketAngle)*RocketDistance)
+                SetSpritePositionByOffset(FlarakTestRocketSprite,FlarakTestRocketPosX,FlarakTestRocketPosY)
                 DrawSprite(FlarakTestRocketSprite)
             endif
         endif
