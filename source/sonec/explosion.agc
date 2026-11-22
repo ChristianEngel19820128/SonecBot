@@ -90,6 +90,7 @@ endfunction
 //----------------------------------------------------------------------
 
 // Measurement switch: only Windows, and only when explicitly enabled.
+#constant EXPLOSION_DAMAGE_TYPE_MAX 4
 #constant EXPLOSION_MEASURE 1
 #constant EXPLOSION_TIMED_DAMAGE 1
 #constant EXPLOSION_DAMAGE_INTERVAL_MS 100
@@ -166,7 +167,7 @@ function ExplosionNew(Explosion ref as TExplosion,ProtoExplosion ref as TProtoEx
 	Explosion.SpriteData.Center = TRUE
 	Explosion.SpriteData.Scale  = 1.0
     if ExplosionType = 3 then Explosion.SpriteData.Scale = 1.5
-    // Types 3/4 are visual-only effects; collision handlers ignore them.
+    // All explosion types use the same damage eligibility limit; bomb platform protection is separate.
 	
 	// The blast starts at zero and reaches the design radius halfway through the animation.
 	Explosion.ObjectData.Radius = 0
@@ -332,7 +333,7 @@ function ExplosionCollideSonec(ExplosionList ref as TExplosionList,Sonec ref as 
     local Hit as integer
 
     for i = 0 to ExplosionList.Explosion.Length
-        if ExplosionList.Explosion[i].Enabled = TRUE and ExplosionList.Explosion[i].ExplosionType < 3
+        if ExplosionList.Explosion[i].Enabled = TRUE and ExplosionList.Explosion[i].ExplosionType <= EXPLOSION_DAMAGE_TYPE_MAX
             ExplosionList.Explosion[i].MeasureChecks = ExplosionList.Explosion[i].MeasureChecks + 1
             // S4: explosion radius reaches either shared Sonec body circle.
             // Keep the existing strict radius test (no extra Sonec-radius padding).
@@ -372,7 +373,7 @@ function ExplosionCollideChest(ExplosionList ref as TExplosionList,ChestList ref
 	local Radius as float
 
 	for i = 0 to ExplosionList.Explosion.Length
-		if ExplosionList.Explosion[i].Enabled = TRUE
+		if ExplosionList.Explosion[i].Enabled = TRUE and ExplosionList.Explosion[i].ExplosionType <= EXPLOSION_DAMAGE_TYPE_MAX
 			for k = 0 to ChestList.Chest.Length
 				if ChestList.Chest[k].Enabled = TRUE
 					Radius = CalcRadius(ExplosionList.Explosion[i].ObjectData.Position,ChestList.Chest[k].ObjectData.Position)
@@ -404,7 +405,7 @@ function ExplosionCollideOrb(ExplosionList ref as TExplosionList,OrbList ref as 
 	local Radius as float
 
 	for i = 0 to ExplosionList.Explosion.Length
-		if ExplosionList.Explosion[i].Enabled = TRUE
+		if ExplosionList.Explosion[i].Enabled = TRUE and ExplosionList.Explosion[i].ExplosionType <= EXPLOSION_DAMAGE_TYPE_MAX
 			for k = 0 to OrbList.Orb.Length
 				if OrbList.Orb[k].Enabled = TRUE
 					Radius = CalcRadius(ExplosionList.Explosion[i].ObjectData.Position,OrbList.Orb[k].ObjectData.Position)
@@ -440,7 +441,7 @@ function ExplosionCollideMine(ExplosionList ref as TExplosionList,MineList ref a
 	local HitNow as integer
 
 	for i = 0 to ExplosionList.Explosion.Length
-		if ExplosionList.Explosion[i].Enabled = TRUE
+		if ExplosionList.Explosion[i].Enabled = TRUE and ExplosionList.Explosion[i].ExplosionType <= EXPLOSION_DAMAGE_TYPE_MAX
 			for k = 0 to MineList.Mine.Length
 				if MineList.Mine[k].Enabled = TRUE
 					Radius = CalcRadius(ExplosionList.Explosion[i].ObjectData.Position,MineList.Mine[k].ObjectData.Position)
@@ -489,7 +490,7 @@ function ExplosionCollideWalkers(ExplosionList ref as TExplosionList,WalkerList 
 	local NearestPoint as TPosition
 
 	for i = 0 to ExplosionList.Explosion.Length
-		if ExplosionList.Explosion[i].Enabled = TRUE
+		if ExplosionList.Explosion[i].Enabled = TRUE and ExplosionList.Explosion[i].ExplosionType <= EXPLOSION_DAMAGE_TYPE_MAX
 			for k = 0 to WalkerList.Walker.Length
 				if WalkerList.Walker[k].Enabled = TRUE
 					NearestPoint = ExplosionList.Explosion[i].ObjectData.Position
@@ -524,7 +525,7 @@ function ExplosionCollideDrone(ExplosionList ref as TExplosionList,Drone ref as 
     local i as integer
     local NearestPoint as TPosition
     for i = 0 to ExplosionList.Explosion.Length
-        if Drone.Enabled = TRUE and ExplosionList.Explosion[i].Enabled = TRUE and ExplosionList.Explosion[i].ExplosionType < 3
+        if Drone.Enabled = TRUE and ExplosionList.Explosion[i].Enabled = TRUE and ExplosionList.Explosion[i].ExplosionType <= EXPLOSION_DAMAGE_TYPE_MAX
             NearestPoint = ExplosionList.Explosion[i].ObjectData.Position
             if NearestPoint.x < Drone.Position.x-23 then NearestPoint.x = Drone.Position.x-23
             if NearestPoint.x > Drone.Position.x+23 then NearestPoint.x = Drone.Position.x+23
