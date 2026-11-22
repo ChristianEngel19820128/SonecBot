@@ -165,6 +165,7 @@ function ExplosionNew(Explosion ref as TExplosion,ProtoExplosion ref as TProtoEx
 	Explosion.SpriteData.Angle  = random(0,360)
 	Explosion.SpriteData.Center = TRUE
 	Explosion.SpriteData.Scale  = 1.0
+    if ExplosionType = 3 then Explosion.SpriteData.Scale = 1.5
     // Types 3/4 are visual-only effects; collision handlers ignore them.
 	
 	// The blast starts at zero and reaches the design radius halfway through the animation.
