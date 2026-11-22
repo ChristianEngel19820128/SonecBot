@@ -78,8 +78,9 @@ function FlarakVisualTestDraw(Screen as TSize)
     DrawSprite(FlarakTestBaseSprite)
 
     if Frame = 5
-        // First pivot experiment: swing to both sides without pointing straight up.
-        Angle = Sin(Elapsed*0.045)*FLARAK_TEST_TILT_DEGREES
+        // Start at 0 degrees when frame 5 first appears, then change
+        // the angle gradually. The old absolute-time sine jumped on deployment.
+        Angle = Sin((Elapsed-4*FLARAK_TEST_FRAME_MS)*0.001)*FLARAK_TEST_TILT_DEGREES
         // Negative angles aim up-right. Positive angles switch the barrel
         // by 180 degrees to aim up-left; neither side aims into the ground.
         LauncherAngle = Angle
