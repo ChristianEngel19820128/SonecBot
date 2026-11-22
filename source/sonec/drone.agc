@@ -19,6 +19,9 @@
 #constant DRONE_SCAN_MIN_DURATION_MS 500
 #constant DRONE_SCAN_MAX_DURATION_MS 1000
 #constant DRONE_SCAN_NEAR_X 220
+#constant DRONE_SCAN_MAX_DISTANCE_X 500
+#constant DRONE_SCAN_MAX_SUCCESS_PERCENT 50
+#constant DRONE_SHOT_MAX_Y_DIFFERENCE 120
 #constant DRONE_CHARGE_MIN_INTERVAL_MS 6000
 #constant DRONE_CHARGE_MAX_INTERVAL_MS 10000
 #constant DRONE_CHARGE_DURATION_MS 900
@@ -259,6 +262,7 @@ function DroneMove(Drone ref as TDrone,Screen as TSize,Sonec ref as TSonec,Shiel
     local LaserOldX as float
     local TargetDx as float
     local TargetDy as float
+    local ScanChance as integer
 
     if Drone.Enabled = TRUE
         if DroneMotionLastMode <> DroneMotionUseGate
@@ -292,7 +296,7 @@ function DroneMove(Drone ref as TDrone,Screen as TSize,Sonec ref as TSonec,Shiel
                 TargetDy = Drone.Position.y-Sonec.ObjectData.Position.y
                 DroneLaserActive = FALSE
                 if Sonec.IsLost = FALSE and DroneTargetAcquired = TRUE and ((Drone.Direction = MOVELEFT and TargetDx < 0) or (Drone.Direction = MOVERIGHT and TargetDx > 0))
-                    if abs(TargetDy) <= SonecHitCircleRadius(Sonec)+Sonec.ObjectData.Size.Height*0.18
+                    if abs(TargetDy) <= DRONE_SHOT_MAX_Y_DIFFERENCE
                         DroneLaserActive = TRUE
                     endif
                 endif
@@ -330,13 +334,14 @@ function DroneMove(Drone ref as TDrone,Screen as TSize,Sonec ref as TSonec,Shiel
                 DroneScanActive = FALSE
                 DroneActionRestUntilMs = Now+DRONE_ACTION_REST_MS
                 DroneNextScanMs = Now + random(DRONE_SCAN_MIN_INTERVAL_MS,DRONE_SCAN_MAX_INTERVAL_MS)
-                // Scan acquires only a target ahead in the laser's horizontal lane.
+                // A completed scan can acquire a target ahead with a linearly
+                // decreasing chance: 50% nearby, 0% at 500px or farther.
                 TargetDx = Sonec.ObjectData.Position.x-Drone.Position.x
-                TargetDy = Drone.Position.y-Sonec.ObjectData.Position.y
                 DroneTargetAcquired = FALSE
                 if Sonec.IsLost = FALSE and ((Drone.Direction = MOVELEFT and TargetDx < 0) or (Drone.Direction = MOVERIGHT and TargetDx > 0))
-                    if abs(TargetDy) <= SonecHitCircleRadius(Sonec)+Sonec.ObjectData.Size.Height*0.18
-                        DroneTargetAcquired = TRUE
+                    if abs(TargetDx) < DRONE_SCAN_MAX_DISTANCE_X
+                        ScanChance = DRONE_SCAN_MAX_SUCCESS_PERCENT*(DRONE_SCAN_MAX_DISTANCE_X-abs(TargetDx))/DRONE_SCAN_MAX_DISTANCE_X
+                        if random(1,100) <= ScanChance then DroneTargetAcquired = TRUE
                     endif
                 endif
                 // Proximity can influence a turn, but never guarantees one.
