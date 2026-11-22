@@ -22,7 +22,7 @@
 #constant DRONE_SCAN_NEAR_X 220
 #constant DRONE_SCAN_PEAK_DISTANCE_X 100
 #constant DRONE_SCAN_MAX_SUCCESS_PERCENT 50
-#constant DRONE_SHOT_MAX_Y_DIFFERENCE 120
+#constant DRONE_SHOT_MAX_Y_DIFFERENCE 60
 #constant DRONE_CHARGE_MIN_INTERVAL_MS 6000
 #constant DRONE_CHARGE_MAX_INTERVAL_MS 10000
 #constant DRONE_CHARGE_DURATION_MS 900
@@ -642,6 +642,8 @@ function DroneDraw(Drone ref as TDrone,ProtoDrone ref as TProtoDrone,World ref a
         // Visual-only 3px-high projectile; world Y stays fixed after firing.
         if DroneLaserActive = TRUE and ProtoDrone.Laser.Sprite.ID > 0
             LaserData = Drone.SpriteData
+            // The laser flies horizontally; do not inherit the drone's visual patrol tilt.
+            LaserData.Angle = 0
             LaserData.Position.x = DroneLaserX
             LaserData.Position.y = DroneLaserY-World.Position.y
             ColorSet(LaserData.Color,30,255,60,230)
