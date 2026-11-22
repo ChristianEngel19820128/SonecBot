@@ -74,6 +74,8 @@ function BulletNew(Bullet ref as TBullet,ProtoBullet ref as TProtoBullet,World r
 	Speed as TPosition
 	
 	Bullet.Enabled = TRUE
+	Bullet.Modification = BULLET_MOD_STANDARD
+	Bullet.ExplodeAtMs = 0
 	TimeSet(Bullet.ObjectData.MoveTimer,10,10)
 	TimeReset(Bullet.ObjectData.MoveTimer,Now)
 	
