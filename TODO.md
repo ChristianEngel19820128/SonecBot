@@ -27,4 +27,6 @@
 
 - [ ] **Später: zentrale Debug-Treffermarkierung für alle gegnerischen Schadensquellen.** Aktuell färben nur Gegnergeschosse die getroffenen Sonec-Kreise rot; Bomberbomben-Kollision ist trotzdem korrekt. Erweiterung getrennt von Schadenslogik planen, auch für Minen/Explosionen.
 
-- [ ] **S3 Minenkontakt – lokaler AGK-Test offen:** `MineCollideSonec` prüft bei intelligenten und einfachen Minen beide zentralen Sonec-Kreise mit unverändertem Minenradius. Bestehende Zerstörung, Reward und Explosion bleiben erhalten; keine Änderung an Minenbewegung oder Explosionsschaden. Test: Stehen, Ducken, Randtreffer/Fehlschüsse, je genau eine Zerstörung/Explosion, Schaden/Schild über Explosion.
+- [x] **S3 Minenkontakt – lokal bestanden (7/7):** `MineCollideSonec` prüft bei intelligenten und einfachen Minen beide zentralen Sonec-Kreise mit unverändertem Minenradius. Bestehende Zerstörung, Reward und Explosion bleiben erhalten; keine Änderung an Minenbewegung oder Explosionsschaden. Test: Stehen, Ducken, Randtreffer/Fehlschüsse, je genau eine Zerstörung/Explosion, Schaden/Schild über Explosion.
+
+- [ ] **S4 Explosionstreffer – nächster separat abzustimmender Schritt:** Zentrale Zwei-Kreis-Trefferfläche verwenden, dabei ExplosionDamageAllowed und Plattformabschirmung unverändert respektieren; zuerst bestehenden Code und Schutzpfad prüfen, dann gezielt implementieren und lokal testen.
