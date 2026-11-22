@@ -45,7 +45,7 @@
 #constant FLARAK_TEST_MUZZLE_DISTANCE 22
 // Each rocket is 5 px thick in its source image; 12 px center spacing
 // keeps the two parallel lanes visibly separated at all firing angles.
-#constant FLARAK_TEST_ROCKET_LANE_OFFSET 4
+#constant FLARAK_TEST_ROCKET_LANE_OFFSET 3
 #constant FLARAK_TEST_SECOND_ROCKET_DELAY_MS 120
 #constant FLARAK_TEST_JET_INTERVAL_MS 20
 #constant FLARAK_TEST_JET_BACK_SPACING 3

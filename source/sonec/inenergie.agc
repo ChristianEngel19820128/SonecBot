@@ -65,7 +65,7 @@ function InenergieAnimate(Inenergie ref as TInenergie,Now as integer)
 			if Inenergie.AnimationData.Frame > Inenergie.AnimationData.FrameMax
 				Inenergie.AnimationData.Frame = Inenergie.AnimationData.FrameMin
 			endif
-			ColorSet(Inenergie.SpriteData.Color,55,255,155,200-50*Inenergie.AnimationData.Frame/Inenergie.AnimationData.FrameMax)
+			ColorSet(Inenergie.SpriteData.Color,55,255,155,150-50*Inenergie.AnimationData.Frame/Inenergie.AnimationData.FrameMax)
 		endif
 	endif
 	
