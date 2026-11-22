@@ -4,6 +4,7 @@
 
 #constant DRONE_JET_INTERVAL_MS 30
 #constant DRONE_JET_PARTICLE_SCALE 0.6
+#constant DRONE_FLIGHT_TILT_DEGREES 10
 #constant DRONE_HEALTH_MAX 100
 #constant DRONE_HIT_FLASH_MS 150
 #constant DRONE_AUTO_SPAWN_MIN_MS 20000
@@ -493,10 +494,23 @@ function DroneChargeDraw(SpriteID as integer,Frame as integer,Position as TPosit
     endif
 endfunction
 
+// Visual tilt only while patrolling; scan, charge and turn remain level.
+function DroneVisualTilt(Drone ref as TDrone)
+    local Angle as float
+    Angle = 0
+    if Drone.IsTurning = FALSE and DroneScanActive = FALSE and DroneChargeActive = FALSE
+        if Drone.Direction = MOVELEFT then Angle = -DRONE_FLIGHT_TILT_DEGREES
+        if Drone.Direction = MOVERIGHT then Angle = DRONE_FLIGHT_TILT_DEGREES
+    endif
+endfunction Angle
+
 // D6: three exhaust streams use Sonec's existing jetfire sprites and lifecycle.
 // Separate emission clock avoids competing with Sonec's shared JetfireAdd timer.
 function DroneJetfireDo(Drone ref as TDrone,JetfireList ref as TJetfireList,ProtoJetfire ref as TProtoJetfire,World ref as TWorld,Now as integer)
     local Outlet as integer
+    local Tilt as float
+    local OffsetX as float
+    local OffsetY as float
     local Position as TPosition
     local Jetfire as TJetfire
     local i as integer
@@ -505,9 +519,13 @@ function DroneJetfireDo(Drone ref as TDrone,JetfireList ref as TJetfireList,Prot
         for Outlet = 0 to 2
             // Match the three visible exhaust outlets of the 46x30 drone sprite.
             // The center outlet extends slightly farther downward.
-            Position.x = Drone.Position.x+(Outlet-1)*8
-            Position.y = Drone.Position.y+8
-            if Outlet = 1 then Position.y = Drone.Position.y+10
+            OffsetX = (Outlet-1)*8
+            OffsetY = 8
+            if Outlet = 1 then OffsetY = 10
+            Tilt = DroneVisualTilt(Drone)
+            // Rotate exhaust outlets around the same center as the drone art.
+            Position.x = Drone.Position.x+OffsetX*cos(Tilt)-OffsetY*sin(Tilt)
+            Position.y = Drone.Position.y+OffsetX*sin(Tilt)+OffsetY*cos(Tilt)
             JetfireNew(Jetfire,ProtoJetfire,World,Position,Now)
             // Only drone exhaust particles are smaller; Sonec's effect is unchanged.
             Jetfire.SpriteData.Scale = DRONE_JET_PARTICLE_SCALE
@@ -539,6 +557,7 @@ function DroneDraw(Drone ref as TDrone,ProtoDrone ref as TProtoDrone,World ref a
     local LaserData as TSpriteData
     if Drone.Enabled = TRUE
         SpritePositionCalc(Drone.SpriteData.Position,Drone.Position,World.Position)
+        Drone.SpriteData.Angle = DroneVisualTilt(Drone)
         if GetMilliseconds() < DroneHitFlashUntilMs
             ColorSet(Drone.SpriteData.Color,255,0,0,255)
         else
