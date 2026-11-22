@@ -7,8 +7,10 @@
 #constant FLARAK_FLAK_RISE_PX 12
 #constant FLARAK_FLAK_FINAL_OFFSET_Y -12
 #constant FLARAK_FLAK_RISE_MS 500
-#constant FLARAK_FLAK_SHOT_GAP_MS 100
-#constant FLARAK_FLAK_VOLLEY_GAP_MS 2400
+#constant FLARAK_FLAK_SHOT_GAP_MS 75
+#constant FLARAK_FLAK_VOLLEY_MIN_GAP_MS 3000
+#constant FLARAK_FLAK_VOLLEY_MAX_GAP_MS 5000
+#constant FLARAK_FLAK_AIM_ERROR_DEG 8
 #constant FLARAK_FLAK_MUZZLE_DISTANCE 25
 #constant FLARAK_FLAK_TUBE_OFFSET 3
 #constant FLARAK_TEST_CELL_W 80
@@ -90,6 +92,7 @@ type TFlarak
     FlakNextVolleyMs as integer
     FlakVolleyAngle as float
     FlakVolleySide as integer
+    FlakAimError as float
     FlakDebugAddCount as integer
     FlakDebugLastShotMs as integer
     FlakDebugLastBulletIndex as integer
@@ -226,6 +229,7 @@ function FlarakSpawn(PlateList ref as TPlateList,ChestList ref as TChestList,Pla
     F.StartMs = NowMs
     F.RocketNextMs = NowMs+1500
     F.FlakNextVolleyMs = NowMs+1500
+    F.FlakAimError = Random(-FLARAK_FLAK_AIM_ERROR_DEG,FLARAK_FLAK_AIM_ERROR_DEG)
     F.FlakDebugLastBulletIndex = -1
     F.CurrentFrame = 1
     F.State = FLARAK_CLOSED
@@ -459,6 +463,7 @@ function FlarakDo(F ref as TFlarak,Game ref as TGame,JetfireList ref as TJetfire
     local ValidRange as integer
     local FrameSteps as integer
     local TargetSide as integer
+    local FlakTargetInArc as integer
     if F.Enabled = FALSE then exitfunction
     F.NowMs = NowMs
     DeltaMs = NowMs-F.LastUpdateMs
@@ -529,14 +534,17 @@ function FlarakDo(F ref as TFlarak,Game ref as TGame,JetfireList ref as TJetfire
         // Flak has a horizontal zero angle. Its mirrored artwork needs a
         // separate signed elevation: lower targets tilt down on either side.
         // VisualAngle is -CurrentLauncherAngle for Flak in FlarakDraw.
+        FlakTargetInArc = TRUE
         if F.Variant = FLARAK_VARIANT_FLAK
-            //DesiredAngle = ATan2(Dy,Abs(Dx))
-if TargetSide < 0 then DesiredAngle = ATan2(Dy,Abs(Dx)) + 90
-if TargetSide > 0 then DesiredAngle = -ATan2(Dy,Abs(Dx)) - 90
-if DesiredAngle < -80 then DesiredAngle = -80
-if DesiredAngle > 80 then DesiredAngle = 80
-            //if DesiredAngle < -60 then DesiredAngle = -60
-            //if DesiredAngle > 60 then DesiredAngle = 60
+            // Keep the developer's left/right angle conversion. Check the
+            // unmodified target before clamping: no fire beyond +/-80 degrees.
+            if TargetSide < 0 then DesiredAngle = ATan2(Dy,Abs(Dx)) + 90
+            if TargetSide > 0 then DesiredAngle = -ATan2(Dy,Abs(Dx)) - 90
+            if DesiredAngle < -80 or DesiredAngle > 80 then FlakTargetInArc = FALSE
+            // One small random aiming error per volley, not bullet spread.
+            DesiredAngle = DesiredAngle+F.FlakAimError
+            if DesiredAngle < -80 then DesiredAngle = -80
+            if DesiredAngle > 80 then DesiredAngle = 80
         endif
         if F.State = FLARAK_READY and F.AimSide = 0 then F.AimSide = TargetSide
         if F.State = FLARAK_READY and F.AimLocked = FALSE
@@ -553,7 +561,7 @@ if DesiredAngle > 80 then DesiredAngle = 80
             if F.AimLocked = TRUE and F.Variant = FLARAK_VARIANT_ROCKET then F.CurrentLauncherAngle = F.LockedLauncherAngle
         endif
         // Four straight bullets: left, right, left, right; lock the aim for the burst.
-        if F.Variant = FLARAK_VARIANT_FLAK and F.State = FLARAK_READY and F.AimLocked = FALSE and NowMs >= F.FlakNextVolleyMs and NowMs-F.FlakRiseStartMs >= FLARAK_FLAK_RISE_MS
+        if F.Variant = FLARAK_VARIANT_FLAK and F.State = FLARAK_READY and F.AimLocked = FALSE and FlakTargetInArc = TRUE and NowMs >= F.FlakNextVolleyMs and NowMs-F.FlakRiseStartMs >= FLARAK_FLAK_RISE_MS
             // Fire using the current barrel direction even if Sonec is moving.
             // The burst itself freezes this angle; no aim-tolerance gate.
             F.FlakVolleyAngle = F.CurrentLauncherAngle
@@ -567,7 +575,8 @@ if DesiredAngle > 80 then DesiredAngle = 80
             F.FlakShotsFired = F.FlakShotsFired+1
             F.FlakNextShotMs = NowMs+FLARAK_FLAK_SHOT_GAP_MS
             if F.FlakShotsFired = 4
-                F.FlakNextVolleyMs = NowMs+FLARAK_FLAK_VOLLEY_GAP_MS
+                F.FlakNextVolleyMs = NowMs+Random(FLARAK_FLAK_VOLLEY_MIN_GAP_MS,FLARAK_FLAK_VOLLEY_MAX_GAP_MS)
+                F.FlakAimError = Random(-FLARAK_FLAK_AIM_ERROR_DEG,FLARAK_FLAK_AIM_ERROR_DEG)
                 F.AimLocked = FALSE
             endif
         endif
