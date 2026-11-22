@@ -236,16 +236,14 @@ function FlarakFireBullet(F ref as TFlarak,Game ref as TGame,NowMs as integer)
     local VisualAngle as float
     local FlightAngle as float
     local TubeOffset as float
-    local Direction as float
+    // The Flak barrels point upward in their source art. Use exactly the
+    // displayed barrel angle from the developer's aiming fix (no +/-90).
     VisualAngle = -F.FlakVolleyAngle
-    Direction = 1
-    if F.FlakVolleySide < 0 then Direction = -1
-    FlightAngle = 90+VisualAngle
-    if Direction < 0 then FlightAngle = -90+VisualAngle
+    FlightAngle = VisualAngle
     TubeOffset = -FLARAK_FLAK_TUBE_OFFSET
     if Mod(F.FlakShotsFired,2) = 1 then TubeOffset = FLARAK_FLAK_TUBE_OFFSET
-    Position.x = F.WorldX-FLARAK_FLAK_FINAL_OFFSET_Y*Sin(VisualAngle)+Direction*Cos(VisualAngle)*FLARAK_FLAK_MUZZLE_DISTANCE-Sin(VisualAngle)*TubeOffset
-    Position.y = F.WorldY+FLARAK_FLAK_FINAL_OFFSET_Y*Cos(VisualAngle)+Direction*Sin(VisualAngle)*FLARAK_FLAK_MUZZLE_DISTANCE+Cos(VisualAngle)*TubeOffset
+    Position.x = F.WorldX-FLARAK_FLAK_FINAL_OFFSET_Y*Sin(VisualAngle)+Sin(FlightAngle)*FLARAK_FLAK_MUZZLE_DISTANCE+Cos(FlightAngle)*TubeOffset
+    Position.y = F.WorldY+FLARAK_FLAK_FINAL_OFFSET_Y*Cos(VisualAngle)-Cos(FlightAngle)*FLARAK_FLAK_MUZZLE_DISTANCE+Sin(FlightAngle)*TubeOffset
     BulletAdd(Game.BulletList,Game.ProtoBullet,Game.World,Position,FlightAngle,0,TYPEENEMY,NowMs)
 endfunction
 
