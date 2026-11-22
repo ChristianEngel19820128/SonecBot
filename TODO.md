@@ -4,6 +4,9 @@
 
 ## Jetzt
 
+- [ ] **S5 Drohnenlaser – implementiert, lokaler Test offen:** `DroneLaserDetectHit` nutzt `SonecHitCircleRadius` und beide `SonecHitCircleY`-Mittelpunkte; Sweep, 30-px-Laserlänge, Schaden, Schild und Einmal-Treffer bleiben unverändert. Entwicklercheck: AGK-Compile/Start, Stehen, Ducken, knappe Fehlschüsse, ein Treffer pro Laser, Schild/Health, Laserflug/Animation.
+
+
 - [x] **S1 und S1b lokal bestanden.** S1 vom Entwickler lokal bestanden: ursprüngliche sechs Prüfungen plus korrigierte rote Trefferanzeige; gezielter Debug-Nachtest 4/4 bestanden. Umgesetzt: Nur tatsächlich vom Gegnergeschoss getroffene Kreise rot markieren, beide nur bei Treffer beider Kreise; je Kreis 200 ms; rein visuell, keine Änderung der Schadenslogik. Nächster separater Schritt: direkte Bomberbomben-Treffer auf zentrale Zwei-Kreis-Fläche umstellen, nach Abstimmung. Weitere Angriffe (Bomberbombe, Mine, Explosion) erst nach Abnahme einzeln umstellen; Walker, Spielerwaffen, Pickups ausgeschlossen.
 
 - [ ] **B5c – Schutzgrenze als Langzeitbeobachtung (kein akuter Blocker).** Lokaler Test 4/5 bestätigt; Schutz direkt unter der getroffenen Plattform mangels reproduzierbarer Spielsituation nicht beobachtbar (nicht fehlgeschlagen). Statische Prüfung auf `develop`: Kistentreffer übergibt Plattformoberkante, `ExplosionAddAboveY` aktiviert `LimitDamageBelowY`, `ExplosionDamageAllowed` wird für Sonec und andere Ziele bei Radiusprüfung verwendet; mitbewegte Plattformgrenze wird aktualisiert. Einschränkung: Sonec-Positionspunkt statt kompletter Kollisionsfläche. Kein Fix ohne beobachteten Fehler; temporäre Bomber-Testauftritte 8–15 s vorerst erhalten.
