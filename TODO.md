@@ -4,39 +4,18 @@
 
 ## Jetzt
 
-- [ ] **Drohnen-Scanbonus bei aktiver Energieansaugung lokal testen:** 50→0 % ohne, 75→0 % mit Ansaugung über 0–500 px; bei Abschaltung wieder Grundchance. AGK-Compile und Spielgefühl prüfen. Danach erst über leichte Vorwärtsneigung im Flug entscheiden.
+- [ ] **Flarakstellung – Konzept anhand der Entwicklergrafiken abstimmen.** Bilder abwarten, dann Aussehen/Animationsphasen, Aktivierungsdistanz, Zielerfassung, Raketenverhalten und faire Reaktionszeit gemeinsam festlegen. **Noch keine Implementierungsfreigabe.**
 
+## Danach / beobachten
 
+- [ ] **B5c – Plattform-Schutzgrenze langfristig beobachten (kein Blocker).** Der frühere Teiltest 4/5 konnte die Situation direkt unter einer getroffenen Plattform nicht reproduzieren; kein bestätigter Fehler. Nur bei beobachteter Auffälligkeit erneut untersuchen.
+- [ ] **Balancing später bündeln.** Drohne: 1,5–3 s Scanintervall, 100-px-Erkennungsmaximum (50 % ohne/75 % mit Ansaugung); Space Jet: Aktivierung im hohen Luftraum; außerdem Minen, Belohnungen und Pickup-Grenzfälle.
+- [ ] **Menü-Hilfetexte bei passendem Qualitätsschritt erweitern.** Kein aktueller Implementierungsauftrag.
 
+## Abgeschlossen / Nachweise
 
+- **Drohne D1–D6:** frühere Funktionstests abgenommen; Scan-/Laserverhalten und kürzeres Scanintervall vom Entwickler positiv beurteilt. Temporäre gelbe Scan-Diagnose entfernt. 10° optische Flugneigung und drei mitrotierende Jetstream-Auslässe anhand Screenshot positiv beurteilt (22.11.2026). Kein vollständiger neuer Regressionstest für diese Optik behauptet.
+- **Sonec-Zwei-Kreis-Treffer S1–S4:** Gegnergeschosse, direkte Bomberbomben, Minenkontakt und Explosionen lokal getestet (S2 7/7, S3 7/7, S4 8/8). Zentrale Debug-Treffermarkierung für weitere Schadensquellen bleibt eine spätere Option.
+- **Nachrichten N1/N2, T4 und F1:** lokal abgenommen; detaillierte Nachweise bleiben in Git und Fach-/Übergabedokumentation.
 
-- [x] **S1 und S1b lokal bestanden.** S1 vom Entwickler lokal bestanden: ursprüngliche sechs Prüfungen plus korrigierte rote Trefferanzeige; gezielter Debug-Nachtest 4/4 bestanden. Umgesetzt: Nur tatsächlich vom Gegnergeschoss getroffene Kreise rot markieren, beide nur bei Treffer beider Kreise; je Kreis 200 ms; rein visuell, keine Änderung der Schadenslogik. Nächster separater Schritt: direkte Bomberbomben-Treffer auf zentrale Zwei-Kreis-Fläche umstellen, nach Abstimmung. Weitere Angriffe (Bomberbombe, Mine, Explosion) erst nach Abnahme einzeln umstellen; Walker, Spielerwaffen, Pickups ausgeschlossen.
-
-- [ ] **B5c – Schutzgrenze als Langzeitbeobachtung (kein akuter Blocker).** Lokaler Test 4/5 bestätigt; Schutz direkt unter der getroffenen Plattform mangels reproduzierbarer Spielsituation nicht beobachtbar (nicht fehlgeschlagen). Statische Prüfung auf `develop`: Kistentreffer übergibt Plattformoberkante, `ExplosionAddAboveY` aktiviert `LimitDamageBelowY`, `ExplosionDamageAllowed` wird für Sonec und andere Ziele bei Radiusprüfung verwendet; mitbewegte Plattformgrenze wird aktualisiert. Einschränkung: Sonec-Positionspunkt statt kompletter Kollisionsfläche. Kein Fix ohne beobachteten Fehler; temporäre Bomber-Testauftritte 8–15 s vorerst erhalten.
-
-- [ ] **Balancing-Merkpunkt – Space Jet:** Aktiviert sich weiterhin beim Betreten des hohen Luftraums. Für weitere Tests bewusst unverändert lassen; später Aktivierungsverhalten balancieren.
-
-- [ ] **Menü-Hilfetexte später erweitern.** Nur vormerken; gehört nicht in den aktuellen N1-/Cloud-Arbeitsschritt.
-
-**N2 abgenommen:** Entwickler bestätigt AGK-Compile und alle neun Tests 9/9: Energie/xN, Gesundheit, MG-/Granatenmunition, Regeneration, Feuerrate/Burst, keine falschen Max-Meldungen, Animationen und Gameplay. Nachrichtentexte zentralisiert; Balancing/Fallbacks bleiben separat.
-
-**Nachrichten-Polishing abgeschlossen:** N1b 9/9, N1c 6/6 und N1d 5/5 lokal vom Entwickler bestanden; Einflug rechts, Ausflug links, 24-Pixel-Abstand, ruhiger Duplikatrahmen. AGK nicht vom Assistenten ausgeführt.
-
-**Abgenommen:** T4 vom Entwickler lokal 5/5, F1-Fix `09e1063` lokal 6/6 bestanden; N1a vollständig bestätigt: ursprünglich 7/10, gezielter Resttest 5/5 bestanden. Temporäre Testtasten 8–0 entfernt; FPS bleibt, Drohnen-Debug-Zusatz entfernt. Aufräumänderung lokal bestätigt (Spiel normal, Debug-Anzeige weg, Tasten 8–0 inaktiv). AGK wurde nicht vom Assistenten ausgeführt.
-
-## Pflege
-
-- Erledigtes nach dokumentierter Abnahme entfernen. Weitere Releasearbeit in Roadmap, unverbindliche Ideen in BACKLOG.
-- Wiedereinstieg: [HANDOFF.md](HANDOFF.md).
-
-- [x] **S2 direkte Bomberbomben-Kollision – lokal bestanden (7/7):** `BomberBombCollideSonec` verwendet nun die gemeinsame Sonec-Zwei-Kreis-Geometrie mit dem bisherigen Bombenradius und Swept-Segment; Schild/Schaden/Explosion bleiben im bisherigen Ablauf. Explosionstreffer/Plattformschutz nicht geändert. Prüfen: Stehen, Ducken, Randtreffer/Fehlschüsse, Schild/Health, Bombenexplosion und Plattformschutz.
-
-- [ ] **Später: zentrale Debug-Treffermarkierung für alle gegnerischen Schadensquellen.** Aktuell färben nur Gegnergeschosse die getroffenen Sonec-Kreise rot; Bomberbomben-Kollision ist trotzdem korrekt. Erweiterung getrennt von Schadenslogik planen, auch für Minen/Explosionen.
-
-- [x] **S3 Minenkontakt – lokal bestanden (7/7):** `MineCollideSonec` prüft bei intelligenten und einfachen Minen beide zentralen Sonec-Kreise mit unverändertem Minenradius. Bestehende Zerstörung, Reward und Explosion bleiben erhalten; keine Änderung an Minenbewegung oder Explosionsschaden. Test: Stehen, Ducken, Randtreffer/Fehlschüsse, je genau eine Zerstörung/Explosion, Schaden/Schild über Explosion.
-
-- [ ] **S4 Explosionstreffer – nächster separat abzustimmender Schritt:** Zentrale Zwei-Kreis-Trefferfläche verwenden, dabei ExplosionDamageAllowed und Plattformabschirmung unverändert respektieren; zuerst bestehenden Code und Schutzpfad prüfen, dann gezielt implementieren und lokal testen.
-
-- [x] **S4 Explosionstreffer – lokal bestanden (8/8):** Explosion prüft Reichweite gegen beide Sonec-Kreismittelpunkte (ohne Radiusaddition, wie bisher); `ExplosionDamageAllowed` bleibt mit Sonecs ursprünglichem Zentrum als konservative Plattformabschirmung erhalten. Schaden, Schild, 100-ms-Takt und Trefferzählung unverändert. Test: Stehen, Ducken, Randtreffer, Fehlschüsse, eine Schadensgabe pro Takt, Plattformschutz direkt unter Plattform und seitlich außerhalb.
-
-- [x] **Zentrale Sonec-Zwei-Kreis-Treffererkennung S1–S4 abgeschlossen:** Geschosse (inkl. S1b-Debug), direkte Bomberbomben, intelligente/einfache Minen und Explosionen lokal erfolgreich getestet. S4-Plattformabschirmung unter Plattform und Treffer seitlich außerhalb bestätigt.
+Weitere Real-Alpha-Arbeit: [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROADMAP.md). Unverbindliche spätere Ideen: [BACKLOG.md](BACKLOG.md). Übergabe: [HANDOFF.md](HANDOFF.md).
