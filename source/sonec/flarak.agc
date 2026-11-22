@@ -45,7 +45,7 @@
 #constant FLARAK_TEST_MUZZLE_DISTANCE 22
 // Each rocket is 5 px thick in its source image; 12 px center spacing
 // keeps the two parallel lanes visibly separated at all firing angles.
-#constant FLARAK_TEST_ROCKET_LANE_OFFSET 6
+#constant FLARAK_TEST_ROCKET_LANE_OFFSET 4
 #constant FLARAK_TEST_SECOND_ROCKET_DELAY_MS 120
 #constant FLARAK_TEST_JET_INTERVAL_MS 20
 #constant FLARAK_TEST_JET_BACK_SPACING 3
@@ -283,7 +283,7 @@ function FlarakFireBullet(F ref as TFlarak,Game ref as TGame,NowMs as integer)
 endfunction
 
 // Perpendicular launch offset rotates with flight direction:
-// at 0 degrees (up), the rockets start side-by-side at X +/-6px.
+// at 0 degrees (up), the rockets start side-by-side at X +/-4px.
 // Both use the same FlightAngle until their independent homing begins.
 function FlarakRocketLaunch(Rocket ref as TFlarakTestRocket,X as float,Y as float,FlightAngle as float,LaneOffset as float,NowMs as integer)
     Rocket.Angle = FlightAngle
