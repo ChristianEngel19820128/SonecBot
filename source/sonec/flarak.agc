@@ -2,8 +2,11 @@
 // The 480x64 sheet contains six 80x64 cells: 1-5 base, 6 launcher.
 #constant FLARAK_TEST_CELL_W 80
 #constant FLARAK_TEST_CELL_H 64
-#constant FLARAK_TEST_PIVOT_X 40
-#constant FLARAK_TEST_PIVOT_Y 52
+#constant FLARAK_TEST_BASE_OFFSET_X 40
+#constant FLARAK_TEST_BASE_OFFSET_Y 52
+// Approximate red-dot joint in the launcher cell; refine after visual test.
+#constant FLARAK_TEST_LAUNCHER_PIVOT_X 46
+#constant FLARAK_TEST_LAUNCHER_PIVOT_Y 38
 #constant FLARAK_TEST_TILT_DEGREES 60
 #constant FLARAK_TEST_FRAME_MS 220
 
@@ -19,11 +22,11 @@ function FlarakVisualTestCreate()
         FlarakTestBaseSprite = CreateSprite(Image.ID)
         SetSpriteAnimation(FlarakTestBaseSprite,FLARAK_TEST_CELL_W,FLARAK_TEST_CELL_H,6)
         SetSpriteFrame(FlarakTestBaseSprite,1)
-        SetSpriteOffset(FlarakTestBaseSprite,FLARAK_TEST_PIVOT_X,FLARAK_TEST_PIVOT_Y)
+        SetSpriteOffset(FlarakTestBaseSprite,FLARAK_TEST_BASE_OFFSET_X,FLARAK_TEST_BASE_OFFSET_Y)
         FlarakTestLauncherSprite = CreateSprite(Image.ID)
         SetSpriteAnimation(FlarakTestLauncherSprite,FLARAK_TEST_CELL_W,FLARAK_TEST_CELL_H,6)
         SetSpriteFrame(FlarakTestLauncherSprite,6)
-        SetSpriteOffset(FlarakTestLauncherSprite,FLARAK_TEST_PIVOT_X,FLARAK_TEST_PIVOT_Y)
+        SetSpriteOffset(FlarakTestLauncherSprite,FLARAK_TEST_LAUNCHER_PIVOT_X,FLARAK_TEST_LAUNCHER_PIVOT_Y)
         SetSpriteColor(FlarakTestBaseSprite,80,232,80,255)
         SetSpriteColor(FlarakTestLauncherSprite,80,232,80,255)
     endif
@@ -51,7 +54,8 @@ function FlarakVisualTestDraw(Screen as TSize)
         // First pivot experiment: swing to both sides without pointing straight up.
         Angle = Sin(Elapsed*0.045)*FLARAK_TEST_TILT_DEGREES
         SetSpriteAngle(FlarakTestLauncherSprite,Angle)
-        SetSpritePositionByOffset(FlarakTestLauncherSprite,X,Y)
+        // Preserve the unrotated overlay while moving the pivot to the joint.
+        SetSpritePositionByOffset(FlarakTestLauncherSprite,X+FLARAK_TEST_LAUNCHER_PIVOT_X-FLARAK_TEST_BASE_OFFSET_X,Y+FLARAK_TEST_LAUNCHER_PIVOT_Y-FLARAK_TEST_BASE_OFFSET_Y)
         DrawSprite(FlarakTestLauncherSprite)
     endif
 endfunction
