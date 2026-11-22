@@ -4,7 +4,7 @@
 
 ## Jetzt
 
-- [ ] **Drohnenverhalten – lokaler Test offen:** Scan vor Laser, keine Schüsse in falsche Richtung, nach jeder Wende neuer Scan; zufällige Wendewahrscheinlichkeit 10 % / nahe Sonec 30 %. AGK-Compile und Gameplay-Abnahme durch Entwickler.
+- [ ] **Drohnenverhalten – Feinschliff lokal testen:** Voriger Scan-vor-Laser-Schritt vom Entwickler 8/8 bestanden. Neue Erfassungschance linear 50 % bei 0 px bis 0 % ab 500 px (nur in Flugrichtung); Schussfreigabe bis 120 px Y-Abstand. AGK-Compile, Scanverteilung, Schuss/Abbruch und Regression prüfen.
 
 
 - [x] **S5 Drohnenlaser – lokal bestanden (7/7):** `DroneLaserDetectHit` nutzt `SonecHitCircleRadius` und beide `SonecHitCircleY`-Mittelpunkte; Sweep, 30-px-Laserlänge, Schaden, Schild und Einmal-Treffer bleiben unverändert. Entwicklercheck: AGK-Compile/Start, Stehen, Ducken, knappe Fehlschüsse, ein Treffer pro Laser, Schild/Health, Laserflug/Animation.
