@@ -4,6 +4,9 @@
 
 ## Jetzt
 
+- [ ] **Drohnen-Scanbonus bei aktiver Energieansaugung lokal testen:** 50→0 % ohne, 75→0 % mit Ansaugung über 0–500 px; bei Abschaltung wieder Grundchance. AGK-Compile und Spielgefühl prüfen. Danach erst über leichte Vorwärtsneigung im Flug entscheiden.
+
+
 
 
 
