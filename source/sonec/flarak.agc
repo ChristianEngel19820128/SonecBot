@@ -547,7 +547,7 @@ function FlarakDraw(F ref as TFlarak,World ref as TWorld)
     if F.CurrentFrame = 5
         VisualAngle = F.CurrentLauncherAngle
         if F.Variant = FLARAK_VARIANT_FLAK then VisualAngle = -VisualAngle
-        if (F.AimSide < 0 and F.Variant = FLARAK_VARIANT_ROCKET) or (F.AimSide >= 0 and F.Variant = FLARAK_VARIANT_FLAK)
+        if F.AimSide < 0
             SetSpriteFlip(F.LauncherSprite,1,0)
         else
             SetSpriteFlip(F.LauncherSprite,0,0)
@@ -557,7 +557,7 @@ function FlarakDraw(F ref as TFlarak,World ref as TWorld)
             if RiseProgress < 0 then RiseProgress = 0
             if RiseProgress > 1 then RiseProgress = 1
             RiseOffset = FLARAK_FLAK_RISE_PX*(1.0-RiseProgress)
-            if F.AimSide >= 0
+            if F.AimSide < 0
                 SetSpriteFlip(F.FlakSprite,1,0)
             else
                 SetSpriteFlip(F.FlakSprite,0,0)
