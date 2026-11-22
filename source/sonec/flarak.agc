@@ -14,6 +14,8 @@
 #constant FLARAK_TEST_ROCKET_LIFETIME_MS 1500
 #constant FLARAK_TEST_ROCKET_SPEED_PX_PER_MS 0.24
 #constant FLARAK_TEST_MUZZLE_DISTANCE 22
+// The launcher barrel points sideways in its source frame, not upward.
+#constant FLARAK_TEST_BARREL_ANGLE_OFFSET 90
 
 global FlarakTestBaseSprite as integer
 global FlarakTestLauncherSprite as integer
@@ -79,9 +81,9 @@ function FlarakVisualTestDraw(Screen as TSize)
         SetSpritePositionByOffset(FlarakTestLauncherSprite,X+FLARAK_TEST_LAUNCHER_PIVOT_X-FLARAK_TEST_BASE_OFFSET_X,Y+FLARAK_TEST_LAUNCHER_PIVOT_Y-FLARAK_TEST_BASE_OFFSET_Y)
         // Capture the launcher angle when firing; the projectile does not turn.
         if FlarakTestRocketSprite > 0 and FlarakTestRocketActive = FALSE and GetMilliseconds() >= FlarakTestRocketNextMs
-            FlarakTestRocketAngle = Angle
-            FlarakTestRocketStartX = X+Sin(Angle)*FLARAK_TEST_MUZZLE_DISTANCE
-            FlarakTestRocketStartY = Y-Cos(Angle)*FLARAK_TEST_MUZZLE_DISTANCE
+            FlarakTestRocketAngle = Angle+FLARAK_TEST_BARREL_ANGLE_OFFSET
+            FlarakTestRocketStartX = X+Sin(FlarakTestRocketAngle)*FLARAK_TEST_MUZZLE_DISTANCE
+            FlarakTestRocketStartY = Y-Cos(FlarakTestRocketAngle)*FLARAK_TEST_MUZZLE_DISTANCE
             FlarakTestRocketLaunchMs = GetMilliseconds()
             FlarakTestRocketActive = TRUE
             FlarakTestRocketNextMs = GetMilliseconds()+FLARAK_TEST_ROCKET_INTERVAL_MS
