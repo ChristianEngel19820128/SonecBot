@@ -1,4 +1,4 @@
-// Flarak F1: visual-only pivot test. No missiles, collisions or gameplay state.
+// Flarak visual test: dual homing rockets with impact fuses; no damage yet.
 // The 480x64 sheet contains six 80x64 cells: 1-5 base, 6 launcher.
 #constant FLARAK_TEST_CELL_W 80
 #constant FLARAK_TEST_CELL_H 64
@@ -10,7 +10,7 @@
 #constant FLARAK_TEST_TILT_DEGREES 60
 // Slow F1 animation for visual inspection: 500 ms per base frame.
 #constant FLARAK_TEST_FRAME_MS 500
-// F2 visual launch test: straight flight, no homing, damage or collision.
+// Dual-rocket launch and homing test; impact detection does not deal damage yet.
 #constant FLARAK_TEST_ROCKET_INTERVAL_MS 2400
 #constant FLARAK_TEST_ROCKET_LIFETIME_MS 3000
 #constant FLARAK_TEST_HOMING_DELAY_MS 600
@@ -119,8 +119,10 @@ function FlarakRocketLaunch(Rocket ref as TFlarakTestRocket,X as float,Y as floa
     Rocket.Active = TRUE
 endfunction
 
-function FlarakRocketDo(Rocket ref as TFlarakTestRocket,SonecX as float,SonecY as float,JetfireList ref as TJetfireList,ProtoJetfire ref as TProtoJetfire,World ref as TWorld,NowMs as integer)
+function FlarakRocketDo(Rocket ref as TFlarakTestRocket,Sonec ref as TSonec,JetfireList ref as TJetfireList,ProtoJetfire ref as TProtoJetfire,World ref as TWorld,NowMs as integer)
     local RocketDeltaMs as integer
+    local OldX as float
+    local OldY as float
     local TargetAngle as float
     local AngleDiff as float
     local MaxTurn as float
@@ -140,7 +142,7 @@ function FlarakRocketDo(Rocket ref as TFlarakTestRocket,SonecX as float,SonecY a
     if RocketDeltaMs > 50 then RocketDeltaMs = 50
     Rocket.LastMs = NowMs
     if NowMs-Rocket.LaunchMs >= FLARAK_TEST_HOMING_DELAY_MS
-        TargetAngle = ATan2(SonecX-Rocket.PosX,Rocket.PosY-SonecY)
+        TargetAngle = ATan2(Sonec.ObjectData.Position.x-Rocket.PosX,Rocket.PosY-(Sonec.ObjectData.Position.y-World.Position.y))
         AngleDiff = TargetAngle-Rocket.Angle
         while AngleDiff > 180
             AngleDiff = AngleDiff-360
@@ -153,9 +155,16 @@ function FlarakRocketDo(Rocket ref as TFlarakTestRocket,SonecX as float,SonecY a
         if AngleDiff < -MaxTurn then AngleDiff = -MaxTurn
         Rocket.Angle = Rocket.Angle+AngleDiff
     endif
+    OldX = Rocket.PosX
+    OldY = Rocket.PosY
     Rocket.PosX = Rocket.PosX+Sin(Rocket.Angle)*FLARAK_TEST_ROCKET_SPEED_PX_PER_MS*RocketDeltaMs
     Rocket.PosY = Rocket.PosY-Cos(Rocket.Angle)*FLARAK_TEST_ROCKET_SPEED_PX_PER_MS*RocketDeltaMs
     Rocket.SpriteAngle = Rocket.Angle+90
+    // Swept impact fuse: test the movement segment against both Sonec circles.
+    if FlarakRocketHitsSonec(Rocket,OldX,OldY,Sonec,World.Position.y) = TRUE
+        Rocket.Active = FALSE
+        exitfunction
+    endif
     if NowMs >= Rocket.NextJetMs and ProtoJetfire.AnimJetfire.Sprite.ID > 0
         for JetOutlet = 0 to 3
             JetBackDistance = FLARAK_TEST_JET_TAIL_DISTANCE+JetOutlet*FLARAK_TEST_JET_BACK_SPACING
@@ -185,6 +194,40 @@ function FlarakRocketDo(Rocket ref as TFlarakTestRocket,SonecX as float,SonecY a
     endif
 endfunction
 
+// Use Sonec's shared two-circle geometry, in screen coordinates.
+function FlarakRocketHitsSonec(Rocket ref as TFlarakTestRocket,OldX as float,OldY as float,Sonec ref as TSonec,WorldY as float)
+    local Dx as float
+    local Dy as float
+    local LengthSquared as float
+    local T as float
+    local ClosestX as float
+    local ClosestY as float
+    local CircleY as float
+    local DistanceX as float
+    local DistanceY as float
+    local Radius as float
+    local CircleIndex as integer
+    if Sonec.IsLost = TRUE then exitfunction FALSE
+    Dx = Rocket.PosX-OldX
+    Dy = Rocket.PosY-OldY
+    LengthSquared = Dx*Dx+Dy*Dy
+    Radius = SonecHitCircleRadius(Sonec)
+    for CircleIndex = 0 to 1
+        CircleY = SonecHitCircleY(Sonec,CircleIndex)-WorldY
+        T = 0
+        if LengthSquared > 0
+            T = ((Sonec.ObjectData.Position.x-OldX)*Dx+(CircleY-OldY)*Dy)/LengthSquared
+            if T < 0 then T = 0
+            if T > 1 then T = 1
+        endif
+        ClosestX = OldX+Dx*T
+        ClosestY = OldY+Dy*T
+        DistanceX = Sonec.ObjectData.Position.x-ClosestX
+        DistanceY = CircleY-ClosestY
+        if DistanceX*DistanceX+DistanceY*DistanceY <= Radius*Radius then exitfunction TRUE
+    next CircleIndex
+endfunction FALSE
+
 function FlarakRocketDraw(Rocket ref as TFlarakTestRocket)
     if Rocket.Active = FALSE then exitfunction
     SetSpriteAngle(Rocket.Sprite,Rocket.SpriteAngle)
@@ -192,7 +235,7 @@ function FlarakRocketDraw(Rocket ref as TFlarakTestRocket)
     DrawSprite(Rocket.Sprite)
 endfunction
 
-function FlarakVisualTestDo(Screen as TSize,SonecX as float,SonecY as float,JetfireList ref as TJetfireList,ProtoJetfire ref as TProtoJetfire,World ref as TWorld,NowMs as integer)
+function FlarakVisualTestDo(Screen as TSize,Sonec ref as TSonec,JetfireList ref as TJetfireList,ProtoJetfire ref as TProtoJetfire,World ref as TWorld,NowMs as integer)
     local Elapsed as integer
     local Frame as integer
     local Angle as float
@@ -256,8 +299,8 @@ function FlarakVisualTestDo(Screen as TSize,SonecX as float,SonecY as float,Jetf
             FlarakRocketLaunch(FlarakTestRocket2,X,Y,FlarakTestVolleyAngle,FLARAK_TEST_ROCKET_LANE_OFFSET,NowMs)
             FlarakTestSecondPending = FALSE
         endif
-        FlarakRocketDo(FlarakTestRocket1,SonecX,SonecY,JetfireList,ProtoJetfire,World,NowMs)
-        FlarakRocketDo(FlarakTestRocket2,SonecX,SonecY,JetfireList,ProtoJetfire,World,NowMs)
+        FlarakRocketDo(FlarakTestRocket1,Sonec,JetfireList,ProtoJetfire,World,NowMs)
+        FlarakRocketDo(FlarakTestRocket2,Sonec,JetfireList,ProtoJetfire,World,NowMs)
         if FlarakTestAimLocked = TRUE and FlarakTestVolleyFired = TRUE and FlarakTestSecondPending = FALSE and NowMs-FlarakTestVolleyStartMs >= FLARAK_TEST_SECOND_ROCKET_DELAY_MS+FLARAK_TEST_POST_SHOT_HOLD_MS
             FlarakTestAimLocked = FALSE
         endif
