@@ -110,6 +110,7 @@ UseNewDefaultFonts(1)
 #include "warning.agc"
 #include "drone.agc"
 #include "bomber.agc"
+#include "flarak.agc"
 #include "explosion.agc"
 #include "world.agc"
 #include "gui.agc"
