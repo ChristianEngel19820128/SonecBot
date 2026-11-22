@@ -7,9 +7,23 @@
 // Approximate red-dot joint in the launcher cell; refine after visual test.
 #constant FLARAK_TEST_LAUNCHER_PIVOT_X 40
 #constant FLARAK_TEST_LAUNCHER_PIVOT_Y 42
-#constant FLARAK_TEST_TILT_DEGREES 60
-// Slow F1 animation for visual inspection: 500 ms per base frame.
-#constant FLARAK_TEST_FRAME_MS 500
+// Adjustable silo behavior (degrees are launcher sprite angles).
+#constant FLARAK_DETECT_DISTANCE 650
+#constant FLARAK_RETRACT_DISTANCE 750
+#constant FLARAK_MIN_DISTANCE 95
+#constant FLARAK_REOPEN_DISTANCE 120
+#constant FLARAK_RIGHT_MIN_ANGLE -60
+#constant FLARAK_RIGHT_MAX_ANGLE 60
+#constant FLARAK_LEFT_MIN_ANGLE 120
+#constant FLARAK_LEFT_MAX_ANGLE 240
+#constant FLARAK_TURN_DEG_PER_MS 0.18
+#constant FLARAK_AIM_TOLERANCE_DEG 9
+#constant FLARAK_TEST_FRAME_MS 140
+#constant FLARAK_CLOSED 0
+#constant FLARAK_OPENING 1
+#constant FLARAK_READY 2
+#constant FLARAK_RETURNING 3
+#constant FLARAK_CLOSING 4
 // Dual-rocket launch and homing test; impact detection does not deal damage yet.
 #constant FLARAK_TEST_ROCKET_INTERVAL_MS 2400
 #constant FLARAK_TEST_ROCKET_LIFETIME_MS 6000
@@ -69,6 +83,9 @@ type TFlarak
     PlateIndex as integer
     PlateOffsetX as float
     PlateOffsetY as float
+    State as integer
+    FrameStampMs as integer
+    LastUpdateMs as integer
 endtype
 
 global FlarakList as TFlarak[]
@@ -127,6 +144,9 @@ function FlarakSpawn(PlateList ref as TPlateList,PlateIndex as integer,NowMs as 
     F.StartMs = NowMs
     F.RocketNextMs = NowMs+1500
     F.CurrentFrame = 1
+    F.State = FLARAK_CLOSED
+    F.FrameStampMs = NowMs
+    F.LastUpdateMs = NowMs
     for i = 0 to FlarakList.Length
         if FlarakList[i].Enabled = FALSE and FlarakList[i].Rocket1.Active = FALSE and FlarakList[i].Rocket2.Active = FALSE
             // Recycle the old instance's five sprites before replacing the slot.
@@ -296,72 +316,130 @@ function FlarakRocketDraw(Rocket ref as TFlarakTestRocket,World ref as TWorld)
     DrawSprite(Rocket.Sprite)
 endfunction
 
+// Move a launcher towards its desired sprite angle without crossing the ground.
+function FlarakTurnTowards(CurrentAngle as float,TargetAngle as float,StepAngle as float)
+    if CurrentAngle < TargetAngle
+        CurrentAngle = CurrentAngle+StepAngle
+        if CurrentAngle > TargetAngle then CurrentAngle = TargetAngle
+    else
+        CurrentAngle = CurrentAngle-StepAngle
+        if CurrentAngle < TargetAngle then CurrentAngle = TargetAngle
+    endif
+endfunction CurrentAngle
+
 function FlarakDo(F ref as TFlarak,Game ref as TGame,JetfireList ref as TJetfireList,ProtoJetfire ref as TProtoJetfire,World ref as TWorld,NowMs as integer)
-    local Elapsed as integer
-    local Frame as integer
-    local Angle as float
-    local LauncherAngle as float
-    local X as float
-    local Y as float
-    local RocketDeltaMs as integer
-    local TargetAngle as float
-    local AngleDiff as float
-    local MaxTurn as float
-    local JetPosition as TPosition
-    local Jetfire as TJetfire
-    local JetIndex as integer
-    local JetFound as integer
-    local JetOutlet as integer
-    local JetBackDistance as float
+    local Dx as float
+    local Dy as float
+    local Distance as float
+    local DesiredAngle as float
+    local StepAngle as float
+    local DeltaMs as integer
+    local ValidRange as integer
+    local FrameSteps as integer
     if F.Enabled = FALSE then exitfunction
     F.NowMs = NowMs
-    Elapsed = NowMs-F.StartMs
-    Frame = 1+Elapsed/FLARAK_TEST_FRAME_MS
-    if Frame > 5 then Frame = 5
-    F.CurrentFrame = Frame
-    X = F.WorldX
-    Y = F.WorldY
-    if Frame = 5
-        // Start at 0 degrees when frame 5 first appears, then change
-        // the angle gradually. The old absolute-time sine jumped on deployment.
-        Angle = Sin((Elapsed-4*FLARAK_TEST_FRAME_MS)*0.001)*FLARAK_TEST_TILT_DEGREES
-        // Negative angles aim up-right. Positive angles switch the barrel
-        // by 180 degrees to aim up-left; neither side aims into the ground.
-        LauncherAngle = Angle
-        if Angle > 0 then LauncherAngle = Angle+180
-        // Lock the aim for the entire warning and shot, including a short
-        // post-launch hold, so the launcher never turns while firing.
-        if F.AimLocked = FALSE and F.Rocket1.Active = FALSE and F.Rocket2.Active = FALSE and F.SecondPending = FALSE and NowMs >= F.RocketNextMs
-            F.LockedLauncherAngle = LauncherAngle
-            F.AimLockMs = NowMs
-            F.AimLocked = TRUE
-            F.VolleyFired = FALSE
+    DeltaMs = NowMs-F.LastUpdateMs
+    if DeltaMs < 0 then DeltaMs = 0
+    if DeltaMs > 50 then DeltaMs = 50
+    F.LastUpdateMs = NowMs
+    StepAngle = FLARAK_TURN_DEG_PER_MS*DeltaMs
+    Dx = Game.Sonec.ObjectData.Position.x-F.WorldX
+    Dy = Game.Sonec.ObjectData.Position.y-F.WorldY
+    Distance = Sqrt(Dx*Dx+Dy*Dy)
+    ValidRange = TRUE
+    if Game.Sonec.IsLost = TRUE then ValidRange = FALSE
+    if Distance < FLARAK_MIN_DISTANCE then ValidRange = FALSE
+    if Distance > FLARAK_RETRACT_DISTANCE then ValidRange = FALSE
+    // Hysteresis: a closed silo only opens in the narrower safe range.
+    if F.State = FLARAK_CLOSED
+        if Game.Sonec.IsLost = FALSE and Distance >= FLARAK_REOPEN_DISTANCE and Distance <= FLARAK_DETECT_DISTANCE
+            F.State = FLARAK_OPENING
+            F.FrameStampMs = NowMs
+            F.CurrentLauncherAngle = 0
         endif
-        if F.AimLocked = TRUE
-            LauncherAngle = F.LockedLauncherAngle
+    endif
+    if F.State = FLARAK_OPENING or F.State = FLARAK_READY
+        if ValidRange = FALSE
+            F.AimLocked = FALSE
+            F.State = FLARAK_RETURNING
         endif
-        F.CurrentLauncherAngle = LauncherAngle
-        // Launch two missiles from parallel tubes, 5 px apart.
-        // At 0 degrees, the first tube is above and the second below.
-        if F.AimLocked = TRUE and F.Rocket1.Sprite > 0 and F.SecondPending = FALSE and F.Rocket1.Active = FALSE and F.Rocket2.Active = FALSE and NowMs-F.AimLockMs >= FLARAK_TEST_AIM_HOLD_MS
-            F.VolleyAngle = LauncherAngle+FLARAK_TEST_BARREL_ANGLE_OFFSET
-            FlarakRocketLaunch(F.Rocket1,X,Y,F.VolleyAngle,-FLARAK_TEST_ROCKET_LANE_OFFSET,NowMs)
+    endif
+    // Complete the already started second rocket even during a retreat.
+    if F.SecondPending = TRUE and NowMs >= F.SecondFireMs
+        FlarakRocketLaunch(F.Rocket2,F.WorldX,F.WorldY,F.VolleyAngle,FLARAK_TEST_ROCKET_LANE_OFFSET,NowMs)
+        F.SecondPending = FALSE
+    endif
+    if F.State = FLARAK_OPENING
+        FrameSteps = (NowMs-F.FrameStampMs)/FLARAK_TEST_FRAME_MS
+        if FrameSteps > 0
+            F.CurrentFrame = F.CurrentFrame+FrameSteps
+            F.FrameStampMs = F.FrameStampMs+FrameSteps*FLARAK_TEST_FRAME_MS
+        endif
+        if F.CurrentFrame >= 5
+            F.CurrentFrame = 5
+            F.State = FLARAK_READY
+            F.CurrentLauncherAngle = 0
+        endif
+    endif
+    if F.State = FLARAK_READY
+        // The launcher sprite's zero angle fires to the right (+90 flight angle).
+        DesiredAngle = ATan2(Dx,-Dy)-FLARAK_TEST_BARREL_ANGLE_OFFSET
+        if Dx < 0
+            // Keep the left-hand sector positive, avoiding a 360-degree jump.
+            if DesiredAngle < 0 then DesiredAngle = DesiredAngle+360
+            if DesiredAngle < FLARAK_LEFT_MIN_ANGLE then DesiredAngle = FLARAK_LEFT_MIN_ANGLE
+            if DesiredAngle > FLARAK_LEFT_MAX_ANGLE then DesiredAngle = FLARAK_LEFT_MAX_ANGLE
+        else
+            if DesiredAngle < FLARAK_RIGHT_MIN_ANGLE then DesiredAngle = FLARAK_RIGHT_MIN_ANGLE
+            if DesiredAngle > FLARAK_RIGHT_MAX_ANGLE then DesiredAngle = FLARAK_RIGHT_MAX_ANGLE
+        endif
+        if F.AimLocked = FALSE
+            F.CurrentLauncherAngle = FlarakTurnTowards(F.CurrentLauncherAngle,DesiredAngle,StepAngle)
+            if F.Rocket1.Active = FALSE and F.Rocket2.Active = FALSE and F.SecondPending = FALSE and NowMs >= F.RocketNextMs
+                if Abs(F.CurrentLauncherAngle-DesiredAngle) <= FLARAK_AIM_TOLERANCE_DEG
+                    F.LockedLauncherAngle = F.CurrentLauncherAngle
+                    F.AimLockMs = NowMs
+                    F.AimLocked = TRUE
+                    F.VolleyFired = FALSE
+                endif
+            endif
+        else
+            F.CurrentLauncherAngle = F.LockedLauncherAngle
+        endif
+        if F.AimLocked = TRUE and F.Rocket1.Sprite > 0 and F.SecondPending = FALSE and F.Rocket1.Active = FALSE and F.Rocket2.Active = FALSE and F.VolleyFired = FALSE and NowMs-F.AimLockMs >= FLARAK_TEST_AIM_HOLD_MS
+            F.VolleyAngle = F.CurrentLauncherAngle+FLARAK_TEST_BARREL_ANGLE_OFFSET
+            FlarakRocketLaunch(F.Rocket1,F.WorldX,F.WorldY,F.VolleyAngle,-FLARAK_TEST_ROCKET_LANE_OFFSET,NowMs)
             F.SecondFireMs = NowMs+FLARAK_TEST_SECOND_ROCKET_DELAY_MS
             F.SecondPending = TRUE
             F.VolleyStartMs = NowMs
             F.VolleyFired = TRUE
             F.RocketNextMs = NowMs+FLARAK_TEST_ROCKET_INTERVAL_MS
         endif
-        if F.SecondPending = TRUE and NowMs >= F.SecondFireMs
-            FlarakRocketLaunch(F.Rocket2,X,Y,F.VolleyAngle,FLARAK_TEST_ROCKET_LANE_OFFSET,NowMs)
-            F.SecondPending = FALSE
-        endif
-        FlarakRocketDo(F.Rocket1,Game,JetfireList,ProtoJetfire,World,NowMs)
-        FlarakRocketDo(F.Rocket2,Game,JetfireList,ProtoJetfire,World,NowMs)
         if F.AimLocked = TRUE and F.VolleyFired = TRUE and F.SecondPending = FALSE and NowMs-F.VolleyStartMs >= FLARAK_TEST_SECOND_ROCKET_DELAY_MS+FLARAK_TEST_POST_SHOT_HOLD_MS
             F.AimLocked = FALSE
         endif
     endif
+    if F.State = FLARAK_RETURNING
+        F.CurrentLauncherAngle = FlarakTurnTowards(F.CurrentLauncherAngle,0,StepAngle)
+        if F.CurrentLauncherAngle = 0 and F.SecondPending = FALSE
+            F.State = FLARAK_CLOSING
+            F.FrameStampMs = NowMs
+        endif
+    endif
+    if F.State = FLARAK_CLOSING
+        FrameSteps = (NowMs-F.FrameStampMs)/FLARAK_TEST_FRAME_MS
+        if FrameSteps > 0
+            F.CurrentFrame = F.CurrentFrame-FrameSteps
+            F.FrameStampMs = F.FrameStampMs+FrameSteps*FLARAK_TEST_FRAME_MS
+        endif
+        if F.CurrentFrame <= 1
+            F.CurrentFrame = 1
+            F.State = FLARAK_CLOSED
+        endif
+    endif
+    // Missiles keep moving regardless of the silo state.
+    FlarakRocketDo(F.Rocket1,Game,JetfireList,ProtoJetfire,World,NowMs)
+    FlarakRocketDo(F.Rocket2,Game,JetfireList,ProtoJetfire,World,NowMs)
 endfunction
 
 function FlarakDraw(F ref as TFlarak,World ref as TWorld)
@@ -380,10 +458,8 @@ function FlarakDraw(F ref as TFlarak,World ref as TWorld)
     if F.CurrentFrame = 5
         SetSpriteAngle(F.LauncherSprite,F.CurrentLauncherAngle)
         SetSpritePositionByOffset(F.LauncherSprite,X+FLARAK_TEST_LAUNCHER_PIVOT_X-FLARAK_TEST_BASE_OFFSET_X,Y+FLARAK_TEST_LAUNCHER_PIVOT_Y-FLARAK_TEST_BASE_OFFSET_Y)
-        FlarakRocketDraw(F.Rocket1,World)
-        FlarakRocketDraw(F.Rocket2,World)
         DrawSprite(F.LauncherSprite)
-        if F.AimLocked = TRUE and F.Rocket1.Active = FALSE and F.Rocket2.Active = FALSE and F.SecondPending = FALSE and F.NowMs-F.AimLockMs >= FLARAK_TEST_AIM_HOLD_MS-FLARAK_TEST_WARNING_MS
+        if F.State = FLARAK_READY and F.AimLocked = TRUE and F.VolleyFired = FALSE and F.Rocket1.Active = FALSE and F.Rocket2.Active = FALSE and F.SecondPending = FALSE and F.NowMs-F.AimLockMs >= FLARAK_TEST_AIM_HOLD_MS-FLARAK_TEST_WARNING_MS
             WarningStep = (F.NowMs-F.AimLockMs-(FLARAK_TEST_AIM_HOLD_MS-FLARAK_TEST_WARNING_MS))/100
             if WarningStep > 2 then WarningStep = 2
             MuzzleAngle = F.LockedLauncherAngle+FLARAK_TEST_BARREL_ANGLE_OFFSET
@@ -394,6 +470,8 @@ function FlarakDraw(F ref as TFlarak,World ref as TWorld)
             next WarningLamp
         endif
     endif
+    FlarakRocketDraw(F.Rocket1,World)
+    FlarakRocketDraw(F.Rocket2,World)
 endfunction
 
 function FlarakDoAll(Game ref as TGame,JetfireList ref as TJetfireList,ProtoJetfire ref as TProtoJetfire,World ref as TWorld,PlateList ref as TPlateList,NowMs as integer)
