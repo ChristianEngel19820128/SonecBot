@@ -460,9 +460,6 @@ function FlarakDo(F ref as TFlarak,Game ref as TGame,JetfireList ref as TJetfire
             if DesiredAngle < FLARAK_RIGHT_MIN_ANGLE then DesiredAngle = FLARAK_RIGHT_MIN_ANGLE
             if DesiredAngle > FLARAK_RIGHT_MAX_ANGLE then DesiredAngle = FLARAK_RIGHT_MAX_ANGLE
         endif
-        // Flak artwork faces correctly after mirroring, but its elevation angle
-        // must run opposite to the rocket launcher on both target sides.
-        if F.Variant = FLARAK_VARIANT_FLAK then DesiredAngle = -DesiredAngle
         if F.State = FLARAK_READY and F.AimSide = 0 then F.AimSide = TargetSide
         if F.State = FLARAK_READY and F.AimLocked = FALSE
             F.CurrentLauncherAngle = FlarakTurnTowards(F.CurrentLauncherAngle,DesiredAngle,StepAngle)
