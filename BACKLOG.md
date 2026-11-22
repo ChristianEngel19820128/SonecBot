@@ -1,6 +1,6 @@
 # SonecBot – Ideen für vielleicht später
 
-**Stand:** 21. November 2026  
+**Stand:** 22. November 2026  
 **Status:** Unverbindliche Sammlung; ohne feste Reihenfolge, Termin oder Implementierungsfreigabe.
 
 Die beschlossenen Real-Alpha-Grundversionen stehen in [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROADMAP.md), nächste Schritte in [TODO.md](TODO.md).
@@ -12,7 +12,6 @@ Bomber, Flarak, hilfreicher Jumppod, Gefahren-/Erfahrungsgrundsystem, kleine Zie
 - **Jumppod-Falle:** sehr seltene explodierende Attrappe. Nur erwägen, wenn ein kleiner erkennbarer Unterschied bzw. eine rechtzeitige Aktivierungsbewegung faire Gegenwehr erlaubt. Idee: bei Annäherung etwa einen Pixel ausfahren, Kontakt löst Explosion aus. Nicht auf alle vorhandenen Minentypen übertragen.
 - **Flarak-Massenwerfer:** ungenaue Raketensalve ohne Zielsuchraketen als spätere Modifikation.
 - **Drohnen-Schildfunktion:** Später ein eigenes Schildkonzept für Drohnen entwerfen (Aktivierung, Schutzwirkung, Trefferfeedback und Gegenmaßnahmen); keine aktuelle Implementierung oder Balancevorgabe.
-- **Drohnen-Vorwärtsneigung:** Nach lokalem Test des Scanbonus prüfen, ob eine leichte Neigung in Flugrichtung die Flugoptik verbessert; noch keine konkrete Winkel- oder Implementierungsentscheidung.
 - **Drohne später gefährlicher gestalten:** Nach lokal 8/8 bestandenem Scan-/Schussfrequenz-Feinschliff (22.11.2026) wirkt das Verhalten deutlich intelligenter; für die Alpha keine weiteren Verhaltensänderungen. Spätere zusätzliche Gefährlichkeit erst separat spielerisch konzipieren, keine aktuelle Balancevorgabe.
 - **Drohnen-Dauerlaser:** seltener, zeitlich begrenzter, über den Boden schwenkender Strahl; sichtbares Aufladen vor dem Angriff. Alpha-Basis sind kurze Laserprojektile.
 - **Flammenfalle:** stationäre Modifikation mit berechenbarem Feuerraum. Flammenwerfer müssen nicht exklusiv Sonec gehören.
