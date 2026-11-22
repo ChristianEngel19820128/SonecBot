@@ -128,3 +128,5 @@ Verbindlicher Planungsrahmen und Details: [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROA
 - [PROJECT.md](PROJECT.md) / [TECHNICAL.md](TECHNICAL.md): nur passende Konzept- bzw. Technikabschnitte nachlesen.
 - [Archivübersicht](docs/archive/README.md): frühere Langfassungen und historische Testdetails; kein Pflichtlesestoff beim Chatstart.
 
+
+**S2 implementiert, lokaler AGK-Test offen:** Direkte Bomberbomben prüfen beide zentralen Sonec-Kreise entlang des bisherigen Bomben-Bewegungssegments inklusive Bombenradius. Bei einem Treffer erfolgt Schaden/Schildabsorption und genau eine Explosion; deren Trefferlogik und Plattformschutz sind unverändert. Entwickler soll Stehen/Ducken, Randtreffer, Fehlschüsse, Schild/Health und Explosion/Plattformschutz prüfen. S1b-Debugkreise werden weiterhin nur durch Gegnergeschosse rot, nicht durch Bomben.
