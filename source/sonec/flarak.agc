@@ -97,7 +97,7 @@ function FlarakSpawn(PlateList ref as TPlateList,PlateIndex as integer,NowMs as 
     F.Enabled = TRUE
     F.PlateIndex = PlateIndex
     F.PlateOffsetX = Plate.ObjectData.Size.Width*0.5
-    F.PlateOffsetY = -FLARAK_TEST_BASE_OFFSET_Y
+    F.PlateOffsetY = -FLARAK_TEST_BASE_OFFSET_Y+FLARAK_TEST_CELL_H*0.5
     F.WorldX = Plate.ObjectData.Position.x+F.PlateOffsetX
     F.WorldY = Plate.ObjectData.Position.y+F.PlateOffsetY
     F.BaseSprite = CreateSprite(FlarakBaseImage)
