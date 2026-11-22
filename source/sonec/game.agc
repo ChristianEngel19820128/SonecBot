@@ -447,21 +447,20 @@ endfunction
 
 function SonecCollisionDebugDraw(Sonec ref as TSonec,World ref as TWorld)
     local Radius as float
-    local OffsetY as float
     if SONEC_TWO_CIRCLE_TEST = 1 and SonecCollisionDebugVisible = 1
         if SonecCollisionDebugLineSprite = 0
             SonecCollisionDebugLineSprite = CreateSprite(0)
+        endif
+        // Red means the active two-circle enemy-bullet check registered a hit,
+        // including hits absorbed by the shield. Otherwise keep cyan.
+        if GetMilliseconds() < SonecCollisionDebugHitUntil
+            SetSpriteColor(SonecCollisionDebugLineSprite,255,0,0,255)
+        else
             SetSpriteColor(SonecCollisionDebugLineSprite,0,255,255,255)
         endif
-        Radius = Sonec.ObjectData.Size.Width*0.30
-        OffsetY = Sonec.ObjectData.Size.Height*0.18
-        if Sonec.State.Stand = TRUE and Sonec.State.Duck = TRUE
-            SonecCollisionDebugCircle(Sonec.ObjectData.Position.x,Sonec.ObjectData.Position.y-World.Position.y,Sonec.ObjectData.Size.Width*0.32)
-            SonecCollisionDebugCircle(Sonec.ObjectData.Position.x,Sonec.ObjectData.Position.y-World.Position.y+SONEC_DUCK_SECOND_CIRCLE_Y,Sonec.ObjectData.Size.Width*0.32)
-        else
-            SonecCollisionDebugCircle(Sonec.ObjectData.Position.x,Sonec.ObjectData.Position.y-World.Position.y-OffsetY,Radius)
-            SonecCollisionDebugCircle(Sonec.ObjectData.Position.x,Sonec.ObjectData.Position.y-World.Position.y+OffsetY,Radius)
-        endif
+        Radius = SonecHitCircleRadius(Sonec)
+        SonecCollisionDebugCircle(Sonec.ObjectData.Position.x,SonecHitCircleY(Sonec,0)-World.Position.y,Radius)
+        SonecCollisionDebugCircle(Sonec.ObjectData.Position.x,SonecHitCircleY(Sonec,1)-World.Position.y,Radius)
     endif
 endfunction
 
