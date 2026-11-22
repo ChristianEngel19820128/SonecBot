@@ -417,38 +417,52 @@ endfunction
 
 function BomberBombCollideSonec(Bomber ref as TBomber,Game ref as TGame,Now as integer)
     local i as integer
+    local CircleIndex as integer
     local DeltaX as float
     local DeltaY as float
     local Fraction as float
     local LengthSquared as float
     local NearestX as float
     local NearestY as float
+    local CircleY as float
     local Radius as float
+    local Hit as integer
     local HealthBeforeHit as integer
     local HitPosition as TPosition
 
     if Game.Sonec.IsLost = TRUE then exitfunction
-    Radius = Game.Sonec.ObjectData.Radius+BOMBER_BOMB_HIT_RADIUS
+    // S2: swept bomb center against both shared Sonec body circles.
+    // Preserve the existing bomb radius, shield damage and explosion behavior.
+    Radius = SonecHitCircleRadius(Game.Sonec)+BOMBER_BOMB_HIT_RADIUS
     for i = 0 to BOMBER_BOMB_COUNT-1
         if Bomber.Bomb[i].Enabled = TRUE
             DeltaX = Bomber.Bomb[i].Position.x-Bomber.Bomb[i].PreviousPosition.x
             DeltaY = Bomber.Bomb[i].Position.y-Bomber.Bomb[i].PreviousPosition.y
             LengthSquared = DeltaX*DeltaX+DeltaY*DeltaY
-            Fraction = 0
-            if LengthSquared > 0
-                Fraction = ((Game.Sonec.ObjectData.Position.x-Bomber.Bomb[i].PreviousPosition.x)*DeltaX+(Game.Sonec.ObjectData.Position.y-Bomber.Bomb[i].PreviousPosition.y)*DeltaY)/LengthSquared
-                if Fraction < 0 then Fraction = 0
-                if Fraction > 1 then Fraction = 1
-            endif
-            NearestX = Bomber.Bomb[i].PreviousPosition.x+Fraction*DeltaX
-            NearestY = Bomber.Bomb[i].PreviousPosition.y+Fraction*DeltaY
-            if (NearestX-Game.Sonec.ObjectData.Position.x)*(NearestX-Game.Sonec.ObjectData.Position.x)+(NearestY-Game.Sonec.ObjectData.Position.y)*(NearestY-Game.Sonec.ObjectData.Position.y) <= Radius*Radius
+            Hit = FALSE
+            for CircleIndex = 0 to 1
+                CircleY = SonecHitCircleY(Game.Sonec,CircleIndex)
+                Fraction = 0
+                if LengthSquared > 0
+                    Fraction = ((Game.Sonec.ObjectData.Position.x-Bomber.Bomb[i].PreviousPosition.x)*DeltaX+(CircleY-Bomber.Bomb[i].PreviousPosition.y)*DeltaY)/LengthSquared
+                    if Fraction < 0 then Fraction = 0
+                    if Fraction > 1 then Fraction = 1
+                endif
+                NearestX = Bomber.Bomb[i].PreviousPosition.x+Fraction*DeltaX
+                NearestY = Bomber.Bomb[i].PreviousPosition.y+Fraction*DeltaY
+                if (NearestX-Game.Sonec.ObjectData.Position.x)*(NearestX-Game.Sonec.ObjectData.Position.x)+(NearestY-CircleY)*(NearestY-CircleY) <= Radius*Radius
+                    if Hit = FALSE
+                        HitPosition.x = NearestX
+                        HitPosition.y = NearestY
+                    endif
+                    Hit = TRUE
+                endif
+            next CircleIndex
+            if Hit = TRUE
                 Bomber.Bomb[i].Enabled = FALSE
                 HealthBeforeHit = Game.Sonec.Health.State
                 Game.Sonec.Health.State = Game.Sonec.Health.State-(BOMBER_BOMB_DIRECT_DAMAGE-ShieldAbsorbDamage(Game.Shield,Game.Sonec,BOMBER_BOMB_DIRECT_DAMAGE,Now))
                 if Game.Sonec.Health.State < HealthBeforeHit then SonecHitFlashUntil = Now+SONEC_HIT_FLASH_MS
-                HitPosition.x = NearestX
-                HitPosition.y = NearestY
                 ExplosionAdd(Game.ExplosionList,Game.ProtoExplosion,Game,1,HitPosition,Now)
             endif
         endif
