@@ -160,6 +160,33 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
+// Configure the bullet just appended by BulletAdd, without changing existing callers.
+function BulletSetModification(BulletList ref as TBulletList,Modification as integer,Now as integer)
+    local Index as integer
+    Index = BulletList.FirstFree-1
+    if Index < 0 or Index > BulletList.Bullet.Length then exitfunction
+    if BulletList.Bullet[Index].Enabled = FALSE then exitfunction
+    BulletList.Bullet[Index].Modification = Modification
+    if Modification = BULLET_MOD_EXPLOSIVE
+        BulletList.Bullet[Index].ExplodeAtMs = Now+Random(BULLET_EXPLOSIVE_FUSE_MIN_MS,BULLET_EXPLOSIVE_FUSE_MAX_MS)
+    else
+        BulletList.Bullet[Index].ExplodeAtMs = 0
+    endif
+endfunction
+
+// Fuse detonations use the existing explosion system and its damage rules.
+function BulletExplosiveFuses(BulletList ref as TBulletList,Game ref as TGame,Now as integer)
+    local i as integer
+    for i = 0 to BulletList.Bullet.Length
+        if BulletList.Bullet[i].Enabled = TRUE and BulletList.Bullet[i].Modification = BULLET_MOD_EXPLOSIVE
+            if Now >= BulletList.Bullet[i].ExplodeAtMs
+                ExplosionAdd(Game.ExplosionList,Game.ProtoExplosion,Game,BULLET_EXPLOSIVE_EXPLOSION_TYPE,BulletList.Bullet[i].ObjectData.Position,Now)
+                BulletDelete(BulletList,i)
+            endif
+        endif
+    next i
+endfunction
+
 function BulletDelete(BulletList ref as TBulletList,Index as integer)
 	
 	BulletList.Bullet[Index].Enabled = FALSE
