@@ -460,6 +460,14 @@ function FlarakDo(F ref as TFlarak,Game ref as TGame,JetfireList ref as TJetfire
             if DesiredAngle < FLARAK_RIGHT_MIN_ANGLE then DesiredAngle = FLARAK_RIGHT_MIN_ANGLE
             if DesiredAngle > FLARAK_RIGHT_MAX_ANGLE then DesiredAngle = FLARAK_RIGHT_MAX_ANGLE
         endif
+        // Flak has a horizontal zero angle. Its mirrored artwork needs a
+        // separate signed elevation: lower targets tilt down on either side.
+        // VisualAngle is -CurrentLauncherAngle for Flak in FlarakDraw.
+        if F.Variant = FLARAK_VARIANT_FLAK
+            DesiredAngle = -TargetSide*ATan2(Dy,Abs(Dx))
+            if DesiredAngle < -60 then DesiredAngle = -60
+            if DesiredAngle > 60 then DesiredAngle = 60
+        endif
         if F.State = FLARAK_READY and F.AimSide = 0 then F.AimSide = TargetSide
         if F.State = FLARAK_READY and F.AimLocked = FALSE
             F.CurrentLauncherAngle = FlarakTurnTowards(F.CurrentLauncherAngle,DesiredAngle,StepAngle)
