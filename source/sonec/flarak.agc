@@ -18,7 +18,7 @@
 #constant FLARAK_TEST_ROCKET_SPEED_PX_PER_MS 0.32
 #constant FLARAK_TEST_MUZZLE_DISTANCE 22
 #constant FLARAK_TEST_JET_INTERVAL_MS 20
-#constant FLARAK_TEST_JET_SIDE_SPACING 3
+#constant FLARAK_TEST_JET_BACK_SPACING 3
 #constant FLARAK_TEST_JET_SCALE 0.35
 #constant FLARAK_TEST_JET_TAIL_DISTANCE 8
 #constant FLARAK_TEST_AIM_HOLD_MS 1000
@@ -104,7 +104,7 @@ function FlarakVisualTestDraw(Screen as TSize,SonecX as float,SonecY as float,Je
     local JetIndex as integer
     local JetFound as integer
     local JetOutlet as integer
-    local JetSideOffset as float
+    local JetBackDistance as float
     if FlarakTestBaseSprite = 0 or FlarakTestLauncherSprite = 0 then exitfunction
 
     NowMs = GetMilliseconds()
@@ -184,13 +184,12 @@ function FlarakVisualTestDraw(Screen as TSize,SonecX as float,SonecY as float,Je
                 FlarakTestRocketPosY = FlarakTestRocketPosY-Cos(FlarakTestRocketAngle)*FLARAK_TEST_ROCKET_SPEED_PX_PER_MS*RocketDeltaMs
                 // The rocket art is 90 degrees offset from the travel vector.
                 FlarakTestRocketSpriteAngle = FlarakTestRocketAngle+90
-                // Three parallel exhaust outlets behind the rocket.
-                // Rotate the sideways offsets with the current flight angle.
+                // Three particles in a row behind the rocket, along its flight axis.
                 if NowMs >= FlarakTestNextJetMs and ProtoJetfire.AnimJetfire.Sprite.ID > 0
-                    for JetOutlet = -1 to 1
-                        JetSideOffset = JetOutlet*FLARAK_TEST_JET_SIDE_SPACING
-                        JetPosition.x = FlarakTestRocketPosX-Sin(FlarakTestRocketAngle)*FLARAK_TEST_JET_TAIL_DISTANCE+Cos(FlarakTestRocketAngle)*JetSideOffset
-                        JetPosition.y = FlarakTestRocketPosY+Cos(FlarakTestRocketAngle)*FLARAK_TEST_JET_TAIL_DISTANCE+Sin(FlarakTestRocketAngle)*JetSideOffset+World.Position.y
+                    for JetOutlet = 0 to 2
+                        JetBackDistance = FLARAK_TEST_JET_TAIL_DISTANCE+JetOutlet*FLARAK_TEST_JET_BACK_SPACING
+                        JetPosition.x = FlarakTestRocketPosX-Sin(FlarakTestRocketAngle)*JetBackDistance
+                        JetPosition.y = FlarakTestRocketPosY+Cos(FlarakTestRocketAngle)*JetBackDistance+World.Position.y
                         JetfireNew(Jetfire,ProtoJetfire,World,JetPosition,NowMs)
                         Jetfire.SpriteData.Angle = FlarakTestRocketAngle
                         Jetfire.SpriteData.Scale = FLARAK_TEST_JET_SCALE
