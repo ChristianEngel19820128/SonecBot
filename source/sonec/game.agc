@@ -247,7 +247,7 @@ function GameDo(Game ref as TGame,Now as integer)
 			if Index >= 0
 				ChestAdd(Game.ChestList,Game.ProtoChest,Game.World,Game.PlateList.Plate[Index],Index,Now)
                 // Provisional spawn chance; balance later.
-                if random(0,10000) < 3500 then FlarakSpawn(Game.PlateList,Index,Now)
+                if random(0,10000) < 3500 then FlarakSpawn(Game.PlateList,Game.ChestList,Index,Now)
 				if WalkerCountAll(Game.WalkerList) < 5
 					// Longer platforms provide more room for walkers (35% at 200 px).
 					WalkerChance = 3500 * Game.PlateList.Plate[Index].ObjectData.Size.Width / 200
