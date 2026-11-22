@@ -4,6 +4,9 @@
 
 ## Jetzt
 
+- [ ] **Drohnen-Jetstreams lokal visuell prüfen:** Äußere Auslässe X ±15 px / Y +13 px, mittlerer längerer Auslass X 0 / Y +16 px. Breite und Effekt unverändert; AGK-Compile und Sichttest bei Bewegung/Wende offen.
+
+
 
 
 - [x] **S1 und S1b lokal bestanden.** S1 vom Entwickler lokal bestanden: ursprüngliche sechs Prüfungen plus korrigierte rote Trefferanzeige; gezielter Debug-Nachtest 4/4 bestanden. Umgesetzt: Nur tatsächlich vom Gegnergeschoss getroffene Kreise rot markieren, beide nur bei Treffer beider Kreise; je Kreis 200 ms; rein visuell, keine Änderung der Schadenslogik. Nächster separater Schritt: direkte Bomberbomben-Treffer auf zentrale Zwei-Kreis-Fläche umstellen, nach Abstimmung. Weitere Angriffe (Bomberbombe, Mine, Explosion) erst nach Abnahme einzeln umstellen; Walker, Spielerwaffen, Pickups ausgeschlossen.
