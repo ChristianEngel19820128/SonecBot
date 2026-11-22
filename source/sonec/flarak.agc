@@ -2,6 +2,8 @@
 // Seven 80x64 cells: 1-5 base, 6 shared rotating launcher, 7 Flak overlay.
 #constant FLARAK_VARIANT_ROCKET 0
 #constant FLARAK_VARIANT_FLAK 1
+// Temporary in-game overlay for diagnosing Flak volleys on either side.
+#constant FLARAK_DEBUG_BULLETS 1
 #constant FLARAK_FLAK_RISE_PX 12
 #constant FLARAK_FLAK_FINAL_OFFSET_Y -12
 #constant FLARAK_FLAK_RISE_MS 500
@@ -86,6 +88,13 @@ type TFlarak
     FlakNextVolleyMs as integer
     FlakVolleyAngle as float
     FlakVolleySide as integer
+    FlakDebugAddCount as integer
+    FlakDebugLastShotMs as integer
+    FlakDebugLastBulletIndex as integer
+    FlakDebugLastMoveStatus as integer
+    FlakDebugLastShotX as float
+    FlakDebugLastShotY as float
+    FlakDebugLastShotAngle as float
     StartMs as integer
     RocketNextMs as integer
     AimLocked as integer
@@ -110,6 +119,7 @@ endtype
 global FlarakList as TFlarak[]
 global FlarakBaseImage as integer
 global FlarakRocketImage as integer
+global FlarakDebugText as integer
 
 function FlarakVisualTestCreate()
     local Image as TImage
@@ -120,6 +130,11 @@ function FlarakVisualTestCreate()
     Image.File.Path = "/media/gfx/weapons"
     Image.File.Name = "rocket.png"
     if ImageLoad(Image) = TRUE then FlarakRocketImage = Image.ID
+    if FLARAK_DEBUG_BULLETS = 1 and FlarakDebugText = 0
+        FlarakDebugText = CreateText("")
+        SetTextSize(FlarakDebugText,9)
+        SetTextColor(FlarakDebugText,255,235,80,255)
+    endif
 endfunction
 
 // Find the free 80px footprint nearest the platform center, avoiding chests.
@@ -208,6 +223,7 @@ function FlarakSpawn(PlateList ref as TPlateList,ChestList ref as TChestList,Pla
     F.StartMs = NowMs
     F.RocketNextMs = NowMs+1500
     F.FlakNextVolleyMs = NowMs+1500
+    F.FlakDebugLastBulletIndex = -1
     F.CurrentFrame = 1
     F.State = FLARAK_CLOSED
     F.FrameStampMs = NowMs
@@ -236,6 +252,7 @@ function FlarakFireBullet(F ref as TFlarak,Game ref as TGame,NowMs as integer)
     local VisualAngle as float
     local FlightAngle as float
     local TubeOffset as float
+    local PreviousBulletLength as integer
     // The Flak barrels point upward in their source art. Use exactly the
     // displayed barrel angle from the developer's aiming fix (no +/-90).
     VisualAngle = -F.FlakVolleyAngle
@@ -244,7 +261,21 @@ function FlarakFireBullet(F ref as TFlarak,Game ref as TGame,NowMs as integer)
     if Mod(F.FlakShotsFired,2) = 1 then TubeOffset = FLARAK_FLAK_TUBE_OFFSET
     Position.x = F.WorldX-FLARAK_FLAK_FINAL_OFFSET_Y*Sin(VisualAngle)+Sin(FlightAngle)*FLARAK_FLAK_MUZZLE_DISTANCE+Cos(FlightAngle)*TubeOffset
     Position.y = F.WorldY+FLARAK_FLAK_FINAL_OFFSET_Y*Cos(VisualAngle)-Cos(FlightAngle)*FLARAK_FLAK_MUZZLE_DISTANCE+Sin(FlightAngle)*TubeOffset
+    PreviousBulletLength = Game.BulletList.Bullet.Length
     BulletAdd(Game.BulletList,Game.ProtoBullet,Game.World,Position,FlightAngle,0,TYPEENEMY,NowMs)
+    if FLARAK_DEBUG_BULLETS = 1
+        F.FlakDebugAddCount = F.FlakDebugAddCount+1
+        F.FlakDebugLastShotMs = NowMs
+        F.FlakDebugLastShotX = Position.x
+        F.FlakDebugLastShotY = Position.y
+        F.FlakDebugLastShotAngle = FlightAngle
+        F.FlakDebugLastMoveStatus = 1
+        if Game.BulletList.Bullet.Length > PreviousBulletLength
+            F.FlakDebugLastBulletIndex = Game.BulletList.Bullet.Length
+        else
+            F.FlakDebugLastBulletIndex = Game.BulletList.FirstFree-1
+        endif
+    endif
 endfunction
 
 function FlarakRocketLaunch(Rocket ref as TFlarakTestRocket,X as float,Y as float,FlightAngle as float,LaneOffset as float,NowMs as integer)
@@ -660,6 +691,67 @@ function FlarakDoAll(Game ref as TGame,JetfireList ref as TJetfireList,ProtoJetf
         if FlarakList[i].Enabled = FALSE
             FlarakRocketDo(FlarakList[i].Rocket1,Game,JetfireList,ProtoJetfire,World,NowMs)
             FlarakRocketDo(FlarakList[i].Rocket2,Game,JetfireList,ProtoJetfire,World,NowMs)
+        endif
+    next i
+endfunction
+
+// Inspect the most recent Flak bullet immediately after BulletMoveAll,
+// before collision processing can remove it for unrelated reasons.
+function FlarakDebugAfterBulletMove(BulletList ref as TBulletList,NowMs as integer)
+    local i as integer
+    local BulletIndex as integer
+    if FLARAK_DEBUG_BULLETS = 0 then exitfunction
+    for i = 0 to FlarakList.Length
+        if FlarakList[i].Variant = FLARAK_VARIANT_FLAK and FlarakList[i].FlakDebugLastMoveStatus = 1 and FlarakList[i].FlakDebugLastShotMs = NowMs
+            BulletIndex = FlarakList[i].FlakDebugLastBulletIndex
+            FlarakList[i].FlakDebugLastMoveStatus = 3
+            if BulletIndex >= 0 and BulletIndex <= BulletList.Bullet.Length
+                if BulletList.Bullet[BulletIndex].Enabled = TRUE then FlarakList[i].FlakDebugLastMoveStatus = 2
+            endif
+        endif
+    next i
+endfunction
+
+// Temporary local HUD for every visible Flak: READY, aim, time gates and
+// whether the last BulletAdd survived BulletMoveAll.
+function FlarakDebugDrawAll(World ref as TWorld)
+    local i as integer
+    local X as float
+    local Y as float
+    local WaitMs as integer
+    local RiseMs as integer
+    local SideText as string
+    local MoveText as string
+    local DebugLine as string
+    if FLARAK_DEBUG_BULLETS = 0 or FlarakDebugText = 0 then exitfunction
+    for i = 0 to FlarakList.Length
+        if FlarakList[i].Enabled = TRUE and FlarakList[i].Variant = FLARAK_VARIANT_FLAK
+            X = FlarakList[i].WorldX-World.Position.x
+            Y = FlarakList[i].WorldY-World.Position.y
+            if X >= 0 and X <= GetVirtualWidth() and Y >= 0 and Y <= GetVirtualHeight()
+                SideText = "R"
+                if FlarakList[i].AimSide < 0 then SideText = "L"
+                if FlarakList[i].AimSide = 0 then SideText = "0"
+                WaitMs = FlarakList[i].FlakNextVolleyMs-FlarakList[i].NowMs
+                if WaitMs < 0 then WaitMs = 0
+                RiseMs = FLARAK_FLAK_RISE_MS-(FlarakList[i].NowMs-FlarakList[i].FlakRiseStartMs)
+                if RiseMs < 0 then RiseMs = 0
+                MoveText = "none"
+                if FlarakList[i].FlakDebugLastMoveStatus = 1 then MoveText = "ADDED"
+                if FlarakList[i].FlakDebugLastMoveStatus = 2 then MoveText = "ALIVE"
+                if FlarakList[i].FlakDebugLastMoveStatus = 3 then MoveText = "REMOVED"
+                DebugLine = "FLAK "+SideText+" state="+Str(FlarakList[i].State)+" lock="+Str(FlarakList[i].AimLocked)+" shots="+Str(FlarakList[i].FlakShotsFired)+" added="+Str(FlarakList[i].FlakDebugAddCount)
+                DebugLine = DebugLine+Chr(10)+"gun="+Str(FlarakList[i].CurrentLauncherAngle,1)+" drawn="+Str(-FlarakList[i].CurrentLauncherAngle,1)+" wait="+Str(WaitMs)+" rise="+Str(RiseMs)
+                DebugLine = DebugLine+Chr(10)+"bullet="+MoveText+" angle="+Str(FlarakList[i].FlakDebugLastShotAngle,1)+" x="+Str(FlarakList[i].FlakDebugLastShotX,0)+" y="+Str(FlarakList[i].FlakDebugLastShotY,0)
+                SetTextString(FlarakDebugText,DebugLine)
+                X = X-50
+                if X < 4 then X = 4
+                if X > GetVirtualWidth()-235 then X = GetVirtualWidth()-235
+                Y = Y-80
+                if Y < 4 then Y = 4
+                SetTextPosition(FlarakDebugText,X,Y)
+                DrawText(FlarakDebugText)
+            endif
         endif
     next i
 endfunction
