@@ -174,9 +174,10 @@ global SonecTwoCircleOldOnly as integer
 global SonecTwoCircleNewOnly as integer
 // F3 only controls the visible outlines; comparison remains active.
 global SonecCollisionDebugVisible as integer
-// Debug-only: briefly highlight the two-circle outline on an enemy bullet hit.
+// Debug-only: track each circle independently; both can light up on one sweep.
 #constant SONEC_COLLISION_DEBUG_HIT_MS 200
-global SonecCollisionDebugHitUntil as integer
+global SonecCollisionDebugHitUntil0 as integer
+global SonecCollisionDebugHitUntil1 as integer
 
 function BulletSweepHitsSonecCircle(Bullet ref as TBullet,CenterX as float,CenterY as float,Radius as float)
     local Dx as float
@@ -271,7 +272,19 @@ function BulletCollide(BulletList ref as TBulletList,Sonec ref as TSonec,Shield 
                     endif
                 endif
                 if DamageHit = TRUE
-                    SonecCollisionDebugHitUntil = GetMilliseconds() + SONEC_COLLISION_DEBUG_HIT_MS
+                    // Diagnostic only: identify which body circle(s) the active sweep touched.
+                    if SONEC_TWO_CIRCLE_TEST = 1 and SONEC_TWO_CIRCLE_DAMAGE = 1
+                        local DebugRadius as float
+                        local DebugHitUntil as integer
+                        DebugRadius = SonecHitCircleRadius(Sonec)
+                        DebugHitUntil = GetMilliseconds() + SONEC_COLLISION_DEBUG_HIT_MS
+                        if BulletSweepHitsSonecCircle(BulletList.Bullet[i],Sonec.ObjectData.Position.x,SonecHitCircleY(Sonec,0),DebugRadius) = TRUE
+                            SonecCollisionDebugHitUntil0 = DebugHitUntil
+                        endif
+                        if BulletSweepHitsSonecCircle(BulletList.Bullet[i],Sonec.ObjectData.Position.x,SonecHitCircleY(Sonec,1),DebugRadius) = TRUE
+                            SonecCollisionDebugHitUntil1 = DebugHitUntil
+                        endif
+                    endif
                     // Keep the established proportional shield protection and health damage.
                     local HealthBeforeHit as integer
                     HealthBeforeHit = Sonec.Health.State
