@@ -140,8 +140,8 @@ function ExplosionNew(Explosion ref as TExplosion,ProtoExplosion ref as TProtoEx
 	Explosion.MeasureMineHits = 0
 	
 	if ExplosionType = 3
-        // RedSmall: five frames at a steady 50 ms each.
-        TimeSet(Explosion.AnimationData.AnimTimer,50,1)
+        // RedSmall: five frames at a steady 60 ms each.
+        TimeSet(Explosion.AnimationData.AnimTimer,60,1)
     else
         TimeSet(Explosion.AnimationData.AnimTimer,random(20,30),1)
     endif
