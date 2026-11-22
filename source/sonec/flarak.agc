@@ -19,7 +19,7 @@
 #constant FLARAK_TEST_MUZZLE_DISTANCE 22
 #constant FLARAK_TEST_JET_INTERVAL_MS 20
 #constant FLARAK_TEST_JET_BACK_SPACING 3
-#constant FLARAK_TEST_JET_SCALE 0.25
+#constant FLARAK_TEST_JET_SCALE 0.37
 #constant FLARAK_TEST_JET_TAIL_DISTANCE 8
 #constant FLARAK_TEST_AIM_HOLD_MS 1000
 #constant FLARAK_TEST_WARNING_MS 300
@@ -180,9 +180,9 @@ function FlarakVisualTestDo(Screen as TSize,SonecX as float,SonecY as float,Jetf
                 FlarakTestRocketPosY = FlarakTestRocketPosY-Cos(FlarakTestRocketAngle)*FLARAK_TEST_ROCKET_SPEED_PX_PER_MS*RocketDeltaMs
                 // The rocket art is 90 degrees offset from the travel vector.
                 FlarakTestRocketSpriteAngle = FlarakTestRocketAngle+90
-                // Three particles in a row behind the rocket, along its flight axis.
+                // Four particles in a row behind the rocket, along its flight axis.
                 if NowMs >= FlarakTestNextJetMs and ProtoJetfire.AnimJetfire.Sprite.ID > 0
-                    for JetOutlet = 0 to 2
+                    for JetOutlet = 0 to 3
                         JetBackDistance = FLARAK_TEST_JET_TAIL_DISTANCE+JetOutlet*FLARAK_TEST_JET_BACK_SPACING
                         JetPosition.x = FlarakTestRocketPosX-Sin(FlarakTestRocketAngle)*JetBackDistance
                         JetPosition.y = FlarakTestRocketPosY+Cos(FlarakTestRocketAngle)*JetBackDistance+World.Position.y
