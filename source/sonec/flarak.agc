@@ -99,7 +99,7 @@ function FlarakSpawn(PlateList ref as TPlateList,PlateIndex as integer,NowMs as 
     F.PlateOffsetX = Plate.ObjectData.Size.Width*0.5
     // Platform position is its vertical center (8 px high); align the sprite bottom to its top.
     // Keep the approved sprite pivot (40,42) separate from platform anchoring.
-    F.PlateOffsetY = -Plate.ObjectData.Size.Height*0.5-(FLARAK_TEST_CELL_H-FLARAK_TEST_BASE_OFFSET_Y)
+    F.PlateOffsetY = -(FLARAK_TEST_CELL_H-FLARAK_TEST_BASE_OFFSET_Y)
     F.WorldX = Plate.ObjectData.Position.x+F.PlateOffsetX
     F.WorldY = Plate.ObjectData.Position.y+F.PlateOffsetY
     F.BaseSprite = CreateSprite(FlarakBaseImage)
