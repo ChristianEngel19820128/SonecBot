@@ -4,7 +4,7 @@
 
 ## Jetzt
 
-- [ ] **Drohnen-Jetstreams lokal visuell prüfen:** Nach Screenshot-Korrektur äußere Auslässe X ±7 px / Y +8 px, mittlerer längerer Auslass X 0 / Y +10 px. Breite und Effekt unverändert; AGK-Compile und Sichttest bei Bewegung/Wende offen.
+- [ ] **Drohnen-Jetstreams lokal visuell prüfen:** Nach Screenshot-Korrektur äußere Auslässe X ±9 px / Y +8 px, mittlerer längerer Auslass X 0 / Y +10 px. Breite und Effekt unverändert; AGK-Compile und Sichttest bei Bewegung/Wende offen.
 
 
 
