@@ -298,28 +298,42 @@ endfunction
 //----------------------------------------------------------------------
 
 function ExplosionCollideSonec(ExplosionList ref as TExplosionList,Sonec ref as TSonec,Shield ref as TShield,Now as integer)
-	
-	local i as integer
-	local Radius as float
 
-	for i = 0 to ExplosionList.Explosion.Length
-		if ExplosionList.Explosion[i].Enabled = TRUE
-			ExplosionList.Explosion[i].MeasureChecks = ExplosionList.Explosion[i].MeasureChecks + 1
-			Radius = CalcRadius(ExplosionList.Explosion[i].ObjectData.Position,Sonec.ObjectData.Position)
-			if Radius < ExplosionList.Explosion[i].ObjectData.Radius and ExplosionDamageAllowed(ExplosionList.Explosion[i],Sonec.ObjectData.Position)
-				if EXPLOSION_TIMED_DAMAGE = 0 or ExplosionList.Explosion[i].LastSonecHitMs = 0 or GetMilliseconds()-ExplosionList.Explosion[i].LastSonecHitMs >= EXPLOSION_DAMAGE_INTERVAL_MS
-					ExplosionList.Explosion[i].LastSonecHitMs = GetMilliseconds()
-					ExplosionList.Explosion[i].MeasureHits = ExplosionList.Explosion[i].MeasureHits + 1
-					ExplosionList.Explosion[i].MeasureDamage = ExplosionList.Explosion[i].MeasureDamage + ExplosionList.Explosion[i].BulletData.Damage
-					local HealthBeforeHit as integer
-					HealthBeforeHit = Sonec.Health.State
-					Sonec.Health.State = Sonec.Health.State - (ExplosionList.Explosion[i].BulletData.Damage - ShieldAbsorbDamage(Shield,Sonec,ExplosionList.Explosion[i].BulletData.Damage,Now))
-					if Sonec.Health.State < HealthBeforeHit then SonecHitFlashUntil = Now + SONEC_HIT_FLASH_MS
-				endif
-			endif
-		endif
-	next i
-	
+    local i as integer
+    local CircleIndex as integer
+    local Radius as float
+    local DeltaX as float
+    local DeltaY as float
+    local Hit as integer
+
+    for i = 0 to ExplosionList.Explosion.Length
+        if ExplosionList.Explosion[i].Enabled = TRUE
+            ExplosionList.Explosion[i].MeasureChecks = ExplosionList.Explosion[i].MeasureChecks + 1
+            // S4: explosion radius reaches either shared Sonec body circle.
+            // Keep the existing strict radius test (no extra Sonec-radius padding).
+            Radius = ExplosionList.Explosion[i].ObjectData.Radius
+            DeltaX = ExplosionList.Explosion[i].ObjectData.Position.x-Sonec.ObjectData.Position.x
+            Hit = FALSE
+            for CircleIndex = 0 to 1
+                DeltaY = ExplosionList.Explosion[i].ObjectData.Position.y-SonecHitCircleY(Sonec,CircleIndex)
+                if DeltaX*DeltaX+DeltaY*DeltaY < Radius*Radius then Hit = TRUE
+            next CircleIndex
+            // Preserve platform shielding against Sonec's original center position.
+            // Do not let the upper circle bypass the existing platform boundary.
+            if Hit = TRUE and ExplosionDamageAllowed(ExplosionList.Explosion[i],Sonec.ObjectData.Position)
+                if EXPLOSION_TIMED_DAMAGE = 0 or ExplosionList.Explosion[i].LastSonecHitMs = 0 or GetMilliseconds()-ExplosionList.Explosion[i].LastSonecHitMs >= EXPLOSION_DAMAGE_INTERVAL_MS
+                    ExplosionList.Explosion[i].LastSonecHitMs = GetMilliseconds()
+                    ExplosionList.Explosion[i].MeasureHits = ExplosionList.Explosion[i].MeasureHits + 1
+                    ExplosionList.Explosion[i].MeasureDamage = ExplosionList.Explosion[i].MeasureDamage + ExplosionList.Explosion[i].BulletData.Damage
+                    local HealthBeforeHit as integer
+                    HealthBeforeHit = Sonec.Health.State
+                    Sonec.Health.State = Sonec.Health.State - (ExplosionList.Explosion[i].BulletData.Damage - ShieldAbsorbDamage(Shield,Sonec,ExplosionList.Explosion[i].BulletData.Damage,Now))
+                    if Sonec.Health.State < HealthBeforeHit then SonecHitFlashUntil = Now + SONEC_HIT_FLASH_MS
+                endif
+            endif
+        endif
+    next i
+
 endfunction
 
 //----------------------------------------------------------------------
