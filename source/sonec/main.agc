@@ -71,6 +71,10 @@ UseNewDefaultFonts(1)
 
 #option_explicit
 
+// Master switch for in-game debug controls and diagnostic overlays.
+// 0 = disabled for normal play; 1 = enable keys 1-8 and their diagnostics.
+#constant GAME_DEBUG_ENABLED 0
+
 #constant FALSE 0
 #constant TRUE 1
 
@@ -206,7 +210,7 @@ repeat
 	// 1 Walker, 2 platforms, 3 K1d outlines, 4 pixel snap,
 	// 5 tower A/B, 6 platform A/B, 7 drone A/B, 8 Flak bullet HUD.
 	// Keys 9-0 remain reserved.
-	if Game.IsLost = FALSE
+	if Game.IsLost = FALSE and GAME_DEBUG_ENABLED = 1
 		if GetKeyPressed(KEY_8) = 1
 			if FlarakDebugVisible = 0
 				FlarakDebugVisible = 1
