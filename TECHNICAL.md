@@ -39,6 +39,20 @@ Virtuelle Auflösung aktuell **900×450**, Windows-Fenster 1350×675. main.agc f
 
 Objektverwaltung und Kollisionen bestehen weitgehend aus eigenen Strukturen/Pools und Kreis-/AABB-Hilfen. Keine pauschale Umstellung auf native Sprite-Physik beschlossen. Einzelne Sonec-Bewegungs-/Ereignispfade können noch bildratenabhängig sein; keine globale Zeit-/Physikänderung vor Veröffentlichung ohne konkreten Befund.
 
+
+## Sonec-Treffergeometrie: verbindlicher Wiederverwendungsweg (S1–S4)
+
+**Für neue gegnerische Angriffe keine eigene Sonec-Mittelpunkt-/Radius-Hitbox nachbauen.** Stattdessen die zentralen Funktionen in `source/sonec/sonec.agc` verwenden:
+
+- `SonecHitCircleRadius(Sonec)`: gemeinsamer Radius der zwei Körperkreise, berücksichtigt Ducken.
+- `SonecHitCircleY(Sonec,0)` und `SonecHitCircleY(Sonec,1)`: Y-Mittelpunkte der beiden Kreise; X-Mittelpunkt ist `Sonec.ObjectData.Position.x`.
+- Bei neuen Schadensquellen **beide** Kreise prüfen und die Schadensauslösung pro Quelle/Ereignis zusammenfassen; ein Treffer beider Kreise darf nicht doppelt schaden. Für bewegte schnelle Projektile die Bewegungsstrecke (Sweep) berücksichtigen, nicht nur die Endposition.
+- Den Quellradius und die jeweilige Treffersemantik bewusst beibehalten: `bullet.agc` prüft Sweep, `bomber.agc` Bomben-Sweep mit Bombenradius, `mine.agc` Kreisüberlappung mit Minenradius; `explosion.agc` prüft die beiden Kreismittelpunkte gegen den Explosionsradius **ohne Addition des Sonec-Kreisradius**.
+- Bei Explosionen `ExplosionDamageAllowed` **zusätzlich** aufrufen: Der Plattformschutz wird derzeit absichtlich mit `Sonec.ObjectData.Position` (bisherigem Körperzentrum) bewertet, damit der obere Kreis die Abschirmung nicht umgeht. Nicht ohne separaten Auftrag und gezielten Plattformtest ändern.
+- Schild, Schadenstakt, Trefferfeedback, Rewards und Explosionserzeugung sind eigene Abläufe; nicht bei einer neuen Kollisionsquelle stillschweigend verändern. Die Taste-3-Kreisfärbung ist aktuell nur für Gegnergeschosse angeschlossen, nicht automatisch für Bomben/Minen/Explosionen.
+
+**Evidenz:** Entwickler hat S1/S1b, S2 (7/7), S3 (7/7) und S4 (8/8) lokal bestanden gemeldet, einschließlich Plattformabschirmung direkt darunter und Treffer außerhalb der Plattformkanten. Kein eigener AGK-Compile durch den Assistenten. Bei neuen Gegnern oder Schadensarten diese Schnittstellen zuerst prüfen und die neuen Trefferfälle lokal testen.
+
 ## 3. Alpha-Walker: unveränderter Referenzstand
 
 ### Pivots und IK
