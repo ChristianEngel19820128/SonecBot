@@ -3,7 +3,7 @@
 #constant FLARAK_VARIANT_ROCKET 0
 #constant FLARAK_VARIANT_FLAK 1
 // Temporary in-game overlay for diagnosing Flak volleys on either side.
-#constant FLARAK_DEBUG_BULLETS GAME_DEBUG_ENABLED
+#constant FLARAK_DEBUG_BULLETS 1
 #constant FLARAK_FLAK_RISE_PX 12
 #constant FLARAK_FLAK_FINAL_OFFSET_Y -12
 #constant FLARAK_FLAK_RISE_MS 500
