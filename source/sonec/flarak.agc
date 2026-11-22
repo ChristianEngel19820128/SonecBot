@@ -2,8 +2,8 @@
 // Seven 80x64 cells: 1-5 base, 6 shared rotating launcher, 7 Flak overlay.
 #constant FLARAK_VARIANT_ROCKET 0
 #constant FLARAK_VARIANT_FLAK 1
-#constant FLARAK_FLAK_RISE_PX 20
-#constant FLARAK_FLAK_RISE_MS 280
+#constant FLARAK_FLAK_RISE_PX 40
+#constant FLARAK_FLAK_RISE_MS 500
 #constant FLARAK_TEST_CELL_W 80
 #constant FLARAK_TEST_CELL_H 64
 #constant FLARAK_TEST_BASE_OFFSET_X 40
@@ -539,9 +539,6 @@ function FlarakDraw(F ref as TFlarak,World ref as TWorld)
         else
             SetSpriteFlip(F.LauncherSprite,0,0)
         endif
-        SetSpriteAngle(F.LauncherSprite,F.CurrentLauncherAngle)
-        SetSpritePositionByOffset(F.LauncherSprite,X+FLARAK_TEST_LAUNCHER_PIVOT_X-FLARAK_TEST_BASE_OFFSET_X,Y+FLARAK_TEST_LAUNCHER_PIVOT_Y-FLARAK_TEST_BASE_OFFSET_Y)
-        DrawSprite(F.LauncherSprite)
         if F.Variant = FLARAK_VARIANT_FLAK and F.FlakSprite > 0
             RiseProgress = (F.NowMs-F.FlakRiseStartMs)*1.0/FLARAK_FLAK_RISE_MS
             if RiseProgress < 0 then RiseProgress = 0
@@ -556,6 +553,9 @@ function FlarakDraw(F ref as TFlarak,World ref as TWorld)
             SetSpritePositionByOffset(F.FlakSprite,X+FLARAK_TEST_LAUNCHER_PIVOT_X-FLARAK_TEST_BASE_OFFSET_X,Y+FLARAK_TEST_LAUNCHER_PIVOT_Y-FLARAK_TEST_BASE_OFFSET_Y+RiseOffset)
             DrawSprite(F.FlakSprite)
         endif
+        SetSpriteAngle(F.LauncherSprite,F.CurrentLauncherAngle)
+        SetSpritePositionByOffset(F.LauncherSprite,X+FLARAK_TEST_LAUNCHER_PIVOT_X-FLARAK_TEST_BASE_OFFSET_X,Y+FLARAK_TEST_LAUNCHER_PIVOT_Y-FLARAK_TEST_BASE_OFFSET_Y)
+        DrawSprite(F.LauncherSprite)
         if F.Variant = FLARAK_VARIANT_ROCKET and F.State = FLARAK_READY and F.AimLocked = TRUE and F.VolleyFired = FALSE and F.Rocket1.Active = FALSE and F.Rocket2.Active = FALSE and F.SecondPending = FALSE and F.NowMs-F.AimLockMs >= FLARAK_TEST_AIM_HOLD_MS-FLARAK_TEST_WARNING_MS
             WarningStep = (F.NowMs-F.AimLockMs-(FLARAK_TEST_AIM_HOLD_MS-FLARAK_TEST_WARNING_MS))/100
             if WarningStep > 2 then WarningStep = 2
