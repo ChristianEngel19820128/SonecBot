@@ -21,8 +21,6 @@
 #constant DRONE_SCAN_NEAR_X 220
 #constant DRONE_SCAN_PEAK_DISTANCE_X 100
 #constant DRONE_SCAN_MAX_SUCCESS_PERCENT 50
-// Temporary diagnostic: force acquisition only for a valid target ahead and within range.
-#constant DRONE_DEBUG_FORCE_ACQUIRE 0
 #constant DRONE_SHOT_MAX_Y_DIFFERENCE 120
 #constant DRONE_CHARGE_MIN_INTERVAL_MS 6000
 #constant DRONE_CHARGE_MAX_INTERVAL_MS 10000
@@ -49,9 +47,6 @@ global DroneScanUntilMs as integer
 global DroneNextScanMs as integer
 global DroneScanActive as integer
 global DroneTargetAcquired as integer
-// Temporary scan diagnostic overlay; remove after developer test.
-global DroneScanDebugText as integer
-global DroneScanDebugMessage as string
 global DroneBaseY as float
 global DroneBobStartMs as integer
 global DroneScanStartMs as integer
@@ -365,13 +360,11 @@ function DroneMove(Drone ref as TDrone,Screen as TSize,Sonec ref as TSonec,Shiel
                         if Inenergie.Enabled = TRUE
                             ScanChance = ScanChance+25*ScanCurve
                         endif
-                        // Diagnostic: use a 10000-step roll without changing the intended probability.
+                        // Fine-grained 10000-step roll preserves fractional scan chances.
                         ScanRoll = random(1,10000)
                         if ScanRoll <= ScanChance*100 then DroneTargetAcquired = TRUE
-                        if DRONE_DEBUG_FORCE_ACQUIRE = 1 then DroneTargetAcquired = TRUE
                     endif
                 endif
-                DroneScanDebugMessage = "SCAN dx="+Str(TargetDx)+" dir="+Str(Drone.Direction)+" ahead="+Str(ScanAhead)+" suction="+Str(Inenergie.Enabled)+" chance%="+Str(ScanChance)+" threshold="+Str(ScanChance*100)+" roll10k="+Str(ScanRoll)+" found="+Str(DroneTargetAcquired)+" lost="+Str(Sonec.IsLost)+" force="+Str(DRONE_DEBUG_FORCE_ACQUIRE)
                 // A successful scan keeps its target; a failed scan may trigger a random turn.
                 if DroneTargetAcquired = TRUE
                     DroneNextChargeMs = Now+DRONE_ACTION_REST_MS
@@ -540,14 +533,6 @@ function DroneJetfireDo(Drone ref as TDrone,JetfireList ref as TJetfireList,Prot
 endfunction
 
 function DroneDraw(Drone ref as TDrone,ProtoDrone ref as TProtoDrone,World ref as TWorld)
-    if DroneScanDebugText = 0
-        DroneScanDebugText = CreateText("")
-        SetTextPosition(DroneScanDebugText,5,75)
-        SetTextSize(DroneScanDebugText,10)
-        SetTextColor(DroneScanDebugText,255,255,0,255)
-    endif
-    SetTextString(DroneScanDebugText,DroneScanDebugMessage)
-    DrawText(DroneScanDebugText)
     local EffectData as TSpriteData
     local TorsoData as TSpriteData
     local SensorData as TSpriteData
