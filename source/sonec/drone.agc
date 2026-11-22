@@ -357,12 +357,13 @@ function DroneMove(Drone ref as TDrone,Screen as TSize,Sonec ref as TSonec,Shiel
                         if Inenergie.Enabled = TRUE
                             ScanChance = ScanChance+25*(DRONE_SCAN_MAX_DISTANCE_X-abs(TargetDx))/DRONE_SCAN_MAX_DISTANCE_X
                         endif
-                        ScanRoll = random(1,100)
-                        if ScanRoll <= ScanChance then DroneTargetAcquired = TRUE
+                        // Diagnostic: use a 10000-step roll without changing the intended probability.
+                        ScanRoll = random(1,10000)
+                        if ScanRoll <= ScanChance*100 then DroneTargetAcquired = TRUE
                         if DRONE_DEBUG_FORCE_ACQUIRE = 1 then DroneTargetAcquired = TRUE
                     endif
                 endif
-                DroneScanDebugMessage = "SCAN dx="+Str(TargetDx)+" dir="+Str(Drone.Direction)+" ahead="+Str(ScanAhead)+" suction="+Str(Inenergie.Enabled)+" chance="+Str(ScanChance)+" roll="+Str(ScanRoll)+" found="+Str(DroneTargetAcquired)+" lost="+Str(Sonec.IsLost)+" force="+Str(DRONE_DEBUG_FORCE_ACQUIRE)
+                DroneScanDebugMessage = "SCAN dx="+Str(TargetDx)+" dir="+Str(Drone.Direction)+" ahead="+Str(ScanAhead)+" suction="+Str(Inenergie.Enabled)+" chance%="+Str(ScanChance)+" threshold="+Str(ScanChance*100)+" roll10k="+Str(ScanRoll)+" found="+Str(DroneTargetAcquired)+" lost="+Str(Sonec.IsLost)+" force="+Str(DRONE_DEBUG_FORCE_ACQUIRE)
                 // A successful scan keeps its target; a failed scan may trigger a random turn.
                 if DroneTargetAcquired = TRUE
                     DroneNextChargeMs = Now+DRONE_ACTION_REST_MS
