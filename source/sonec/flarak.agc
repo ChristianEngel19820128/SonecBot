@@ -528,6 +528,7 @@ function FlarakDraw(F ref as TFlarak,World ref as TWorld)
     local MuzzleAngle as float
     local RiseProgress as float
     local RiseOffset as float
+    local FlakOffsetY as float
     if F.BaseSprite = 0 or F.LauncherSprite = 0 then exitfunction
     X = F.WorldX-World.Position.x
     Y = F.WorldY-World.Position.y
@@ -551,7 +552,9 @@ function FlarakDraw(F ref as TFlarak,World ref as TWorld)
                 SetSpriteFlip(F.FlakSprite,0,0)
             endif
             SetSpriteAngle(F.FlakSprite,F.CurrentLauncherAngle)
-            SetSpritePositionByOffset(F.FlakSprite,X+FLARAK_TEST_LAUNCHER_PIVOT_X-FLARAK_TEST_BASE_OFFSET_X,Y+FLARAK_TEST_LAUNCHER_PIVOT_Y-FLARAK_TEST_BASE_OFFSET_Y+FLARAK_FLAK_FINAL_OFFSET_Y+RiseOffset)
+            // Rotate the deployment offset around the same world pivot as frame 6.
+            FlakOffsetY = FLARAK_FLAK_FINAL_OFFSET_Y+RiseOffset
+            SetSpritePositionByOffset(F.FlakSprite,X+FLARAK_TEST_LAUNCHER_PIVOT_X-FLARAK_TEST_BASE_OFFSET_X-FlakOffsetY*Sin(F.CurrentLauncherAngle),Y+FLARAK_TEST_LAUNCHER_PIVOT_Y-FLARAK_TEST_BASE_OFFSET_Y+FlakOffsetY*Cos(F.CurrentLauncherAngle))
             DrawSprite(F.FlakSprite)
         endif
         SetSpriteAngle(F.LauncherSprite,F.CurrentLauncherAngle)
