@@ -4,7 +4,7 @@
 
 ## Jetzt
 
-- [ ] **Flarak F1 – visuellen Sockel-/Werfer-Test lokal prüfen.** Frames 1–5 fahren aus, Frame 6 rotiert separat um vorläufigen Pivot (40,52); Position, Richtung und Winkel anhand Screenshot beurteilen. Danach F2 (begrenztes Zielen/Seitenwechsel) und F3 (zwei Raketenvarianten mit Startwinkel und optional verzögerter Zielsuche) planen.
+- [ ] **Flarak F1/F2 – Sockel-/Werfer- und Raketenstart-Test lokal prüfen.** Frames 1–5 fahren aus, Frame 6 rotiert separat um vorläufigen Pivot (40,52); Position, Richtung und Winkel anhand Screenshot beurteilen. Danach F2 (begrenztes Zielen/Seitenwechsel) und F3 (zwei Raketenvarianten mit Startwinkel und optional verzögerter Zielsuche) planen.
 
 ## Danach / beobachten
 
