@@ -278,7 +278,7 @@ function BulletSweepHitsSonec(Bullet ref as TBullet,Sonec ref as TSonec)
     if DeltaX*DeltaX + DeltaY*DeltaY < RadiusSq then Hit = TRUE
 endfunction Hit
 
-function BulletCollide(BulletList ref as TBulletList,Sonec ref as TSonec,Shield ref as TShield,Now as integer)
+function BulletCollide(BulletList ref as TBulletList,Sonec ref as TSonec,Shield ref as TShield,Game ref as TGame,Now as integer)
     local i as integer
 
     for i = 0 to BulletList.Bullet.Length
