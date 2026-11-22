@@ -1,10 +1,12 @@
 # SonecBot – Nächste Aufgaben
 
-**Stand:** 21. November 2026 · **Arbeitszweig:** `develop`
+**Stand:** 22. November 2026 · **Arbeitszweig:** `develop`
 
 ## Jetzt
 
-- [ ] **B5 – Bomben zerstören genau eine getroffene Kiste, lokaler Test blockiert (1/7: Compile bestanden, sechs Fälle nicht prüfbar); zufällige wiederkehrende Bomber-Testauftritte 8–15 s lokal 5/5 bestanden; B5-Kistenkollision weiterhin mit sechs offenen Verhaltensprüfungen.** Sweep gegen aktuelle Kisten-Rechtecke, normaler Chest-Reward einmalig, vorhandene plattformbegrenzte Explosion; keine neue Zerstörungsanimation. 
+- [ ] **B5 – Grafische Explosionsbegrenzung B5b lokal bestätigt; tatsächliche Schutz-/Schadensgrenze auf Plattformhöhe noch separat prüfen.** Kistenkontakt, Rewards und übriges Gameplay in vorigem B5-Test 5/6 bestätigt; der sechste Grafikpunkt wurde nach Korrektur vom Entwickler als funktionierend gemeldet. Temporäre Bomber-Testauftritte 8–15 s bleiben vorerst erhalten.
+
+- [ ] **Balancing-Merkpunkt – Space Jet:** Aktiviert sich weiterhin beim Betreten des hohen Luftraums. Für weitere Tests bewusst unverändert lassen; später Aktivierungsverhalten balancieren.
 
 - [ ] **Menü-Hilfetexte später erweitern.** Nur vormerken; gehört nicht in den aktuellen N1-/Cloud-Arbeitsschritt.
 
