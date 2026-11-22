@@ -62,8 +62,8 @@ function FlarakVisualTestCreate()
     endif
     // Small warning lamp; it steps across three points on the barrel.
     FlarakTestWarningSprite = CreateSprite(0)
-    SetSpriteSize(FlarakTestWarningSprite,3,3)
-    SetSpriteOffset(FlarakTestWarningSprite,1.5,1.5)
+    SetSpriteSize(FlarakTestWarningSprite,2,2)
+    SetSpriteOffset(FlarakTestWarningSprite,1,1)
     SetSpriteColor(FlarakTestWarningSprite,255,155,45,255)
     FlarakTestAimLocked = FALSE
     FlarakTestRocketActive = FALSE
