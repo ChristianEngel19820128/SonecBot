@@ -206,3 +206,10 @@ Verbindlicher Planungsrahmen und Details: [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROA
 **Flarak-Raketen-Lebensdauer und RedSmall-Größe (lokaler Test offen):** `flarak.agc` Commit `27fa0a8`: bisherige feste 3000-ms-Lebensdauer entfernt; Raketen werden bei Weltgrenzenüberschreitung (`0..World.Size.Width/Height`) oder Sonec-Spitzentreffer deaktiviert, unabhängig vom Kamerabild. `explosion.agc` Commit `ce95ffa`: nur RedSmall (Typ 3) visuell auf Scale 1.5 gesetzt, 60 ms pro Frame beibehalten. AGK-Build und Spieltest ausstehend.
 
 **Flarak-Raketen-Zeitzünder / RedSmall-Farbe (lokaler Test offen):** `flarak.agc` Commit `0e903ab`: Raketen explodieren nach 6000 ms an ihrer aktuellen Weltposition mit visueller RedSmall (Typ 3); Treffer lösen weiterhin RedSmall an der Spitze aus; Verlassen der Weltgrenzen entfernt Raketen weiterhin ohne Explosion. `explosion.agc` Commit `bb9ac22`: RedSmall hellgrün RGB (170,255,170), Alpha 255; Scale 1.5 und 60 ms/Frame unverändert. Keine neue Schadenswirkung. AGK-Build/visueller Test offen.
+
+## Flarak Mehrfach-Spawn (AGK-Lokaltest offen)
+
+- `flarak.agc`: globale Einzelinstanz auf `TFlarak`-Liste umgestellt; jede Flarak besitzt eigene Sprites, Ziel-/Warn-/Animationszustände und zwei Raketen. Provisorische Spawnchance 35 % bei neu erzeugten Plattformen ab 100 px Breite, Position Plattformmitte, Basis-Pivot unverändert (40,42).
+- `game.agc`: Spawn nach `PlateAdd`, Flarak-Update nach `PlateMoveAll`, Zeichnen über Liste. Flarak-Weltposition pro Frame aus Plattformposition und festem Offset (horizontal/vertikal). Bei deaktivierter Plattform stoppt der Werfer, abgefeuerte Raketen laufen unabhängig weiter. Inaktive Listenplätze werden erst nach Ende beider Raketen wiederverwendet; alte Sprites werden dann gelöscht.
+- Raketenverhalten und RedSmall bleiben visuell; Schaden für direkte Raketen- und Explosionstreffer folgt in einem späteren getrennten Schritt. Spawn-Balancing ist provisorisch.
+- **Ungeprüft:** AGK-Compile und Laufzeitverhalten, mehrere gleichzeitige Flaraks, Plattformmitbewegung, Plattform-Ende und fortfliegende Raketen. Nächster Schritt: Entwickler-Lokaltest und ggf. Korrektur.
