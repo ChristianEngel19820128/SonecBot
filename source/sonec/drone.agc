@@ -344,7 +344,10 @@ function DroneMove(Drone ref as TDrone,Screen as TSize,Sonec ref as TSonec,Shiel
                         if random(1,100) <= ScanChance then DroneTargetAcquired = TRUE
                     endif
                 endif
-                // Proximity can influence a turn, but never guarantees one.
+                // A successful scan keeps its target; a failed scan may trigger a random turn.
+                if DroneTargetAcquired = TRUE
+                    DroneNextChargeMs = Now+DRONE_ACTION_REST_MS
+                else
                 TurnChance = 10
                 if abs(Drone.Position.x-Sonec.ObjectData.Position.x) <= DRONE_SCAN_NEAR_X then TurnChance = 30
                 if random(1,100) <= TurnChance
@@ -356,6 +359,7 @@ function DroneMove(Drone ref as TDrone,Screen as TSize,Sonec ref as TSonec,Shiel
                     Drone.IsTurning = TRUE
                     DroneTargetAcquired = FALSE
                     Drone.TurnUntilMs = Now+DRONE_TURN_MS
+                endif
                 endif
             endif
         else
