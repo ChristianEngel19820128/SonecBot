@@ -46,6 +46,9 @@ global FlarakTestAimLockMs as integer
 global FlarakTestLockedLauncherAngle as float
 global FlarakTestWarningSprite as integer
 global FlarakTestNextJetMs as integer
+global FlarakTestCurrentFrame as integer
+global FlarakTestCurrentLauncherAngle as float
+global FlarakTestNowMs as integer
 
 function FlarakVisualTestCreate()
     local Image as TImage
@@ -77,13 +80,14 @@ function FlarakVisualTestCreate()
     SetSpriteColor(FlarakTestWarningSprite,255,155,45,255)
     FlarakTestAimLocked = FALSE
     FlarakTestRocketActive = FALSE
-    FlarakTestRocketLastMs = GetMilliseconds()
+    FlarakTestRocketLastMs = 0
     FlarakTestNextJetMs = 0
-    FlarakTestStartMs = GetMilliseconds()
-    FlarakTestRocketNextMs = FlarakTestStartMs+1500
+    FlarakTestStartMs = -1
+    FlarakTestCurrentFrame = 1
+    FlarakTestRocketNextMs = 0
 endfunction
 
-function FlarakVisualTestDraw(Screen as TSize,SonecX as float,SonecY as float,JetfireList ref as TJetfireList,ProtoJetfire ref as TProtoJetfire,World ref as TWorld)
+function FlarakVisualTestDo(Screen as TSize,SonecX as float,SonecY as float,JetfireList ref as TJetfireList,ProtoJetfire ref as TProtoJetfire,World ref as TWorld,NowMs as integer)
     local Elapsed as integer
     local Frame as integer
     local Angle as float
@@ -94,11 +98,6 @@ function FlarakVisualTestDraw(Screen as TSize,SonecX as float,SonecY as float,Je
     local TargetAngle as float
     local AngleDiff as float
     local MaxTurn as float
-    local NowMs as integer
-    local MuzzleAngle as float
-    local WarningStep as integer
-    local WarningLamp as integer
-    local WarningDistance as float
     local JetPosition as TPosition
     local Jetfire as TJetfire
     local JetIndex as integer
@@ -106,18 +105,18 @@ function FlarakVisualTestDraw(Screen as TSize,SonecX as float,SonecY as float,Je
     local JetOutlet as integer
     local JetBackDistance as float
     if FlarakTestBaseSprite = 0 or FlarakTestLauncherSprite = 0 then exitfunction
-
-    NowMs = GetMilliseconds()
+    if FlarakTestStartMs < 0
+        FlarakTestStartMs = NowMs
+        FlarakTestRocketNextMs = NowMs+1500
+        FlarakTestRocketLastMs = NowMs
+    endif
+    FlarakTestNowMs = NowMs
     Elapsed = NowMs-FlarakTestStartMs
     Frame = 1+Elapsed/FLARAK_TEST_FRAME_MS
     if Frame > 5 then Frame = 5
-    SetSpriteFrame(FlarakTestBaseSprite,Frame)
+    FlarakTestCurrentFrame = Frame
     X = Screen.Width*0.5
     Y = Screen.Height-45
-    SetSpritePositionByOffset(FlarakTestBaseSprite,X,Y)
-    // Frame 5 stays visible as the base while frame 6 rotates above it.
-    DrawSprite(FlarakTestBaseSprite)
-
     if Frame = 5
         // Start at 0 degrees when frame 5 first appears, then change
         // the angle gradually. The old absolute-time sine jumped on deployment.
@@ -136,9 +135,7 @@ function FlarakVisualTestDraw(Screen as TSize,SonecX as float,SonecY as float,Je
         if FlarakTestAimLocked = TRUE
             LauncherAngle = FlarakTestLockedLauncherAngle
         endif
-        SetSpriteAngle(FlarakTestLauncherSprite,LauncherAngle)
-        // Preserve the unrotated overlay while moving the pivot to the joint.
-        SetSpritePositionByOffset(FlarakTestLauncherSprite,X+FLARAK_TEST_LAUNCHER_PIVOT_X-FLARAK_TEST_BASE_OFFSET_X,Y+FLARAK_TEST_LAUNCHER_PIVOT_Y-FLARAK_TEST_BASE_OFFSET_Y)
+        FlarakTestCurrentLauncherAngle = LauncherAngle
         // Capture the launcher angle when firing; the projectile does not turn.
         if FlarakTestAimLocked = TRUE and FlarakTestRocketSprite > 0 and FlarakTestRocketActive = FALSE and NowMs-FlarakTestAimLockMs >= FLARAK_TEST_AIM_HOLD_MS
             FlarakTestRocketAngle = LauncherAngle+FLARAK_TEST_BARREL_ANGLE_OFFSET
@@ -155,7 +152,6 @@ function FlarakVisualTestDraw(Screen as TSize,SonecX as float,SonecY as float,Je
             FlarakTestRocketActive = TRUE
             FlarakTestRocketNextMs = NowMs+FLARAK_TEST_ROCKET_INTERVAL_MS
         endif
-         // Draw between base and launcher: the launcher masks the emerging rocket.
         if FlarakTestRocketActive = TRUE
             if NowMs-FlarakTestRocketLaunchMs >= FLARAK_TEST_ROCKET_LIFETIME_MS
                 FlarakTestRocketActive = FALSE
@@ -212,16 +208,38 @@ function FlarakVisualTestDraw(Screen as TSize,SonecX as float,SonecY as float,Je
                     next JetOutlet
                     FlarakTestNextJetMs = NowMs+FLARAK_TEST_JET_INTERVAL_MS
                 endif
-                SetSpriteAngle(FlarakTestRocketSprite,FlarakTestRocketSpriteAngle)
-                SetSpritePositionByOffset(FlarakTestRocketSprite,FlarakTestRocketPosX,FlarakTestRocketPosY)
-                DrawSprite(FlarakTestRocketSprite)
             endif
         endif
+        if FlarakTestAimLocked = TRUE and FlarakTestRocketActive = TRUE and NowMs-FlarakTestRocketLaunchMs >= FLARAK_TEST_POST_SHOT_HOLD_MS
+            FlarakTestAimLocked = FALSE
+        endif
+    endif
+endfunction
+
+function FlarakVisualTestDraw(Screen as TSize)
+    local X as float
+    local Y as float
+    local WarningStep as integer
+    local WarningLamp as integer
+    local WarningDistance as float
+    local MuzzleAngle as float
+    if FlarakTestBaseSprite = 0 or FlarakTestLauncherSprite = 0 then exitfunction
+    X = Screen.Width*0.5
+    Y = Screen.Height-45
+    SetSpriteFrame(FlarakTestBaseSprite,FlarakTestCurrentFrame)
+    SetSpritePositionByOffset(FlarakTestBaseSprite,X,Y)
+    DrawSprite(FlarakTestBaseSprite)
+    if FlarakTestCurrentFrame = 5
+        SetSpriteAngle(FlarakTestLauncherSprite,FlarakTestCurrentLauncherAngle)
+        SetSpritePositionByOffset(FlarakTestLauncherSprite,X+FLARAK_TEST_LAUNCHER_PIVOT_X-FLARAK_TEST_BASE_OFFSET_X,Y+FLARAK_TEST_LAUNCHER_PIVOT_Y-FLARAK_TEST_BASE_OFFSET_Y)
+        if FlarakTestRocketActive = TRUE
+            SetSpriteAngle(FlarakTestRocketSprite,FlarakTestRocketSpriteAngle)
+            SetSpritePositionByOffset(FlarakTestRocketSprite,FlarakTestRocketPosX,FlarakTestRocketPosY)
+            DrawSprite(FlarakTestRocketSprite)
+        endif
         DrawSprite(FlarakTestLauncherSprite)
-        // Accumulate three small lamps from the middle toward the muzzle.
-        // Previously lit lamps remain on until the rocket fires.
-        if FlarakTestAimLocked = TRUE and FlarakTestRocketActive = FALSE and NowMs-FlarakTestAimLockMs >= FLARAK_TEST_AIM_HOLD_MS-FLARAK_TEST_WARNING_MS
-            WarningStep = (NowMs-FlarakTestAimLockMs-(FLARAK_TEST_AIM_HOLD_MS-FLARAK_TEST_WARNING_MS))/100
+        if FlarakTestAimLocked = TRUE and FlarakTestRocketActive = FALSE and FlarakTestNowMs-FlarakTestAimLockMs >= FLARAK_TEST_AIM_HOLD_MS-FLARAK_TEST_WARNING_MS
+            WarningStep = (FlarakTestNowMs-FlarakTestAimLockMs-(FLARAK_TEST_AIM_HOLD_MS-FLARAK_TEST_WARNING_MS))/100
             if WarningStep > 2 then WarningStep = 2
             MuzzleAngle = FlarakTestLockedLauncherAngle+FLARAK_TEST_BARREL_ANGLE_OFFSET
             for WarningLamp = 0 to WarningStep
@@ -229,9 +247,6 @@ function FlarakVisualTestDraw(Screen as TSize,SonecX as float,SonecY as float,Je
                 SetSpritePositionByOffset(FlarakTestWarningSprite,X+Sin(MuzzleAngle)*WarningDistance,Y-Cos(MuzzleAngle)*WarningDistance)
                 DrawSprite(FlarakTestWarningSprite)
             next WarningLamp
-        endif
-        if FlarakTestAimLocked = TRUE and FlarakTestRocketActive = TRUE and NowMs-FlarakTestRocketLaunchMs >= FLARAK_TEST_POST_SHOT_HOLD_MS
-            FlarakTestAimLocked = FALSE
         endif
     endif
 endfunction
