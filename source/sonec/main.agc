@@ -202,11 +202,18 @@ repeat
 		// There is only one sample while paused; -1 means no paired read.
 		MotionDebugClockReadGapMs = -1
 	endif
-	// Debug keys 1-7 work in Windows and HTML5 (click the browser canvas first).
+	// Debug keys 1-8 work in Windows and HTML5 (click the browser canvas first).
 	// 1 Walker, 2 platforms, 3 K1d outlines, 4 pixel snap,
-	// 5 tower A/B, 6 platform A/B, 7 drone A/B.
-	// Keys 8-0 remain reserved.
+	// 5 tower A/B, 6 platform A/B, 7 drone A/B, 8 Flak bullet HUD.
+	// Keys 9-0 remain reserved.
 	if Game.IsLost = FALSE
+		if GetKeyPressed(KEY_8) = 1
+			if FlarakDebugVisible = 0
+				FlarakDebugVisible = 1
+			else
+				FlarakDebugVisible = 0
+			endif
+		endif
 		if GetKeyPressed(KEY_7) = 1
 			if DroneMotionUseGate = 0
 				DroneMotionUseGate = 1
