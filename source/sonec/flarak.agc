@@ -529,6 +529,7 @@ function FlarakDraw(F ref as TFlarak,World ref as TWorld)
     local RiseProgress as float
     local RiseOffset as float
     local FlakOffsetY as float
+    local VisualAngle as float
     if F.BaseSprite = 0 or F.LauncherSprite = 0 then exitfunction
     X = F.WorldX-World.Position.x
     Y = F.WorldY-World.Position.y
@@ -536,6 +537,8 @@ function FlarakDraw(F ref as TFlarak,World ref as TWorld)
     SetSpritePositionByOffset(F.BaseSprite,X,Y)
     DrawSprite(F.BaseSprite)
     if F.CurrentFrame = 5
+        VisualAngle = F.CurrentLauncherAngle
+        if F.Variant = FLARAK_VARIANT_FLAK then VisualAngle = -VisualAngle
         if (F.AimSide < 0 and F.Variant = FLARAK_VARIANT_ROCKET) or (F.AimSide >= 0 and F.Variant = FLARAK_VARIANT_FLAK)
             SetSpriteFlip(F.LauncherSprite,1,0)
         else
@@ -551,13 +554,13 @@ function FlarakDraw(F ref as TFlarak,World ref as TWorld)
             else
                 SetSpriteFlip(F.FlakSprite,0,0)
             endif
-            SetSpriteAngle(F.FlakSprite,F.CurrentLauncherAngle)
+            SetSpriteAngle(F.FlakSprite,VisualAngle)
             // Rotate the deployment offset around the same world pivot as frame 6.
             FlakOffsetY = FLARAK_FLAK_FINAL_OFFSET_Y+RiseOffset
-            SetSpritePositionByOffset(F.FlakSprite,X+FLARAK_TEST_LAUNCHER_PIVOT_X-FLARAK_TEST_BASE_OFFSET_X-FlakOffsetY*Sin(F.CurrentLauncherAngle),Y+FLARAK_TEST_LAUNCHER_PIVOT_Y-FLARAK_TEST_BASE_OFFSET_Y+FlakOffsetY*Cos(F.CurrentLauncherAngle))
+            SetSpritePositionByOffset(F.FlakSprite,X+FLARAK_TEST_LAUNCHER_PIVOT_X-FLARAK_TEST_BASE_OFFSET_X-FlakOffsetY*Sin(VisualAngle),Y+FLARAK_TEST_LAUNCHER_PIVOT_Y-FLARAK_TEST_BASE_OFFSET_Y+FlakOffsetY*Cos(VisualAngle))
             DrawSprite(F.FlakSprite)
         endif
-        SetSpriteAngle(F.LauncherSprite,F.CurrentLauncherAngle)
+        SetSpriteAngle(F.LauncherSprite,VisualAngle)
         SetSpritePositionByOffset(F.LauncherSprite,X+FLARAK_TEST_LAUNCHER_PIVOT_X-FLARAK_TEST_BASE_OFFSET_X,Y+FLARAK_TEST_LAUNCHER_PIVOT_Y-FLARAK_TEST_BASE_OFFSET_Y)
         DrawSprite(F.LauncherSprite)
         if F.Variant = FLARAK_VARIANT_ROCKET and F.State = FLARAK_READY and F.AimLocked = TRUE and F.VolleyFired = FALSE and F.Rocket1.Active = FALSE and F.Rocket2.Active = FALSE and F.SecondPending = FALSE and F.NowMs-F.AimLockMs >= FLARAK_TEST_AIM_HOLD_MS-FLARAK_TEST_WARNING_MS
