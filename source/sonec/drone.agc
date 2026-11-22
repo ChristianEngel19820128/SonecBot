@@ -21,6 +21,8 @@
 #constant DRONE_SCAN_NEAR_X 220
 #constant DRONE_SCAN_MAX_DISTANCE_X 500
 #constant DRONE_SCAN_MAX_SUCCESS_PERCENT 50
+// Temporary diagnostic: force acquisition only for a valid target ahead and within range.
+#constant DRONE_DEBUG_FORCE_ACQUIRE 1
 #constant DRONE_SHOT_MAX_Y_DIFFERENCE 120
 #constant DRONE_CHARGE_MIN_INTERVAL_MS 6000
 #constant DRONE_CHARGE_MAX_INTERVAL_MS 10000
@@ -357,9 +359,10 @@ function DroneMove(Drone ref as TDrone,Screen as TSize,Sonec ref as TSonec,Shiel
                         endif
                         ScanRoll = random(1,100)
                         if ScanRoll <= ScanChance then DroneTargetAcquired = TRUE
+                        if DRONE_DEBUG_FORCE_ACQUIRE = 1 then DroneTargetAcquired = TRUE
                     endif
                 endif
-                DroneScanDebugMessage = "SCAN dx="+Str(TargetDx)+" dir="+Str(Drone.Direction)+" ahead="+Str(ScanAhead)+" suction="+Str(Inenergie.Enabled)+" chance="+Str(ScanChance)+" roll="+Str(ScanRoll)+" found="+Str(DroneTargetAcquired)+" lost="+Str(Sonec.IsLost)
+                DroneScanDebugMessage = "SCAN dx="+Str(TargetDx)+" dir="+Str(Drone.Direction)+" ahead="+Str(ScanAhead)+" suction="+Str(Inenergie.Enabled)+" chance="+Str(ScanChance)+" roll="+Str(ScanRoll)+" found="+Str(DroneTargetAcquired)+" lost="+Str(Sonec.IsLost)+" force="+Str(DRONE_DEBUG_FORCE_ACQUIRE)
                 // A successful scan keeps its target; a failed scan may trigger a random turn.
                 if DroneTargetAcquired = TRUE
                     DroneNextChargeMs = Now+DRONE_ACTION_REST_MS
