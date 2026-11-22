@@ -48,6 +48,7 @@ global FlarakTestRocket2 as TFlarakTestRocket
 global FlarakTestSecondPending as integer
 global FlarakTestSecondFireMs as integer
 global FlarakTestVolleyStartMs as integer
+global FlarakTestVolleyFired as integer
 global FlarakTestVolleyAngle as float
 
 global FlarakTestBaseSprite as integer
@@ -97,6 +98,7 @@ function FlarakVisualTestCreate()
     FlarakTestRocket1.Active = FALSE
     FlarakTestRocket2.Active = FALSE
     FlarakTestSecondPending = FALSE
+    FlarakTestVolleyFired = FALSE
     FlarakTestStartMs = -1
     FlarakTestCurrentFrame = 1
     FlarakTestRocketNextMs = 0
@@ -233,6 +235,7 @@ function FlarakVisualTestDo(Screen as TSize,SonecX as float,SonecY as float,Jetf
             FlarakTestLockedLauncherAngle = LauncherAngle
             FlarakTestAimLockMs = NowMs
             FlarakTestAimLocked = TRUE
+            FlarakTestVolleyFired = FALSE
         endif
         if FlarakTestAimLocked = TRUE
             LauncherAngle = FlarakTestLockedLauncherAngle
@@ -246,6 +249,7 @@ function FlarakVisualTestDo(Screen as TSize,SonecX as float,SonecY as float,Jetf
             FlarakTestSecondFireMs = NowMs+FLARAK_TEST_SECOND_ROCKET_DELAY_MS
             FlarakTestSecondPending = TRUE
             FlarakTestVolleyStartMs = NowMs
+            FlarakTestVolleyFired = TRUE
             FlarakTestRocketNextMs = NowMs+FLARAK_TEST_ROCKET_INTERVAL_MS
         endif
         if FlarakTestSecondPending = TRUE and NowMs >= FlarakTestSecondFireMs
@@ -254,7 +258,7 @@ function FlarakVisualTestDo(Screen as TSize,SonecX as float,SonecY as float,Jetf
         endif
         FlarakRocketDo(FlarakTestRocket1,SonecX,SonecY,JetfireList,ProtoJetfire,World,NowMs)
         FlarakRocketDo(FlarakTestRocket2,SonecX,SonecY,JetfireList,ProtoJetfire,World,NowMs)
-        if FlarakTestAimLocked = TRUE and FlarakTestSecondPending = FALSE and NowMs-FlarakTestVolleyStartMs >= FLARAK_TEST_SECOND_ROCKET_DELAY_MS+FLARAK_TEST_POST_SHOT_HOLD_MS
+        if FlarakTestAimLocked = TRUE and FlarakTestVolleyFired = TRUE and FlarakTestSecondPending = FALSE and NowMs-FlarakTestVolleyStartMs >= FLARAK_TEST_SECOND_ROCKET_DELAY_MS+FLARAK_TEST_POST_SHOT_HOLD_MS
             FlarakTestAimLocked = FALSE
         endif
     endif
