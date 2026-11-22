@@ -451,15 +451,19 @@ function SonecCollisionDebugDraw(Sonec ref as TSonec,World ref as TWorld)
         if SonecCollisionDebugLineSprite = 0
             SonecCollisionDebugLineSprite = CreateSprite(0)
         endif
-        // Red means the active two-circle enemy-bullet check registered a hit,
-        // including hits absorbed by the shield. Otherwise keep cyan.
-        if GetMilliseconds() < SonecCollisionDebugHitUntil
+        // Each circle independently shows whether its own sweep registered a hit.
+        Radius = SonecHitCircleRadius(Sonec)
+        if GetMilliseconds() < SonecCollisionDebugHitUntil0
             SetSpriteColor(SonecCollisionDebugLineSprite,255,0,0,255)
         else
             SetSpriteColor(SonecCollisionDebugLineSprite,0,255,255,255)
         endif
-        Radius = SonecHitCircleRadius(Sonec)
         SonecCollisionDebugCircle(Sonec.ObjectData.Position.x,SonecHitCircleY(Sonec,0)-World.Position.y,Radius)
+        if GetMilliseconds() < SonecCollisionDebugHitUntil1
+            SetSpriteColor(SonecCollisionDebugLineSprite,255,0,0,255)
+        else
+            SetSpriteColor(SonecCollisionDebugLineSprite,0,255,255,255)
+        endif
         SonecCollisionDebugCircle(Sonec.ObjectData.Position.x,SonecHitCircleY(Sonec,1)-World.Position.y,Radius)
     endif
 endfunction
