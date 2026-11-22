@@ -47,6 +47,9 @@ global DroneScanUntilMs as integer
 global DroneNextScanMs as integer
 global DroneScanActive as integer
 global DroneTargetAcquired as integer
+// Temporary scan diagnostic overlay; remove after developer test.
+global DroneScanDebugText as integer
+global DroneScanDebugMessage as string
 global DroneBaseY as float
 global DroneBobStartMs as integer
 global DroneScanStartMs as integer
@@ -263,6 +266,8 @@ function DroneMove(Drone ref as TDrone,Screen as TSize,Sonec ref as TSonec,Shiel
     local TargetDx as float
     local TargetDy as float
     local ScanChance as integer
+    local ScanRoll as integer
+    local ScanAhead as integer
 
     if Drone.Enabled = TRUE
         if DroneMotionLastMode <> DroneMotionUseGate
@@ -338,7 +343,11 @@ function DroneMove(Drone ref as TDrone,Screen as TSize,Sonec ref as TSonec,Shiel
                 // decreasing chance: 50% nearby, 0% at 500px or farther.
                 TargetDx = Sonec.ObjectData.Position.x-Drone.Position.x
                 DroneTargetAcquired = FALSE
-                if Sonec.IsLost = FALSE and ((Drone.Direction = MOVELEFT and TargetDx < 0) or (Drone.Direction = MOVERIGHT and TargetDx > 0))
+                ScanChance = 0
+                ScanRoll = 0
+                ScanAhead = FALSE
+                if (Drone.Direction = MOVELEFT and TargetDx < 0) or (Drone.Direction = MOVERIGHT and TargetDx > 0) then ScanAhead = TRUE
+                if Sonec.IsLost = FALSE and ScanAhead = TRUE
                     if abs(TargetDx) < DRONE_SCAN_MAX_DISTANCE_X
                         ScanChance = DRONE_SCAN_MAX_SUCCESS_PERCENT*(DRONE_SCAN_MAX_DISTANCE_X-abs(TargetDx))/DRONE_SCAN_MAX_DISTANCE_X
                         // Active energy suction increases scan probability by up to 25 percentage points.
@@ -346,9 +355,11 @@ function DroneMove(Drone ref as TDrone,Screen as TSize,Sonec ref as TSonec,Shiel
                         if Inenergie.Enabled = TRUE
                             ScanChance = ScanChance+25*(DRONE_SCAN_MAX_DISTANCE_X-abs(TargetDx))/DRONE_SCAN_MAX_DISTANCE_X
                         endif
-                        if random(1,100) <= ScanChance then DroneTargetAcquired = TRUE
+                        ScanRoll = random(1,100)
+                        if ScanRoll <= ScanChance then DroneTargetAcquired = TRUE
                     endif
                 endif
+                DroneScanDebugMessage = "SCAN dx="+Str(TargetDx)+" dir="+Str(Drone.Direction)+" ahead="+Str(ScanAhead)+" suction="+Str(Inenergie.Enabled)+" chance="+Str(ScanChance)+" roll="+Str(ScanRoll)+" found="+Str(DroneTargetAcquired)+" lost="+Str(Sonec.IsLost)
                 // A successful scan keeps its target; a failed scan may trigger a random turn.
                 if DroneTargetAcquired = TRUE
                     DroneNextChargeMs = Now+DRONE_ACTION_REST_MS
@@ -517,6 +528,14 @@ function DroneJetfireDo(Drone ref as TDrone,JetfireList ref as TJetfireList,Prot
 endfunction
 
 function DroneDraw(Drone ref as TDrone,ProtoDrone ref as TProtoDrone,World ref as TWorld)
+    if DroneScanDebugText = 0
+        DroneScanDebugText = CreateText("")
+        SetTextPosition(DroneScanDebugText,5,75)
+        SetTextSize(DroneScanDebugText,10)
+        SetTextColor(DroneScanDebugText,255,255,0,255)
+    endif
+    SetTextString(DroneScanDebugText,DroneScanDebugMessage)
+    DrawText(DroneScanDebugText)
     local EffectData as TSpriteData
     local TorsoData as TSpriteData
     local SensorData as TSpriteData
