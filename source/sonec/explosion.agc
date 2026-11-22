@@ -165,8 +165,8 @@ function ExplosionNew(Explosion ref as TExplosion,ProtoExplosion ref as TProtoEx
 	
 	Explosion.SpriteData.Angle  = random(0,360)
 	Explosion.SpriteData.Center = TRUE
-	Explosion.SpriteData.Scale  = 1.0
-    if ExplosionType = 3 then Explosion.SpriteData.Scale = 1.5
+	// One random visual scale per blast; collision radius uses the same scale.
+	Explosion.SpriteData.Scale  = Random(85,115) * 0.01
     // All explosion types use the same damage eligibility limit; bomb platform protection is separate.
 	
 	// The blast starts at zero and reaches the design radius halfway through the animation.
@@ -308,7 +308,7 @@ function ExplosionAnimateAll(ExplosionList ref as TExplosionList,ProtoExplosion 
 				if ExplosionList.Explosion[i].ObjectData.Size.Height > ExplosionList.Explosion[i].ObjectData.Size.Width
 					MaxRadius = ExplosionList.Explosion[i].ObjectData.Size.Height * 0.5
 				endif
-				ExplosionList.Explosion[i].ObjectData.Radius = MaxRadius * RadiusFactor
+				ExplosionList.Explosion[i].ObjectData.Radius = MaxRadius * ExplosionList.Explosion[i].SpriteData.Scale * RadiusFactor
 			endif
 			if ExplosionList.Explosion[i].ExplosionType <> 3 and ExplosionList.Explosion[i].AnimationData.AnimTimer.Span > 15
 				TimeSet(ExplosionList.Explosion[i].AnimationData.AnimTimer,floor(ExplosionList.Explosion[i].AnimationData.AnimTimer.Span*0.9),1)
