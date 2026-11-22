@@ -2,7 +2,8 @@
 // Seven 80x64 cells: 1-5 base, 6 shared rotating launcher, 7 Flak overlay.
 #constant FLARAK_VARIANT_ROCKET 0
 #constant FLARAK_VARIANT_FLAK 1
-#constant FLARAK_FLAK_RISE_PX 40
+#constant FLARAK_FLAK_RISE_PX 54
+#constant FLARAK_FLAK_FINAL_OFFSET_Y -14
 #constant FLARAK_FLAK_RISE_MS 500
 #constant FLARAK_TEST_CELL_W 80
 #constant FLARAK_TEST_CELL_H 64
@@ -550,7 +551,7 @@ function FlarakDraw(F ref as TFlarak,World ref as TWorld)
                 SetSpriteFlip(F.FlakSprite,0,0)
             endif
             SetSpriteAngle(F.FlakSprite,F.CurrentLauncherAngle)
-            SetSpritePositionByOffset(F.FlakSprite,X+FLARAK_TEST_LAUNCHER_PIVOT_X-FLARAK_TEST_BASE_OFFSET_X,Y+FLARAK_TEST_LAUNCHER_PIVOT_Y-FLARAK_TEST_BASE_OFFSET_Y+RiseOffset)
+            SetSpritePositionByOffset(F.FlakSprite,X+FLARAK_TEST_LAUNCHER_PIVOT_X-FLARAK_TEST_BASE_OFFSET_X,Y+FLARAK_TEST_LAUNCHER_PIVOT_Y-FLARAK_TEST_BASE_OFFSET_Y+FLARAK_FLAK_FINAL_OFFSET_Y+RiseOffset)
             DrawSprite(F.FlakSprite)
         endif
         SetSpriteAngle(F.LauncherSprite,F.CurrentLauncherAngle)
