@@ -354,3 +354,5 @@ Knowledge-Base-Kandidaten stehen in [BACKLOG.md](BACKLOG.md); Beiträge separat 
 **Drohnen-Jetstream-Ausrichtung (lokaler Sichttest offen, 22.11.2026):** In `DroneJetfireDo` liegen die äußeren Partikelquellen jetzt bei X ±15 px (zuvor ±10 px) und Y +13 px; die mittlere bei X 0 und Y +16 px (zuvor +13 px), passend zum längeren mittleren Auspuff des 46×30-Sprites. Partikelbreite/-Skalierung 0,65, Emissionsintervall 30 ms und Lebenszyklus unverändert. Positionen anhand Screenshots angenähert, visuelle Entwicklerabnahme steht aus.
 
 **Jetstream-Nachkorrektur (lokaler Sichttest offen):** Entwickler-Screenshot zeigte die vorherigen Quellen ±15/+13 außen und 0/+16 mittig zu weit außen und unten. Neuer Versuch: äußere X ±7 / Y +8, Mitte X 0 / Y +10 (mittlerer Auspuff bleibt länger). Partikelbreite/-skalierung unverändert. AGK-Compile und optischer Test ausstehend.
+
+**Jetstream-Feinjustierung (Sichttest offen, 22.11.2026):** Nach Entwickler-Screenshot äußere Partikelquellen je 2 px nach außen korrigiert: X ±9 / Y +8; Mitte X 0 / Y +10 unverändert. Entwickler bestätigt bisherige Y-Ausrichtung; finale X-Sichtabnahme noch offen. Breite und übrige Effekte unverändert.
