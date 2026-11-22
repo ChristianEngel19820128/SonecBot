@@ -276,6 +276,7 @@ function FlarakFireBullet(F ref as TFlarak,Game ref as TGame,NowMs as integer)
     Position.y = F.WorldY+FLARAK_FLAK_FINAL_OFFSET_Y*Cos(VisualAngle)-Cos(FlightAngle)*FLARAK_FLAK_MUZZLE_DISTANCE+Sin(FlightAngle)*TubeOffset
     PreviousBulletLength = Game.BulletList.Bullet.Length
     BulletAdd(Game.BulletList,Game.ProtoBullet,Game.World,Position,FlightAngle,0,TYPEENEMY,NowMs)
+    BulletSetModification(Game.BulletList,BULLET_MOD_EXPLOSIVE,NowMs)
     if FLARAK_DEBUG_BULLETS = 1
         F.FlakDebugAddCount = F.FlakDebugAddCount+1
         F.FlakDebugLastShotMs = NowMs
