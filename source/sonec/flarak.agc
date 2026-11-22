@@ -13,9 +13,9 @@
 // F2 visual launch test: straight flight, no homing, damage or collision.
 #constant FLARAK_TEST_ROCKET_INTERVAL_MS 2400
 #constant FLARAK_TEST_ROCKET_LIFETIME_MS 3000
-#constant FLARAK_TEST_HOMING_DELAY_MS 300
-#constant FLARAK_TEST_HOMING_TURN_DEG_PER_MS 0.10
-#constant FLARAK_TEST_ROCKET_SPEED_PX_PER_MS 0.24
+#constant FLARAK_TEST_HOMING_DELAY_MS 600
+#constant FLARAK_TEST_HOMING_TURN_DEG_PER_MS 0.06
+#constant FLARAK_TEST_ROCKET_SPEED_PX_PER_MS 0.32
 #constant FLARAK_TEST_MUZZLE_DISTANCE 22
 #constant FLARAK_TEST_AIM_HOLD_MS 1000
 #constant FLARAK_TEST_WARNING_MS 300
@@ -151,7 +151,7 @@ function FlarakVisualTestDraw(Screen as TSize,SonecX as float,SonecY as float)
                 if RocketDeltaMs < 0 then RocketDeltaMs = 0
                 if RocketDeltaMs > 50 then RocketDeltaMs = 50
                 FlarakTestRocketLastMs = NowMs
-                // The first 300 ms remain straight. Then steer toward Sonec's
+                // The first 600 ms remain straight. Then steer toward Sonec's
                 // current screen position, with a limited turn rate.
                 if NowMs-FlarakTestRocketLaunchMs >= FLARAK_TEST_HOMING_DELAY_MS
                     TargetAngle = ATan2(SonecX-FlarakTestRocketPosX,FlarakTestRocketPosY-SonecY)
