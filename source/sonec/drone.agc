@@ -43,6 +43,7 @@ global DroneMotionLastMode as integer
 global DroneScanUntilMs as integer
 global DroneNextScanMs as integer
 global DroneScanActive as integer
+global DroneTargetAcquired as integer
 global DroneBaseY as float
 global DroneBobStartMs as integer
 global DroneScanStartMs as integer
@@ -140,6 +141,7 @@ function DroneInit(Drone ref as TDrone,Screen as TSize,World ref as TWorld,Now a
     Drone.TurnUntilMs = 0
     Drone.LastMoveMs = Now
     DroneScanActive = FALSE
+    DroneTargetAcquired = FALSE
     DroneScanUntilMs = 0
     DroneNextScanMs = Now + random(DRONE_SCAN_MIN_INTERVAL_MS,DRONE_SCAN_MAX_INTERVAL_MS)
     DroneBobStartMs = Now
@@ -190,6 +192,7 @@ function DroneTakeDamage(Drone ref as TDrone,Damage as integer)
             Drone.Enabled = FALSE
             DroneLaserActive = FALSE
             DroneScanActive = FALSE
+            DroneTargetAcquired = FALSE
             DroneChargeActive = FALSE
         endif
     endif
@@ -254,6 +257,8 @@ function DroneMove(Drone ref as TDrone,Screen as TSize,Sonec ref as TSonec,Shiel
     local DeltaMs as integer
     local TurnChance as integer
     local LaserOldX as float
+    local TargetDx as float
+    local TargetDy as float
 
     if Drone.Enabled = TRUE
         if DroneMotionLastMode <> DroneMotionUseGate
@@ -282,8 +287,16 @@ function DroneMove(Drone ref as TDrone,Screen as TSize,Sonec ref as TSonec,Shiel
             if Now >= DroneChargeUntilMs
                 DroneChargeActive = FALSE
                 DroneActionRestUntilMs = Now+DRONE_ACTION_REST_MS
-                // Spawn a single visual projectile at the charge tip.
-                DroneLaserActive = TRUE
+                // A scan only authorizes a shot while Sonec remains in front and in the laser lane.
+                TargetDx = Sonec.ObjectData.Position.x-Drone.Position.x
+                TargetDy = Drone.Position.y-Sonec.ObjectData.Position.y
+                DroneLaserActive = FALSE
+                if Sonec.IsLost = FALSE and DroneTargetAcquired = TRUE and ((Drone.Direction = MOVELEFT and TargetDx < 0) or (Drone.Direction = MOVERIGHT and TargetDx > 0))
+                    if abs(TargetDy) <= SonecHitCircleRadius(Sonec)+Sonec.ObjectData.Size.Height*0.18
+                        DroneLaserActive = TRUE
+                    endif
+                endif
+                DroneTargetAcquired = FALSE
                 DroneLaserDirection = Drone.Direction
                 DroneLaserX = Drone.Position.x
                 if DroneLaserDirection = MOVELEFT
@@ -317,9 +330,18 @@ function DroneMove(Drone ref as TDrone,Screen as TSize,Sonec ref as TSonec,Shiel
                 DroneScanActive = FALSE
                 DroneActionRestUntilMs = Now+DRONE_ACTION_REST_MS
                 DroneNextScanMs = Now + random(DRONE_SCAN_MIN_INTERVAL_MS,DRONE_SCAN_MAX_INTERVAL_MS)
+                // Scan acquires only a target ahead in the laser's horizontal lane.
+                TargetDx = Sonec.ObjectData.Position.x-Drone.Position.x
+                TargetDy = Drone.Position.y-Sonec.ObjectData.Position.y
+                DroneTargetAcquired = FALSE
+                if Sonec.IsLost = FALSE and ((Drone.Direction = MOVELEFT and TargetDx < 0) or (Drone.Direction = MOVERIGHT and TargetDx > 0))
+                    if abs(TargetDy) <= SonecHitCircleRadius(Sonec)+Sonec.ObjectData.Size.Height*0.18
+                        DroneTargetAcquired = TRUE
+                    endif
+                endif
                 // Proximity can influence a turn, but never guarantees one.
-                TurnChance = 5
-                if abs(Drone.Position.x-Sonec.ObjectData.Position.x) <= DRONE_SCAN_NEAR_X then TurnChance = 25
+                TurnChance = 10
+                if abs(Drone.Position.x-Sonec.ObjectData.Position.x) <= DRONE_SCAN_NEAR_X then TurnChance = 30
                 if random(1,100) <= TurnChance
                     if Drone.Direction = MOVELEFT
                         Drone.Direction = MOVERIGHT
@@ -327,11 +349,12 @@ function DroneMove(Drone ref as TDrone,Screen as TSize,Sonec ref as TSonec,Shiel
                         Drone.Direction = MOVELEFT
                     endif
                     Drone.IsTurning = TRUE
+                    DroneTargetAcquired = FALSE
                     Drone.TurnUntilMs = Now+DRONE_TURN_MS
                 endif
             endif
         else
-            if DroneChargeActive = FALSE and Drone.IsTurning = FALSE and Now >= DroneNextScanMs and Now >= DroneActionRestUntilMs
+            if DroneChargeActive = FALSE and DroneTargetAcquired = FALSE and Drone.IsTurning = FALSE and Now >= DroneNextScanMs and Now >= DroneActionRestUntilMs
                 DroneScanActive = TRUE
                 DroneScanStartMs = Now
                 DroneScanFrame = 1
@@ -339,7 +362,7 @@ function DroneMove(Drone ref as TDrone,Screen as TSize,Sonec ref as TSonec,Shiel
             endif
         endif
 
-        if DroneChargeActive = FALSE and DroneScanActive = FALSE and Drone.IsTurning = FALSE and Now >= DroneNextChargeMs and Now >= DroneActionRestUntilMs
+        if DroneTargetAcquired = TRUE and DroneChargeActive = FALSE and DroneScanActive = FALSE and Drone.IsTurning = FALSE and Now >= DroneNextChargeMs and Now >= DroneActionRestUntilMs
             DroneChargeActive = TRUE
             DroneChargeStartMs = Now
             DroneChargeUntilMs = Now+DRONE_CHARGE_DURATION_MS
@@ -359,6 +382,8 @@ function DroneMove(Drone ref as TDrone,Screen as TSize,Sonec ref as TSonec,Shiel
         if Drone.IsTurning = TRUE
             if Now >= Drone.TurnUntilMs
                 Drone.IsTurning = FALSE
+                DroneTargetAcquired = FALSE
+                DroneNextScanMs = Now
             endif
         else
             if Drone.Direction = MOVELEFT
@@ -368,6 +393,8 @@ function DroneMove(Drone ref as TDrone,Screen as TSize,Sonec ref as TSonec,Shiel
                     Drone.IsTurning = TRUE
                     Drone.TurnUntilMs = Now+DRONE_TURN_MS
                     Drone.Direction = MOVERIGHT
+                    DroneTargetAcquired = FALSE
+                    DroneNextScanMs = Now+DRONE_TURN_MS
                 endif
             else
                 Drone.Position.x = Drone.Position.x + DeltaMs*DRONE_PATROL_SPEED
@@ -376,6 +403,8 @@ function DroneMove(Drone ref as TDrone,Screen as TSize,Sonec ref as TSonec,Shiel
                     Drone.IsTurning = TRUE
                     Drone.TurnUntilMs = Now+DRONE_TURN_MS
                     Drone.Direction = MOVELEFT
+                    DroneTargetAcquired = FALSE
+                    DroneNextScanMs = Now+DRONE_TURN_MS
                 endif
             endif
         endif
