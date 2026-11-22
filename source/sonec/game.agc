@@ -11,6 +11,7 @@ function GameCreate(Game ref as TGame,vx as integer,vy as integer)
 	Game.Screen.Height = vy
 	
 	GameProtoLoad(Game)
+	FlarakVisualTestCreate()
 	WarningCreate(Game.Warning,Game.Screen)
 	
 	SetJoystickIndex(Game)
@@ -484,6 +485,7 @@ function GameDraw(Game ref as TGame)
 	OrbDrawAll(Game.OrbList,Game.ProtoOrb)
 	MineDrawAll(Game.MineList,Game.ProtoMine)
 	MineDrawAll(Game.SimpleMineList,Game.ProtoSimpleMine)
+	FlarakVisualTestDraw(Game.Screen)
 	DroneDraw(Game.Drone,Game.ProtoDrone,Game.World)
     BomberBombDraw(Game.Bomber,Game.ProtoBomber,Game.World)
 	BomberDraw(Game.Bomber,Game.ProtoBomber,Game.World)
