@@ -321,6 +321,11 @@ function BulletCollide(BulletList ref as TBulletList,Sonec ref as TSonec,Shield 
                             SonecCollisionDebugHitUntil1 = DebugHitUntil
                         endif
                     endif
+                    // Explosive rounds use area damage instead of a second direct-hit damage event.
+                    if BulletList.Bullet[i].Modification = BULLET_MOD_EXPLOSIVE
+                        ExplosionAdd(Game.ExplosionList,Game.ProtoExplosion,Game,BULLET_EXPLOSIVE_EXPLOSION_TYPE,BulletList.Bullet[i].ObjectData.Position,Now)
+                        BulletDelete(BulletList,i)
+                    else
                     // Keep the established proportional shield protection and health damage.
                     local HealthBeforeHit as integer
                     HealthBeforeHit = Sonec.Health.State
