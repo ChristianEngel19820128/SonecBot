@@ -127,7 +127,6 @@ function FlarakFindFreeOffsetX(Plate ref as TPlate,PlateIndex as integer,ChestLi
                 ChestRight = ChestLeft+ChestList.Chest[ChestIndex].ObjectData.Size.Width
                 if Candidate < ChestRight and Candidate+FLARAK_TEST_CELL_W > ChestLeft
                     Blocked = TRUE
-                    exit
                 endif
             endif
         next ChestIndex
