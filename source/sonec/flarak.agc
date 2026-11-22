@@ -5,6 +5,10 @@
 #constant FLARAK_FLAK_RISE_PX 12
 #constant FLARAK_FLAK_FINAL_OFFSET_Y -12
 #constant FLARAK_FLAK_RISE_MS 500
+#constant FLARAK_FLAK_SHOT_GAP_MS 100
+#constant FLARAK_FLAK_VOLLEY_GAP_MS 2400
+#constant FLARAK_FLAK_MUZZLE_DISTANCE 25
+#constant FLARAK_FLAK_TUBE_OFFSET 3
 #constant FLARAK_TEST_CELL_W 80
 #constant FLARAK_TEST_CELL_H 64
 #constant FLARAK_TEST_BASE_OFFSET_X 40
@@ -77,6 +81,11 @@ type TFlarak
     FlakSprite as integer
     Variant as integer
     FlakRiseStartMs as integer
+    FlakShotsFired as integer
+    FlakNextShotMs as integer
+    FlakNextVolleyMs as integer
+    FlakVolleyAngle as float
+    FlakVolleySide as integer
     StartMs as integer
     RocketNextMs as integer
     AimLocked as integer
@@ -198,6 +207,7 @@ function FlarakSpawn(PlateList ref as TPlateList,ChestList ref as TChestList,Pla
     SetSpriteColor(F.WarningSprite,255,155,45,255)
     F.StartMs = NowMs
     F.RocketNextMs = NowMs+1500
+    F.FlakNextVolleyMs = NowMs+1500
     F.CurrentFrame = 1
     F.State = FLARAK_CLOSED
     F.FrameStampMs = NowMs
@@ -219,6 +229,26 @@ function FlarakSpawn(PlateList ref as TPlateList,ChestList ref as TChestList,Pla
 endfunction
 
 // Lane offset is perpendicular to the flight axis: negative = upper tube at 0 degrees.
+// Flak uses the regular enemy bullet system. Both muzzles follow the
+// rotated frame-7 center; shots have no individual angular spread.
+function FlarakFireBullet(F ref as TFlarak,Game ref as TGame,NowMs as integer)
+    local Position as TPosition
+    local VisualAngle as float
+    local FlightAngle as float
+    local TubeOffset as float
+    local Direction as float
+    VisualAngle = -F.FlakVolleyAngle
+    Direction = 1
+    if F.FlakVolleySide < 0 then Direction = -1
+    FlightAngle = 90+VisualAngle
+    if Direction < 0 then FlightAngle = -90+VisualAngle
+    TubeOffset = -FLARAK_FLAK_TUBE_OFFSET
+    if Mod(F.FlakShotsFired,2) = 1 then TubeOffset = FLARAK_FLAK_TUBE_OFFSET
+    Position.x = F.WorldX-FLARAK_FLAK_FINAL_OFFSET_Y*Sin(VisualAngle)+Direction*Cos(VisualAngle)*FLARAK_FLAK_MUZZLE_DISTANCE-Sin(VisualAngle)*TubeOffset
+    Position.y = F.WorldY+FLARAK_FLAK_FINAL_OFFSET_Y*Cos(VisualAngle)+Direction*Sin(VisualAngle)*FLARAK_FLAK_MUZZLE_DISTANCE+Cos(VisualAngle)*TubeOffset
+    BulletAdd(Game.BulletList,Game.ProtoBullet,Game.World,Position,FlightAngle,0,TYPEENEMY,NowMs)
+endfunction
+
 function FlarakRocketLaunch(Rocket ref as TFlarakTestRocket,X as float,Y as float,FlightAngle as float,LaneOffset as float,NowMs as integer)
     Rocket.Angle = FlightAngle
     Rocket.SpriteAngle = FlightAngle+90
@@ -485,6 +515,25 @@ if DesiredAngle > 80 then DesiredAngle = 80
             endif
         else
             if F.AimLocked = TRUE then F.CurrentLauncherAngle = F.LockedLauncherAngle
+        endif
+        // Four straight bullets: left, right, left, right; lock the aim for the burst.
+        if F.Variant = FLARAK_VARIANT_FLAK and F.State = FLARAK_READY and F.AimLocked = FALSE and NowMs >= F.FlakNextVolleyMs and NowMs-F.FlakRiseStartMs >= FLARAK_FLAK_RISE_MS
+            if Abs(F.CurrentLauncherAngle-DesiredAngle) <= FLARAK_AIM_TOLERANCE_DEG
+                F.FlakVolleyAngle = F.CurrentLauncherAngle
+                F.FlakVolleySide = F.AimSide
+                F.FlakShotsFired = 0
+                F.FlakNextShotMs = NowMs
+                F.AimLocked = TRUE
+            endif
+        endif
+        if F.Variant = FLARAK_VARIANT_FLAK and F.State = FLARAK_READY and F.AimLocked = TRUE and F.FlakShotsFired < 4 and NowMs >= F.FlakNextShotMs
+            FlarakFireBullet(F,Game,NowMs)
+            F.FlakShotsFired = F.FlakShotsFired+1
+            F.FlakNextShotMs = NowMs+FLARAK_FLAK_SHOT_GAP_MS
+            if F.FlakShotsFired = 4
+                F.FlakNextVolleyMs = NowMs+FLARAK_FLAK_VOLLEY_GAP_MS
+                F.AimLocked = FALSE
+            endif
         endif
         if F.Variant = FLARAK_VARIANT_ROCKET and F.State = FLARAK_READY and F.AimLocked = TRUE and F.Rocket1.Sprite > 0 and F.SecondPending = FALSE and F.Rocket1.Active = FALSE and F.Rocket2.Active = FALSE and F.VolleyFired = FALSE and NowMs-F.AimLockMs >= FLARAK_TEST_AIM_HOLD_MS
             // Keep the original rocket flight angles while only mirroring the launcher artwork.
