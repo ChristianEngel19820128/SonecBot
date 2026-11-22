@@ -60,10 +60,10 @@ function FlarakVisualTestCreate()
         SetSpriteOffset(FlarakTestRocketSprite,GetSpriteWidth(FlarakTestRocketSprite)*0.5,GetSpriteHeight(FlarakTestRocketSprite)*0.5)
         SetSpriteColor(FlarakTestRocketSprite,170,215,170,255)
     endif
-    // A small orange marker at the muzzle signals the imminent shot.
+    // Small warning lamp; it steps across three points on the barrel.
     FlarakTestWarningSprite = CreateSprite(0)
-    SetSpriteSize(FlarakTestWarningSprite,7,7)
-    SetSpriteOffset(FlarakTestWarningSprite,3.5,3.5)
+    SetSpriteSize(FlarakTestWarningSprite,3,3)
+    SetSpriteOffset(FlarakTestWarningSprite,1.5,1.5)
     SetSpriteColor(FlarakTestWarningSprite,255,155,45,255)
     FlarakTestAimLocked = FALSE
     FlarakTestRocketActive = FALSE
@@ -81,6 +81,8 @@ function FlarakVisualTestDraw(Screen as TSize)
     local RocketDistance as float
     local NowMs as integer
     local MuzzleAngle as float
+    local WarningStep as integer
+    local WarningDistance as float
     if FlarakTestBaseSprite = 0 or FlarakTestLauncherSprite = 0 then exitfunction
 
     NowMs = GetMilliseconds()
@@ -127,11 +129,14 @@ function FlarakVisualTestDraw(Screen as TSize)
             FlarakTestRocketActive = TRUE
             FlarakTestRocketNextMs = NowMs+FLARAK_TEST_ROCKET_INTERVAL_MS
         endif
-        // Warning light is visible only during the final 300 ms of aim hold.
+        // Three tiny lamps flash in sequence over the last 300 ms.
+        // Their positions follow the locked barrel direction on both sides.
         if FlarakTestAimLocked = TRUE and FlarakTestRocketActive = FALSE and NowMs-FlarakTestAimLockMs >= FLARAK_TEST_AIM_HOLD_MS-FLARAK_TEST_WARNING_MS
+            WarningStep = (NowMs-FlarakTestAimLockMs-(FLARAK_TEST_AIM_HOLD_MS-FLARAK_TEST_WARNING_MS))/100
+            if WarningStep > 2 then WarningStep = 2
+            WarningDistance = 7+WarningStep*5
             MuzzleAngle = FlarakTestLockedLauncherAngle+FLARAK_TEST_BARREL_ANGLE_OFFSET
-            SetSpritePositionByOffset(FlarakTestWarningSprite,X+Sin(MuzzleAngle)*FLARAK_TEST_MUZZLE_DISTANCE,Y-Cos(MuzzleAngle)*FLARAK_TEST_MUZZLE_DISTANCE)
-            DrawSprite(FlarakTestWarningSprite)
+            SetSpritePositionByOffset(FlarakTestWarningSprite,X+Sin(MuzzleAngle)*WarningDistance,Y-Cos(MuzzleAngle)*WarningDistance)
         endif
         // Draw between base and launcher: the launcher masks the emerging rocket.
         if FlarakTestRocketActive = TRUE
@@ -146,6 +151,10 @@ function FlarakVisualTestDraw(Screen as TSize)
             endif
         endif
         DrawSprite(FlarakTestLauncherSprite)
+        // Draw the active lamp above the launcher so it stays visible.
+        if FlarakTestAimLocked = TRUE and FlarakTestRocketActive = FALSE and NowMs-FlarakTestAimLockMs >= FLARAK_TEST_AIM_HOLD_MS-FLARAK_TEST_WARNING_MS
+            DrawSprite(FlarakTestWarningSprite)
+        endif
         if FlarakTestAimLocked = TRUE and FlarakTestRocketActive = TRUE and NowMs-FlarakTestRocketLaunchMs >= FLARAK_TEST_POST_SHOT_HOLD_MS
             FlarakTestAimLocked = FALSE
         endif
