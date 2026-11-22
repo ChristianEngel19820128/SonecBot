@@ -20,7 +20,7 @@
 #constant DRONE_SCAN_MAX_DURATION_MS 1000
 #constant DRONE_SCAN_NEAR_X 220
 #constant DRONE_SCAN_MAX_DISTANCE_X 500
-#constant DRONE_SCAN_MAX_SUCCESS_PERCENT 62.5
+#constant DRONE_SCAN_MAX_SUCCESS_PERCENT 50
 // Temporary diagnostic: force acquisition only for a valid target ahead and within range.
 #constant DRONE_DEBUG_FORCE_ACQUIRE 0
 #constant DRONE_SHOT_MAX_Y_DIFFERENCE 120
@@ -342,7 +342,7 @@ function DroneMove(Drone ref as TDrone,Screen as TSize,Sonec ref as TSonec,Shiel
                 DroneActionRestUntilMs = Now+DRONE_ACTION_REST_MS
                 DroneNextScanMs = Now + random(DRONE_SCAN_MIN_INTERVAL_MS,DRONE_SCAN_MAX_INTERVAL_MS)
                 // A completed scan can acquire a target ahead with a linearly
-                // decreasing chance: 62.5% nearby, 0% at 500px or farther.
+                // decreasing chance: 50% nearby, 0% at 500px or farther.
                 TargetDx = Sonec.ObjectData.Position.x-Drone.Position.x
                 DroneTargetAcquired = FALSE
                 ScanChance = 0
