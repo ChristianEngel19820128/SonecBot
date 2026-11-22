@@ -31,4 +31,6 @@
 
 - [ ] **S4 Explosionstreffer – nächster separat abzustimmender Schritt:** Zentrale Zwei-Kreis-Trefferfläche verwenden, dabei ExplosionDamageAllowed und Plattformabschirmung unverändert respektieren; zuerst bestehenden Code und Schutzpfad prüfen, dann gezielt implementieren und lokal testen.
 
-- [ ] **S4 Explosionstreffer – implementiert, lokaler AGK-Test offen:** Explosion prüft Reichweite gegen beide Sonec-Kreismittelpunkte (ohne Radiusaddition, wie bisher); `ExplosionDamageAllowed` bleibt mit Sonecs ursprünglichem Zentrum als konservative Plattformabschirmung erhalten. Schaden, Schild, 100-ms-Takt und Trefferzählung unverändert. Test: Stehen, Ducken, Randtreffer, Fehlschüsse, eine Schadensgabe pro Takt, Plattformschutz direkt unter Plattform und seitlich außerhalb.
+- [x] **S4 Explosionstreffer – lokal bestanden (8/8):** Explosion prüft Reichweite gegen beide Sonec-Kreismittelpunkte (ohne Radiusaddition, wie bisher); `ExplosionDamageAllowed` bleibt mit Sonecs ursprünglichem Zentrum als konservative Plattformabschirmung erhalten. Schaden, Schild, 100-ms-Takt und Trefferzählung unverändert. Test: Stehen, Ducken, Randtreffer, Fehlschüsse, eine Schadensgabe pro Takt, Plattformschutz direkt unter Plattform und seitlich außerhalb.
+
+- [x] **Zentrale Sonec-Zwei-Kreis-Treffererkennung S1–S4 abgeschlossen:** Geschosse (inkl. S1b-Debug), direkte Bomberbomben, intelligente/einfache Minen und Explosionen lokal erfolgreich getestet. S4-Plattformabschirmung unter Plattform und Treffer seitlich außerhalb bestätigt.
