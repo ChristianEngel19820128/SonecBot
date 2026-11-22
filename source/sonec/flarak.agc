@@ -44,71 +44,95 @@ type TFlarakTestRocket
     NextJetMs as integer
 endtype
 
-global FlarakTestRocket1 as TFlarakTestRocket
-global FlarakTestRocket2 as TFlarakTestRocket
-global FlarakTestSecondPending as integer
-global FlarakTestSecondFireMs as integer
-global FlarakTestVolleyStartMs as integer
-global FlarakTestVolleyFired as integer
-global FlarakTestVolleyAngle as float
+type TFlarak
+    Rocket1 as TFlarakTestRocket
+    Rocket2 as TFlarakTestRocket
+    SecondPending as integer
+    SecondFireMs as integer
+    VolleyStartMs as integer
+    VolleyFired as integer
+    VolleyAngle as float
+    BaseSprite as integer
+    LauncherSprite as integer
+    StartMs as integer
+    RocketNextMs as integer
+    AimLocked as integer
+    AimLockMs as integer
+    LockedLauncherAngle as float
+    WarningSprite as integer
+    CurrentFrame as integer
+    CurrentLauncherAngle as float
+    NowMs as integer
+    WorldX as float
+    WorldY as float
+    Enabled as integer
+    PlateIndex as integer
+    PlateOffsetX as float
+    PlateOffsetY as float
+endtype
 
-global FlarakTestBaseSprite as integer
-global FlarakTestLauncherSprite as integer
-global FlarakTestStartMs as integer
-global FlarakTestRocketNextMs as integer
-global FlarakTestAimLocked as integer
-global FlarakTestAimLockMs as integer
-global FlarakTestLockedLauncherAngle as float
-global FlarakTestWarningSprite as integer
-global FlarakTestCurrentFrame as integer
-global FlarakTestCurrentLauncherAngle as float
-global FlarakTestNowMs as integer
-global FlarakTestWorldX as float
-global FlarakTestWorldY as float
+global FlarakList as TFlarak[]
+global FlarakBaseImage as integer
+global FlarakRocketImage as integer
 
 function FlarakVisualTestCreate()
     local Image as TImage
+    FlarakList.Length = -1
     Image.File.Path = "/media/gfx/enemies"
     Image.File.Name = "flarak.png"
-    if ImageLoad(Image) = TRUE
-        FlarakTestBaseSprite = CreateSprite(Image.ID)
-        SetSpriteAnimation(FlarakTestBaseSprite,FLARAK_TEST_CELL_W,FLARAK_TEST_CELL_H,6)
-        SetSpriteFrame(FlarakTestBaseSprite,1)
-        SetSpriteOffset(FlarakTestBaseSprite,FLARAK_TEST_BASE_OFFSET_X,FLARAK_TEST_BASE_OFFSET_Y)
-        FlarakTestLauncherSprite = CreateSprite(Image.ID)
-        SetSpriteAnimation(FlarakTestLauncherSprite,FLARAK_TEST_CELL_W,FLARAK_TEST_CELL_H,6)
-        SetSpriteFrame(FlarakTestLauncherSprite,6)
-        SetSpriteOffset(FlarakTestLauncherSprite,FLARAK_TEST_LAUNCHER_PIVOT_X,FLARAK_TEST_LAUNCHER_PIVOT_Y)
-        SetSpriteColor(FlarakTestBaseSprite,80,232,80,255)
-        SetSpriteColor(FlarakTestLauncherSprite,80,232,80,255)
-    endif
+    if ImageLoad(Image) = TRUE then FlarakBaseImage = Image.ID
     Image.File.Path = "/media/gfx/weapons"
     Image.File.Name = "rocket.png"
-    if ImageLoad(Image) = TRUE
-        FlarakTestRocket1.Sprite = CreateSprite(Image.ID)
-        SetSpriteOffset(FlarakTestRocket1.Sprite,GetSpriteWidth(FlarakTestRocket1.Sprite)*0.5,GetSpriteHeight(FlarakTestRocket1.Sprite)*0.5)
-        SetSpriteColor(FlarakTestRocket1.Sprite,170,215,170,255)
-        FlarakTestRocket1.TipDistance = GetSpriteWidth(FlarakTestRocket1.Sprite)*0.5
-        FlarakTestRocket2.Sprite = CreateSprite(Image.ID)
-        SetSpriteOffset(FlarakTestRocket2.Sprite,GetSpriteWidth(FlarakTestRocket2.Sprite)*0.5,GetSpriteHeight(FlarakTestRocket2.Sprite)*0.5)
-        SetSpriteColor(FlarakTestRocket2.Sprite,170,215,170,255)
-        FlarakTestRocket2.TipDistance = GetSpriteWidth(FlarakTestRocket2.Sprite)*0.5
-    endif
-    // Small warning lamp; it steps across three points on the barrel.
-    FlarakTestWarningSprite = CreateSprite(0)
-    SetSpriteSize(FlarakTestWarningSprite,2,2)
-    SetSpriteOffset(FlarakTestWarningSprite,1,1)
-    SetSpriteColor(FlarakTestWarningSprite,255,155,45,255)
-    FlarakTestAimLocked = FALSE
-    FlarakTestRocket1.Active = FALSE
-    FlarakTestRocket2.Active = FALSE
-    FlarakTestSecondPending = FALSE
-    FlarakTestVolleyFired = FALSE
-    FlarakTestStartMs = -1
-    FlarakTestCurrentFrame = 1
-    FlarakTestRocketNextMs = 0
+    if ImageLoad(Image) = TRUE then FlarakRocketImage = Image.ID
 endfunction
 
+function FlarakSpawn(PlateList ref as TPlateList,PlateIndex as integer,NowMs as integer)
+    local F as TFlarak
+    local Plate as TPlate
+    local i as integer
+    if FlarakBaseImage = 0 or FlarakRocketImage = 0 then exitfunction
+    if PlateIndex < 0 or PlateIndex > PlateList.Plate.Length then exitfunction
+    Plate = PlateList.Plate[PlateIndex]
+    if Plate.Enabled = FALSE or Plate.ObjectData.Size.Width < FLARAK_TEST_CELL_W+20 then exitfunction
+    F.Enabled = TRUE
+    F.PlateIndex = PlateIndex
+    F.PlateOffsetX = Plate.ObjectData.Size.Width*0.5
+    F.PlateOffsetY = -FLARAK_TEST_BASE_OFFSET_Y
+    F.WorldX = Plate.ObjectData.Position.x+F.PlateOffsetX
+    F.WorldY = Plate.ObjectData.Position.y+F.PlateOffsetY
+    F.BaseSprite = CreateSprite(FlarakBaseImage)
+    SetSpriteAnimation(F.BaseSprite,FLARAK_TEST_CELL_W,FLARAK_TEST_CELL_H,6)
+    SetSpriteFrame(F.BaseSprite,1)
+    SetSpriteOffset(F.BaseSprite,FLARAK_TEST_BASE_OFFSET_X,FLARAK_TEST_BASE_OFFSET_Y)
+    SetSpriteColor(F.BaseSprite,80,232,80,255)
+    F.LauncherSprite = CreateSprite(FlarakBaseImage)
+    SetSpriteAnimation(F.LauncherSprite,FLARAK_TEST_CELL_W,FLARAK_TEST_CELL_H,6)
+    SetSpriteFrame(F.LauncherSprite,6)
+    SetSpriteOffset(F.LauncherSprite,FLARAK_TEST_LAUNCHER_PIVOT_X,FLARAK_TEST_LAUNCHER_PIVOT_Y)
+    SetSpriteColor(F.LauncherSprite,80,232,80,255)
+    F.Rocket1.Sprite = CreateSprite(FlarakRocketImage)
+    F.Rocket2.Sprite = CreateSprite(FlarakRocketImage)
+    SetSpriteOffset(F.Rocket1.Sprite,GetSpriteWidth(F.Rocket1.Sprite)*0.5,GetSpriteHeight(F.Rocket1.Sprite)*0.5)
+    SetSpriteOffset(F.Rocket2.Sprite,GetSpriteWidth(F.Rocket2.Sprite)*0.5,GetSpriteHeight(F.Rocket2.Sprite)*0.5)
+    SetSpriteColor(F.Rocket1.Sprite,170,215,170,255)
+    SetSpriteColor(F.Rocket2.Sprite,170,215,170,255)
+    F.Rocket1.TipDistance = GetSpriteWidth(F.Rocket1.Sprite)*0.5
+    F.Rocket2.TipDistance = GetSpriteWidth(F.Rocket2.Sprite)*0.5
+    F.WarningSprite = CreateSprite(0)
+    SetSpriteSize(F.WarningSprite,2,2)
+    SetSpriteOffset(F.WarningSprite,1,1)
+    SetSpriteColor(F.WarningSprite,255,155,45,255)
+    F.StartMs = NowMs
+    F.RocketNextMs = NowMs+1500
+    F.CurrentFrame = 1
+    for i = 0 to FlarakList.Length
+        if FlarakList[i].Enabled = FALSE and FlarakList[i].Rocket1.Active = FALSE and FlarakList[i].Rocket2.Active = FALSE
+            FlarakList[i] = F
+            exitfunction
+        endif
+    next i
+    FlarakList.Insert(F)
+endfunction
 
 // Lane offset is perpendicular to the flight axis: negative = upper tube at 0 degrees.
 function FlarakRocketLaunch(Rocket ref as TFlarakTestRocket,X as float,Y as float,FlightAngle as float,LaneOffset as float,NowMs as integer)
@@ -264,7 +288,7 @@ function FlarakRocketDraw(Rocket ref as TFlarakTestRocket,World ref as TWorld)
     DrawSprite(Rocket.Sprite)
 endfunction
 
-function FlarakVisualTestDo(Screen as TSize,Game ref as TGame,JetfireList ref as TJetfireList,ProtoJetfire ref as TProtoJetfire,World ref as TWorld,NowMs as integer)
+function FlarakDo(F ref as TFlarak,Game ref as TGame,JetfireList ref as TJetfireList,ProtoJetfire ref as TProtoJetfire,World ref as TWorld,NowMs as integer)
     local Elapsed as integer
     local Frame as integer
     local Angle as float
@@ -281,20 +305,14 @@ function FlarakVisualTestDo(Screen as TSize,Game ref as TGame,JetfireList ref as
     local JetFound as integer
     local JetOutlet as integer
     local JetBackDistance as float
-    if FlarakTestBaseSprite = 0 or FlarakTestLauncherSprite = 0 then exitfunction
-    if FlarakTestStartMs < 0
-        FlarakTestWorldX = World.Size.Width-45
-        FlarakTestWorldY = World.Size.Height-45
-        FlarakTestStartMs = NowMs
-        FlarakTestRocketNextMs = NowMs+1500
-    endif
-    FlarakTestNowMs = NowMs
-    Elapsed = NowMs-FlarakTestStartMs
+    if F.Enabled = FALSE then exitfunction
+    F.NowMs = NowMs
+    Elapsed = NowMs-F.StartMs
     Frame = 1+Elapsed/FLARAK_TEST_FRAME_MS
     if Frame > 5 then Frame = 5
-    FlarakTestCurrentFrame = Frame
-    X = FlarakTestWorldX
-    Y = FlarakTestWorldY
+    F.CurrentFrame = Frame
+    X = F.WorldX
+    Y = F.WorldY
     if Frame = 5
         // Start at 0 degrees when frame 5 first appears, then change
         // the angle gradually. The old absolute-time sine jumped on deployment.
@@ -305,67 +323,104 @@ function FlarakVisualTestDo(Screen as TSize,Game ref as TGame,JetfireList ref as
         if Angle > 0 then LauncherAngle = Angle+180
         // Lock the aim for the entire warning and shot, including a short
         // post-launch hold, so the launcher never turns while firing.
-        if FlarakTestAimLocked = FALSE and FlarakTestRocket1.Active = FALSE and FlarakTestRocket2.Active = FALSE and FlarakTestSecondPending = FALSE and NowMs >= FlarakTestRocketNextMs
-            FlarakTestLockedLauncherAngle = LauncherAngle
-            FlarakTestAimLockMs = NowMs
-            FlarakTestAimLocked = TRUE
-            FlarakTestVolleyFired = FALSE
+        if F.AimLocked = FALSE and F.Rocket1.Active = FALSE and F.Rocket2.Active = FALSE and F.SecondPending = FALSE and NowMs >= F.RocketNextMs
+            F.LockedLauncherAngle = LauncherAngle
+            F.AimLockMs = NowMs
+            F.AimLocked = TRUE
+            F.VolleyFired = FALSE
         endif
-        if FlarakTestAimLocked = TRUE
-            LauncherAngle = FlarakTestLockedLauncherAngle
+        if F.AimLocked = TRUE
+            LauncherAngle = F.LockedLauncherAngle
         endif
-        FlarakTestCurrentLauncherAngle = LauncherAngle
+        F.CurrentLauncherAngle = LauncherAngle
         // Launch two missiles from parallel tubes, 5 px apart.
         // At 0 degrees, the first tube is above and the second below.
-        if FlarakTestAimLocked = TRUE and FlarakTestRocket1.Sprite > 0 and FlarakTestSecondPending = FALSE and FlarakTestRocket1.Active = FALSE and FlarakTestRocket2.Active = FALSE and NowMs-FlarakTestAimLockMs >= FLARAK_TEST_AIM_HOLD_MS
-            FlarakTestVolleyAngle = LauncherAngle+FLARAK_TEST_BARREL_ANGLE_OFFSET
-            FlarakRocketLaunch(FlarakTestRocket1,X,Y,FlarakTestVolleyAngle,-FLARAK_TEST_ROCKET_LANE_OFFSET,NowMs)
-            FlarakTestSecondFireMs = NowMs+FLARAK_TEST_SECOND_ROCKET_DELAY_MS
-            FlarakTestSecondPending = TRUE
-            FlarakTestVolleyStartMs = NowMs
-            FlarakTestVolleyFired = TRUE
-            FlarakTestRocketNextMs = NowMs+FLARAK_TEST_ROCKET_INTERVAL_MS
+        if F.AimLocked = TRUE and F.Rocket1.Sprite > 0 and F.SecondPending = FALSE and F.Rocket1.Active = FALSE and F.Rocket2.Active = FALSE and NowMs-F.AimLockMs >= FLARAK_TEST_AIM_HOLD_MS
+            F.VolleyAngle = LauncherAngle+FLARAK_TEST_BARREL_ANGLE_OFFSET
+            FlarakRocketLaunch(F.Rocket1,X,Y,F.VolleyAngle,-FLARAK_TEST_ROCKET_LANE_OFFSET,NowMs)
+            F.SecondFireMs = NowMs+FLARAK_TEST_SECOND_ROCKET_DELAY_MS
+            F.SecondPending = TRUE
+            F.VolleyStartMs = NowMs
+            F.VolleyFired = TRUE
+            F.RocketNextMs = NowMs+FLARAK_TEST_ROCKET_INTERVAL_MS
         endif
-        if FlarakTestSecondPending = TRUE and NowMs >= FlarakTestSecondFireMs
-            FlarakRocketLaunch(FlarakTestRocket2,X,Y,FlarakTestVolleyAngle,FLARAK_TEST_ROCKET_LANE_OFFSET,NowMs)
-            FlarakTestSecondPending = FALSE
+        if F.SecondPending = TRUE and NowMs >= F.SecondFireMs
+            FlarakRocketLaunch(F.Rocket2,X,Y,F.VolleyAngle,FLARAK_TEST_ROCKET_LANE_OFFSET,NowMs)
+            F.SecondPending = FALSE
         endif
-        FlarakRocketDo(FlarakTestRocket1,Game,JetfireList,ProtoJetfire,World,NowMs)
-        FlarakRocketDo(FlarakTestRocket2,Game,JetfireList,ProtoJetfire,World,NowMs)
-        if FlarakTestAimLocked = TRUE and FlarakTestVolleyFired = TRUE and FlarakTestSecondPending = FALSE and NowMs-FlarakTestVolleyStartMs >= FLARAK_TEST_SECOND_ROCKET_DELAY_MS+FLARAK_TEST_POST_SHOT_HOLD_MS
-            FlarakTestAimLocked = FALSE
+        FlarakRocketDo(F.Rocket1,Game,JetfireList,ProtoJetfire,World,NowMs)
+        FlarakRocketDo(F.Rocket2,Game,JetfireList,ProtoJetfire,World,NowMs)
+        if F.AimLocked = TRUE and F.VolleyFired = TRUE and F.SecondPending = FALSE and NowMs-F.VolleyStartMs >= FLARAK_TEST_SECOND_ROCKET_DELAY_MS+FLARAK_TEST_POST_SHOT_HOLD_MS
+            F.AimLocked = FALSE
         endif
     endif
 endfunction
 
-function FlarakVisualTestDraw(World ref as TWorld)
+function FlarakDraw(F ref as TFlarak,World ref as TWorld)
     local X as float
     local Y as float
     local WarningStep as integer
     local WarningLamp as integer
     local WarningDistance as float
     local MuzzleAngle as float
-    if FlarakTestBaseSprite = 0 or FlarakTestLauncherSprite = 0 then exitfunction
-    X = FlarakTestWorldX-World.Position.x
-    Y = FlarakTestWorldY-World.Position.y
-    SetSpriteFrame(FlarakTestBaseSprite,FlarakTestCurrentFrame)
-    SetSpritePositionByOffset(FlarakTestBaseSprite,X,Y)
-    DrawSprite(FlarakTestBaseSprite)
-    if FlarakTestCurrentFrame = 5
-        SetSpriteAngle(FlarakTestLauncherSprite,FlarakTestCurrentLauncherAngle)
-        SetSpritePositionByOffset(FlarakTestLauncherSprite,X+FLARAK_TEST_LAUNCHER_PIVOT_X-FLARAK_TEST_BASE_OFFSET_X,Y+FLARAK_TEST_LAUNCHER_PIVOT_Y-FLARAK_TEST_BASE_OFFSET_Y)
-        FlarakRocketDraw(FlarakTestRocket1,World)
-        FlarakRocketDraw(FlarakTestRocket2,World)
-        DrawSprite(FlarakTestLauncherSprite)
-        if FlarakTestAimLocked = TRUE and FlarakTestRocket1.Active = FALSE and FlarakTestRocket2.Active = FALSE and FlarakTestSecondPending = FALSE and FlarakTestNowMs-FlarakTestAimLockMs >= FLARAK_TEST_AIM_HOLD_MS-FLARAK_TEST_WARNING_MS
-            WarningStep = (FlarakTestNowMs-FlarakTestAimLockMs-(FLARAK_TEST_AIM_HOLD_MS-FLARAK_TEST_WARNING_MS))/100
+    if F.BaseSprite = 0 or F.LauncherSprite = 0 then exitfunction
+    X = F.WorldX-World.Position.x
+    Y = F.WorldY-World.Position.y
+    SetSpriteFrame(F.BaseSprite,F.CurrentFrame)
+    SetSpritePositionByOffset(F.BaseSprite,X,Y)
+    DrawSprite(F.BaseSprite)
+    if F.CurrentFrame = 5
+        SetSpriteAngle(F.LauncherSprite,F.CurrentLauncherAngle)
+        SetSpritePositionByOffset(F.LauncherSprite,X+FLARAK_TEST_LAUNCHER_PIVOT_X-FLARAK_TEST_BASE_OFFSET_X,Y+FLARAK_TEST_LAUNCHER_PIVOT_Y-FLARAK_TEST_BASE_OFFSET_Y)
+        FlarakRocketDraw(F.Rocket1,World)
+        FlarakRocketDraw(F.Rocket2,World)
+        DrawSprite(F.LauncherSprite)
+        if F.AimLocked = TRUE and F.Rocket1.Active = FALSE and F.Rocket2.Active = FALSE and F.SecondPending = FALSE and F.NowMs-F.AimLockMs >= FLARAK_TEST_AIM_HOLD_MS-FLARAK_TEST_WARNING_MS
+            WarningStep = (F.NowMs-F.AimLockMs-(FLARAK_TEST_AIM_HOLD_MS-FLARAK_TEST_WARNING_MS))/100
             if WarningStep > 2 then WarningStep = 2
-            MuzzleAngle = FlarakTestLockedLauncherAngle+FLARAK_TEST_BARREL_ANGLE_OFFSET
+            MuzzleAngle = F.LockedLauncherAngle+FLARAK_TEST_BARREL_ANGLE_OFFSET
             for WarningLamp = 0 to WarningStep
                 WarningDistance = 3+WarningLamp*4
-                SetSpritePositionByOffset(FlarakTestWarningSprite,X+Sin(MuzzleAngle)*WarningDistance,Y-Cos(MuzzleAngle)*WarningDistance)
-                DrawSprite(FlarakTestWarningSprite)
+                SetSpritePositionByOffset(F.WarningSprite,X+Sin(MuzzleAngle)*WarningDistance,Y-Cos(MuzzleAngle)*WarningDistance)
+                DrawSprite(F.WarningSprite)
             next WarningLamp
         endif
     endif
+endfunction
+
+function FlarakDoAll(Game ref as TGame,JetfireList ref as TJetfireList,ProtoJetfire ref as TProtoJetfire,World ref as TWorld,PlateList ref as TPlateList,NowMs as integer)
+    local i as integer
+    local PlateIndex as integer
+    for i = 0 to FlarakList.Length
+        if FlarakList[i].Enabled = TRUE
+            PlateIndex = FlarakList[i].PlateIndex
+            if PlateIndex < 0 or PlateIndex > PlateList.Plate.Length
+                FlarakList[i].Enabled = FALSE
+            else
+                if PlateList.Plate[PlateIndex].Enabled = FALSE
+                    FlarakList[i].Enabled = FALSE
+                else
+                    FlarakList[i].WorldX = PlateList.Plate[PlateIndex].ObjectData.Position.x+FlarakList[i].PlateOffsetX
+                    FlarakList[i].WorldY = PlateList.Plate[PlateIndex].ObjectData.Position.y+FlarakList[i].PlateOffsetY
+                    FlarakDo(FlarakList[i],Game,JetfireList,ProtoJetfire,World,NowMs)
+                endif
+            endif
+        endif
+        // Fired rockets continue even after their platform disappears.
+        if FlarakList[i].Enabled = FALSE
+            FlarakRocketDo(FlarakList[i].Rocket1,Game,JetfireList,ProtoJetfire,World,NowMs)
+            FlarakRocketDo(FlarakList[i].Rocket2,Game,JetfireList,ProtoJetfire,World,NowMs)
+        endif
+    next i
+endfunction
+
+function FlarakDrawAll(World ref as TWorld)
+    local i as integer
+    for i = 0 to FlarakList.Length
+        if FlarakList[i].Enabled = TRUE then FlarakDraw(FlarakList[i],World)
+        if FlarakList[i].Enabled = FALSE
+            FlarakRocketDraw(FlarakList[i].Rocket1,World)
+            FlarakRocketDraw(FlarakList[i].Rocket2,World)
+        endif
+    next i
 endfunction
