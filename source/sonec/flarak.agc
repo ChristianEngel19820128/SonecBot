@@ -43,7 +43,9 @@
 #constant FLARAK_TEST_HOMING_TURN_DEG_PER_MS 0.06
 #constant FLARAK_TEST_ROCKET_SPEED_PX_PER_MS 0.32
 #constant FLARAK_TEST_MUZZLE_DISTANCE 22
-#constant FLARAK_TEST_ROCKET_LANE_OFFSET 2.5
+// Each rocket is 5 px thick in its source image; 12 px center spacing
+// keeps the two parallel lanes visibly separated at all firing angles.
+#constant FLARAK_TEST_ROCKET_LANE_OFFSET 6
 #constant FLARAK_TEST_SECOND_ROCKET_DELAY_MS 120
 #constant FLARAK_TEST_JET_INTERVAL_MS 20
 #constant FLARAK_TEST_JET_BACK_SPACING 3
@@ -120,6 +122,7 @@ global FlarakList as TFlarak[]
 global FlarakBaseImage as integer
 global FlarakRocketImage as integer
 global FlarakDebugText as integer
+global FlarakDebugVisible as integer
 
 function FlarakVisualTestCreate()
     local Image as TImage
@@ -244,7 +247,6 @@ function FlarakSpawn(PlateList ref as TPlateList,ChestList ref as TChestList,Pla
     FlarakList.Insert(F)
 endfunction
 
-// Lane offset is perpendicular to the flight axis: negative = upper tube at 0 degrees.
 // Flak uses the regular enemy bullet system. Both muzzles follow the
 // rotated frame-7 center; shots have no individual angular spread.
 function FlarakFireBullet(F ref as TFlarak,Game ref as TGame,NowMs as integer)
@@ -280,6 +282,9 @@ function FlarakFireBullet(F ref as TFlarak,Game ref as TGame,NowMs as integer)
     endif
 endfunction
 
+// Perpendicular launch offset rotates with flight direction:
+// at 0 degrees (up), the rockets start side-by-side at X +/-6px.
+// Both use the same FlightAngle until their independent homing begins.
 function FlarakRocketLaunch(Rocket ref as TFlarakTestRocket,X as float,Y as float,FlightAngle as float,LaneOffset as float,NowMs as integer)
     Rocket.Angle = FlightAngle
     Rocket.SpriteAngle = FlightAngle+90
@@ -725,7 +730,7 @@ function FlarakDebugDrawAll(World ref as TWorld)
     local SideText as string
     local MoveText as string
     local DebugLine as string
-    if FLARAK_DEBUG_BULLETS = 0 or FlarakDebugText = 0 then exitfunction
+    if FLARAK_DEBUG_BULLETS = 0 or FlarakDebugText = 0 or FlarakDebugVisible = 0 then exitfunction
     for i = 0 to FlarakList.Length
         if FlarakList[i].Enabled = TRUE and FlarakList[i].Variant = FLARAK_VARIANT_FLAK
             X = FlarakList[i].WorldX-World.Position.x
