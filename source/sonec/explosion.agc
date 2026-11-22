@@ -175,6 +175,12 @@ function ExplosionNew(Explosion ref as TExplosion,ProtoExplosion ref as TProtoEx
 		case 2
 			ColorSet(Explosion.SpriteData.Color,0,255,0,200)
 		endcase
+        case 3
+            ColorSet(Explosion.SpriteData.Color,255,255,255,255)
+        endcase
+        case 4
+            ColorSet(Explosion.SpriteData.Color,255,255,255,255)
+        endcase
 	endselect
 	
 	SpritePositionCalc(Explosion.SpriteData.Position,Explosion.ObjectData.Position,Game.World.Position)
