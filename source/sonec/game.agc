@@ -300,7 +300,7 @@ function GameDo(Game ref as TGame,Now as integer)
 	MineCollideSonec(Game.SimpleMineList,Game.Sonec,Game,Now)
 	
 	
-	FlarakVisualTestDo(Game.Screen,Game.Sonec.ObjectData.Position.x,Game.Sonec.ObjectData.Position.y-Game.World.Position.y,Game.JetfireList,Game.ProtoJetfire,Game.World,Now)
+	FlarakVisualTestDo(Game.Screen,Game.Sonec,Game.JetfireList,Game.ProtoJetfire,Game.World,Now)
 	JetfireLifeCycle(Game.JetfireList,Now)
 	EnergieMoveAll(Game.EnergieList,Game.World,Now)
 	EnergieLifeCycle(Game.EnergieList,Now)
