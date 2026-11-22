@@ -3,6 +3,13 @@
 // 
 //----------------------------------------------------------------------
 
+// Bullet modifications: normal ammunition remains the default for all existing callers.
+#constant BULLET_MOD_STANDARD 0
+#constant BULLET_MOD_EXPLOSIVE 1
+#constant BULLET_EXPLOSIVE_FUSE_MIN_MS 450
+#constant BULLET_EXPLOSIVE_FUSE_MAX_MS 1100
+#constant BULLET_EXPLOSIVE_EXPLOSION_TYPE 3
+
 function ProtoBulletLoad(ProtoBullet ref as TProtoBullet,File ref as TFilePath)
 	
 	local i as integer
