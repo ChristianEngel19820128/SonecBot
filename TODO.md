@@ -4,7 +4,7 @@
 
 ## Jetzt
 
-- [ ] **S5 Drohnenlaser – implementiert, lokaler Test offen:** `DroneLaserDetectHit` nutzt `SonecHitCircleRadius` und beide `SonecHitCircleY`-Mittelpunkte; Sweep, 30-px-Laserlänge, Schaden, Schild und Einmal-Treffer bleiben unverändert. Entwicklercheck: AGK-Compile/Start, Stehen, Ducken, knappe Fehlschüsse, ein Treffer pro Laser, Schild/Health, Laserflug/Animation.
+- [x] **S5 Drohnenlaser – lokal bestanden (7/7):** `DroneLaserDetectHit` nutzt `SonecHitCircleRadius` und beide `SonecHitCircleY`-Mittelpunkte; Sweep, 30-px-Laserlänge, Schaden, Schild und Einmal-Treffer bleiben unverändert. Entwicklercheck: AGK-Compile/Start, Stehen, Ducken, knappe Fehlschüsse, ein Treffer pro Laser, Schild/Health, Laserflug/Animation.
 
 
 - [x] **S1 und S1b lokal bestanden.** S1 vom Entwickler lokal bestanden: ursprüngliche sechs Prüfungen plus korrigierte rote Trefferanzeige; gezielter Debug-Nachtest 4/4 bestanden. Umgesetzt: Nur tatsächlich vom Gegnergeschoss getroffene Kreise rot markieren, beide nur bei Treffer beider Kreise; je Kreis 200 ms; rein visuell, keine Änderung der Schadenslogik. Nächster separater Schritt: direkte Bomberbomben-Treffer auf zentrale Zwei-Kreis-Fläche umstellen, nach Abstimmung. Weitere Angriffe (Bomberbombe, Mine, Explosion) erst nach Abnahme einzeln umstellen; Walker, Spielerwaffen, Pickups ausgeschlossen.
