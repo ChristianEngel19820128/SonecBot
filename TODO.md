@@ -4,7 +4,7 @@
 
 ## Jetzt
 
-- [ ] **Sonec-Trefferfläche S1 – lokaler AGK-Test offen.** Zwei-Kreis-Geometrie aus `bullet.agc` in `sonec.agc` zentralisiert; Gegnergeschoss-Sweep nutzt dieselben Kreispositionen und Radien. Vergleich mit altem Ein-Kreis-Trefferweg und Debug-Anzeige bleibt bestehen. Stehen, Ducken, Treffer/Fehlschüsse, Schild/Health und bestehendes Gameplay lokal prüfen. Weitere Angriffe (Bomberbombe, Mine, Explosion) erst nach Abnahme einzeln umstellen; Walker, Spielerwaffen, Pickups ausgeschlossen.
+- [ ] **Sonec-Trefferfläche S1 – lokaler AGK-Test offen.** Zwei-Kreis-Geometrie aus `bullet.agc` in `sonec.agc` zentralisiert; Gegnergeschoss-Sweep nutzt dieselben Kreispositionen und Radien. Vergleich mit altem Ein-Kreis-Trefferweg bleibt bestehen; Debug-Kreise (Taste 3) sind türkis und leuchten nach einem bestätigten Gegnergeschoss-Treffer für 200 ms rot (auch bei Schildabsorption). Stehen, Ducken, Treffer/Fehlschüsse, Schild/Health und bestehendes Gameplay lokal prüfen. Weitere Angriffe (Bomberbombe, Mine, Explosion) erst nach Abnahme einzeln umstellen; Walker, Spielerwaffen, Pickups ausgeschlossen.
 
 - [ ] **B5c – Schutzgrenze als Langzeitbeobachtung (kein akuter Blocker).** Lokaler Test 4/5 bestätigt; Schutz direkt unter der getroffenen Plattform mangels reproduzierbarer Spielsituation nicht beobachtbar (nicht fehlgeschlagen). Statische Prüfung auf `develop`: Kistentreffer übergibt Plattformoberkante, `ExplosionAddAboveY` aktiviert `LimitDamageBelowY`, `ExplosionDamageAllowed` wird für Sonec und andere Ziele bei Radiusprüfung verwendet; mitbewegte Plattformgrenze wird aktualisiert. Einschränkung: Sonec-Positionspunkt statt kompletter Kollisionsfläche. Kein Fix ohne beobachteten Fehler; temporäre Bomber-Testauftritte 8–15 s vorerst erhalten.
 
