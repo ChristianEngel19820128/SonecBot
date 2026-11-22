@@ -3,7 +3,7 @@
 // Three user-provided 46x30 colored images: left, center (turn), right.
 
 #constant DRONE_JET_INTERVAL_MS 30
-#constant DRONE_JET_PARTICLE_SCALE 0.65
+#constant DRONE_JET_PARTICLE_SCALE 0.6
 #constant DRONE_HEALTH_MAX 100
 #constant DRONE_HIT_FLASH_MS 150
 #constant DRONE_AUTO_SPAWN_MIN_MS 20000
@@ -484,7 +484,7 @@ function DroneJetfireDo(Drone ref as TDrone,JetfireList ref as TJetfireList,Prot
         for Outlet = 0 to 2
             // Match the three visible exhaust outlets of the 46x30 drone sprite.
             // The center outlet extends slightly farther downward.
-            Position.x = Drone.Position.x+(Outlet-1)*10
+            Position.x = Drone.Position.x+(Outlet-1)*8
             Position.y = Drone.Position.y+8
             if Outlet = 1 then Position.y = Drone.Position.y+10
             JetfireNew(Jetfire,ProtoJetfire,World,Position,Now)
