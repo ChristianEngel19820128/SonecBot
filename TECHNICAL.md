@@ -356,3 +356,5 @@ Knowledge-Base-Kandidaten stehen in [BACKLOG.md](BACKLOG.md); Beiträge separat 
 **Jetstream-Nachkorrektur (lokaler Sichttest offen):** Entwickler-Screenshot zeigte die vorherigen Quellen ±15/+13 außen und 0/+16 mittig zu weit außen und unten. Neuer Versuch: äußere X ±7 / Y +8, Mitte X 0 / Y +10 (mittlerer Auspuff bleibt länger). Partikelbreite/-skalierung unverändert. AGK-Compile und optischer Test ausstehend.
 
 **Jetstream-Feinjustierung (Sichttest offen, 22.11.2026):** Nach Entwickler-Screenshot äußere Partikelquellen je 2 px nach außen korrigiert: X ±9 / Y +8; Mitte X 0 / Y +10 unverändert. Entwickler bestätigt bisherige Y-Ausrichtung; finale X-Sichtabnahme noch offen. Breite und übrige Effekte unverändert.
+
+**Jetstream-Finalversuch (Sichttest offen):** Auf Entwicklerfeedback hin äußere X-Offsets von ±9 auf ±10 px korrigiert, Y +8 unverändert; Mitte X 0 / Y +10 unverändert. Keine Änderungen an Partikeln oder Drohnenverhalten.
