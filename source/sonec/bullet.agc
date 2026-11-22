@@ -168,8 +168,6 @@ endfunction
 // Change the switch to 0 to restore the proven K1c single-circle damage path.
 #constant SONEC_TWO_CIRCLE_TEST 1
 #constant SONEC_TWO_CIRCLE_DAMAGE 1
-// Second duck circle sits 10 world pixels below the first.
-#constant SONEC_DUCK_SECOND_CIRCLE_Y 10
 global SonecTwoCircleChecks as integer
 global SonecTwoCircleBoth as integer
 global SonecTwoCircleOldOnly as integer
@@ -199,20 +197,11 @@ endfunction DeltaX*DeltaX+DeltaY*DeltaY < Radius*Radius
 
 function BulletSweepHitsSonecTwoCircles(Bullet ref as TBullet,Sonec ref as TSonec)
     local Radius as float
-    local OffsetY as float
     local Hit as integer
-    Radius = Sonec.ObjectData.Size.Width*0.30
-    OffsetY = Sonec.ObjectData.Size.Height*0.18
+    Radius = SonecHitCircleRadius(Sonec)
     Hit = FALSE
-    if Sonec.State.Stand = TRUE and Sonec.State.Duck = TRUE
-        // Provisional two circles for ducking: centered and 10 px lower.
-        Radius = Sonec.ObjectData.Size.Width*0.32
-        if BulletSweepHitsSonecCircle(Bullet,Sonec.ObjectData.Position.x,Sonec.ObjectData.Position.y,Radius) = TRUE then Hit = TRUE
-        if BulletSweepHitsSonecCircle(Bullet,Sonec.ObjectData.Position.x,Sonec.ObjectData.Position.y+SONEC_DUCK_SECOND_CIRCLE_Y,Radius) = TRUE then Hit = TRUE
-    else
-        if BulletSweepHitsSonecCircle(Bullet,Sonec.ObjectData.Position.x,Sonec.ObjectData.Position.y-OffsetY,Radius) = TRUE then Hit = TRUE
-        if BulletSweepHitsSonecCircle(Bullet,Sonec.ObjectData.Position.x,Sonec.ObjectData.Position.y+OffsetY,Radius) = TRUE then Hit = TRUE
-    endif
+    if BulletSweepHitsSonecCircle(Bullet,Sonec.ObjectData.Position.x,SonecHitCircleY(Sonec,0),Radius) = TRUE then Hit = TRUE
+    if BulletSweepHitsSonecCircle(Bullet,Sonec.ObjectData.Position.x,SonecHitCircleY(Sonec,1),Radius) = TRUE then Hit = TRUE
 endfunction Hit
 
 // K1c: check the whole last movement segment of an enemy bullet against
