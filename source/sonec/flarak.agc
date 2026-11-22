@@ -27,6 +27,7 @@ global FlarakTestRocketNextMs as integer
 global FlarakTestRocketStartX as float
 global FlarakTestRocketStartY as float
 global FlarakTestRocketAngle as float
+global FlarakTestRocketSpriteAngle as float
 
 function FlarakVisualTestCreate()
     local Image as TImage
@@ -59,6 +60,7 @@ function FlarakVisualTestDraw(Screen as TSize)
     local Elapsed as integer
     local Frame as integer
     local Angle as float
+    local LauncherAngle as float
     local X as float
     local Y as float
     local RocketDistance as float
@@ -76,12 +78,17 @@ function FlarakVisualTestDraw(Screen as TSize)
     if Frame = 5
         // First pivot experiment: swing to both sides without pointing straight up.
         Angle = Sin(Elapsed*0.045)*FLARAK_TEST_TILT_DEGREES
-        SetSpriteAngle(FlarakTestLauncherSprite,Angle)
+        // Negative angles aim up-right. Positive angles switch the barrel
+        // by 180 degrees to aim up-left; neither side aims into the ground.
+        LauncherAngle = Angle
+        if Angle > 0 then LauncherAngle = Angle+180
+        SetSpriteAngle(FlarakTestLauncherSprite,LauncherAngle)
         // Preserve the unrotated overlay while moving the pivot to the joint.
         SetSpritePositionByOffset(FlarakTestLauncherSprite,X+FLARAK_TEST_LAUNCHER_PIVOT_X-FLARAK_TEST_BASE_OFFSET_X,Y+FLARAK_TEST_LAUNCHER_PIVOT_Y-FLARAK_TEST_BASE_OFFSET_Y)
         // Capture the launcher angle when firing; the projectile does not turn.
         if FlarakTestRocketSprite > 0 and FlarakTestRocketActive = FALSE and GetMilliseconds() >= FlarakTestRocketNextMs
-            FlarakTestRocketAngle = Angle+FLARAK_TEST_BARREL_ANGLE_OFFSET
+            FlarakTestRocketAngle = LauncherAngle+FLARAK_TEST_BARREL_ANGLE_OFFSET
+            FlarakTestRocketSpriteAngle = LauncherAngle
             FlarakTestRocketStartX = X+Sin(FlarakTestRocketAngle)*FLARAK_TEST_MUZZLE_DISTANCE
             FlarakTestRocketStartY = Y-Cos(FlarakTestRocketAngle)*FLARAK_TEST_MUZZLE_DISTANCE
             FlarakTestRocketLaunchMs = GetMilliseconds()
@@ -96,7 +103,7 @@ function FlarakVisualTestDraw(Screen as TSize)
             else
                 // Rocket artwork already has the correct orientation relative to the launcher.
                 // Only the travel vector needs the barrel-axis correction.
-                SetSpriteAngle(FlarakTestRocketSprite,FlarakTestRocketAngle-FLARAK_TEST_BARREL_ANGLE_OFFSET)
+                SetSpriteAngle(FlarakTestRocketSprite,FlarakTestRocketSpriteAngle)
                 SetSpritePositionByOffset(FlarakTestRocketSprite,FlarakTestRocketStartX+Sin(FlarakTestRocketAngle)*RocketDistance,FlarakTestRocketStartY-Cos(FlarakTestRocketAngle)*RocketDistance)
                 DrawSprite(FlarakTestRocketSprite)
             endif
