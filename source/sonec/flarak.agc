@@ -12,14 +12,15 @@ global FlarakTestLauncherSprite as integer
 global FlarakTestStartMs as integer
 
 function FlarakVisualTestCreate()
-    local ImageID as integer
-    ImageID = LoadImage("media/gfx/enemies/flarak.png")
-    if ImageID > 0
-        FlarakTestBaseSprite = CreateSprite(ImageID)
+    local Image as TImage
+    Image.File.Path = "/media/gfx/enemies"
+    Image.File.Name = "flarak.png"
+    if ImageLoad(Image) = TRUE
+        FlarakTestBaseSprite = CreateSprite(Image.ID)
         SetSpriteAnimation(FlarakTestBaseSprite,FLARAK_TEST_CELL_W,FLARAK_TEST_CELL_H,6)
         SetSpriteFrame(FlarakTestBaseSprite,1)
         SetSpriteOffset(FlarakTestBaseSprite,FLARAK_TEST_PIVOT_X,FLARAK_TEST_PIVOT_Y)
-        FlarakTestLauncherSprite = CreateSprite(ImageID)
+        FlarakTestLauncherSprite = CreateSprite(Image.ID)
         SetSpriteAnimation(FlarakTestLauncherSprite,FLARAK_TEST_CELL_W,FLARAK_TEST_CELL_H,6)
         SetSpriteFrame(FlarakTestLauncherSprite,6)
         SetSpriteOffset(FlarakTestLauncherSprite,FLARAK_TEST_PIVOT_X,FLARAK_TEST_PIVOT_Y)
