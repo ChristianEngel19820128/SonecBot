@@ -665,6 +665,9 @@ function FlarakDraw(F ref as TFlarak,World ref as TWorld)
     if F.BaseSprite = 0 or F.LauncherSprite = 0 then exitfunction
     X = F.WorldX-World.Position.x
     Y = F.WorldY-World.Position.y
+    // Draw rockets first so the silo and rotating launcher cover their in-barrel section.
+    FlarakRocketDraw(F.Rocket1,World)
+    FlarakRocketDraw(F.Rocket2,World)
     SetSpriteFrame(F.BaseSprite,F.CurrentFrame)
     SetSpritePositionByOffset(F.BaseSprite,X,Y)
     DrawSprite(F.BaseSprite)
@@ -707,8 +710,6 @@ function FlarakDraw(F ref as TFlarak,World ref as TWorld)
             next WarningLamp
         endif
     endif
-    FlarakRocketDraw(F.Rocket1,World)
-    FlarakRocketDraw(F.Rocket2,World)
 endfunction
 
 function FlarakDoAll(Game ref as TGame,JetfireList ref as TJetfireList,ProtoJetfire ref as TProtoJetfire,World ref as TWorld,PlateList ref as TPlateList,NowMs as integer)
