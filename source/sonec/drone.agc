@@ -256,7 +256,7 @@ function DroneAutoSpawnDo(Drone ref as TDrone,Screen as TSize,World ref as TWorl
     endif
 endfunction
 
-function DroneMove(Drone ref as TDrone,Screen as TSize,Sonec ref as TSonec,Shield ref as TShield,Now as integer)
+function DroneMove(Drone ref as TDrone,Screen as TSize,Sonec ref as TSonec,Shield ref as TShield,Inenergie ref as TInenergie,Now as integer)
     local DeltaMs as integer
     local TurnChance as integer
     local LaserOldX as float
@@ -341,6 +341,11 @@ function DroneMove(Drone ref as TDrone,Screen as TSize,Sonec ref as TSonec,Shiel
                 if Sonec.IsLost = FALSE and ((Drone.Direction = MOVELEFT and TargetDx < 0) or (Drone.Direction = MOVERIGHT and TargetDx > 0))
                     if abs(TargetDx) < DRONE_SCAN_MAX_DISTANCE_X
                         ScanChance = DRONE_SCAN_MAX_SUCCESS_PERCENT*(DRONE_SCAN_MAX_DISTANCE_X-abs(TargetDx))/DRONE_SCAN_MAX_DISTANCE_X
+                        // Active energy suction increases scan probability by up to 25 percentage points.
+                        // Bonus tapers with distance, preserving zero detection at maximum range.
+                        if Inenergie.Enabled = TRUE
+                            ScanChance = ScanChance+25*(DRONE_SCAN_MAX_DISTANCE_X-abs(TargetDx))/DRONE_SCAN_MAX_DISTANCE_X
+                        endif
                         if random(1,100) <= ScanChance then DroneTargetAcquired = TRUE
                     endif
                 endif
