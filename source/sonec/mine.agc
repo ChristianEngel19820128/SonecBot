@@ -237,21 +237,33 @@ endfunction
 //----------------------------------------------------------------------
 
 function MineCollideSonec(MineList ref as TMineList,Sonec ref as TSonec,Game ref as TGame,Now as integer)
-	
-	local i as integer
-	local Radius as float
 
-	for i = 0 to MineList.Mine.Length
-		if MineList.Mine[i].Enabled = TRUE
-			Radius = CalcRadius(MineList.Mine[i].ObjectData.Position,Sonec.ObjectData.Position)
-			if Radius < Sonec.ObjectData.Radius + MineList.Mine[i].ObjectData.Radius
-				// A collision destroys the smart mine too: grant its normal reward.
-				RewardDrop(Game,REWARD_OBJECT_SMART_MINE,MineList.Mine[i].ObjectData.Position,Now)
-				MineDestroy(MineList,i,Game.ExplosionList,Game.ProtoExplosion,Game,MineList.Mine[i].ObjectData.Position,Now)
-			endif
-		endif
-	next i
-	
+    local i as integer
+    local CircleIndex as integer
+    local Radius as float
+    local DeltaX as float
+    local DeltaY as float
+    local Hit as integer
+
+    for i = 0 to MineList.Mine.Length
+        if MineList.Mine[i].Enabled = TRUE
+            // S3: both smart and simple mines share Sonec's two body circles.
+            // Keep the mine's own collision radius and the existing explosion flow.
+            Radius = SonecHitCircleRadius(Sonec)+MineList.Mine[i].ObjectData.Radius
+            DeltaX = MineList.Mine[i].ObjectData.Position.x-Sonec.ObjectData.Position.x
+            Hit = FALSE
+            for CircleIndex = 0 to 1
+                DeltaY = MineList.Mine[i].ObjectData.Position.y-SonecHitCircleY(Sonec,CircleIndex)
+                if DeltaX*DeltaX+DeltaY*DeltaY < Radius*Radius then Hit = TRUE
+            next CircleIndex
+            if Hit = TRUE
+                // A collision destroys the mine and grants its established reward.
+                RewardDrop(Game,REWARD_OBJECT_SMART_MINE,MineList.Mine[i].ObjectData.Position,Now)
+                MineDestroy(MineList,i,Game.ExplosionList,Game.ProtoExplosion,Game,MineList.Mine[i].ObjectData.Position,Now)
+            endif
+        endif
+    next i
+
 endfunction
 
 //----------------------------------------------------------------------
