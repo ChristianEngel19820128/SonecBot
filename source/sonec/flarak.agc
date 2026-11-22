@@ -516,13 +516,13 @@ if DesiredAngle > 80 then DesiredAngle = 80
         endif
         // Four straight bullets: left, right, left, right; lock the aim for the burst.
         if F.Variant = FLARAK_VARIANT_FLAK and F.State = FLARAK_READY and F.AimLocked = FALSE and NowMs >= F.FlakNextVolleyMs and NowMs-F.FlakRiseStartMs >= FLARAK_FLAK_RISE_MS
-            if Abs(F.CurrentLauncherAngle-DesiredAngle) <= FLARAK_AIM_TOLERANCE_DEG
-                F.FlakVolleyAngle = F.CurrentLauncherAngle
-                F.FlakVolleySide = F.AimSide
-                F.FlakShotsFired = 0
-                F.FlakNextShotMs = NowMs
-                F.AimLocked = TRUE
-            endif
+            // Fire using the current barrel direction even if Sonec is moving.
+            // The burst itself freezes this angle; no aim-tolerance gate.
+            F.FlakVolleyAngle = F.CurrentLauncherAngle
+            F.FlakVolleySide = F.AimSide
+            F.FlakShotsFired = 0
+            F.FlakNextShotMs = NowMs
+            F.AimLocked = TRUE
         endif
         if F.Variant = FLARAK_VARIANT_FLAK and F.State = FLARAK_READY and F.AimLocked = TRUE and F.FlakShotsFired < 4 and NowMs >= F.FlakNextShotMs
             FlarakFireBullet(F,Game,NowMs)
