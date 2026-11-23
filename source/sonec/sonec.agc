@@ -102,6 +102,8 @@ function SonecInit(Sonec ref as TSonec,ProtoSonec ref as TProtoSonec,World ref a
 	Sonec.IsLost = False
 
 	Sonec.AnimationData.Frame = 0
+	Sonec.AnimationData.Loop = TRUE
+	Sonec.AnimationData.Finished = FALSE
 		
 	Sonec.CollisionData.Index = -1
 
@@ -1186,40 +1188,49 @@ endfunction
 //----------------------------------------------------------------------
 
 function SonecAnimate(Sonec ref as TSonec,ProtoSonec ref as TProtoSonec,Now as integer)
-	
+
+	local Step as integer
+	local LastFrame as integer
+
 	if TimeGet(Sonec.AnimationData.AnimTimer,Now) > 0
 		if Sonec.State.Stand = TRUE and Sonec.State.Duck = FALSE and Sonec.ObjectData.MoveSpeed.x <> 0
-			if Sonec.State.Alignment = MOVELEFT and Sonec.State.LookAlignment = LOOKLEFT
-				Sonec.AnimationData.Frame = Sonec.AnimationData.Frame +1
-				if Sonec.AnimationData.Frame > ProtoSonec.AnimLeft.AnimWalk.Length
-					Sonec.AnimationData.Frame = 0
+			if Sonec.AnimationData.Loop = TRUE or Sonec.AnimationData.Finished = FALSE
+				Step = 1
+				if Sonec.State.Alignment = MOVELEFT and Sonec.State.LookAlignment = LOOKRIGHT
+					Step = -1
 				endif
-			endif
-			if Sonec.State.Alignment = MOVELEFT and Sonec.State.LookAlignment = LOOKRIGHT
-				Sonec.AnimationData.Frame = Sonec.AnimationData.Frame -1
+				if Sonec.State.Alignment = MOVERIGHT and Sonec.State.LookAlignment = LOOKLEFT
+					Step = -1
+				endif
+				if Sonec.State.LookAlignment = LOOKLEFT
+					LastFrame = ProtoSonec.AnimLeft.AnimWalk.Length
+				else
+					LastFrame = ProtoSonec.AnimRight.AnimWalk.Length
+				endif
+				Sonec.AnimationData.Frame = Sonec.AnimationData.Frame + Step
+				if Sonec.AnimationData.Frame > LastFrame
+					if Sonec.AnimationData.Loop = TRUE
+						Sonec.AnimationData.Frame = 0
+					else
+						Sonec.AnimationData.Frame = LastFrame
+						Sonec.AnimationData.Finished = TRUE
+					endif
+				endif
 				if Sonec.AnimationData.Frame < 0
-					Sonec.AnimationData.Frame = ProtoSonec.AnimRight.AnimWalk.Length
-				endif
-			endif
-			if Sonec.State.Alignment = MOVERIGHT and Sonec.State.LookAlignment = LOOKLEFT
-				Sonec.AnimationData.Frame = Sonec.AnimationData.Frame -1
-				if Sonec.AnimationData.Frame < 0
-					Sonec.AnimationData.Frame = ProtoSonec.AnimLeft.AnimWalk.Length
-				endif
-			endif
-			if Sonec.State.Alignment = MOVERIGHT and Sonec.State.LookAlignment = LOOKRIGHT
-				Sonec.AnimationData.Frame = Sonec.AnimationData.Frame +1
-				if Sonec.AnimationData.Frame > ProtoSonec.AnimRight.AnimWalk.Length
-					Sonec.AnimationData.Frame = 0
+					if Sonec.AnimationData.Loop = TRUE
+						Sonec.AnimationData.Frame = LastFrame
+					else
+						Sonec.AnimationData.Frame = 0
+						Sonec.AnimationData.Finished = TRUE
+					endif
 				endif
 			endif
 		endif
-		
+
 		TimeSet(Sonec.AnimationData.AnimTimer,1000/(abs(Sonec.ObjectData.MoveSpeed.x)+10),1)
 		TimeReset(Sonec.AnimationData.AnimTimer,Now)
-		
 	endif
-		
+
 endfunction
 
 //----------------------------------------------------------------------
