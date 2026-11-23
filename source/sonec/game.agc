@@ -358,6 +358,7 @@ function GameDo(Game ref as TGame,Now as integer)
 	FlameCollideChest(Game.FlameList,Game.ChestList)
 	FlameCollideWalkers(Game.FlameList,Game.WalkerList,Now)
 	FlameCollideDrone(Game.FlameList,Game.Drone)
+    FlameCollideFlaraks(Game.FlameList,Game,Now)
 	
 	BulletMoveall(Game.BulletList,Game.World,Now)
     // Flak diagnostic: see whether a freshly added bullet survives world-bound checks.
@@ -379,6 +380,7 @@ function GameDo(Game ref as TGame,Now as integer)
 	GrenadeCollideChest(Game.GrenadeList,Game.ChestList,Game,Now)
 	GrenadeCollideWalkers(Game.GrenadeList,Game.WalkerList,Game,Now)
 	GrenadeCollideDrone(Game.GrenadeList,Game.Drone,Game,Now)
+    GrenadeCollideFlaraks(Game.GrenadeList,Game,Now)
 	GrenadeCollidePlate(Game.GrenadeList,Game.PlateList,Game,Now)
 	
 	PlasmaBlitzLifeCycle(Game.PlasmaBlitzList,Now)
@@ -391,6 +393,7 @@ function GameDo(Game ref as TGame,Now as integer)
 	PlasmaBlitzCollideChest(Game.PlasmaBlitzList,Game.ChestList,Now)
 	PlasmaBlitzCollideWalkers(Game.PlasmaBlitzList,Game.WalkerList,Now)
 	PlasmaBlitzCollideDrone(Game.PlasmaBlitzList,Game.Drone,Now)
+    PlasmaBlitzCollideFlaraks(Game.PlasmaBlitzList,Game,Now)
 	PlasmaBlitzCollisionTimerReset(Game.PlasmaBlitzList,Now)
 	// D5c: consume one destruction event after all weapon collisions.
 	if DroneDeathEffectPending = TRUE
