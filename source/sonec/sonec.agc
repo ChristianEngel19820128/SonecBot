@@ -936,7 +936,7 @@ function SonecCollideChestVertical(Sonec ref as TSonec,ChestList ref as TChestLi
 	for i = 0 to ChestList.Chest.Length
 			
 		if ChestList.Chest[i].Enabled = TRUE
-			if Sonec.State.Stand = FALSE or ChestList.Chest[i].CollisionData.Index = Index
+			if Sonec.State.Stand = FALSE or (Index >= 0 and ChestList.Chest[i].CollisionData.Index = Index)
 			
 				if Sonec.ObjectData.Position.x + Sonec.ObjectData.Size.Width*0.5 + Sonec.ObjectData.MoveSpeed.x > ChestList.Chest[i].ObjectData.Position.x
 					if Sonec.ObjectData.Position.x - Sonec.ObjectData.Size.Width*0.5 + Sonec.ObjectData.MoveSpeed.x < ChestList.Chest[i].ObjectData.Position.x + ChestList.Chest[i].ObjectData.Size.Width
@@ -958,7 +958,7 @@ function SonecCollideChestVertical(Sonec ref as TSonec,ChestList ref as TChestLi
 							if Sonec.ObjectData.MoveSpeed.x < 0 and Sonec.ObjectData.Position.x > ChestList.Chest[i].ObjectData.Position.x + ChestList.Chest[i].ObjectData.Size.Width
 								if Sonec.ObjectData.Position.x - Sonec.ObjectData.Size.Width*0.5 < ChestList.Chest[i].ObjectData.Position.x + ChestList.Chest[i].ObjectData.Size.Width
 									Sonec.ObjectData.Position.x = ChestList.Chest[i].ObjectData.Position.x + ChestList.Chest[i].ObjectData.Size.Width + Sonec.ObjectData.Size.Width*0.5
-									if ChestList.Chest[i].CollisionData.Index = Index
+									if Index >= 0 and ChestList.Chest[i].CollisionData.Index = Index
 										Sonec.CollisionData.Position.x = Sonec.ObjectData.Position.x - PlateList.Plate[Index].ObjectData.Position.x
 									endif
 									if Sonec.ObjectData.MoveSpeed.x < 0
@@ -973,7 +973,7 @@ function SonecCollideChestVertical(Sonec ref as TSonec,ChestList ref as TChestLi
 								if Sonec.ObjectData.Position.x + Sonec.ObjectData.Size.Width*0.5 > ChestList.Chest[i].ObjectData.Position.x and ChestList.Chest[i].ObjectData.Position.x - Sonec.ObjectData.Size.Width*0.5 >= Sonec.ObjectData.Size.Width*0.5
 									// At the left boundary, let the chest pass through instead of pushing Sonec outside.
 									Sonec.ObjectData.Position.x = ChestList.Chest[i].ObjectData.Position.x - Sonec.ObjectData.Size.Width*0.5
-									if ChestList.Chest[i].CollisionData.Index = Index
+									if Index >= 0 and ChestList.Chest[i].CollisionData.Index = Index
 										Sonec.CollisionData.Position.x = Sonec.ObjectData.Position.x - PlateList.Plate[Index].ObjectData.Position.x
 									endif
 									if Sonec.ObjectData.MoveSpeed.x > 0
