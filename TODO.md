@@ -5,7 +5,7 @@
 ## Jetzt
 
 - [ ] **K3.3 – Ausgleichsschritt bei knapper Kistenlandung:** K3.2 (`568e2a2`) vom Entwickler lokal mit 6/6 bestanden; K3.2b Weltrandfix (`b83cc4f`) ebenfalls 6/6 bestanden. K3.3a Animationsgrundlage (`RepeatAnimation`, `Finished`) nach AGK-Reserviertwort-Korrektur vom Entwickler lokal mit 6/6 bestanden (23.11.2026). K3.3b Ausgleichsschritt für langsame Randlandungen mit einmaliger Laufanimation implementiert (`acdde81`, `bb520e7`); Entwickler bestätigt 8/8 Funktionstests bestanden (23.11.2026), meldet aber dauerhaft falsche Flugpose nach Ausgleich. Quellprüfung: Kistenstand stellte bei MoveSpeed.x=0 den alten relativen x-Offset wieder her und verhinderte so den Abschluss des Schritts. Kleiner Offset-Fix (`4cf978d`) umgesetzt; Entwickler meldet anschließend, dass die Korrektur zu funktionieren scheint (positiver lokaler Nachtest, vorläufig bestätigt; keine erneute vollständige 8/8-Abnahme behauptet). Nächster geplanter Schritt: K3.4 Schwung und aktives Bremsen.
-- [ ] **K3.4 – Schwung und aktives Bremsen:** Auf Kisten bremst bewusstes Gegenlenken nun mit Faktor 1,5 statt 1,0 (`d4917a4`); normales Loslassen, Luftsteuerung und K3.3-Ausgleich bleiben unverändert. Lokaler AGK-Test ausstehend; insbesondere schnelle Randlandungen und aktive Knierutsche prüfen.
+- [ ] **K3.5 – Mini-Hop beim aktiven Verlassen einer Kistenkante:** Nur bei aktivem Herauslaufen über die Kante eine kleine Aufwärtsbewegung auslösen; nicht bei zerstörter Kiste oder passivem Herunterfallen. K3.4 lokal 7/7 bestanden; Umsetzung K3.5 noch offen.
 - [ ] **Kistendurchflug beim Springen (Fehlerverdacht):** Entwickler präzisiert: Sonec springt von unten nach oben in die Kiste hinein (Aufwärtsbewegung, kein Durchfallen von oben). Priorität: Offen; Status: Vermutet; ID: Noch nicht vergeben. Prüfen: Aufwärts-/Abwärtsbewegung, Sprungposition, kleine/große Kiste und Kollision in `SonecCollideChestHorizontal`/`SonecCollideChestVertical`; noch keine Ursache oder Korrektur bestätigt. K3.3b zunächst getrennt halten.
 - [ ] **Sporadisches Sprite nach Neustart (Fehlerverdacht):** Entwickler beobachtet gelegentlich ein unerwartetes gezeichnetes Sprite nach Spielneustart; vor früheren Flarak-Tests nicht beobachtet. Zusammenhang mit Flarak-Testresten nur Hypothese. Priorität: Offen; Status: Vermutet; ID: Noch nicht vergeben. Reproduktion: mehrfach neu starten, Zeitpunkt/Bildposition/Spritezuordnung prüfen; mögliche nicht zurückgesetzte Sprite-/Objektzustände erst dann untersuchen. Dublette bisher nicht bestätigt.
 - [ ] **Granatwerfer/Flarak/Flak Direkttreffer:** Nutzer beobachtet gelegentliches Durchfliegen ohne Direkttreffer. Projektilbewegung und Kollisionsprüfung untersuchen; Explosionstreffer getrennt betrachten.
@@ -17,6 +17,9 @@
 B5c Plattform-Schutzgrenze bei reproduzierbarer Auffälligkeit prüfen; Drohnen-/Minen-/Belohnungsbalancing und Menü-Hilfetexte später bündeln.
 
 ## Abgeschlossen / Nachweise
+
+- **K3.4 – Schwung und aktives Bremsen:** Entwickler bestätigt lokalen AGK-Test mit 7/7 bestanden (23.11.2026): Kompilierung, Schwung bei schneller Kistenlandung, unverändertes Loslassen, stärkeres Gegenlenken, Richtungswechsel, aktives Knieschliddern sowie K3.3-Ausgleich und Standbild. Keine offenen Testpunkte oder Beobachtungen. Code `d4917a4`.
+
 
 - **K3.3a – Wiederverwendbare Animationssteuerung:** Entwickler bestätigt lokalen AGK-Test mit 6/6 bestanden (23.11.2026): Kompilierung, Laufanimation links/rechts, Loop, Standbild beim Anhalten, Springen/Knieschliddern und Kistenlandungen. AGK-Reserviertwörter `Loop` und `Step` wurden in `RepeatAnimation` und `FrameIncrement` umbenannt (`9265f2c`, `9e7256c`).
 
