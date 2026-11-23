@@ -886,7 +886,7 @@ function FlarakCollisionDebugDrawAll(World ref as TWorld)
                 StemHeight = (Frame-1)*5
                 StemTop = StemBottom-StemHeight
                 StemCenterY = (StemTop+StemBottom)*0.5
-                FlarakDebugRect(X+5,StemCenterY,6,StemHeight*0.5,0,60,230,255)
+                FlarakDebugRect(X,StemCenterY,6,StemHeight*0.5,0,60,230,255)
             endif
             if Frame = 5
                 Angle = FlarakList[i].CurrentLauncherAngle
@@ -896,8 +896,9 @@ function FlarakCollisionDebugDrawAll(World ref as TWorld)
                 if FlarakList[i].Variant = FLARAK_VARIANT_FLAK
                     GunX = GetSpriteXByOffset(FlarakList[i].FlakSprite)
                     GunY = GetSpriteYByOffset(FlarakList[i].FlakSprite)
-                    // The circle center is a local offset from the Flak pivot.
-                    FlarakDebugCircle(GunX+6*Cos(Angle)-6*Sin(Angle),GunY+6*Sin(Angle)+6*Cos(Angle),13,255,205,45)
+                    // Sprite frame center (40,32) relative to pivot (40,42): (0,-10).
+                    // Rotate this local offset with the Flak sprite.
+                    FlarakDebugCircle(GunX+10*Sin(Angle),GunY-10*Cos(Angle),13,255,205,45)
                 else
                     GunX = GetSpriteXByOffset(FlarakList[i].LauncherSprite)
                     GunY = GetSpriteYByOffset(FlarakList[i].LauncherSprite)
