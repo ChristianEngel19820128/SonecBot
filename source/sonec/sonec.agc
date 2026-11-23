@@ -100,6 +100,8 @@ function SonecInit(Sonec ref as TSonec,ProtoSonec ref as TProtoSonec,World ref a
 	TimeReset(Sonec.InputActionTimer,Now)
 
 	Sonec.IsLost = False
+	Sonec.BalanceActive = FALSE
+	Sonec.BalanceTargetX = 0
 
 	Sonec.AnimationData.Frame = 0
 	Sonec.AnimationData.RepeatAnimation = TRUE
@@ -758,6 +760,15 @@ function SonecInput(Sonec ref as TSonec,JetfireList ref as TJetfireList,ProtoJet
 			endif
 		endif
 		
+		// Any deliberate input takes priority over an automatic balance step.
+		if Sonec.BalanceActive = TRUE
+			if Sonec.State.Move = TRUE or Sonec.State.Duck = TRUE or Sonec.State.Jump = TRUE or Sonec.State.Fly = TRUE or Sonec.State.Stand = FALSE
+				Sonec.BalanceActive = FALSE
+				Sonec.AnimationData.RepeatAnimation = TRUE
+				Sonec.AnimationData.Finished = FALSE
+			endif
+		endif
+
 		TimeReset(Sonec.InputTimer,Now)
 	endif
 	
@@ -775,6 +786,9 @@ function SonecCollideReset(Sonec ref as TSonec)
 	Sonec.State.Stand = FALSE
 	Sonec.ObjectData.AutoSpeed.x = 0
 	Sonec.ObjectData.AutoSpeed.y = 0
+	Sonec.BalanceActive = FALSE
+	Sonec.AnimationData.RepeatAnimation = TRUE
+	Sonec.AnimationData.Finished = FALSE
 	
 endfunction
 						
@@ -1049,6 +1063,27 @@ function SonecCollideChestHorizontal(Sonec ref as TSonec,ChestList ref as TChest
 							Sonec.CollisionData.ListType = TYPECHEST
 							Sonec.CollisionData.Index = i
 							Sonec.ObjectData.MoveSpeed.y = 0
+							// Only a slow landing close to an edge needs a short balancing step.
+							Sonec.BalanceActive = FALSE
+							if abs(Sonec.ObjectData.MoveSpeed.x) <= 0.75 and Sonec.State.Move = FALSE and Sonec.State.Duck = FALSE
+								if Sonec.ObjectData.Position.x < ChestList.Chest[i].ObjectData.Position.x + Sonec.ObjectData.Size.Width*0.35
+									Sonec.BalanceTargetX = ChestList.Chest[i].ObjectData.Position.x + Sonec.ObjectData.Size.Width*0.35
+									Sonec.State.Alignment = MOVERIGHT
+									Sonec.State.LookAlignment = LOOKRIGHT
+									Sonec.BalanceActive = TRUE
+								endif
+								if Sonec.ObjectData.Position.x > ChestList.Chest[i].ObjectData.Position.x + ChestList.Chest[i].ObjectData.Size.Width - Sonec.ObjectData.Size.Width*0.35
+									Sonec.BalanceTargetX = ChestList.Chest[i].ObjectData.Position.x + ChestList.Chest[i].ObjectData.Size.Width - Sonec.ObjectData.Size.Width*0.35
+									Sonec.State.Alignment = MOVELEFT
+									Sonec.State.LookAlignment = LOOKLEFT
+									Sonec.BalanceActive = TRUE
+								endif
+								if Sonec.BalanceActive = TRUE
+									Sonec.AnimationData.Frame = 0
+									Sonec.AnimationData.RepeatAnimation = FALSE
+									Sonec.AnimationData.Finished = FALSE
+								endif
+							endif
 							SpritePositionCalc(Sonec.SpriteData.Position,Sonec.ObjectData.Position,World.Position)
 						endif
 					endif
@@ -1132,6 +1167,33 @@ function SonecMove(Sonec ref as TSonec,World ref as TWorld,Screen as TSize,Now a
 			
 		Sonec.ObjectData.Position.x = Sonec.ObjectData.Position.x + Sonec.ObjectData.MoveSpeed.x
 		Sonec.ObjectData.Position.y = Sonec.ObjectData.Position.y + Sonec.ObjectData.MoveSpeed.y
+
+		// A balance step uses a small independent displacement, not running momentum.
+		if Sonec.BalanceActive = TRUE
+			if Sonec.State.Stand = FALSE or Sonec.State.Move = TRUE or Sonec.State.Duck = TRUE
+				Sonec.BalanceActive = FALSE
+				Sonec.AnimationData.RepeatAnimation = TRUE
+				Sonec.AnimationData.Finished = FALSE
+			else
+				if Sonec.ObjectData.Position.x < Sonec.BalanceTargetX
+					Sonec.ObjectData.Position.x = Sonec.ObjectData.Position.x + 0.5
+					if Sonec.ObjectData.Position.x > Sonec.BalanceTargetX
+						Sonec.ObjectData.Position.x = Sonec.BalanceTargetX
+					endif
+				endif
+				if Sonec.ObjectData.Position.x > Sonec.BalanceTargetX
+					Sonec.ObjectData.Position.x = Sonec.ObjectData.Position.x - 0.5
+					if Sonec.ObjectData.Position.x < Sonec.BalanceTargetX
+						Sonec.ObjectData.Position.x = Sonec.BalanceTargetX
+					endif
+				endif
+				if Sonec.ObjectData.Position.x = Sonec.BalanceTargetX and Sonec.AnimationData.Finished = TRUE
+					Sonec.BalanceActive = FALSE
+					Sonec.AnimationData.RepeatAnimation = TRUE
+					Sonec.AnimationData.Finished = FALSE
+				endif
+			endif
+		endif
 		
 		// Active jetpack flight takes priority over the Hover air brake.
 		if Sonec.State.Hover = TRUE and Sonec.State.Fly = FALSE
@@ -1193,7 +1255,7 @@ function SonecAnimate(Sonec ref as TSonec,ProtoSonec ref as TProtoSonec,Now as i
 	local LastFrame as integer
 
 	if TimeGet(Sonec.AnimationData.AnimTimer,Now) > 0
-		if Sonec.State.Stand = TRUE and Sonec.State.Duck = FALSE and Sonec.ObjectData.MoveSpeed.x <> 0
+		if Sonec.State.Stand = TRUE and Sonec.State.Duck = FALSE and (Sonec.ObjectData.MoveSpeed.x <> 0 or Sonec.BalanceActive = TRUE)
 			if Sonec.AnimationData.RepeatAnimation = TRUE or Sonec.AnimationData.Finished = FALSE
 				FrameIncrement = 1
 				if Sonec.State.Alignment = MOVELEFT and Sonec.State.LookAlignment = LOOKRIGHT
@@ -1255,7 +1317,7 @@ function SonecDraw(Sonec ref as TSonec,ProtoSonec ref as TProtoSonec)
 				SpriteDraw(ProtoSonec.AnimRight.Duck.Sprite,Sonec.SpriteData)
 			endif
 		else
-			if Sonec.ObjectData.MoveSpeed.x <> 0
+			if Sonec.ObjectData.MoveSpeed.x <> 0 or Sonec.BalanceActive = TRUE
 				if Sonec.State.LookAlignment = LOOKLEFT
 					SpriteDraw(ProtoSonec.AnimLeft.AnimWalk[Sonec.AnimationData.Frame].Sprite,Sonec.SpriteData)
 				else
