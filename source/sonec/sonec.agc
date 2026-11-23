@@ -102,7 +102,7 @@ function SonecInit(Sonec ref as TSonec,ProtoSonec ref as TProtoSonec,World ref a
 	Sonec.IsLost = False
 
 	Sonec.AnimationData.Frame = 0
-	Sonec.AnimationData.Loop = TRUE
+	Sonec.AnimationData.RepeatAnimation = TRUE
 	Sonec.AnimationData.Finished = FALSE
 		
 	Sonec.CollisionData.Index = -1
@@ -1189,27 +1189,27 @@ endfunction
 
 function SonecAnimate(Sonec ref as TSonec,ProtoSonec ref as TProtoSonec,Now as integer)
 
-	local Step as integer
+	local FrameIncrement as integer
 	local LastFrame as integer
 
 	if TimeGet(Sonec.AnimationData.AnimTimer,Now) > 0
 		if Sonec.State.Stand = TRUE and Sonec.State.Duck = FALSE and Sonec.ObjectData.MoveSpeed.x <> 0
-			if Sonec.AnimationData.Loop = TRUE or Sonec.AnimationData.Finished = FALSE
-				Step = 1
+			if Sonec.AnimationData.RepeatAnimation = TRUE or Sonec.AnimationData.Finished = FALSE
+				FrameIncrement = 1
 				if Sonec.State.Alignment = MOVELEFT and Sonec.State.LookAlignment = LOOKRIGHT
-					Step = -1
+					FrameIncrement = -1
 				endif
 				if Sonec.State.Alignment = MOVERIGHT and Sonec.State.LookAlignment = LOOKLEFT
-					Step = -1
+					FrameIncrement = -1
 				endif
 				if Sonec.State.LookAlignment = LOOKLEFT
 					LastFrame = ProtoSonec.AnimLeft.AnimWalk.Length
 				else
 					LastFrame = ProtoSonec.AnimRight.AnimWalk.Length
 				endif
-				Sonec.AnimationData.Frame = Sonec.AnimationData.Frame + Step
+				Sonec.AnimationData.Frame = Sonec.AnimationData.Frame + FrameIncrement
 				if Sonec.AnimationData.Frame > LastFrame
-					if Sonec.AnimationData.Loop = TRUE
+					if Sonec.AnimationData.RepeatAnimation = TRUE
 						Sonec.AnimationData.Frame = 0
 					else
 						Sonec.AnimationData.Frame = LastFrame
@@ -1217,7 +1217,7 @@ function SonecAnimate(Sonec ref as TSonec,ProtoSonec ref as TProtoSonec,Now as i
 					endif
 				endif
 				if Sonec.AnimationData.Frame < 0
-					if Sonec.AnimationData.Loop = TRUE
+					if Sonec.AnimationData.RepeatAnimation = TRUE
 						Sonec.AnimationData.Frame = LastFrame
 					else
 						Sonec.AnimationData.Frame = 0
