@@ -366,7 +366,7 @@ function GameDo(Game ref as TGame,Now as integer)
     BomberBombCollideBullets(Game.Bomber,Game.BulletList,Game.ExplosionList,Game.ProtoExplosion,Game,Now)
 	BulletCollide(Game.BulletList,Game.Sonec,Game.Shield,Game,Now)
 	// K1b: one nearest-hit sweep across all player-bullet target types.
-	BulletCollidePlayerTargets(Game.BulletList,Game.OrbList,Game.WalkerList,Game.MineList,Game.SimpleMineList,Game.ChestList,Game.Drone,Now)
+	BulletCollidePlayerTargets(Game.BulletList,Game.OrbList,Game.WalkerList,Game.MineList,Game.SimpleMineList,Game.ChestList,Game.Drone,Game,Now)
 	// Retain the established enemy-bullet interactions with mines and chests.
 	BulletCollideMines(Game.BulletList,Game.MineList,Game.SimpleMineList)
 	BulletCollideChest(Game.BulletList,Game.ChestList)
