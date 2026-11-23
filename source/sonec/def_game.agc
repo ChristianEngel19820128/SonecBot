@@ -133,7 +133,7 @@ type TAnimationData
 	FrameMin as integer
 	FrameMax as integer
 	FrameAlignment as integer
-	Loop as integer
+	RepeatAnimation as integer
 	Finished as integer
 endtype
 
