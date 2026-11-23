@@ -540,6 +540,7 @@ function GameDraw(Game ref as TGame)
 	endif
 	// Temporary developer HUD for Flak firing from either side.
     FlarakDebugDrawAll(Game.World)
+    FlarakCollisionDebugDrawAll(Game.World)
 
 endfunction
 
