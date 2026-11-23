@@ -5,7 +5,7 @@
 ## Jetzt
 
 - [ ] **Flarak/Flak Plasma-Blitz Wirkung/Balancing:** Nutzer bestätigt, dass Plasma-Blitz Schaden an beiden Varianten verursacht. Keine bestätigte Kollisionstörung; bisher reicht die Wirkung für die Zerstörung offenbar nicht aus. Trefferintervall, tatsächliche Kontaktzeit und Schaden pro Aktivierung vor einer Balanceentscheidung messen; 150 HP pro Geschütz, derzeit 10 Schaden pro Tick.
-- [ ] **Flarak/Flak Trefferfeedback lokal prüfen:** 150-ms-Rotblitz nach Schaden ergänzt; keine AGK-Kompilierung durch Assistenten.
+- [ ] **Raketen der Raketenstellung:** Nutzer meldet, dass fliegende Raketen derzeit nicht abgeschossen werden können. Prüfen, ob Abschießbarkeit vorgesehen ist, und dann Projektil-Trefferzonen/Waffeninteraktion festlegen. **Rauchende Wracks:** kleine, dezente Rauchwolken nach Zerstörung von Flarak/Flak als spätere Optikaufgabe. Wrack-Grünstich RGB (57,79,57) lokal bestätigt.
 - [ ] **Kistenkollision beim Laufen/Springen untersuchen:** Nutzer meldet mögliches Regressionsverhalten, noch nicht reproduziert.
 - [ ] **Flammenwerfer/Kisten Designentscheidung:** Soll Feuer durch Kisten hindurchtreffen dürfen? Vor Änderung entscheiden.
 - [ ] **Plasma-Blitz Balancing nach Fehlerbehebung:** Aufwand der Bedienung vs. geringe Wirkung; Dauer und regelmäßigen Schaden überprüfen, ohne vorab Werte festzulegen.
