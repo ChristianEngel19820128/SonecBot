@@ -842,6 +842,50 @@ function FlarakDebugDrawAll(World ref as TWorld)
 endfunction
 
 
+// World-space point test for the approved live hitboxes. The lower silo
+// never receives damage; frame 1 and destroyed wrecks are fully protected.
+// Launcher and Flak head centers use the same real sprite pivots as debug.
+function FlarakPointInRotatedRect(PX as float,PY as float,CX as float,CY as float,HalfW as float,HalfH as float,Angle as float)
+    local DX as float
+    local DY as float
+    local LX as float
+    local LY as float
+    DX = PX-CX
+    DY = PY-CY
+    LX = DX*Cos(Angle)+DY*Sin(Angle)
+    LY = -DX*Sin(Angle)+DY*Cos(Angle)
+endfunction (Abs(LX) <= HalfW and Abs(LY) <= HalfH)
+
+function FlarakPointHits(F ref as TFlarak,World ref as TWorld,PX as float,PY as float)
+    local StemHeight as float
+    local Angle as float
+    local GunX as float
+    local GunY as float
+    local CircleX as float
+    local CircleY as float
+    local DX as float
+    local DY as float
+    if F.Enabled = FALSE or F.Destroyed = TRUE or F.CurrentFrame <= 1 then exitfunction FALSE
+    StemHeight = (F.CurrentFrame-1)*3.5
+    if Abs(PX-F.WorldX) <= 6 and PY >= F.WorldY+15-StemHeight and PY <= F.WorldY+15 then exitfunction TRUE
+    if F.CurrentFrame <> 5 then exitfunction FALSE
+    Angle = F.CurrentLauncherAngle
+    if F.Variant = FLARAK_VARIANT_FLAK then Angle = -Angle
+    GunX = GetSpriteXByOffset(F.LauncherSprite)+World.Position.x
+    GunY = GetSpriteYByOffset(F.LauncherSprite)+World.Position.y
+    if FlarakPointInRotatedRect(PX,PY,GunX,GunY,17,7,Angle) then exitfunction TRUE
+    if F.Variant = FLARAK_VARIANT_FLAK and F.FlakSprite > 0
+        GunX = GetSpriteXByOffset(F.FlakSprite)+World.Position.x
+        GunY = GetSpriteYByOffset(F.FlakSprite)+World.Position.y
+        CircleX = GunX-11*Sin(Angle)
+        CircleY = GunY+11*Cos(Angle)
+        DX = PX-CircleX
+        DY = PY-CircleY
+        // Only the upper SCREEN-facing half of the circle takes damage.
+        if DY <= 0 and DX*DX+DY*DY <= 225 then exitfunction TRUE
+    endif
+endfunction FALSE
+
 // Visual-only hitbox proposal. The frame-1 lower silo is always excluded.
 // Positions are in screen space; tune these outlines against the actual art.
 function FlarakDebugLine(X1 as float,Y1 as float,X2 as float,Y2 as float,R as integer,G as integer,B as integer)
