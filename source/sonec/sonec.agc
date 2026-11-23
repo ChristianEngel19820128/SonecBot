@@ -1009,6 +1009,12 @@ function SonecCollideChestHorizontal(Sonec ref as TSonec,ChestList ref as TChest
 								Sonec.ObjectData.Position.x = ChestList.Chest[Sonec.CollisionData.Index].ObjectData.Position.x + Sonec.CollisionData.Position.x
 							endif
 						endif
+						// Keep the world boundary valid when a moving chest restores the standing offset.
+						if Sonec.ObjectData.Position.x < Sonec.ObjectData.Size.Width*0.5
+							Sonec.ObjectData.Position.x = Sonec.ObjectData.Size.Width*0.5
+							Sonec.ObjectData.MoveSpeed.x = 0
+							Sonec.CollisionData.Position.x = Sonec.ObjectData.Position.x - ChestList.Chest[Sonec.CollisionData.Index].ObjectData.Position.x
+						endif
 						
 						SpritePositionCalc(Sonec.SpriteData.Position,Sonec.ObjectData.Position,World.Position)
 						
