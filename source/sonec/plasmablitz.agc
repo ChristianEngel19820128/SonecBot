@@ -358,6 +358,32 @@ function PlasmaBlitzCollideDrone(PlasmaBlitzList ref as TPlasmaBlitzList,Drone r
     next i
 endfunction
 
+function PlasmaBlitzCollideFlaraks(PlasmaBlitzList ref as TPlasmaBlitzList,Game ref as TGame,Now as integer)
+    local i as integer
+    local k as integer
+    local CX as float
+    local CY as float
+    local HW as float
+    local HH as float
+    for i = 0 to PlasmaBlitzList.PlasmaBlitz.Length
+        if PlasmaBlitzList.PlasmaBlitz[i].Enabled = TRUE
+            if TimeGet(PlasmaBlitzList.PlasmaBlitz[i].CollisionData.CollisionTimer,Now) > 0
+                CX = (PlasmaBlitzList.PlasmaBlitz[i].CollisionData.Position1.x+PlasmaBlitzList.PlasmaBlitz[i].CollisionData.Position2.x)*0.5
+                CY = (PlasmaBlitzList.PlasmaBlitz[i].CollisionData.Position1.y+PlasmaBlitzList.PlasmaBlitz[i].CollisionData.Position2.y)*0.5
+                HW = Abs(PlasmaBlitzList.PlasmaBlitz[i].CollisionData.Position2.x-PlasmaBlitzList.PlasmaBlitz[i].CollisionData.Position1.x)*0.5
+                HH = Abs(PlasmaBlitzList.PlasmaBlitz[i].CollisionData.Position2.y-PlasmaBlitzList.PlasmaBlitz[i].CollisionData.Position1.y)*0.5
+                for k = 0 to FlarakList.Length
+                    if FlarakList[k].Enabled = TRUE and FlarakList[k].Destroyed = FALSE
+                        if FlarakAreaHits(FlarakList[k],Game.World,CX,CY,HW,HH,FALSE)
+                            FlarakApplyDamage(FlarakList[k],Game,PlasmaBlitzList.PlasmaBlitz[i].BulletData.Damage,Now)
+                        endif
+                    endif
+                next k
+            endif
+        endif
+    next i
+endfunction
+
 function PlasmaBlitzCollisionTimerReset(PlasmaBlitzList ref as TPlasmaBlitzList,Now as integer)
 
 	local i as integer
