@@ -370,3 +370,12 @@ Knowledge-Base-Kandidaten stehen in [BACKLOG.md](BACKLOG.md); Beiträge separat 
 - `FlarakFireBullet` übergibt den zurückgegebenen Index ausdrücklich an `BulletSetModification` und verwendet ihn für die Flak-Diagnose. Die frühere indirekte Herleitung über `FirstFree-1` entfällt.
 - Quellprüfung: Die frühere unmittelbare Aufrufreihenfolge zeigte keinen bewiesenen Fehlindex; die Änderung verhindert eine fragile implizite Zuordnung. Explosionsdauer 175–200 ms, Schadenslogik und andere Waffen unverändert.
 - AGK-Abnahme durch Entwickler: **bestanden** (alle fünf Prüfungen). Projekt kompiliert und startet; vier Flak-Geschosse pro Salve; sichtbare unabhängige Explosionen; stabile Geschosse nach vielen Salven; Sonec- und Walker-Standardmunition unverändert. Keine Auffälligkeiten gemeldet.
+
+
+## Flarak/Flak Trefferzonen – vereinbartes Modell und visueller Ersttest
+
+- Geschlossene Silos und sämtliche bereits in Frame 1 sichtbaren unteren Siloteile sind grundsätzlich unverwundbar.
+- Der ausfahrende Sockel erhält eine vertikale rechteckige Trefferzone, deren sichtbare Höhe mit den Animationsframes 2–5 wächst bzw. beim Einfahren schrumpft.
+- Bei ausgefahrenem Raketenwerfer: rechteckige obere Trefferzone; bei Flak: kreisförmige obere Trefferzone. Die obere Zone folgt der jeweiligen Ausrichtung und bei Flak dem zusätzlichen Ausfahrversatz.
+- Erste Implementierung ausschließlich als farbige Umrissdiagnose: Taste 9 einblenden, Taste 0 ausblenden; keine Treffer, Health, Rewards oder Zerstörung implementiert. Sockel cyan, Oberteil gelb. Die Maße sind **vorläufige Schätzwerte** und müssen gegen die tatsächlichen Sprites/Frames lokal geprüft und gegebenenfalls korrigiert werden.
+- Testauftrag: AGK-Compile; geschlossene Stellung ohne Trefferzone; Frames 2–5, Ein-/Ausfahren, beide Varianten, links/rechts Schwenk und Flak-Hub; Frame-1-Siloteile stets ausgespart. Erst nach Entwicklerabnahme die Kollisionsberechnung anbinden.
