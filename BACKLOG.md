@@ -21,6 +21,11 @@ Bomber, Flarak, hilfreicher Jumppod, Gefahren-/Erfahrungsgrundsystem, kleine Zie
 
 ## Fortschritt, Wertung und Bedienung
 
+- **Hauptmenü-Minispiel: unsichtbarer Countdown und Punkte:** Nur während der Spieler aktiv im Hauptmenü spielt, intern Zeit und Punkte erfassen; genaue Spielregeln, Anzeige und Start-/Endbedingungen noch offen. Menüarbeiten als gelegentliche Abwechslung, nicht als aktueller Schwerpunkt.
+- **Menü-Highscore und optionaler Online-Score:** Punktestand im Menü anzeigen; Highscore-Eintrag ausschließlich, wenn der Spieler beim aktiven Menüspiel den bisherigen Rekord übertrifft. Online-Rangliste später separat hinsichtlich Speicherung und Datenschutz entscheiden.
+- **Initialien-Eingabe:** Virtuelle Tastatur oder vergleichbare Eingabe für neue Highscores; Initialien optional auch im Spiel oder Menü wiederverwenden. Eingabemethode und Gültigkeitsregeln später festlegen.
+
+
 - **Punkte und Online-Ranglisten:** später getrennt vom Erfahrungswert entwickeln; Erfahrung steuert Gefahr, die Wertung ist noch nicht festgelegt. Mögliche Anknüpfung an Crystals.
 - **Schwierigkeitsauswahl:** im Zusammenhang mit späteren Punkten/Ranglisten prüfen. Getrennte Tabellen je Schwierigkeit und eine gemeinsame Alpha-Ausgangseinstellung sind Vorschläge aus der Besprechung, noch keine endgültigen Regeln.
 - **Umfassende Rüstungs-/Schadensmatrix:** einfache testbare Basis gehört zur Alpha; weitere Gegenwerte, Typen und Feinausgleich später, besonders vor 1.0. Fraktionen Player/Enemy/Neutral getrennt von Schadensarten behandeln.
