@@ -4,7 +4,6 @@
 
 ## Jetzt
 
-- [ ] **K2 – Seitliche Kistenkollision (lokaler AGK-Test offen):** Positionskorrektur nur bei Sonecs Bewegung gegen die Kiste; am linken Rand durchdringbar statt Herausschieben (`c7e1da8`). Sprunghilfe und übrige Kistenfunktionen beim Test prüfen.
 - [ ] **K3 – Kistenauflage/Kanten:** Sonec soll nicht bis zum letzten Pixel auf einer Kiste stehen bleiben; Auflagegrenzen und Sprunghilfe getrennt prüfen.
 - [ ] **Granatwerfer/Flarak/Flak Direkttreffer:** Nutzer beobachtet gelegentliches Durchfliegen ohne Direkttreffer. Projektilbewegung und Kollisionsprüfung untersuchen; Explosionstreffer getrennt betrachten.
 - [ ] **Schnelles Fallen durch Plattformen:** Gemeldeten möglichen Durchfallfehler untersuchen und priorisieren; zunächst reproduzieren und Fallgeschwindigkeit/Plattformprüfung prüfen.
@@ -15,6 +14,8 @@
 B5c Plattform-Schutzgrenze bei reproduzierbarer Auffälligkeit prüfen; Drohnen-/Minen-/Belohnungsbalancing und Menü-Hilfetexte später bündeln.
 
 ## Abgeschlossen / Nachweise
+
+- **K2 – Seitliche Kistenkollision:** Entwickler bestätigt lokalen AGK-Test mit 5/5 bestanden (23.11.2026): Kisten stoppen Sonec beim Anlaufen, schieben ihn nicht aktiv, dürfen ihn am linken Rand durchdringen; kein Herausschieben beim Sprung; Übersprunghilfe unverändert (`c7e1da8`).
 
 - **K1 – Zerstörte Kisten:** Landekollision berücksichtigt nur aktive Kisten (`44783e0`); Entwickler bestätigt lokalen AGK-Test mit 4/4 bestanden (23.11.2026).
 - **Flarak/Flak und Raketen:** Entwickler bestätigt beide Stellungen vollständig funktionsfähig, inklusive abschießbarer Raketen. Abfangexplosion auf Raketen-Typ 3 geändert (`3c0606a`). Granaten-Direkttreffer als separater neuer Fehler offen.
