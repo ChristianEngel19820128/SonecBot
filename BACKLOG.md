@@ -8,6 +8,8 @@ Bomber, Flarak, hilfreicher Jumppod, Gefahren-/Erfahrungsgrundsystem, kleine Zie
 
 ## Varianten und Unterstützung
 
+- **Dunkle Hintergrundkisten:** Als Variante/Mod der normalen Kisten vorgesehen: optisch dunkler und im Hintergrund; Sonec kann hindurchlaufen und hindurchspringen (keine blockierende Sonec-Kollision). Alle übrigen Eigenschaften und Funktionen sollen wie bei normalen Kisten bleiben. Spätere Umsetzung separat vereinbaren; aktuell nur vorgemerkt.
+
 - **Quadrokopter:** eigenständiges, noch offenes Konzept. Möglich sind zeitweilige verbündete Unterstützung, etwa als Belohnung nach zerstörten Flaraks, ein auf Abstand angreifender Verfolger oder Aufklärung. Keine Rolle endgültig gewählt; keine weitere Kamikaze-Kopie der intelligenten Mine als Vorgabe.
 - **Jumppod-Falle:** sehr seltene explodierende Attrappe. Nur erwägen, wenn ein kleiner erkennbarer Unterschied bzw. eine rechtzeitige Aktivierungsbewegung faire Gegenwehr erlaubt. Idee: bei Annäherung etwa einen Pixel ausfahren, Kontakt löst Explosion aus. Nicht auf alle vorhandenen Minentypen übertragen.
 - **Flarak-Massenwerfer:** ungenaue Raketensalve ohne Zielsuchraketen als spätere Modifikation.
