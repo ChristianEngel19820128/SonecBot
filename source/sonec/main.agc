@@ -209,8 +209,10 @@ repeat
 	// Debug keys 1-8 work in Windows and HTML5 (click the browser canvas first).
 	// 1 Walker, 2 platforms, 3 K1d outlines, 4 pixel snap,
 	// 5 tower A/B, 6 platform A/B, 7 drone A/B, 8 Flak bullet HUD.
-	// Keys 9-0 remain reserved.
+	// 9 shows Flarak/Flak collision proposals; 0 hides them.
 	if Game.IsLost = FALSE and GAME_DEBUG_ENABLED = 1
+		if GetKeyPressed(KEY_9) = 1 then FlarakCollisionDebugVisible = 1
+		if GetKeyPressed(KEY_0) = 1 then FlarakCollisionDebugVisible = 0
 		if GetKeyPressed(KEY_8) = 1
 			if FlarakDebugVisible = 0
 				FlarakDebugVisible = 1
