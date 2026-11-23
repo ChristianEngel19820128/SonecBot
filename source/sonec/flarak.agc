@@ -864,17 +864,26 @@ function FlarakAreaHits(F ref as TFlarak,World ref as TWorld,CX as float,CY as f
     local PX as float
     local PY as float
     local Radius as float
+    if F.Enabled = FALSE or F.Destroyed = TRUE or F.CurrentFrame <= 1 then exitfunction FALSE
     if HalfW <= 0 or HalfH <= 0 then exitfunction FALSE
+    // Broad phase covers the complete deployed assembly and avoids scanning
+    // the full area of a large explosion.
+    if CX+HalfW < F.WorldX-45 or CX-HalfW > F.WorldX+45 then exitfunction FALSE
+    if CY+HalfH < F.WorldY-55 or CY-HalfH > F.WorldY+40 then exitfunction FALSE
     Radius = HalfW
-    // 9x9 samples include boundaries, center, and intermediate contacts.
-    for IX = 0 to 8
-        for IY = 0 to 8
-            PX = CX-HalfW+IX*HalfW*0.25
-            PY = CY-HalfH+IY*HalfH*0.25
-            if IsCircle = FALSE or (PX-CX)*(PX-CX)+(PY-CY)*(PY-CY) <= Radius*Radius
-                if FlarakPointHits(F,World,PX,PY) then exitfunction TRUE
-            endif
-        next IY
+    // Sample the TARGET footprint at 2px spacing, independent of blast size.
+    for IX = -23 to 23
+        PX = F.WorldX+IX*2
+        if PX >= CX-HalfW and PX <= CX+HalfW
+            for IY = -28 to 20
+                PY = F.WorldY+IY*2
+                if PY >= CY-HalfH and PY <= CY+HalfH
+                    if IsCircle = FALSE or (PX-CX)*(PX-CX)+(PY-CY)*(PY-CY) <= Radius*Radius
+                        if FlarakPointHits(F,World,PX,PY) then exitfunction TRUE
+                    endif
+                endif
+            next IY
+        endif
     next IX
 endfunction FALSE
 
