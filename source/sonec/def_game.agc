@@ -525,6 +525,7 @@ type TFlameGun
 endtype
 
 type TSonec
+	PassThroughChestIndex as integer
 	CollisionMoveStart as TPosition
 	CollisionMoveEnd as TPosition
     SpawnEntering as integer
