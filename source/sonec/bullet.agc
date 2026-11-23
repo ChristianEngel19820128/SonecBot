@@ -511,7 +511,29 @@ endfunction Entry
 // K1b: choose one earliest player-bullet hit across ALL supported targets.
 // Tie priority is stable: orb, Walker turret, intelligent mine, simple mine,
 // chest. Enemy bullets continue to use their existing collision functions.
-function BulletCollidePlayerTargets(BulletList ref as TBulletList,OrbList ref as TOrbList,WalkerList ref as TWalkerList,MineList ref as TMineList,SimpleMineList ref as TMineList,ChestList ref as TChestList,Drone ref as TDrone,Now as integer)
+// Earliest sampled center hit against the approved Flarak/Flak shapes.
+// Sample at <= 2px intervals to avoid tunneling through the narrow stem.
+function BulletFlarakSweepEntry(Bullet ref as TBullet,F ref as TFlarak,World ref as TWorld)
+    local DX as float
+    local DY as float
+    local Steps as integer
+    local StepIndex as integer
+    local T as float
+    local PX as float
+    local PY as float
+    DX = Bullet.ObjectData.Position.x-Bullet.PreviousPosition.x
+    DY = Bullet.ObjectData.Position.y-Bullet.PreviousPosition.y
+    Steps = Ceil(Sqrt(DX*DX+DY*DY)/2.0)
+    if Steps < 1 then Steps = 1
+    for StepIndex = 0 to Steps
+        T = StepIndex*1.0/Steps
+        PX = Bullet.PreviousPosition.x+DX*T
+        PY = Bullet.PreviousPosition.y+DY*T
+        if FlarakPointHits(F,World,PX,PY) then exitfunction T
+    next StepIndex
+endfunction -1
+
+function BulletCollidePlayerTargets(BulletList ref as TBulletList,OrbList ref as TOrbList,WalkerList ref as TWalkerList,MineList ref as TMineList,SimpleMineList ref as TMineList,ChestList ref as TChestList,Drone ref as TDrone,Game ref as TGame,Now as integer)
     local i as integer
     local k as integer
     local BestType as integer
@@ -595,6 +617,22 @@ function BulletCollidePlayerTargets(BulletList ref as TBulletList,OrbList ref as
                 endif
             endif
 
+            // Include deployed Flarak/Flak in the same nearest-hit decision.
+            for k = 0 to FlarakList.Length
+                if FlarakList[k].Enabled = TRUE and FlarakList[k].Destroyed = FALSE
+                    Entry = BulletFlarakSweepEntry(BulletList.Bullet[i],FlarakList[k],Game.World)
+                    if Entry >= 0 and Entry < BestEntry
+                        BestEntry = Entry
+                        BestType = 7
+                        BestIndex = k
+                    endif
+                endif
+            next k
+
+            if BestType = 7
+                FlarakApplyDamage(FlarakList[BestIndex],Game,BulletList.Bullet[i].BulletData.Damage,Now)
+                BulletDelete(BulletList,i)
+            endif
             if BestType = 1
                 OrbList.Orb[BestIndex].Health.State = OrbList.Orb[BestIndex].Health.State - BulletList.Bullet[i].BulletData.Damage
                 ColorSet(OrbList.Orb[BestIndex].SpriteData.Color,255,0,0,255)
