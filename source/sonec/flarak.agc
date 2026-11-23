@@ -874,8 +874,6 @@ function FlarakCollisionDebugDrawAll(World ref as TWorld)
     local GunX as float
     local GunY as float
     local Angle as float
-    local RiseProgress as float
-    local FlakOffsetY as float
     if GAME_DEBUG_ENABLED = 0 or FlarakCollisionDebugVisible = 0 then exitfunction
     for i = 0 to FlarakList.Length
         if FlarakList[i].Enabled = TRUE
@@ -893,20 +891,18 @@ function FlarakCollisionDebugDrawAll(World ref as TWorld)
             if Frame = 5
                 Angle = FlarakList[i].CurrentLauncherAngle
                 if FlarakList[i].Variant = FLARAK_VARIANT_FLAK then Angle = -Angle
-                GunX = X
-                GunY = Y
+                // Read the exact by-offset pivot of the already positioned sprite.
+                // This includes camera movement, sprite animation and Flak rise.
                 if FlarakList[i].Variant = FLARAK_VARIANT_FLAK
-                    RiseProgress = (FlarakList[i].NowMs-FlarakList[i].FlakRiseStartMs)*1.0/FLARAK_FLAK_RISE_MS
-                    if RiseProgress < 0 then RiseProgress = 0
-                    if RiseProgress > 1 then RiseProgress = 1
-                    FlakOffsetY = FLARAK_FLAK_FINAL_OFFSET_Y+FLARAK_FLAK_RISE_PX*(1.0-RiseProgress)
-                    GunX = X-FlakOffsetY*Sin(Angle)
-                    GunY = Y+FlakOffsetY*Cos(Angle)
+                    GunX = GetSpriteXByOffset(FlarakList[i].FlakSprite)
+                    GunY = GetSpriteYByOffset(FlarakList[i].FlakSprite)
+                    // The circle center is a local offset from the Flak pivot.
                     FlarakDebugCircle(GunX+6*Cos(Angle)-6*Sin(Angle),GunY+6*Sin(Angle)+6*Cos(Angle),13,255,205,45)
                 else
-                    // Long axis follows the same launcher rotation as frame 6.
-                    // Frame 6 artwork is horizontal at zero degrees, not vertical.
-                    FlarakDebugRect(GunX+9*Cos(Angle)+4*Sin(Angle),GunY+9*Sin(Angle)-4*Cos(Angle),18,7,Angle,255,205,45)
+                    GunX = GetSpriteXByOffset(FlarakList[i].LauncherSprite)
+                    GunY = GetSpriteYByOffset(FlarakList[i].LauncherSprite)
+                    // Rectangle centered on the launcher pivot, rotated with it.
+                    FlarakDebugRect(GunX,GunY,18,7,Angle,255,205,45)
                 endif
             endif
         endif
