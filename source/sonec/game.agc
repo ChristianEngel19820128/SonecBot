@@ -329,6 +329,8 @@ function GameDo(Game ref as TGame,Now as integer)
 	PlateMoveAll(Game.PlateList,Game.World,Now)
     FlarakDoAll(Game,Game.JetfireList,Game.ProtoJetfire,Game.World,Game.PlateList,Now)
     ExplosionFollowPlates(Game.ExplosionList,Game.PlateList,Game.World)
+    // Current platform and launcher pose is now available for explosion damage.
+    ExplosionCollideFlaraks(Game.ExplosionList,Game,Now)
     BomberBombCollideSonec(Game.Bomber,Game,Now)
 	WalkerMoveAll(Game.WalkerList,Game.ProtoWalker,Game.PlateList,Game.ChestList,Game.Sonec,Game.World,Now)
 	WalkerHealthRegenerate(Game.WalkerList,Game,Now)
