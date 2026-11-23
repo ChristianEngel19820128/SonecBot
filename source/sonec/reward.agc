@@ -6,6 +6,7 @@
 #constant REWARD_OBJECT_CHEST 5
 #constant REWARD_OBJECT_DRONE 6
 #constant REWARD_OBJECT_BOMBER 7
+#constant REWARD_OBJECT_FLARAK 8
 
 // Preserve existing mine drops: random(0,4) inclusive => 1..5 energy items.
 function RewardDrop(Game ref as TGame,ObjectType as integer,Origin as TPosition,Now as integer)
@@ -73,6 +74,18 @@ function RewardDrop(Game ref as TGame,ObjectType as integer,Origin as TPosition,
         case REWARD_OBJECT_BOMBER
             // First-pass rewards: 8..15 pickups.
             for k = 1 to random(8,15)
+                EnergieType = 0
+                if random(0,8) > 5
+                    EnergieType = random(0,Game.ProtoEnergie.AnimEnergie.Length)
+                endif
+                Position.x = Origin.x + random(0,20) - 10
+                Position.y = Origin.y + random(0,20) - 10
+                EnergieAdd(Game.EnergieList,Game.ProtoEnergie,Game.World,EnergieType,Position,Now)
+            next k
+        endcase
+        case REWARD_OBJECT_FLARAK
+            // Alpha placeholder: reuse the drone's 4..8 energy drops and type roll.
+            for k = 1 to random(4,8)
                 EnergieType = 0
                 if random(0,8) > 5
                     EnergieType = random(0,Game.ProtoEnergie.AnimEnergie.Length)
