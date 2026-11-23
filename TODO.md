@@ -5,6 +5,7 @@
 ## Jetzt
 
 - [ ] **K3.3 – Ausgleichsschritt bei knapper Kistenlandung:** K3.2 (`568e2a2`) vom Entwickler lokal mit 6/6 bestanden; K3.2b Weltrandfix (`b83cc4f`) ebenfalls 6/6 bestanden. K3.3a Animationsgrundlage (`RepeatAnimation`, `Finished`) nach AGK-Reserviertwort-Korrektur vom Entwickler lokal mit 6/6 bestanden (23.11.2026). Als Nächstes K3.3b: kleinen automatischen Ausgleichsschritt bei geringer Geschwindigkeit gezielt umsetzen; schnellen Schwung und aktives Knieschliddern erhalten.
+- [ ] **Sporadisches Sprite nach Neustart (Fehlerverdacht):** Entwickler beobachtet gelegentlich ein unerwartetes gezeichnetes Sprite nach Spielneustart; vor früheren Flarak-Tests nicht beobachtet. Zusammenhang mit Flarak-Testresten nur Hypothese. Priorität: Offen; Status: Vermutet; ID: Noch nicht vergeben. Reproduktion: mehrfach neu starten, Zeitpunkt/Bildposition/Spritezuordnung prüfen; mögliche nicht zurückgesetzte Sprite-/Objektzustände erst dann untersuchen. Dublette bisher nicht bestätigt.
 - [ ] **Granatwerfer/Flarak/Flak Direkttreffer:** Nutzer beobachtet gelegentliches Durchfliegen ohne Direkttreffer. Projektilbewegung und Kollisionsprüfung untersuchen; Explosionstreffer getrennt betrachten.
 - [ ] **Schnelles Fallen durch Plattformen:** Gemeldeten möglichen Durchfallfehler untersuchen und priorisieren; zunächst reproduzieren und Fallgeschwindigkeit/Plattformprüfung prüfen.
 - [ ] **Flammenwerfer/Kisten:** Deckungswirkung als Designentscheidung klären. Plasma-Blitz-Balancing und Rauchwolken an zerstörten Flarak/Flak später separat behandeln.
