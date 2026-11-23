@@ -131,6 +131,7 @@ global FlarakBaseImage as integer
 global FlarakRocketImage as integer
 global FlarakDebugText as integer
 global FlarakDebugVisible as integer
+global FlarakCollisionDebugVisible as integer
 
 function FlarakVisualTestCreate()
     local Image as TImage
@@ -796,6 +797,101 @@ function FlarakDebugDrawAll(World ref as TWorld)
                 if Y < 4 then Y = 4
                 SetTextPosition(FlarakDebugText,X,Y)
                 DrawText(FlarakDebugText)
+            endif
+        endif
+    next i
+endfunction
+
+
+// Visual-only hitbox proposal. The frame-1 lower silo is always excluded.
+// Positions are in screen space; tune these outlines against the actual art.
+function FlarakDebugLine(X1 as float,Y1 as float,X2 as float,Y2 as float,R as integer,G as integer,B as integer)
+    DrawLine(X1,Y1,X2,Y2,R,G,B)
+endfunction
+
+function FlarakDebugRect(X as float,Y as float,HalfW as float,HalfH as float,Angle as float,R as integer,G as integer,B as integer)
+    local AX as float
+    local AY as float
+    local BX as float
+    local BY as float
+    local CX as float
+    local CY as float
+    local DX as float
+    local DY as float
+    local C as float
+    local S as float
+    C = Cos(Angle)
+    S = Sin(Angle)
+    AX = X-HalfW*C+HalfH*S
+    AY = Y-HalfW*S-HalfH*C
+    BX = X+HalfW*C+HalfH*S
+    BY = Y+HalfW*S-HalfH*C
+    CX = X+HalfW*C-HalfH*S
+    CY = Y+HalfW*S+HalfH*C
+    DX = X-HalfW*C-HalfH*S
+    DY = Y-HalfW*S+HalfH*C
+    FlarakDebugLine(AX,AY,BX,BY,R,G,B)
+    FlarakDebugLine(BX,BY,CX,CY,R,G,B)
+    FlarakDebugLine(CX,CY,DX,DY,R,G,B)
+    FlarakDebugLine(DX,DY,AX,AY,R,G,B)
+endfunction
+
+function FlarakDebugCircle(X as float,Y as float,Radius as float,R as integer,G as integer,B as integer)
+    local i as integer
+    local A as float
+    local NextA as float
+    for i = 0 to 23
+        A = i*15
+        NextA = (i+1)*15
+        FlarakDebugLine(X+Cos(A)*Radius,Y+Sin(A)*Radius,X+Cos(NextA)*Radius,Y+Sin(NextA)*Radius,R,G,B)
+    next i
+endfunction
+
+function FlarakCollisionDebugDrawAll(World ref as TWorld)
+    local i as integer
+    local X as float
+    local Y as float
+    local Frame as integer
+    local StemTop as float
+    local StemBottom as float
+    local StemHeight as float
+    local StemCenterY as float
+    local GunX as float
+    local GunY as float
+    local Angle as float
+    local RiseProgress as float
+    local FlakOffsetY as float
+    if FlarakCollisionDebugVisible = 0 then exitfunction
+    for i = 0 to FlarakList.Length
+        if FlarakList[i].Enabled = TRUE
+            X = FlarakList[i].WorldX-World.Position.x
+            Y = FlarakList[i].WorldY-World.Position.y
+            Frame = FlarakList[i].CurrentFrame
+            // Frame 1 has no hitbox. Frames 2-5 expose progressively more stem.
+            if Frame > 1
+                StemBottom = Y-8
+                StemHeight = (Frame-1)*8
+                StemTop = StemBottom-StemHeight
+                StemCenterY = (StemTop+StemBottom)*0.5
+                FlarakDebugRect(X,StemCenterY,7,StemHeight*0.5,0,60,230,255)
+            endif
+            if Frame = 5
+                Angle = FlarakList[i].CurrentLauncherAngle
+                if FlarakList[i].Variant = FLARAK_VARIANT_FLAK then Angle = -Angle
+                GunX = X
+                GunY = Y
+                if FlarakList[i].Variant = FLARAK_VARIANT_FLAK
+                    RiseProgress = (FlarakList[i].NowMs-FlarakList[i].FlakRiseStartMs)*1.0/FLARAK_FLAK_RISE_MS
+                    if RiseProgress < 0 then RiseProgress = 0
+                    if RiseProgress > 1 then RiseProgress = 1
+                    FlakOffsetY = FLARAK_FLAK_FINAL_OFFSET_Y+FLARAK_FLAK_RISE_PX*(1.0-RiseProgress)
+                    GunX = X-FlakOffsetY*Sin(Angle)
+                    GunY = Y+FlakOffsetY*Cos(Angle)
+                    FlarakDebugCircle(GunX,GunY-8,15,255,205,45)
+                else
+                    // Long axis follows the same launcher rotation as frame 6.
+                    FlarakDebugRect(GunX,GunY-9,10,19,Angle,255,205,45)
+                endif
             endif
         endif
     next i
