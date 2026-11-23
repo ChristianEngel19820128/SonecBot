@@ -1026,6 +1026,7 @@ function SonecCollideChestHorizontal(Sonec ref as TSonec,ChestList ref as TChest
 		
 	if Sonec.State.Stand = FALSE and Sonec.State.Fall = TRUE
 		for i = 0 to ChestList.Chest.Length
+            if ChestList.Chest[i].Enabled = TRUE
 			if Sonec.ObjectData.Position.x > ChestList.Chest[i].ObjectData.Position.x
 				if Sonec.ObjectData.Position.x < ChestList.Chest[i].ObjectData.Position.x + ChestList.Chest[i].ObjectData.Size.Width
 					if Sonec.ObjectData.Position.y + Sonec.ObjectData.Size.Height*0.5 > ChestList.Chest[i].ObjectData.Position.y
@@ -1043,6 +1044,7 @@ function SonecCollideChestHorizontal(Sonec ref as TSonec,ChestList ref as TChest
 					endif
 				endif
 			endif
+            endif
 		next i
 	endif
 
