@@ -4,7 +4,7 @@
 
 ## Jetzt
 
-- [ ] **K3.3 – Ausgleichsschritt bei knapper Kistenlandung:** K3.2 (`568e2a2`) vom Entwickler lokal mit 6/6 bestanden; K3.2b Weltrandfix (`b83cc4f`) ebenfalls 6/6 bestanden. Als Nächstes die Bedingungen für einen kleinen automatischen Ausgleichsschritt bei geringer Geschwindigkeit festlegen und gezielt umsetzen; schnellen Schwung und aktives Knieschliddern erhalten.
+- [ ] **K3.3 – Ausgleichsschritt bei knapper Kistenlandung:** K3.2 (`568e2a2`) vom Entwickler lokal mit 6/6 bestanden; K3.2b Weltrandfix (`b83cc4f`) ebenfalls 6/6 bestanden. K3.3a Animationsgrundlage (`RepeatAnimation`, `Finished`) nach AGK-Reserviertwort-Korrektur vom Entwickler lokal mit 6/6 bestanden (23.11.2026). Als Nächstes K3.3b: kleinen automatischen Ausgleichsschritt bei geringer Geschwindigkeit gezielt umsetzen; schnellen Schwung und aktives Knieschliddern erhalten.
 - [ ] **Granatwerfer/Flarak/Flak Direkttreffer:** Nutzer beobachtet gelegentliches Durchfliegen ohne Direkttreffer. Projektilbewegung und Kollisionsprüfung untersuchen; Explosionstreffer getrennt betrachten.
 - [ ] **Schnelles Fallen durch Plattformen:** Gemeldeten möglichen Durchfallfehler untersuchen und priorisieren; zunächst reproduzieren und Fallgeschwindigkeit/Plattformprüfung prüfen.
 - [ ] **Flammenwerfer/Kisten:** Deckungswirkung als Designentscheidung klären. Plasma-Blitz-Balancing und Rauchwolken an zerstörten Flarak/Flak später separat behandeln.
@@ -14,6 +14,8 @@
 B5c Plattform-Schutzgrenze bei reproduzierbarer Auffälligkeit prüfen; Drohnen-/Minen-/Belohnungsbalancing und Menü-Hilfetexte später bündeln.
 
 ## Abgeschlossen / Nachweise
+
+- **K3.3a – Wiederverwendbare Animationssteuerung:** Entwickler bestätigt lokalen AGK-Test mit 6/6 bestanden (23.11.2026): Kompilierung, Laufanimation links/rechts, Loop, Standbild beim Anhalten, Springen/Knieschliddern und Kistenlandungen. AGK-Reserviertwörter `Loop` und `Step` wurden in `RepeatAnimation` und `FrameIncrement` umbenannt (`9265f2c`, `9e7256c`).
 
 - **K3.2/K3.2b – Kistenlandung und linker Weltrand:** Entwickler bestätigt beide lokalen AGK-Tests mit jeweils 6/6 bestanden (23.11.2026). Kleine/große Kisten, stabiler Stand, kein Einsinken, seitliches Anlaufen, K2-Ausnahme sowie kein Verlassen/Teleportieren am linken Weltrand. Commits `568e2a2`, `b83cc4f`.
 
