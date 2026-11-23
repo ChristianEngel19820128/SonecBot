@@ -988,8 +988,6 @@ endfunction
 function SonecCollideChestHorizontal(Sonec ref as TSonec,ChestList ref as TChestList,World ref as TWorld)
 	
 	local i as integer
-	local EdgeInset as float
-	EdgeInset = 4
 	
 	if Sonec.State.Stand = TRUE
 		if Sonec.CollisionData.ListType = TYPECHEST
@@ -1013,10 +1011,10 @@ function SonecCollideChestHorizontal(Sonec ref as TSonec,ChestList ref as TChest
 						
 						SpritePositionCalc(Sonec.SpriteData.Position,Sonec.ObjectData.Position,World.Position)
 						
-						if Sonec.ObjectData.Position.x < ChestList.Chest[Sonec.CollisionData.Index].ObjectData.Position.x + EdgeInset
+						if Sonec.ObjectData.Position.x < ChestList.Chest[Sonec.CollisionData.Index].ObjectData.Position.x
 							SonecCollideReset(Sonec)
 						else
-							if Sonec.ObjectData.Position.x > ChestList.Chest[Sonec.CollisionData.Index].ObjectData.Position.x + ChestList.Chest[Sonec.CollisionData.Index].ObjectData.Size.Width - EdgeInset
+							if Sonec.ObjectData.Position.x > ChestList.Chest[Sonec.CollisionData.Index].ObjectData.Position.x + ChestList.Chest[Sonec.CollisionData.Index].ObjectData.Size.Width
 								SonecCollideReset(Sonec)
 							endif
 						endif
