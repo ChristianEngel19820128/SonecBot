@@ -323,6 +323,25 @@ endfunction
 //----------------------------------------------------------------------
 
 // D5b: player flames damage the drone using the existing growing flame radius.
+function FlameCollideFlaraks(FlameList ref as TFlameList,Game ref as TGame,Now as integer)
+    local i as integer
+    local k as integer
+    local R as float
+    for i = 0 to FlameList.Flame.Length
+        if FlameList.Flame[i].Enabled = TRUE
+            R = FlameCollisionRadius(FlameList.Flame[i])
+            for k = 0 to FlarakList.Length
+                if FlameList.Flame[i].Enabled = TRUE and FlarakList[k].Enabled = TRUE and FlarakList[k].Destroyed = FALSE
+                    if FlarakAreaHits(FlarakList[k],Game.World,FlameList.Flame[i].ObjectData.Position.x,FlameList.Flame[i].ObjectData.Position.y,R,R,TRUE)
+                        FlarakApplyDamage(FlarakList[k],Game,FlameList.Flame[i].BulletData.Damage,Now)
+                        FlameDelete(FlameList,i)
+                    endif
+                endif
+            next k
+        endif
+    next i
+endfunction
+
 function FlameCollideDrone(FlameList ref as TFlameList,Drone ref as TDrone)
     local i as integer
     local NearestPoint as TPosition
