@@ -2,6 +2,8 @@
 // Seven 80x64 cells: 1-5 base, 6 shared rotating launcher, 7 Flak overlay.
 #constant FLARAK_VARIANT_ROCKET 0
 #constant FLARAK_VARIANT_FLAK 1
+#constant FLARAK_HEALTH_MAX 150
+#constant FLARAK_WRECK_COLOR 65
 // Temporary in-game overlay for diagnosing Flak volleys on either side.
 #constant FLARAK_DEBUG_BULLETS 1
 #constant FLARAK_FLAK_RISE_PX 12
@@ -80,6 +82,8 @@ type TFlarakTestRocket
 endtype
 
 type TFlarak
+    Health as integer
+    Destroyed as integer
     Rocket1 as TFlarakTestRocket
     Rocket2 as TFlarakTestRocket
     SecondPending as integer
@@ -197,6 +201,8 @@ function FlarakSpawn(PlateList ref as TPlateList,ChestList ref as TChestList,Pla
     FreeLeft = FlarakFindFreeOffsetX(Plate,PlateIndex,ChestList)
     if FreeLeft < 0 then exitfunction
     F.Enabled = TRUE
+    F.Health = FLARAK_HEALTH_MAX
+    F.Destroyed = FALSE
     F.Variant = Random(0,1)
     F.PlateIndex = PlateIndex
     F.PlateOffsetX = FreeLeft+FLARAK_TEST_BASE_OFFSET_X
@@ -474,6 +480,31 @@ function FlarakTurnTowards(CurrentAngle as float,TargetAngle as float,StepAngle 
     endif
 endfunction CurrentAngle
 
+// Destruction is a one-shot event. Keep the base sprite as a dark frame-1
+// wreck; fired rockets remain independently simulated by FlarakDoAll.
+function FlarakDestroy(F ref as TFlarak,Game ref as TGame,NowMs as integer)
+    local Impact as TPosition
+    if F.Enabled = FALSE or F.Destroyed = TRUE then exitfunction
+    F.Destroyed = TRUE
+    F.Health = 0
+    F.SecondPending = FALSE
+    F.FlakShotsFired = 4
+    F.CurrentFrame = 1
+    F.Rocket1.Attached = FALSE
+    F.Rocket2.Attached = FALSE
+    SetSpriteColor(F.BaseSprite,FLARAK_WRECK_COLOR,FLARAK_WRECK_COLOR,FLARAK_WRECK_COLOR,255)
+    Impact.x = F.WorldX
+    Impact.y = F.WorldY-10
+    ExplosionAdd(Game.ExplosionList,Game.ProtoExplosion,Game,4,Impact,NowMs)
+    RewardDrop(Game,REWARD_OBJECT_FLARAK,Impact,NowMs)
+endfunction
+
+function FlarakApplyDamage(F ref as TFlarak,Game ref as TGame,Damage as integer,NowMs as integer)
+    if F.Enabled = FALSE or F.Destroyed = TRUE or Damage <= 0 then exitfunction
+    F.Health = F.Health-Damage
+    if F.Health <= 0 then FlarakDestroy(F,Game,NowMs)
+endfunction
+
 function FlarakDo(F ref as TFlarak,Game ref as TGame,JetfireList ref as TJetfireList,ProtoJetfire ref as TProtoJetfire,World ref as TWorld,NowMs as integer)
     local Dx as float
     local Dy as float
@@ -485,7 +516,7 @@ function FlarakDo(F ref as TFlarak,Game ref as TGame,JetfireList ref as TJetfire
     local FrameSteps as integer
     local TargetSide as integer
     local FlakTargetInArc as integer
-    if F.Enabled = FALSE then exitfunction
+    if F.Enabled = FALSE or F.Destroyed = TRUE then exitfunction
     F.NowMs = NowMs
     DeltaMs = NowMs-F.LastUpdateMs
     if DeltaMs < 0 then DeltaMs = 0
@@ -672,6 +703,7 @@ function FlarakDraw(F ref as TFlarak,World ref as TWorld)
     SetSpriteFrame(F.BaseSprite,F.CurrentFrame)
     SetSpritePositionByOffset(F.BaseSprite,X,Y)
     DrawSprite(F.BaseSprite)
+    if F.Destroyed = TRUE then exitfunction
     if F.CurrentFrame = 5
         VisualAngle = F.CurrentLauncherAngle
         if F.Variant = FLARAK_VARIANT_FLAK then VisualAngle = -VisualAngle
@@ -727,7 +759,13 @@ function FlarakDoAll(Game ref as TGame,JetfireList ref as TJetfireList,ProtoJetf
                 else
                     FlarakList[i].WorldX = PlateList.Plate[PlateIndex].ObjectData.Position.x+FlarakList[i].PlateOffsetX
                     FlarakList[i].WorldY = PlateList.Plate[PlateIndex].ObjectData.Position.y+FlarakList[i].PlateOffsetY
-                    FlarakDo(FlarakList[i],Game,JetfireList,ProtoJetfire,World,NowMs)
+                    if FlarakList[i].Destroyed = FALSE
+                        FlarakDo(FlarakList[i],Game,JetfireList,ProtoJetfire,World,NowMs)
+                    else
+                        // Active rockets keep flying after the launcher is destroyed.
+                        FlarakRocketDo(FlarakList[i].Rocket1,Game,JetfireList,ProtoJetfire,World,NowMs)
+                        FlarakRocketDo(FlarakList[i].Rocket2,Game,JetfireList,ProtoJetfire,World,NowMs)
+                    endif
                 endif
             endif
         endif
@@ -879,7 +917,7 @@ function FlarakCollisionDebugDrawAll(World ref as TWorld)
     local CircleLocalY as float
     if GAME_DEBUG_ENABLED = 0 or FlarakCollisionDebugVisible = 0 then exitfunction
     for i = 0 to FlarakList.Length
-        if FlarakList[i].Enabled = TRUE
+        if FlarakList[i].Enabled = TRUE and FlarakList[i].Destroyed = FALSE
             X = FlarakList[i].WorldX-World.Position.x
             Y = FlarakList[i].WorldY-World.Position.y
             Frame = FlarakList[i].CurrentFrame
