@@ -874,8 +874,9 @@ function FlarakCollisionDebugDrawAll(World ref as TWorld)
     local GunX as float
     local GunY as float
     local Angle as float
-    local CirclePivotY as float
-    local CirclePivotOffset as float
+    local CircleCenterX as float
+    local CircleCenterY as float
+    local CircleLocalY as float
     if GAME_DEBUG_ENABLED = 0 or FlarakCollisionDebugVisible = 0 then exitfunction
     for i = 0 to FlarakList.Length
         if FlarakList[i].Enabled = TRUE
@@ -899,12 +900,21 @@ function FlarakCollisionDebugDrawAll(World ref as TWorld)
                 if FlarakList[i].Variant = FLARAK_VARIANT_FLAK
                     GunX = GetSpriteXByOffset(FlarakList[i].FlakSprite)
                     GunY = GetSpriteYByOffset(FlarakList[i].FlakSprite)
-                    // Circle radius 15 px. The circle pivots 1/4 radius BELOW
-                    // its center, so its center orbits the pivot on rotation.
-                    // At angle 0 the center is 6 px below the previous overlay.
-                    CirclePivotOffset = 15.0/4.0
-                    CirclePivotY = GunY+14.75
-                    FlarakDebugCircle(GunX+CirclePivotOffset*Sin(Angle),CirclePivotY-CirclePivotOffset*Cos(Angle),15,255,205,45)
+                    // Rotate the circle's LOCAL center around the actual sprite
+                    // pivot (GunX,GunY), not around an invented pivot.
+                    // Preserve the accepted X and neutral-angle Y: GunY+11.
+                    CircleLocalY = 11
+                    CircleCenterX = GunX-CircleLocalY*Sin(Angle)
+                    CircleCenterY = GunY+CircleLocalY*Cos(Angle)
+                    FlarakDebugCircle(CircleCenterX,CircleCenterY,15,255,205,45)
+                    // Calibration: magenta cross = actual sprite pivot,
+                    // white cross = calculated circle center; connecting line
+                    // makes any unexpected orbit direction immediately visible.
+                    FlarakDebugLine(GunX,GunY,CircleCenterX,CircleCenterY,255,255,255)
+                    FlarakDebugLine(GunX-3,GunY,GunX+3,GunY,255,80,220)
+                    FlarakDebugLine(GunX,GunY-3,GunX,GunY+3,255,80,220)
+                    FlarakDebugLine(CircleCenterX-3,CircleCenterY,CircleCenterX+3,CircleCenterY,255,255,255)
+                    FlarakDebugLine(CircleCenterX,CircleCenterY-3,CircleCenterX,CircleCenterY+3,255,255,255)
                 else
                     GunX = GetSpriteXByOffset(FlarakList[i].LauncherSprite)
                     GunY = GetSpriteYByOffset(FlarakList[i].LauncherSprite)
