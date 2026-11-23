@@ -263,7 +263,7 @@ function FlarakFireBullet(F ref as TFlarak,Game ref as TGame,NowMs as integer)
     local VisualAngle as float
     local FlightAngle as float
     local TubeOffset as float
-    local PreviousBulletLength as integer
+    local NewBulletIndex as integer
     // The Flak barrels point upward in their source art. Use exactly the
     // displayed barrel angle from the developer's aiming fix (no +/-90).
     VisualAngle = -F.FlakVolleyAngle
@@ -274,9 +274,8 @@ function FlarakFireBullet(F ref as TFlarak,Game ref as TGame,NowMs as integer)
     if Mod(F.FlakShotsFired,2) = 1 then TubeOffset = FLARAK_FLAK_TUBE_OFFSET
     Position.x = F.WorldX-FLARAK_FLAK_FINAL_OFFSET_Y*Sin(VisualAngle)+Sin(FlightAngle)*FLARAK_FLAK_MUZZLE_DISTANCE+Cos(FlightAngle)*TubeOffset
     Position.y = F.WorldY+FLARAK_FLAK_FINAL_OFFSET_Y*Cos(VisualAngle)-Cos(FlightAngle)*FLARAK_FLAK_MUZZLE_DISTANCE+Sin(FlightAngle)*TubeOffset
-    PreviousBulletLength = Game.BulletList.Bullet.Length
-    BulletAdd(Game.BulletList,Game.ProtoBullet,Game.World,Position,FlightAngle,0,TYPEENEMY,NowMs)
-    BulletSetModification(Game.BulletList,BULLET_MOD_EXPLOSIVE,NowMs)
+    NewBulletIndex = BulletAdd(Game.BulletList,Game.ProtoBullet,Game.World,Position,FlightAngle,0,TYPEENEMY,NowMs)
+    BulletSetModification(Game.BulletList,NewBulletIndex,BULLET_MOD_EXPLOSIVE,NowMs)
     if FLARAK_DEBUG_BULLETS = 1
         F.FlakDebugAddCount = F.FlakDebugAddCount+1
         F.FlakDebugLastShotMs = NowMs
@@ -284,11 +283,7 @@ function FlarakFireBullet(F ref as TFlarak,Game ref as TGame,NowMs as integer)
         F.FlakDebugLastShotY = Position.y
         F.FlakDebugLastShotAngle = FlightAngle
         F.FlakDebugLastMoveStatus = 1
-        if Game.BulletList.Bullet.Length > PreviousBulletLength
-            F.FlakDebugLastBulletIndex = Game.BulletList.Bullet.Length
-        else
-            F.FlakDebugLastBulletIndex = Game.BulletList.FirstFree-1
-        endif
+        F.FlakDebugLastBulletIndex = NewBulletIndex
     endif
 endfunction
 
