@@ -613,6 +613,7 @@ type TExplosion
 	// E1b: simple mine pool uses independent indices and a separate cooldown.
 	LastSimpleMineHitMs as integer[-1]
 	LastWalkerHitMs as integer[-1]
+    LastFlarakHitMs as integer[-1]
 	MeasureStartMs as integer
 	MeasureChecks as integer
 	MeasureHits as integer
