@@ -2,6 +2,8 @@
 
 **Stand:** 22. November 2026 · **Arbeitszweig:** `develop`
 
+**Aktueller Nachtrag 23.11.2026 – Kisten-Kollision:** Auf `develop` wurde mit `67d9e71` die seitliche Kollision auf einen Kantenübertritt während der Bewegung umgestellt (Y-Überlappung am Eintrittszeitpunkt; horizontaler Stopp an der Kistenkante). Der aktive Mini-Hop wird nun bereits halbe Sonec-Breite zuzüglich aktueller X-Schrittweite vor dem Rand ausgelöst. **AGK-Compile und Laufzeittest ausstehend**; vorherige Erstkorrektur `a95b1fd` hatte nach Entwicklerbeobachtung weiterhin seltene Durchläufe beim Laufen/Springen/Fallen. Gewollt: Durchspringen von unten, von oben landen, seitlich blockieren. Dunkle, ansonsten normale **Hintergrundkisten ohne Sonec-Kollision** sind nur als Idee in `BACKLOG.md` notiert (`dc17e6c`), nicht implementiert. **Einziger nächster Schritt:** Entwickler-Nachtest der Kistenkollision und des früheren Mini-Hops (siehe `TODO.md`).
+
 Diese Datei ermöglicht den nächsten Chatwechsel. Sie wird aktualisiert und gekürzt, nicht um Chatprotokolle erweitert.
 
 ## Einstieg und Arbeitsstand
