@@ -1,6 +1,6 @@
 # SonecBot – Ideen für vielleicht später
 
-**Stand:** 22. November 2026  
+**Stand:** 23. November 2026  
 **Status:** Unverbindliche Sammlung; ohne feste Reihenfolge, Termin oder Implementierungsfreigabe.
 
 Die beschlossenen Real-Alpha-Grundversionen stehen in [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROADMAP.md), nächste Schritte in [TODO.md](TODO.md).
@@ -40,6 +40,10 @@ Bomber, Flarak, hilfreicher Jumppod, Gefahren-/Erfahrungsgrundsystem, kleine Zie
 - **Overload-Schutz bei Ersatzenergie:** Keine zusätzliche oder beschleunigte Gesundheitsschädigung durch Fallback-Gutschriften. Der aktuelle Typ-0-Code prüft `Energy.State > 1.5 * Energy.StateMax`, zieht Gesundheit ab und setzt den Energiewert zurück; das ist eine Schwelle mit Rücksetzung, nicht der Nachweis eines unbegrenzten Overload-Speichers. Bestehende Overload-Mechanik und etwaige weitere Schadenspfade beim Balancing vollständig prüfen. Sicherer Ersatznutzen bei voller Energie ist noch offen; keine unbeabsichtigte Todesfalle und keine Erhöhung der bisherigen Schadensrate/-höhe.
 
 ## Grafik und Präsentation
+
+- **Fadenkreuz im Hauptmenü:** Statt des System-Mauszeigers ein eigenes Fadenkreuz anzeigen; vorhandenes Paintball-Easter-Egg bei der Gestaltung berücksichtigen. Nur Idee, noch keine Implementierung.
+- **Halbtransparente Einschusslöcher:** Bei Treffern auf den Hintergrund dezente Spuren zeigen; später Sichtbarkeit, Lebensdauer und Begrenzung der Anzahl festlegen. Nur Idee, noch keine Implementierung.
+
 
 - **Trefferfarben nach Schadenshöhe:** Optional später ein einheitliches Farbspektrum für die Höhe eines erlittenen Treffers entwerfen. Derzeit bleibt Standardrot RGB (255,0,0) für alle Gegner bestehen; keine Umsetzung im aktuellen Drohnenschritt.
 
