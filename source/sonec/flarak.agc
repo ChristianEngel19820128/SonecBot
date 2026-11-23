@@ -865,18 +865,28 @@ function FlarakPointHits(F ref as TFlarak,World ref as TWorld,PX as float,PY as 
     local CircleY as float
     local DX as float
     local DY as float
+    local RiseProgress as float
+    local RiseOffset as float
+    local FlakOffsetY as float
     if F.Enabled = FALSE or F.Destroyed = TRUE or F.CurrentFrame <= 1 then exitfunction FALSE
     StemHeight = (F.CurrentFrame-1)*3.5
     if Abs(PX-F.WorldX) <= 6 and PY >= F.WorldY+15-StemHeight and PY <= F.WorldY+15 then exitfunction TRUE
     if F.CurrentFrame <> 5 then exitfunction FALSE
     Angle = F.CurrentLauncherAngle
     if F.Variant = FLARAK_VARIANT_FLAK then Angle = -Angle
-    GunX = GetSpriteXByOffset(F.LauncherSprite)+World.Position.x
-    GunY = GetSpriteYByOffset(F.LauncherSprite)+World.Position.y
+    // The frame-6 launcher pivot is aligned with the base pivot in FlarakDraw.
+    // Derive it from the world position, never from last frame's sprite pose.
+    GunX = F.WorldX
+    GunY = F.WorldY
     if FlarakPointInRotatedRect(PX,PY,GunX,GunY,17,7,Angle) then exitfunction TRUE
     if F.Variant = FLARAK_VARIANT_FLAK and F.FlakSprite > 0
-        GunX = GetSpriteXByOffset(F.FlakSprite)+World.Position.x
-        GunY = GetSpriteYByOffset(F.FlakSprite)+World.Position.y
+        RiseProgress = (F.NowMs-F.FlakRiseStartMs)*1.0/FLARAK_FLAK_RISE_MS
+        if RiseProgress < 0 then RiseProgress = 0
+        if RiseProgress > 1 then RiseProgress = 1
+        RiseOffset = FLARAK_FLAK_RISE_PX*(1.0-RiseProgress)
+        FlakOffsetY = FLARAK_FLAK_FINAL_OFFSET_Y+RiseOffset
+        GunX = F.WorldX-FlakOffsetY*Sin(Angle)
+        GunY = F.WorldY+FlakOffsetY*Cos(Angle)
         CircleX = GunX-11*Sin(Angle)
         CircleY = GunY+11*Cos(Angle)
         DX = PX-CircleX
