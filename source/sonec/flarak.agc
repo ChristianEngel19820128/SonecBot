@@ -854,7 +854,10 @@ function FlarakPointInRotatedRect(PX as float,PY as float,CX as float,CY as floa
     DY = PY-CY
     LX = DX*Cos(Angle)+DY*Sin(Angle)
     LY = -DX*Sin(Angle)+DY*Cos(Angle)
-endfunction (Abs(LX) <= HalfW and Abs(LY) <= HalfH)
+    local Hit as integer
+    Hit = FALSE
+    if Abs(LX) <= HalfW and Abs(LY) <= HalfH then Hit = TRUE
+endfunction Hit
 
 // Conservative area overlap using samples over a source circle or AABB.
 // Reuses the precise point shapes, never the protected silo sprite.
