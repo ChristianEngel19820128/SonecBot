@@ -833,8 +833,9 @@ function SonecCollidePlate(Sonec ref as TSonec,PlateList ref as TPlateList,Chest
 		endif
 	endif
 	
-	SonecCollideChestVertical(Sonec,ChestList,PlateList,PlateIndex,World)
+	// Resolve landing on a chest before side contact can displace Sonec.
 	SonecCollideChestHorizontal(Sonec,ChestList,World)
+	SonecCollideChestVertical(Sonec,ChestList,PlateList,PlateIndex,World)
 		
 	if Sonec.State.Stand = FALSE and Sonec.State.Fall = TRUE
 		if Sonec.ObjectData.MoveSpeed.y > 0
