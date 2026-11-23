@@ -4,7 +4,7 @@
 
 ## Jetzt
 
-- [ ] **K3 – Kistenkollision neu konzipieren:** Lokaler Test des 4-px-Kantenabstands fehlgeschlagen: Sonec fällt in Kisten hinein, Aufspringen schwer und instabil. Versuch `e287328` zurückgenommen. Landen, Standhalten, Seitenkontakt und Kantenabgang mit getrennten Regeln planen; kleine Kisten, horizontalen Schwung und K1/K2 erhalten.
+- [ ] **K3.3 – Ausgleichsschritt bei knapper Kistenlandung:** K3.2 (`568e2a2`) vom Entwickler lokal mit 6/6 bestanden; K3.2b Weltrandfix (`b83cc4f`) ebenfalls 6/6 bestanden. Als Nächstes die Bedingungen für einen kleinen automatischen Ausgleichsschritt bei geringer Geschwindigkeit festlegen und gezielt umsetzen; schnellen Schwung und aktives Knieschliddern erhalten.
 - [ ] **Granatwerfer/Flarak/Flak Direkttreffer:** Nutzer beobachtet gelegentliches Durchfliegen ohne Direkttreffer. Projektilbewegung und Kollisionsprüfung untersuchen; Explosionstreffer getrennt betrachten.
 - [ ] **Schnelles Fallen durch Plattformen:** Gemeldeten möglichen Durchfallfehler untersuchen und priorisieren; zunächst reproduzieren und Fallgeschwindigkeit/Plattformprüfung prüfen.
 - [ ] **Flammenwerfer/Kisten:** Deckungswirkung als Designentscheidung klären. Plasma-Blitz-Balancing und Rauchwolken an zerstörten Flarak/Flak später separat behandeln.
@@ -14,6 +14,8 @@
 B5c Plattform-Schutzgrenze bei reproduzierbarer Auffälligkeit prüfen; Drohnen-/Minen-/Belohnungsbalancing und Menü-Hilfetexte später bündeln.
 
 ## Abgeschlossen / Nachweise
+
+- **K3.2/K3.2b – Kistenlandung und linker Weltrand:** Entwickler bestätigt beide lokalen AGK-Tests mit jeweils 6/6 bestanden (23.11.2026). Kleine/große Kisten, stabiler Stand, kein Einsinken, seitliches Anlaufen, K2-Ausnahme sowie kein Verlassen/Teleportieren am linken Weltrand. Commits `568e2a2`, `b83cc4f`.
 
 - **K2 – Seitliche Kistenkollision:** Entwickler bestätigt lokalen AGK-Test mit 5/5 bestanden (23.11.2026): Kisten stoppen Sonec beim Anlaufen, schieben ihn nicht aktiv, dürfen ihn am linken Rand durchdringen; kein Herausschieben beim Sprung; Übersprunghilfe unverändert (`c7e1da8`).
 
