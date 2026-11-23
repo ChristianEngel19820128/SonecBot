@@ -884,11 +884,11 @@ function FlarakCollisionDebugDrawAll(World ref as TWorld)
             Frame = FlarakList[i].CurrentFrame
             // Frame 1 has no hitbox. Frames 2-5 expose progressively more stem.
             if Frame > 1
-                StemBottom = Y-8
-                StemHeight = (Frame-1)*8
+                StemBottom = Y+1
+                StemHeight = (Frame-1)*5
                 StemTop = StemBottom-StemHeight
                 StemCenterY = (StemTop+StemBottom)*0.5
-                FlarakDebugRect(X,StemCenterY,7,StemHeight*0.5,0,60,230,255)
+                FlarakDebugRect(X+5,StemCenterY,6,StemHeight*0.5,0,60,230,255)
             endif
             if Frame = 5
                 Angle = FlarakList[i].CurrentLauncherAngle
@@ -902,10 +902,11 @@ function FlarakCollisionDebugDrawAll(World ref as TWorld)
                     FlakOffsetY = FLARAK_FLAK_FINAL_OFFSET_Y+FLARAK_FLAK_RISE_PX*(1.0-RiseProgress)
                     GunX = X-FlakOffsetY*Sin(Angle)
                     GunY = Y+FlakOffsetY*Cos(Angle)
-                    FlarakDebugCircle(GunX,GunY-8,15,255,205,45)
+                    FlarakDebugCircle(GunX+6*Cos(Angle)-6*Sin(Angle),GunY+6*Sin(Angle)+6*Cos(Angle),13,255,205,45)
                 else
                     // Long axis follows the same launcher rotation as frame 6.
-                    FlarakDebugRect(GunX,GunY-9,10,19,Angle,255,205,45)
+                    // Frame 6 artwork is horizontal at zero degrees, not vertical.
+                    FlarakDebugRect(GunX+9*Cos(Angle)+4*Sin(Angle),GunY+9*Sin(Angle)-4*Cos(Angle),18,7,Angle,255,205,45)
                 endif
             endif
         endif
