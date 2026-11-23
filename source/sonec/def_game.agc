@@ -526,6 +526,8 @@ endtype
 
 type TSonec
     SpawnEntering as integer
+	BalanceActive as integer
+	BalanceTargetX as float
 	ObjectData as TObjectData
 	SpriteData as TSpriteData
 	State as TObjectState
