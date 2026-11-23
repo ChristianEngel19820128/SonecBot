@@ -256,6 +256,31 @@ endfunction
 //-----------------------------------------------------------------------
 
 // D5b: direct grenade impact damages the drone and creates the normal blast.
+function GrenadeCollideFlaraks(GrenadeList ref as TGrenadeList,Game ref as TGame,Now as integer)
+    local i as integer
+    local k as integer
+    local CX as float
+    local CY as float
+    local HW as float
+    local HH as float
+    for i = 0 to GrenadeList.Grenade.Length
+        if GrenadeList.Grenade[i].Enabled = TRUE
+            CX = (GrenadeList.Grenade[i].CollisionData.Position1.x+GrenadeList.Grenade[i].CollisionData.Position2.x)*0.5
+            CY = (GrenadeList.Grenade[i].CollisionData.Position1.y+GrenadeList.Grenade[i].CollisionData.Position2.y)*0.5
+            HW = Abs(GrenadeList.Grenade[i].CollisionData.Position2.x-GrenadeList.Grenade[i].CollisionData.Position1.x)*0.5
+            HH = Abs(GrenadeList.Grenade[i].CollisionData.Position2.y-GrenadeList.Grenade[i].CollisionData.Position1.y)*0.5
+            for k = 0 to FlarakList.Length
+                if GrenadeList.Grenade[i].Enabled = TRUE and FlarakList[k].Enabled = TRUE and FlarakList[k].Destroyed = FALSE
+                    if FlarakAreaHits(FlarakList[k],Game.World,CX,CY,HW,HH,FALSE)
+                        FlarakApplyDamage(FlarakList[k],Game,GrenadeList.Grenade[i].BulletData.Damage,Now)
+                        GrenadeDestroy(GrenadeList,i,Game.ExplosionList,Game.ProtoExplosion,Game,GrenadeList.Grenade[i].ObjectData.Position,Now)
+                    endif
+                endif
+            next k
+        endif
+    next i
+endfunction
+
 function GrenadeCollideDrone(GrenadeList ref as TGrenadeList,Drone ref as TDrone,Game ref as TGame,Now as integer)
     local i as integer
     local MinPos as TPosition
