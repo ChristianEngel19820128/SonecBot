@@ -525,6 +525,8 @@ type TFlameGun
 endtype
 
 type TSonec
+	CollisionMoveStart as TPosition
+	CollisionMoveEnd as TPosition
     SpawnEntering as integer
 	BalanceActive as integer
 	BalanceTargetX as float
@@ -583,6 +585,7 @@ type TProtoChest
 endtype
 
 type TChest
+	CollisionMoveStart as TPosition
 	Enabled as integer
 	CollisionData as TCollisionData
 	ObjectData as TObjectData

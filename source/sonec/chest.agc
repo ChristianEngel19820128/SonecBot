@@ -80,6 +80,7 @@ function ChestNew(ChestList ref as TChestList,Chest ref as TChest,ProtoChest ref
 	endwhile
 
 	Chest.ObjectData.Position = Position
+	Chest.CollisionMoveStart = Chest.ObjectData.Position
 
 	SpritePositionCalc(Chest.SpriteData.Position,Chest.ObjectData.Position,World.Position)
 	
@@ -256,6 +257,7 @@ function ChestMove(Chest ref as TChest,PlateList ref as TPlateList,World ref as 
 	local r as float
 	
 	if Chest.Enabled = TRUE
+		Chest.CollisionMoveStart = Chest.ObjectData.Position
 		
 		Chest.ObjectData.Position.x = PlateList.Plate[Chest.CollisionData.Index].ObjectData.Position.x + Chest.CollisionData.Position.x
 		Chest.ObjectData.Position.y = PlateList.Plate[Chest.CollisionData.Index].ObjectData.Position.y + Chest.CollisionData.Position.y
