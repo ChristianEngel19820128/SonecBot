@@ -861,7 +861,7 @@ function FlarakCollisionDebugDrawAll(World ref as TWorld)
     local Angle as float
     local RiseProgress as float
     local FlakOffsetY as float
-    if FlarakCollisionDebugVisible = 0 then exitfunction
+    if GAME_DEBUG_ENABLED = 0 or FlarakCollisionDebugVisible = 0 then exitfunction
     for i = 0 to FlarakList.Length
         if FlarakList[i].Enabled = TRUE
             X = FlarakList[i].WorldX-World.Position.x
