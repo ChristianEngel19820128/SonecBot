@@ -494,7 +494,7 @@ function FlarakDestroy(F ref as TFlarak,Game ref as TGame,NowMs as integer)
     F.CurrentFrame = 1
     F.Rocket1.Attached = FALSE
     F.Rocket2.Attached = FALSE
-    SetSpriteColor(F.BaseSprite,FLARAK_WRECK_COLOR,FLARAK_WRECK_COLOR,FLARAK_WRECK_COLOR,255)
+    SetSpriteColor(F.BaseSprite,FLARAK_WRECK_COLOR-8,FLARAK_WRECK_COLOR+14,FLARAK_WRECK_COLOR-8,255)
     Impact.x = F.WorldX
     Impact.y = F.WorldY-10
     ExplosionAdd(Game.ExplosionList,Game.ProtoExplosion,Game,4,Impact,NowMs)
