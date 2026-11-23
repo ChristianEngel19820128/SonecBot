@@ -4,7 +4,7 @@
 
 ## Jetzt
 
-- [ ] **K2 – Seitliche Kistenkollision:** Kisten dürfen Sonec nicht aktiv hinausschieben; bestehende Übersprunghilfe bewahren. Nach K1 einzeln untersuchen und korrigieren.
+- [ ] **K2 – Seitliche Kistenkollision (lokaler AGK-Test offen):** Positionskorrektur nur bei Sonecs Bewegung gegen die Kiste; am linken Rand durchdringbar statt Herausschieben (`c7e1da8`). Sprunghilfe und übrige Kistenfunktionen beim Test prüfen.
 - [ ] **K3 – Kistenauflage/Kanten:** Sonec soll nicht bis zum letzten Pixel auf einer Kiste stehen bleiben; Auflagegrenzen und Sprunghilfe getrennt prüfen.
 - [ ] **Granatwerfer/Flarak/Flak Direkttreffer:** Nutzer beobachtet gelegentliches Durchfliegen ohne Direkttreffer. Projektilbewegung und Kollisionsprüfung untersuchen; Explosionstreffer getrennt betrachten.
 - [ ] **Schnelles Fallen durch Plattformen:** Gemeldeten möglichen Durchfallfehler untersuchen und priorisieren; zunächst reproduzieren und Fallgeschwindigkeit/Plattformprüfung prüfen.
