@@ -128,6 +128,7 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
+// Return the actual inserted/reused slot; callers may ignore the result.
 function BulletAdd(BulletList ref as TBulletList,ProtoBullet ref as TProtoBullet,World ref as TWorld,Position ref as TPosition,Angle as float,Radius as float,CollisionType as integer,Now as integer)
 	
 	local Found as integer
@@ -149,21 +150,20 @@ function BulletAdd(BulletList ref as TBulletList,ProtoBullet ref as TProtoBullet
 	if Found = FALSE
 		BulletList.Bullet.Insert(Bullet)
 		BulletList.FirstFree = BulletList.Bullet.Length
+        i = BulletList.Bullet.Length
 	else
 		BulletList.Bullet[i] = Bullet
 		BulletList.FirstFree = i+1
 	endif
 	
-endfunction
+endfunction i
 
 //----------------------------------------------------------------------
 // 
 //----------------------------------------------------------------------
 
-// Configure the bullet just appended by BulletAdd, without changing existing callers.
-function BulletSetModification(BulletList ref as TBulletList,Modification as integer,Now as integer)
-    local Index as integer
-    Index = BulletList.FirstFree-1
+// Configure exactly the bullet slot returned by BulletAdd.
+function BulletSetModification(BulletList ref as TBulletList,Index as integer,Modification as integer,Now as integer)
     if Index < 0 or Index > BulletList.Bullet.Length then exitfunction
     if BulletList.Bullet[Index].Enabled = FALSE then exitfunction
     BulletList.Bullet[Index].Modification = Modification
