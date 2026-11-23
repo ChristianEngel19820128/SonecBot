@@ -362,3 +362,11 @@ Knowledge-Base-Kandidaten stehen in [BACKLOG.md](BACKLOG.md); Beiträge separat 
 **Drohnen-Scanbalancing (temporärer Entwicklertest, 22.11.2026):** `DRONE_SCAN_MAX_SUCCESS_PERCENT` von 50 auf 62.5 erhöht (+25 % relativ), `ScanChance` als Float; bei aktiver Energieansaugung weiterhin bis +25 Prozentpunkte, also maximal 87.5 % nahe 0 px, linear auf 0 % bei 500 px. `DRONE_DEBUG_FORCE_ACQUIRE` wieder 0, gelbe Scan-Diagnose bleibt aktiv. Vorheriger Erzwingungstest bestätigte Laser-Schusskette, nicht die natürliche Erkennung. Lokaler AGK-/Spieltest ausstehend; nach Test Debugcode entfernen.
 
 **Aktueller Scan-Balancingtest (22.11.2026, AGK-Test offen):** Auf Wunsch wieder `DRONE_SCAN_MAX_SUCCESS_PERCENT=50`, bei aktiver Energieansaugung linearer Bonus bis +25 Prozentpunkte (Maximum 75 %). Diagnose mit `random(1,10000)` und Vergleich `ScanChance*100` bleibt vorübergehend; keine erzwungene Erkennung. Schusshäufigkeit vom Entwickler noch zu bewerten.
+
+
+## Geschossindex und Flak-Explosivmunition
+
+- `BulletAdd` liefert den tatsächlich angelegten oder wiederverwendeten Array-Index zurück. Bestehende Standardmunition-Aufrufer können den Rückgabewert ignorieren.
+- `FlarakFireBullet` übergibt den zurückgegebenen Index ausdrücklich an `BulletSetModification` und verwendet ihn für die Flak-Diagnose. Die frühere indirekte Herleitung über `FirstFree-1` entfällt.
+- Quellprüfung: Die frühere unmittelbare Aufrufreihenfolge zeigte keinen bewiesenen Fehlindex; die Änderung verhindert eine fragile implizite Zuordnung. Explosionsdauer 175–200 ms, Schadenslogik und andere Waffen unverändert.
+- AGK-Compile und Laufzeitprüfung ausstehend: vier Geschosse pro Salve, unabhängige Zündungen, wiederverwendete Slots, normale Spieler-/Walker-Geschosse.
