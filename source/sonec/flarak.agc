@@ -84,6 +84,7 @@ endtype
 type TFlarak
     Health as integer
     Destroyed as integer
+    HitFlashUntil as integer
     Rocket1 as TFlarakTestRocket
     Rocket2 as TFlarakTestRocket
     SecondPending as integer
@@ -203,6 +204,7 @@ function FlarakSpawn(PlateList ref as TPlateList,ChestList ref as TChestList,Pla
     F.Enabled = TRUE
     F.Health = FLARAK_HEALTH_MAX
     F.Destroyed = FALSE
+    F.HitFlashUntil = 0
     F.Variant = Random(0,1)
     F.PlateIndex = PlateIndex
     F.PlateOffsetX = FreeLeft+FLARAK_TEST_BASE_OFFSET_X
@@ -502,6 +504,7 @@ endfunction
 function FlarakApplyDamage(F ref as TFlarak,Game ref as TGame,Damage as integer,NowMs as integer)
     if F.Enabled = FALSE or F.Destroyed = TRUE or Damage <= 0 then exitfunction
     F.Health = F.Health-Damage
+    F.HitFlashUntil = NowMs+150
     if F.Health <= 0 then FlarakDestroy(F,Game,NowMs)
 endfunction
 
@@ -697,6 +700,18 @@ function FlarakDraw(F ref as TFlarak,World ref as TWorld)
     if F.BaseSprite = 0 or F.LauncherSprite = 0 then exitfunction
     X = F.WorldX-World.Position.x
     Y = F.WorldY-World.Position.y
+    // Standard short red damage flash on all exposed gun parts.
+    if F.Destroyed = FALSE
+        if F.NowMs < F.HitFlashUntil
+            SetSpriteColor(F.BaseSprite,255,0,0,255)
+            SetSpriteColor(F.LauncherSprite,255,0,0,255)
+            if F.FlakSprite > 0 then SetSpriteColor(F.FlakSprite,255,0,0,255)
+        else
+            SetSpriteColor(F.BaseSprite,0,255,0,255)
+            SetSpriteColor(F.LauncherSprite,0,255,0,255)
+            if F.FlakSprite > 0 then SetSpriteColor(F.FlakSprite,0,255,0,255)
+        endif
+    endif
     // Draw rockets first so the silo and rotating launcher cover their in-barrel section.
     FlarakRocketDraw(F.Rocket1,World)
     FlarakRocketDraw(F.Rocket2,World)
