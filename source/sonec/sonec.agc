@@ -1019,7 +1019,7 @@ function SonecCollideChestHorizontal(Sonec ref as TSonec,ChestList ref as TChest
 						
 						if Sonec.ObjectData.Position.x > 0
 							Sonec.ObjectData.AutoSpeed.x = -ChestList.Chest[Sonec.CollisionData.Index].ObjectData.MoveSpeed.x
-							if Sonec.ObjectData.MoveSpeed.x <> 0
+							if Sonec.ObjectData.MoveSpeed.x <> 0 or Sonec.BalanceActive = TRUE
 								Sonec.CollisionData.Position.x = Sonec.ObjectData.Position.x - ChestList.Chest[Sonec.CollisionData.Index].ObjectData.Position.x
 							else
 								Sonec.ObjectData.Position.x = ChestList.Chest[Sonec.CollisionData.Index].ObjectData.Position.x + Sonec.CollisionData.Position.x
