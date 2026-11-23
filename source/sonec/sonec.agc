@@ -955,7 +955,7 @@ function SonecCollideChestVertical(Sonec ref as TSonec,ChestList ref as TChestLi
 				
 						if BoxInBox(Box1P1,Box1P2,Box2P1,Box2P2) = TRUE
 						
-							if Sonec.ObjectData.MoveSpeed.x < 0 and Sonec.ObjectData.Position.x > ChestList.Chest[i].ObjectData.Position.x + ChestList.Chest[i].ObjectData.Size.Width
+							if Sonec.ObjectData.MoveSpeed.x < 0 and Sonec.ObjectData.Position.x - Sonec.ObjectData.MoveSpeed.x - Sonec.ObjectData.Size.Width*0.5 >= ChestList.Chest[i].ObjectData.Position.x + ChestList.Chest[i].ObjectData.Size.Width and Sonec.ObjectData.Position.y - Sonec.ObjectData.MoveSpeed.y - Sonec.ObjectData.Size.Height*0.5 < ChestList.Chest[i].ObjectData.Position.y + ChestList.Chest[i].ObjectData.Size.Height and Sonec.ObjectData.Position.y - Sonec.ObjectData.MoveSpeed.y + Sonec.ObjectData.Size.Height*0.5 > ChestList.Chest[i].ObjectData.Position.y
 								if Sonec.ObjectData.Position.x - Sonec.ObjectData.Size.Width*0.5 < ChestList.Chest[i].ObjectData.Position.x + ChestList.Chest[i].ObjectData.Size.Width
 									Sonec.ObjectData.Position.x = ChestList.Chest[i].ObjectData.Position.x + ChestList.Chest[i].ObjectData.Size.Width + Sonec.ObjectData.Size.Width*0.5
 									if Index >= 0 and ChestList.Chest[i].CollisionData.Index = Index
@@ -969,7 +969,7 @@ function SonecCollideChestVertical(Sonec ref as TSonec,ChestList ref as TChestLi
 								endif
 							endif
 								
-							if Sonec.ObjectData.MoveSpeed.x > 0 and Sonec.ObjectData.Position.x < ChestList.Chest[i].ObjectData.Position.x
+							if Sonec.ObjectData.MoveSpeed.x > 0 and Sonec.ObjectData.Position.x - Sonec.ObjectData.MoveSpeed.x + Sonec.ObjectData.Size.Width*0.5 <= ChestList.Chest[i].ObjectData.Position.x and Sonec.ObjectData.Position.y - Sonec.ObjectData.MoveSpeed.y - Sonec.ObjectData.Size.Height*0.5 < ChestList.Chest[i].ObjectData.Position.y + ChestList.Chest[i].ObjectData.Size.Height and Sonec.ObjectData.Position.y - Sonec.ObjectData.MoveSpeed.y + Sonec.ObjectData.Size.Height*0.5 > ChestList.Chest[i].ObjectData.Position.y
 								if Sonec.ObjectData.Position.x + Sonec.ObjectData.Size.Width*0.5 > ChestList.Chest[i].ObjectData.Position.x and ChestList.Chest[i].ObjectData.Position.x - Sonec.ObjectData.Size.Width*0.5 >= Sonec.ObjectData.Size.Width*0.5
 									// At the left boundary, let the chest pass through instead of pushing Sonec outside.
 									Sonec.ObjectData.Position.x = ChestList.Chest[i].ObjectData.Position.x - Sonec.ObjectData.Size.Width*0.5
