@@ -464,6 +464,163 @@ function FlarakRocketHitsSonec(Rocket ref as TFlarakTestRocket,OldX as float,Old
     next CircleIndex
 endfunction FALSE
 
+// Bomber-bomb interception model: a single hit destroys an airborne rocket.
+// Rocket sprite position is its world-space center; attached rockets are also valid.
+#constant FLARAK_ROCKET_SHOT_RADIUS 7
+
+function FlarakRocketIntercept(Rocket ref as TFlarakTestRocket,Game ref as TGame,Now as integer)
+    local Impact as TPosition
+    if Rocket.Active = FALSE then exitfunction
+    Impact.x = Rocket.PosX
+    Impact.y = Rocket.PosY
+    Rocket.Active = FALSE
+    Rocket.Attached = FALSE
+    ExplosionAdd(Game.ExplosionList,Game.ProtoExplosion,Game,1,Impact,Now)
+endfunction
+
+function FlarakRocketHitByBullet(Rocket ref as TFlarakTestRocket,Bullet ref as TBullet)
+    local DX as float
+    local DY as float
+    local LengthSq as float
+    local Fraction as float
+    local HitX as float
+    local HitY as float
+    local Radius as float
+    if Rocket.Active = FALSE then exitfunction FALSE
+    DX = Bullet.ObjectData.Position.x-Bullet.PreviousPosition.x
+    DY = Bullet.ObjectData.Position.y-Bullet.PreviousPosition.y
+    LengthSq = DX*DX+DY*DY
+    Fraction = 0
+    if LengthSq > 0
+        Fraction = ((Rocket.PosX-Bullet.PreviousPosition.x)*DX+(Rocket.PosY-Bullet.PreviousPosition.y)*DY)/LengthSq
+        if Fraction < 0 then Fraction = 0
+        if Fraction > 1 then Fraction = 1
+    endif
+    HitX = Bullet.PreviousPosition.x+Fraction*DX-Rocket.PosX
+    HitY = Bullet.PreviousPosition.y+Fraction*DY-Rocket.PosY
+    Radius = FLARAK_ROCKET_SHOT_RADIUS+Bullet.ObjectData.Radius
+    if HitX*HitX+HitY*HitY <= Radius*Radius then exitfunction TRUE
+endfunction FALSE
+
+function FlarakRocketCollideBullets(Game ref as TGame,Now as integer)
+    local i as integer
+    local k as integer
+    for i = 0 to Game.BulletList.Bullet.Length
+        if Game.BulletList.Bullet[i].Enabled = TRUE and Game.BulletList.Bullet[i].CollisionData.CollisionType = TYPEPLAYERONE
+            for k = 0 to FlarakList.Length
+                if Game.BulletList.Bullet[i].Enabled = TRUE
+                    if FlarakRocketHitByBullet(FlarakList[k].Rocket1,Game.BulletList.Bullet[i])
+                        FlarakRocketIntercept(FlarakList[k].Rocket1,Game,Now)
+                        BulletDelete(Game.BulletList,i)
+                    endif
+                endif
+                if Game.BulletList.Bullet[i].Enabled = TRUE
+                    if FlarakRocketHitByBullet(FlarakList[k].Rocket2,Game.BulletList.Bullet[i])
+                        FlarakRocketIntercept(FlarakList[k].Rocket2,Game,Now)
+                        BulletDelete(Game.BulletList,i)
+                    endif
+                endif
+            next k
+        endif
+    next i
+endfunction
+
+function FlarakRocketHitByFlame(Rocket ref as TFlarakTestRocket,Flame ref as TFlame)
+    local Radius as float
+    local DX as float
+    local DY as float
+    if Rocket.Active = FALSE then exitfunction FALSE
+    Radius = FlameCollisionRadius(Flame)+FLARAK_ROCKET_SHOT_RADIUS
+    DX = Flame.ObjectData.Position.x-Rocket.PosX
+    DY = Flame.ObjectData.Position.y-Rocket.PosY
+    if DX*DX+DY*DY <= Radius*Radius then exitfunction TRUE
+endfunction FALSE
+
+function FlarakRocketCollideFlames(Game ref as TGame,Now as integer)
+    local i as integer
+    local k as integer
+    for i = 0 to Game.FlameList.Flame.Length
+        if Game.FlameList.Flame[i].Enabled = TRUE
+            for k = 0 to FlarakList.Length
+                if Game.FlameList.Flame[i].Enabled = TRUE
+                    if FlarakRocketHitByFlame(FlarakList[k].Rocket1,Game.FlameList.Flame[i])
+                        FlarakRocketIntercept(FlarakList[k].Rocket1,Game,Now)
+                        FlameDelete(Game.FlameList,i)
+                    endif
+                endif
+                if Game.FlameList.Flame[i].Enabled = TRUE
+                    if FlarakRocketHitByFlame(FlarakList[k].Rocket2,Game.FlameList.Flame[i])
+                        FlarakRocketIntercept(FlarakList[k].Rocket2,Game,Now)
+                        FlameDelete(Game.FlameList,i)
+                    endif
+                endif
+            next k
+        endif
+    next i
+endfunction
+
+function FlarakRocketHitByGrenade(Rocket ref as TFlarakTestRocket,Grenade ref as TGrenade)
+    local Radius as float
+    local DX as float
+    local DY as float
+    if Rocket.Active = FALSE then exitfunction FALSE
+    Radius = Grenade.ObjectData.Radius+FLARAK_ROCKET_SHOT_RADIUS
+    DX = Grenade.ObjectData.Position.x-Rocket.PosX
+    DY = Grenade.ObjectData.Position.y-Rocket.PosY
+    if DX*DX+DY*DY <= Radius*Radius then exitfunction TRUE
+endfunction FALSE
+
+function FlarakRocketCollideGrenades(Game ref as TGame,Now as integer)
+    local i as integer
+    local k as integer
+    for i = 0 to Game.GrenadeList.Grenade.Length
+        if Game.GrenadeList.Grenade[i].Enabled = TRUE
+            for k = 0 to FlarakList.Length
+                if Game.GrenadeList.Grenade[i].Enabled = TRUE
+                    if FlarakRocketHitByGrenade(FlarakList[k].Rocket1,Game.GrenadeList.Grenade[i])
+                        FlarakRocketIntercept(FlarakList[k].Rocket1,Game,Now)
+                        GrenadeDelete(Game.GrenadeList,i)
+                    endif
+                endif
+                if Game.GrenadeList.Grenade[i].Enabled = TRUE
+                    if FlarakRocketHitByGrenade(FlarakList[k].Rocket2,Game.GrenadeList.Grenade[i])
+                        FlarakRocketIntercept(FlarakList[k].Rocket2,Game,Now)
+                        GrenadeDelete(Game.GrenadeList,i)
+                    endif
+                endif
+            next k
+        endif
+    next i
+endfunction
+
+function FlarakRocketHitByPlasma(Rocket ref as TFlarakTestRocket,Plasma ref as TPlasmaBlitz)
+    local MinPos as TPosition
+    local MaxPos as TPosition
+    if Rocket.Active = FALSE then exitfunction FALSE
+    MinPos.x = Rocket.PosX-FLARAK_ROCKET_SHOT_RADIUS
+    MinPos.y = Rocket.PosY-FLARAK_ROCKET_SHOT_RADIUS
+    MaxPos.x = Rocket.PosX+FLARAK_ROCKET_SHOT_RADIUS
+    MaxPos.y = Rocket.PosY+FLARAK_ROCKET_SHOT_RADIUS
+    if BoxInBox(Plasma.CollisionData.Position1,Plasma.CollisionData.Position2,MinPos,MaxPos) then exitfunction TRUE
+endfunction FALSE
+
+function FlarakRocketCollidePlasma(Game ref as TGame,Now as integer)
+    local i as integer
+    local k as integer
+    for i = 0 to Game.PlasmaBlitzList.PlasmaBlitz.Length
+        if Game.PlasmaBlitzList.PlasmaBlitz[i].Enabled = TRUE
+            for k = 0 to FlarakList.Length
+                if FlarakRocketHitByPlasma(FlarakList[k].Rocket1,Game.PlasmaBlitzList.PlasmaBlitz[i])
+                    FlarakRocketIntercept(FlarakList[k].Rocket1,Game,Now)
+                endif
+                if FlarakRocketHitByPlasma(FlarakList[k].Rocket2,Game.PlasmaBlitzList.PlasmaBlitz[i])
+                    FlarakRocketIntercept(FlarakList[k].Rocket2,Game,Now)
+                endif
+            next k
+        endif
+    next i
+endfunction
+
 function FlarakRocketDraw(Rocket ref as TFlarakTestRocket,World ref as TWorld)
     if Rocket.Active = FALSE then exitfunction
     SetSpriteAngle(Rocket.Sprite,Rocket.SpriteAngle)
