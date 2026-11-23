@@ -856,6 +856,28 @@ function FlarakPointInRotatedRect(PX as float,PY as float,CX as float,CY as floa
     LY = -DX*Sin(Angle)+DY*Cos(Angle)
 endfunction (Abs(LX) <= HalfW and Abs(LY) <= HalfH)
 
+// Conservative area overlap using samples over a source circle or AABB.
+// Reuses the precise point shapes, never the protected silo sprite.
+function FlarakAreaHits(F ref as TFlarak,World ref as TWorld,CX as float,CY as float,HalfW as float,HalfH as float,IsCircle as integer)
+    local IX as integer
+    local IY as integer
+    local PX as float
+    local PY as float
+    local Radius as float
+    if HalfW <= 0 or HalfH <= 0 then exitfunction FALSE
+    Radius = HalfW
+    // 9x9 samples include boundaries, center, and intermediate contacts.
+    for IX = 0 to 8
+        for IY = 0 to 8
+            PX = CX-HalfW+IX*HalfW*0.25
+            PY = CY-HalfH+IY*HalfH*0.25
+            if IsCircle = FALSE or (PX-CX)*(PX-CX)+(PY-CY)*(PY-CY) <= Radius*Radius
+                if FlarakPointHits(F,World,PX,PY) then exitfunction TRUE
+            endif
+        next IY
+    next IX
+endfunction FALSE
+
 function FlarakPointHits(F ref as TFlarak,World ref as TWorld,PX as float,PY as float)
     local StemHeight as float
     local Angle as float
