@@ -4,13 +4,15 @@
 
 ## Jetzt
 
-- [ ] **Flarak F1/F2 – Sockel-/Werfer- und Raketenstart-Test lokal prüfen.** Frames 1–5 fahren aus, Frame 6 rotiert separat um vorläufigen Pivot (40,52); Position, Richtung und Winkel anhand Screenshot beurteilen. Danach F2 (begrenztes Zielen/Seitenwechsel) und F3 (zwei Raketenvarianten mit Startwinkel und optional verzögerter Zielsuche) planen.
+- [ ] **Flarak/Flak Plasma-Blitz abschließen:** Nutzer kann beide Varianten damit bislang nicht zerstören; Trefferintervall, tatsächliche Kontaktzeit, Schaden pro Aktivierung und ggf. Geometrie untersuchen. Erst nach Fix erneut lokal testen. Der bisherige Plasma-Blitz hat 10 Schaden pro Tick, 25 Lebenszyklus-Schritte à 10 ms und trifft nach vorhandenem Intervall; 150 HP können damit je Einsatz deutlich zu hoch sein.
+- [ ] **Flarak/Flak Trefferfeedback lokal prüfen:** 150-ms-Rotblitz nach Schaden ergänzt; keine AGK-Kompilierung durch Assistenten.
+- [ ] **Kistenkollision beim Laufen/Springen untersuchen:** Nutzer meldet mögliches Regressionsverhalten, noch nicht reproduziert.
+- [ ] **Flammenwerfer/Kisten Designentscheidung:** Soll Feuer durch Kisten hindurchtreffen dürfen? Vor Änderung entscheiden.
+- [ ] **Plasma-Blitz Balancing nach Fehlerbehebung:** Aufwand der Bedienung vs. geringe Wirkung; Dauer und regelmäßigen Schaden überprüfen, ohne vorab Werte festzulegen.
 
 ## Danach / beobachten
 
-- [ ] **B5c – Plattform-Schutzgrenze langfristig beobachten (kein Blocker).** Der frühere Teiltest 4/5 konnte die Situation direkt unter einer getroffenen Plattform nicht reproduzieren; kein bestätigter Fehler. Nur bei beobachteter Auffälligkeit erneut untersuchen.
-- [ ] **Balancing später bündeln.** Drohne: 1,5–3 s Scanintervall, 100-px-Erkennungsmaximum (50 % ohne/75 % mit Ansaugung); Space Jet: Aktivierung im hohen Luftraum; außerdem Minen, Belohnungen und Pickup-Grenzfälle.
-- [ ] **Menü-Hilfetexte bei passendem Qualitätsschritt erweitern.** Kein aktueller Implementierungsauftrag.
+B5c Plattform-Schutzgrenze bei reproduzierbarer Auffälligkeit prüfen; Drohnen-/Minen-/Belohnungsbalancing und Menü-Hilfetexte später bündeln.
 
 ## Abgeschlossen / Nachweise
 
