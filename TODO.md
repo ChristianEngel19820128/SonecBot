@@ -4,7 +4,7 @@
 
 ## Jetzt
 
-- [ ] **K3 – Kistenauflage/Kanten:** Sonec soll nicht bis zum letzten Pixel auf einer Kiste stehen bleiben; Auflagegrenzen und Sprunghilfe getrennt prüfen.
+- [ ] **K3 – Kistenauflage/Kanten (lokaler AGK-Test offen):** Auflage endet 4 px vor den beiden Kanten (`e287328`); horizontaler Schwung beim Herunterfallen bleibt erhalten, kein zusätzlicher Sprungimpuls. Natürliches Abgleiten, kleine Kisten und Sprunghilfe testen.
 - [ ] **Granatwerfer/Flarak/Flak Direkttreffer:** Nutzer beobachtet gelegentliches Durchfliegen ohne Direkttreffer. Projektilbewegung und Kollisionsprüfung untersuchen; Explosionstreffer getrennt betrachten.
 - [ ] **Schnelles Fallen durch Plattformen:** Gemeldeten möglichen Durchfallfehler untersuchen und priorisieren; zunächst reproduzieren und Fallgeschwindigkeit/Plattformprüfung prüfen.
 - [ ] **Flammenwerfer/Kisten:** Deckungswirkung als Designentscheidung klären. Plasma-Blitz-Balancing und Rauchwolken an zerstörten Flarak/Flak später separat behandeln.
