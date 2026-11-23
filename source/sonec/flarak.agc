@@ -882,8 +882,9 @@ function FlarakCollisionDebugDrawAll(World ref as TWorld)
             Frame = FlarakList[i].CurrentFrame
             // Frame 1 has no hitbox. Frames 2-5 expose progressively more stem.
             if Frame > 1
-                StemBottom = Y+1
-                StemHeight = (Frame-1)*5
+                // Keep the frame-1 silo protected; fully deployed stem is 14 px high.
+                StemBottom = Y+15
+                StemHeight = (Frame-1)*3.5
                 StemTop = StemBottom-StemHeight
                 StemCenterY = (StemTop+StemBottom)*0.5
                 FlarakDebugRect(X,StemCenterY,6,StemHeight*0.5,0,60,230,255)
@@ -896,9 +897,9 @@ function FlarakCollisionDebugDrawAll(World ref as TWorld)
                 if FlarakList[i].Variant = FLARAK_VARIANT_FLAK
                     GunX = GetSpriteXByOffset(FlarakList[i].FlakSprite)
                     GunY = GetSpriteYByOffset(FlarakList[i].FlakSprite)
-                    // Sprite frame center (40,32) relative to pivot (40,42): (0,-10).
-                    // Rotate this local offset with the Flak sprite.
-                    FlarakDebugCircle(GunX+10*Sin(Angle),GunY-10*Cos(Angle),13,255,205,45)
+                    // Keep the verified X placement; shift the circle 15 px down on screen.
+                    // Its original rotated local center offset is retained.
+                    FlarakDebugCircle(GunX+10*Sin(Angle),GunY-10*Cos(Angle)+15,15,255,205,45)
                 else
                     GunX = GetSpriteXByOffset(FlarakList[i].LauncherSprite)
                     GunY = GetSpriteYByOffset(FlarakList[i].LauncherSprite)
