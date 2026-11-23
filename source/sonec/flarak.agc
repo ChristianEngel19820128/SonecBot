@@ -132,6 +132,7 @@ global FlarakRocketImage as integer
 global FlarakDebugText as integer
 global FlarakDebugVisible as integer
 global FlarakCollisionDebugVisible as integer
+global FlarakCollisionDebugLineSprite as integer
 
 function FlarakVisualTestCreate()
     local Image as TImage
@@ -806,7 +807,21 @@ endfunction
 // Visual-only hitbox proposal. The frame-1 lower silo is always excluded.
 // Positions are in screen space; tune these outlines against the actual art.
 function FlarakDebugLine(X1 as float,Y1 as float,X2 as float,Y2 as float,R as integer,G as integer,B as integer)
-    DrawLine(X1,Y1,X2,Y2,R,G,B)
+    local Dx as float
+    local Dy as float
+    local Length as float
+    if FlarakCollisionDebugLineSprite = 0
+        FlarakCollisionDebugLineSprite = CreateSprite(0)
+    endif
+    Dx = X2-X1
+    Dy = Y2-Y1
+    Length = Sqrt(Dx*Dx+Dy*Dy)
+    SetSpriteSize(FlarakCollisionDebugLineSprite,Length,2)
+    SetSpriteOffset(FlarakCollisionDebugLineSprite,0,1)
+    SetSpriteAngle(FlarakCollisionDebugLineSprite,ATan2(Dy,Dx))
+    SetSpritePositionByOffset(FlarakCollisionDebugLineSprite,X1,Y1)
+    SetSpriteColor(FlarakCollisionDebugLineSprite,R,G,B,255)
+    DrawSprite(FlarakCollisionDebugLineSprite)
 endfunction
 
 function FlarakDebugRect(X as float,Y as float,HalfW as float,HalfH as float,Angle as float,R as integer,G as integer,B as integer)
