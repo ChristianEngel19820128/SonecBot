@@ -72,8 +72,8 @@ UseNewDefaultFonts(1)
 #option_explicit
 
 // Master switch for in-game debug controls and diagnostic overlays.
-// 0 = disabled for normal play; 1 = enable keys 1-8 and their diagnostics.
-#constant GAME_DEBUG_ENABLED 0
+// 0 = disabled for normal play; 1 = enable debug keys 1-9 and diagnostics.
+#constant GAME_DEBUG_ENABLED 1
 
 #constant FALSE 0
 #constant TRUE 1
