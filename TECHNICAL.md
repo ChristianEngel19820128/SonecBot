@@ -369,4 +369,4 @@ Knowledge-Base-Kandidaten stehen in [BACKLOG.md](BACKLOG.md); Beiträge separat 
 - `BulletAdd` liefert den tatsächlich angelegten oder wiederverwendeten Array-Index zurück. Bestehende Standardmunition-Aufrufer können den Rückgabewert ignorieren.
 - `FlarakFireBullet` übergibt den zurückgegebenen Index ausdrücklich an `BulletSetModification` und verwendet ihn für die Flak-Diagnose. Die frühere indirekte Herleitung über `FirstFree-1` entfällt.
 - Quellprüfung: Die frühere unmittelbare Aufrufreihenfolge zeigte keinen bewiesenen Fehlindex; die Änderung verhindert eine fragile implizite Zuordnung. Explosionsdauer 175–200 ms, Schadenslogik und andere Waffen unverändert.
-- AGK-Compile und Laufzeitprüfung ausstehend: vier Geschosse pro Salve, unabhängige Zündungen, wiederverwendete Slots, normale Spieler-/Walker-Geschosse.
+- AGK-Abnahme durch Entwickler: **bestanden** (alle fünf Prüfungen). Projekt kompiliert und startet; vier Flak-Geschosse pro Salve; sichtbare unabhängige Explosionen; stabile Geschosse nach vielen Salven; Sonec- und Walker-Standardmunition unverändert. Keine Auffälligkeiten gemeldet.
