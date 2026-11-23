@@ -133,6 +133,7 @@ function ExplosionNew(Explosion ref as TExplosion,ProtoExplosion ref as TProtoEx
 	Explosion.LastMineHitMs.Length = -1
 	Explosion.LastSimpleMineHitMs.Length = -1
 	Explosion.LastWalkerHitMs.Length = -1
+    Explosion.LastFlarakHitMs.Length = -1
 	Explosion.MeasureChecks = 0
 	Explosion.MeasureHits = 0
 	Explosion.MeasureDamage = 0
@@ -521,6 +522,37 @@ endfunction
 //----------------------------------------------------------------------
 
 // D5b: each blast has its own cooldown for the single active drone.
+// One independent cooldown per explosion and Flarak/Flak instance.
+function ExplosionCollideFlaraks(ExplosionList ref as TExplosionList,Game ref as TGame,Now as integer)
+    local i as integer
+    local k as integer
+    local R as float
+    local Impact as TPosition
+    for i = 0 to ExplosionList.Explosion.Length
+        if ExplosionList.Explosion[i].Enabled = TRUE and ExplosionList.Explosion[i].ExplosionType <= EXPLOSION_DAMAGE_TYPE_MAX
+            R = ExplosionList.Explosion[i].ObjectData.Radius
+            if R > 0
+                for k = 0 to FlarakList.Length
+                    if FlarakList[k].Enabled = TRUE and FlarakList[k].Destroyed = FALSE
+                        Impact = ExplosionList.Explosion[i].ObjectData.Position
+                        if ExplosionDamageAllowed(ExplosionList.Explosion[i],Impact)
+                            if FlarakAreaHits(FlarakList[k],Game.World,Impact.x,Impact.y,R,R,TRUE)
+                                if ExplosionList.Explosion[i].LastFlarakHitMs.Length < k
+                                    ExplosionList.Explosion[i].LastFlarakHitMs.Length = k
+                                endif
+                                if EXPLOSION_TIMED_DAMAGE = 0 or ExplosionList.Explosion[i].LastFlarakHitMs[k] = 0 or GetMilliseconds()-ExplosionList.Explosion[i].LastFlarakHitMs[k] >= EXPLOSION_DAMAGE_INTERVAL_MS
+                                    ExplosionList.Explosion[i].LastFlarakHitMs[k] = GetMilliseconds()
+                                    FlarakApplyDamage(FlarakList[k],Game,ExplosionList.Explosion[i].BulletData.Damage,Now)
+                                endif
+                            endif
+                        endif
+                    endif
+                next k
+            endif
+        endif
+    next i
+endfunction
+
 function ExplosionCollideDrone(ExplosionList ref as TExplosionList,Drone ref as TDrone,Now as integer)
     local i as integer
     local NearestPoint as TPosition
