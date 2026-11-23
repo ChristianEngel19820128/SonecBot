@@ -1035,10 +1035,22 @@ function SonecCollideChestHorizontal(Sonec ref as TSonec,ChestList ref as TChest
 						SpritePositionCalc(Sonec.SpriteData.Position,Sonec.ObjectData.Position,World.Position)
 						
 						if Sonec.ObjectData.Position.x < ChestList.Chest[Sonec.CollisionData.Index].ObjectData.Position.x
-							SonecCollideReset(Sonec)
+							// Only deliberate running off the left edge produces a small hop.
+							if Sonec.State.Move = TRUE and Sonec.State.Alignment = MOVELEFT and Sonec.ObjectData.MoveSpeed.x < 0 and Sonec.State.Duck = FALSE
+								SonecCollideReset(Sonec)
+								Sonec.ObjectData.MoveSpeed.y = -1.5
+							else
+								SonecCollideReset(Sonec)
+							endif
 						else
 							if Sonec.ObjectData.Position.x > ChestList.Chest[Sonec.CollisionData.Index].ObjectData.Position.x + ChestList.Chest[Sonec.CollisionData.Index].ObjectData.Size.Width
-								SonecCollideReset(Sonec)
+								// Do not hop when the chest disappears or Sonec drifts off without input.
+								if Sonec.State.Move = TRUE and Sonec.State.Alignment = MOVERIGHT and Sonec.ObjectData.MoveSpeed.x > 0 and Sonec.State.Duck = FALSE
+									SonecCollideReset(Sonec)
+									Sonec.ObjectData.MoveSpeed.y = -1.5
+								else
+									SonecCollideReset(Sonec)
+								endif
 							endif
 						endif
 			
