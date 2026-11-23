@@ -874,6 +874,8 @@ function FlarakCollisionDebugDrawAll(World ref as TWorld)
     local GunX as float
     local GunY as float
     local Angle as float
+    local CirclePivotY as float
+    local CirclePivotOffset as float
     if GAME_DEBUG_ENABLED = 0 or FlarakCollisionDebugVisible = 0 then exitfunction
     for i = 0 to FlarakList.Length
         if FlarakList[i].Enabled = TRUE
@@ -897,14 +899,17 @@ function FlarakCollisionDebugDrawAll(World ref as TWorld)
                 if FlarakList[i].Variant = FLARAK_VARIANT_FLAK
                     GunX = GetSpriteXByOffset(FlarakList[i].FlakSprite)
                     GunY = GetSpriteYByOffset(FlarakList[i].FlakSprite)
-                    // Keep the verified X placement; shift the circle 15 px down on screen.
-                    // Its original rotated local center offset is retained.
-                    FlarakDebugCircle(GunX+10*Sin(Angle),GunY-10*Cos(Angle)+15,15,255,205,45)
+                    // Circle radius 15 px. The circle pivots 1/4 radius BELOW
+                    // its center, so its center orbits the pivot on rotation.
+                    // At angle 0 the center is 6 px below the previous overlay.
+                    CirclePivotOffset = 15.0/4.0
+                    CirclePivotY = GunY+14.75
+                    FlarakDebugCircle(GunX+CirclePivotOffset*Sin(Angle),CirclePivotY-CirclePivotOffset*Cos(Angle),15,255,205,45)
                 else
                     GunX = GetSpriteXByOffset(FlarakList[i].LauncherSprite)
                     GunY = GetSpriteYByOffset(FlarakList[i].LauncherSprite)
                     // Rectangle centered on the launcher pivot, rotated with it.
-                    FlarakDebugRect(GunX,GunY,18,7,Angle,255,205,45)
+                    FlarakDebugRect(GunX,GunY,17,7,Angle,255,205,45)
                 endif
             endif
         endif
