@@ -895,8 +895,12 @@ function FlarakCollisionDebugDrawAll(World ref as TWorld)
             if Frame = 5
                 Angle = FlarakList[i].CurrentLauncherAngle
                 if FlarakList[i].Variant = FLARAK_VARIANT_FLAK then Angle = -Angle
-                // Read the exact by-offset pivot of the already positioned sprite.
-                // This includes camera movement, sprite animation and Flak rise.
+                // The shared frame-6 launcher rectangle belongs to BOTH variants.
+                // Keep the approved 34x14 px shape anchored to its actual pivot.
+                GunX = GetSpriteXByOffset(FlarakList[i].LauncherSprite)
+                GunY = GetSpriteYByOffset(FlarakList[i].LauncherSprite)
+                FlarakDebugRect(GunX,GunY,17,7,Angle,255,205,45)
+                // The Flak additionally has its independently rotating head circle.
                 if FlarakList[i].Variant = FLARAK_VARIANT_FLAK
                     GunX = GetSpriteXByOffset(FlarakList[i].FlakSprite)
                     GunY = GetSpriteYByOffset(FlarakList[i].FlakSprite)
@@ -915,11 +919,6 @@ function FlarakCollisionDebugDrawAll(World ref as TWorld)
                     FlarakDebugLine(GunX,GunY-3,GunX,GunY+3,255,80,220)
                     FlarakDebugLine(CircleCenterX-3,CircleCenterY,CircleCenterX+3,CircleCenterY,255,255,255)
                     FlarakDebugLine(CircleCenterX,CircleCenterY-3,CircleCenterX,CircleCenterY+3,255,255,255)
-                else
-                    GunX = GetSpriteXByOffset(FlarakList[i].LauncherSprite)
-                    GunY = GetSpriteYByOffset(FlarakList[i].LauncherSprite)
-                    // Rectangle centered on the launcher pivot, rotated with it.
-                    FlarakDebugRect(GunX,GunY,17,7,Angle,255,205,45)
                 endif
             endif
         endif
