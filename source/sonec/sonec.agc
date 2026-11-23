@@ -1128,10 +1128,21 @@ function SonecMove(Sonec ref as TSonec,World ref as TWorld,Screen as TSize,Now a
 		endif
 		
 		if Sonec.State.Move = TRUE
+			// Countersteering on a chest brakes harder than releasing the direction.
+			// Keep airborne movement and normal acceleration unchanged.
+			acc = 1.0
+			if Sonec.State.Stand = TRUE and Sonec.CollisionData.ListType = TYPECHEST
+				if Sonec.State.Alignment = MOVELEFT and Sonec.ObjectData.MoveSpeed.x > 0
+					acc = 1.5
+				endif
+				if Sonec.State.Alignment = MOVERIGHT and Sonec.ObjectData.MoveSpeed.x < 0
+					acc = 1.5
+				endif
+			endif
 			if Sonec.State.Alignment = MOVELEFT
-				Sonec.ObjectData.MoveSpeed.x = Sonec.ObjectData.MoveSpeed.x - Sonec.ObjectData.MoveAcceleration.x * Sonec.ObjectData.MoveTimer.CalcRange
+				Sonec.ObjectData.MoveSpeed.x = Sonec.ObjectData.MoveSpeed.x - acc * Sonec.ObjectData.MoveAcceleration.x * Sonec.ObjectData.MoveTimer.CalcRange
 			else
-				Sonec.ObjectData.MoveSpeed.x = Sonec.ObjectData.MoveSpeed.x + Sonec.ObjectData.MoveAcceleration.x * Sonec.ObjectData.MoveTimer.CalcRange
+				Sonec.ObjectData.MoveSpeed.x = Sonec.ObjectData.MoveSpeed.x + acc * Sonec.ObjectData.MoveAcceleration.x * Sonec.ObjectData.MoveTimer.CalcRange
 			endif
 			// Limit powered ground running only; leave airborne thrust and recoil untouched.
 			if Sonec.State.Stand = TRUE
