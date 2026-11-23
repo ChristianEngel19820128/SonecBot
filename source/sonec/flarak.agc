@@ -475,7 +475,7 @@ function FlarakRocketIntercept(Rocket ref as TFlarakTestRocket,Game ref as TGame
     Impact.y = Rocket.PosY
     Rocket.Active = FALSE
     Rocket.Attached = FALSE
-    ExplosionAdd(Game.ExplosionList,Game.ProtoExplosion,Game,1,Impact,Now)
+    ExplosionAdd(Game.ExplosionList,Game.ProtoExplosion,Game,3,Impact,Now)
 endfunction
 
 function FlarakRocketHitByBullet(Rocket ref as TFlarakTestRocket,Bullet ref as TBullet)
