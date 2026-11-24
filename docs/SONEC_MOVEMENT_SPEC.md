@@ -575,3 +575,8 @@ Die Reihenfolge ist vorläufig; tatsächliche technische Abhängigkeiten können
 - **Linke Randlandung 18508 ms:** `vx=-0.3115`, `balance_active=1`, Nachlauf `balance_dx=+0.5` pro Frame: automatische Korrektur nach rechts trotz anfänglich negativer VX. Bei 18558 ms `vx=0`, aber Balance schiebt weiter bis `x=679.454041` (18658 ms). **Rechtsdrall nach linker Landung ist damit als Balancebewegung messbar**; nicht mit zusätzlichem positiven VX-Impuls verwechseln.
 - **Zusatzbeobachtung:** Bei 18908 ms fällt `stand` von 1 auf 0 und `fall` von 0 auf 1, bei unverändertem `x=679.454041`; Ursache dieser Kontaktaufhebung aus CSV allein nicht beweisbar. Keine Aussagen über Tod/Gegnerkontakte, da nicht mitgeloggt.
 - **Status:** Reine Auswertung, keine Codeänderung. Vor Verhaltenskorrektur geplante Randbalance gegen Bewegungsspezifikation und tatsächlichen gewünschten Effekt abgleichen.
+
+## 74. Entwicklerklärung zu 18.908 ms (24.11.2026)
+
+- **Entwicklerbeobachtung:** Sonec ist bei 18.908 ms gestorben. Der dortige Wechsel von `stand=1`/`fall=0` auf `stand=0`/`fall=1` ist deshalb **nicht als eigenständiger Kollisionsfehler zu werten**. Ohne Todes-/Schadensereignis im CSV lässt sich der genaue Todesablauf daraus nicht rekonstruieren.
+- **Weiter gültig:** Die Messungen zu horizontaler Beschleunigung vor den beiden Mini-Hops und zur Randbalance nach den Landungen bleiben unverändert. Keine Codeänderung.
