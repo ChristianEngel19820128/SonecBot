@@ -629,3 +629,10 @@ Die Reihenfolge ist vorläufig; tatsächliche technische Abhängigkeiten können
 
 - **Code:** `ac5429166855a7311ed1e699d0b7e0c510f0b1ce`. Die erste Plattformkandidatensuche speichert nun `BestPlateIndex`, `BestPlateContactTime` und `BestPlateY`; die Landung verwendet denselben Kandidaten. **Ausnahme:** Wenn die Kistenprüfung `PassPlateIndex` ändert, wird der Kandidat mit der neuen Durchflugausnahme neu berechnet, damit eine andere gültige Plattform weiterhin gewählt werden kann.
 - **Status:** Noch kein AGK-Compile/Entwicklertest. Die getrennte Auflösung von Seitenkontakt und Landung bleibt; Phase B ist nicht abgeschlossen. Nächster Architekturbaustein: gemeinsame Kontaktrepräsentation und früheste Auswahl vor Auflösung.
+
+## 83. B3e – Gemeinsame Kontaktrepräsentation (vor Code, 24.11.2026)
+
+- Entwickler hat B3e freigegeben; B3d ist noch nicht ausdrücklich getestet/abgenommen.
+- **Architektur:** Ein eigener Typ `TSonecContactCandidate` hält `Valid`, `ContactTime`, `ListType` und `Index`. Eine reine Funktion `SonecContactChooseEarlier` vergleicht Kandidaten nach Zeit; bei Gleichstand behält sie den zuerst angebotenen Kandidaten. Die Aufrufer bestimmen die Reihenfolge bewusst (Kistenoberseite vor Plattformoberseite, wie in B3b vereinbart).
+- **B3e-Umfang:** Den gemeinsamen Typ und Vergleichshelfer anlegen und die bisherige Plattformkandidatensuche damit betreiben; vorhandene Kisten- und Seitenauflösung noch nicht ersetzen. Keine neue Kontaktreaktion, keine Änderung der Restbewegung. Der gemeinsame Typ wird im nächsten Schritt für Kistenoberseiten und Seitenkontakte verwendet.
+- **Test:** AGK-Kompilierung und bisherige Plattform-/Kisten-/Durchflug-Regression; keine Änderung der bekannten Fehler erwartet.
