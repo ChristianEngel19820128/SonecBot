@@ -872,6 +872,10 @@ function SonecCollidePlate(Sonec ref as TSonec,PlateList ref as TPlateList,Chest
 	local PassIndex as integer
 	local HalfWidth as float
 	local HalfHeight as float
+	local BestPlateIndex as integer
+	local BestPlateY as float
+	local StartFeetY as float
+	local EndFeetY as float
 	
 	
 	PlateIndex = -1
@@ -948,10 +952,6 @@ function SonecCollidePlate(Sonec ref as TSonec,PlateList ref as TPlateList,Chest
 	// Chest landing is still handled by the existing earlier pass.
 	if Sonec.State.Stand = FALSE and Sonec.State.Fall = TRUE
 		if Sonec.CollisionMoveEnd.y > Sonec.CollisionMoveStart.y
-			local BestPlateIndex as integer
-			local BestPlateY as float
-			local StartFeetY as float
-			local EndFeetY as float
 			BestPlateIndex = -1
 			StartFeetY = Sonec.CollisionMoveStart.y + Sonec.ObjectData.Size.Height*0.5
 			EndFeetY = Sonec.CollisionMoveEnd.y + Sonec.ObjectData.Size.Height*0.5
