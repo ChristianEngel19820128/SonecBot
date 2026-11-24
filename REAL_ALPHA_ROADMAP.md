@@ -70,7 +70,7 @@ Legacy-Grafiken (`rakstellung.png`, `spacejet.png`, `falle.bmp`) sind Vorlagen, 
 ### Sonec-Bewegungsumstellung – in Arbeit
 
 - Verbindliche Anforderungen und Phasen A–G: [SONEC_MOVEMENT_SPEC.md](docs/SONEC_MOVEMENT_SPEC.md).
-- Phase A abgeschlossen und lokal geprüft; B/C-Grundverhalten bestätigt (Plattformtests, B/C-Test `0d0d7a0` 8/9, C-Nachtest `b1a21dd` 5/5). Optische Luft-Gewehrüberdeckung links und früherer kleiner Rückversatz rechts nach links bleiben D-Beobachtungen; gezielte Restweg-/Kontaktreihenfolgefälle bei Integration prüfen. Phase D `36a7f23` 9/9 bestanden; Rückversatz beim Laufen nicht mehr aufgetreten. Jetpack-Landungskorrektur `be7dc31` 6/6 bestanden; Phase D im getesteten Umfang abgeschlossen. Phase E implementiert; AGK-Compile und Tiefenebenentest offen.
+- Phase A abgeschlossen und lokal geprüft; B/C-Grundverhalten bestätigt (Plattformtests, B/C-Test `0d0d7a0` 8/9, C-Nachtest `b1a21dd` 5/5). Optische Luft-Gewehrüberdeckung links und früherer kleiner Rückversatz rechts nach links bleiben D-Beobachtungen; gezielte Restweg-/Kontaktreihenfolgefälle bei Integration prüfen. Phase D `36a7f23` 9/9 bestanden; Rückversatz beim Laufen nicht mehr aufgetreten. Jetpack-Landungskorrektur `be7dc31` 6/6 bestanden; Phase D im getesteten Umfang abgeschlossen. Phase E `f2acaae` 9/9 bestanden. Situationsabhängig unfaire Plattformübernahme und möglicherweise nicht aktualisierte vertikale Plattformbewegung gemeldet; Ursache offen.
 - Mechanische Kontakte, Plattformmitnahme, Tiefenebenen, Mini-Hop und Integration gemäß Spezifikation abschließen.
 
 ## 4. Arbeitsblock B – Erfahrung, Ressourcen und Gefahr
@@ -156,6 +156,6 @@ Gefahrenzulassung, Erholungsrhythmus, tatsächlicher Ressourcengewinn und Muniti
 Bekannte Qualitätsfragen erhalten eine ausdrückliche Entscheidung bzw. dokumentierte Grenze; der integrierte Alpha-Build wird auf der Zielplattform geprüft.
 Diese Kriterien sind Prüfaufträge für die Umsetzung, keine bereits bestandene Alpha-Abnahme. itch.io bleibt Draft/Secret URL bis zu einer gesonderten Entscheidung.
 
-**Nächster Schritt:** Phase-E-Paket gemäß TODO lokal kompilieren und Tiefenebenen testen. Weitere Arbeitsblöcke nach Abstimmung auswählen; keine automatische Codefreigabe aus dieser Roadmap ableiten.
+**Nächster Schritt:** Vertikale Plattformbeobachtung gemäß TODO konkretisieren und prüfen; danach Phase F gemeinsam beginnen. Weitere Arbeitsblöcke nach Abstimmung auswählen; keine automatische Codefreigabe aus dieser Roadmap ableiten.
 
 Spätere Varianten und Ideen stehen in [BACKLOG.md](BACKLOG.md). Frühere Langfassungen liegen im [Archiv](docs/archive/README.md); sie werden nur für konkrete historische Fragen gelesen.

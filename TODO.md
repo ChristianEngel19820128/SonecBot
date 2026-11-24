@@ -4,7 +4,7 @@
 
 ## Jetzt
 
-- [ ] Phase E: plattformweite Durchflug-/Tiefenebenenlogik implementiert, AGK-Compile und gezielter Funktionstest offen. Phase D 9/9 und Jetpack-Nachtest 6/6 bestanden. Danach F–G gemäß [Spezifikation](docs/SONEC_MOVEMENT_SPEC.md).
+- [ ] Phase E 9/9 bestanden (`f2acaae`); vertikale Plattformbeobachtung konkretisieren und prüfen. Situationsabhängig unfaire Übernahme als offene Spielgefühl-/Designbeobachtung (pauschale Freigabehöhe als Hypothese). Danach F–G gemäß [Spezifikation](docs/SONEC_MOVEMENT_SPEC.md).
 
 ## Danach / separat
 
