@@ -1098,7 +1098,7 @@ function SonecChestCircleHitTime(StartX as float,StartY as float,DeltaX as float
 	local SearchLow as float
 	local SearchHigh as float
 	local Third as float
-	local Mid as float
+	local SweepMidTime as float
 	local NearestTime as float
 	local RadiusSq as float
 	local DistanceLeft as float
@@ -1170,11 +1170,11 @@ function SonecChestCircleHitTime(StartX as float,StartY as float,DeltaX as float
 				SearchLow = EnterTime
 				SearchHigh = NearestTime
 				for i = 1 to SONEC_CHEST_SWEEP_ITERATIONS
-					Mid = (SearchLow + SearchHigh)*0.5
-					if SonecChestCircleDistanceSq(StartX + DeltaX*Mid,StartY + DeltaY*Mid,Width,Height) <= RadiusSq
-						SearchHigh = Mid
+					SweepMidTime = (SearchLow + SearchHigh)*0.5
+					if SonecChestCircleDistanceSq(StartX + DeltaX*SweepMidTime,StartY + DeltaY*SweepMidTime,Width,Height) <= RadiusSq
+						SearchHigh = SweepMidTime
 					else
-						SearchLow = Mid
+						SearchLow = SweepMidTime
 					endif
 				next i
 				HitTime = SearchHigh
