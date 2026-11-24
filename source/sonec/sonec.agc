@@ -944,25 +944,38 @@ function SonecCollidePlate(Sonec ref as TSonec,PlateList ref as TPlateList,Chest
 		PassPlateIndex = ChestList.Chest[Sonec.PassThroughChestIndex].CollisionData.Index
 	endif
 		
+	// B1: Select the earliest downward crossing of a platform surface.
+	// Chest landing is still handled by the existing earlier pass.
 	if Sonec.State.Stand = FALSE and Sonec.State.Fall = TRUE
-		if Sonec.ObjectData.MoveSpeed.y > 0
+		if Sonec.CollisionMoveEnd.y > Sonec.CollisionMoveStart.y
+			local BestPlateIndex as integer
+			local BestPlateY as float
+			local StartFeetY as float
+			local EndFeetY as float
+			BestPlateIndex = -1
+			StartFeetY = Sonec.CollisionMoveStart.y + Sonec.ObjectData.Size.Height*0.5
+			EndFeetY = Sonec.CollisionMoveEnd.y + Sonec.ObjectData.Size.Height*0.5
 			for i = 0 to PlateList.Plate.Length
 				if i <> PassPlateIndex and PlateList.Plate[i].Enabled = TRUE
 					if Sonec.ObjectData.Position.x > PlateList.Plate[i].ObjectData.Position.x
 						if Sonec.ObjectData.Position.x < PlateList.Plate[i].ObjectData.Position.x + PlateList.Plate[i].ObjectData.Size.Width
-							if Sonec.ObjectData.Position.y + Sonec.ObjectData.Size.Height*0.5 > PlateList.Plate[i].ObjectData.Position.y
-								if Sonec.ObjectData.Position.y + Sonec.ObjectData.Size.Height*0.5 < PlateList.Plate[i].ObjectData.Position.y + PlateList.Plate[i].ObjectData.Size.Height + Sonec.ObjectData.MoveSpeed.y
-									Sonec.ObjectData.Position.y = PlateList.Plate[i].ObjectData.Position.y - Sonec.ObjectData.Size.Height*0.5
-									Sonec.CollisionData.Position.x = Sonec.ObjectData.Position.x - PlateList.Plate[i].ObjectData.Position.x
-									Sonec.CollisionData.Position.y = Sonec.ObjectData.Position.y + Sonec.ObjectData.Size.Height*0.5 - PlateList.Plate[i].ObjectData.Position.y
-									SonecSetGroundContact(Sonec,TYPEPLATE,i,i)
-									SpritePositionCalc(Sonec.SpriteData.Position,Sonec.ObjectData.Position,World.Position)
+							if StartFeetY <= PlateList.Plate[i].ObjectData.Position.y and EndFeetY >= PlateList.Plate[i].ObjectData.Position.y
+								if BestPlateIndex = -1 or PlateList.Plate[i].ObjectData.Position.y < BestPlateY
+									BestPlateIndex = i
+									BestPlateY = PlateList.Plate[i].ObjectData.Position.y
 								endif
 							endif
 						endif
 					endif
 				endif
 			next i
+			if BestPlateIndex >= 0
+				Sonec.ObjectData.Position.y = BestPlateY - Sonec.ObjectData.Size.Height*0.5
+				Sonec.CollisionData.Position.x = Sonec.ObjectData.Position.x - PlateList.Plate[BestPlateIndex].ObjectData.Position.x
+				Sonec.CollisionData.Position.y = Sonec.ObjectData.Position.y + Sonec.ObjectData.Size.Height*0.5 - BestPlateY
+				SonecSetGroundContact(Sonec,TYPEPLATE,BestPlateIndex,BestPlateIndex)
+				SpritePositionCalc(Sonec.SpriteData.Position,Sonec.ObjectData.Position,World.Position)
+			endif
 		endif
 	endif
 
