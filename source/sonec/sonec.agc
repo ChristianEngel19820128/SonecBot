@@ -1517,6 +1517,103 @@ function SonecMoveHorizontalSpeed(Sonec ref as TSonec)
 		
 endfunction
 
+// Movement phase extracted without changing its original order or conditions.
+function SonecMoveIntegratePosition(Sonec ref as TSonec)
+	Sonec.ObjectData.Position.x = Sonec.ObjectData.Position.x + Sonec.ObjectData.MoveSpeed.x
+	Sonec.ObjectData.Position.y = Sonec.ObjectData.Position.y + Sonec.ObjectData.MoveSpeed.y
+
+
+endfunction
+
+// Movement phase extracted without changing its original order or conditions.
+function SonecMoveBalanceStep(Sonec ref as TSonec)
+	// A balance step uses a small independent displacement, not running momentum.
+	if Sonec.BalanceActive = TRUE
+		if Sonec.State.Stand = FALSE or Sonec.State.Move = TRUE or Sonec.State.Duck = TRUE
+			Sonec.BalanceActive = FALSE
+			Sonec.AnimationData.RepeatAnimation = TRUE
+			Sonec.AnimationData.Finished = FALSE
+		else
+			if Sonec.ObjectData.Position.x < Sonec.BalanceTargetX
+				Sonec.ObjectData.Position.x = Sonec.ObjectData.Position.x + SONEC_BALANCE_X_STEP
+				if Sonec.ObjectData.Position.x > Sonec.BalanceTargetX
+					Sonec.ObjectData.Position.x = Sonec.BalanceTargetX
+				endif
+			endif
+			if Sonec.ObjectData.Position.x > Sonec.BalanceTargetX
+				Sonec.ObjectData.Position.x = Sonec.ObjectData.Position.x - SONEC_BALANCE_X_STEP
+				if Sonec.ObjectData.Position.x < Sonec.BalanceTargetX
+					Sonec.ObjectData.Position.x = Sonec.BalanceTargetX
+				endif
+			endif
+			if Sonec.ObjectData.Position.x = Sonec.BalanceTargetX and Sonec.AnimationData.Finished = TRUE
+				Sonec.BalanceActive = FALSE
+				Sonec.AnimationData.RepeatAnimation = TRUE
+				Sonec.AnimationData.Finished = FALSE
+			endif
+		endif
+	endif
+	
+
+endfunction
+
+// Movement phase extracted without changing its original order or conditions.
+function SonecMoveHoverBrake(Sonec ref as TSonec)
+	// Active jetpack flight takes priority over the Hover air brake.
+	if Sonec.State.Hover = TRUE and Sonec.State.Fly = FALSE
+		Sonec.ObjectData.MoveSpeed.y = Sonec.ObjectData.MoveSpeed.y * SONEC_HOVER_AIR_DAMPING
+	endif
+	
+
+endfunction
+
+// Movement phase extracted without changing its original order or conditions.
+function SonecMoveWorldBounds(Sonec ref as TSonec,World ref as TWorld,Screen as TSize)
+	// Allow the first descent from off-screen; restore the top boundary afterwards.
+        if Sonec.SpawnEntering = TRUE and Sonec.ObjectData.Position.y >= Sonec.ObjectData.Size.Height*0.5
+            Sonec.SpawnEntering = FALSE
+        endif
+        if Sonec.SpawnEntering = FALSE and Sonec.ObjectData.Position.y < Sonec.ObjectData.Size.Height*0.5
+            Sonec.ObjectData.Position.y = Sonec.ObjectData.Size.Height*0.5
+            Sonec.ObjectData.MoveSpeed.y = 0
+        endif
+	
+	if Sonec.ObjectData.Position.y > World.Size.Height + Sonec.ObjectData.Size.Height*0.5
+		Sonec.IsLost = TRUE
+	endif
+	
+	if Sonec.ObjectData.Position.x < Sonec.ObjectData.Size.Width*0.5
+		Sonec.ObjectData.Position.x =  Sonec.ObjectData.Size.Width*0.5
+		Sonec.ObjectData.MoveSpeed.x = 0
+	endif
+	
+	if Sonec.ObjectData.Position.x > Screen.Width - Sonec.ObjectData.Size.Width*0.5
+		Sonec.ObjectData.Position.x = Screen.Width - Sonec.ObjectData.Size.Width*0.5
+		Sonec.ObjectData.MoveSpeed.x = 0
+	endif
+
+
+endfunction
+
+// Movement phase extracted without changing its original order or conditions.
+function SonecMoveCamera(Sonec ref as TSonec,World ref as TWorld,Screen as TSize)
+	if World.Position.y > 10
+		if Sonec.SpriteData.Position.y < Screen.Height * 0.33
+			World.Position.y = World.Position.y + (Sonec.SpriteData.Position.y - Screen.Height * 0.33)
+		endif
+	endif
+	
+	if World.Position.y < World.Size.Height - Screen.Height - 10
+		if Sonec.SpriteData.Position.y > Screen.Height * 0.66
+			World.Position.y = World.Position.y + (Sonec.SpriteData.Position.y - Screen.Height * 0.66)
+		endif
+	endif
+	
+	SpritePositionCalc(Sonec.SpriteData.Position,Sonec.ObjectData.Position,World.Position)
+	
+
+endfunction
+
 function SonecMove(Sonec ref as TSonec,ChestList ref as TChestList,World ref as TWorld,Screen as TSize,Now as integer)
 	
 	Sonec.CollisionMoveStart = Sonec.ObjectData.Position
@@ -1526,81 +1623,12 @@ function SonecMove(Sonec ref as TSonec,ChestList ref as TChestList,World ref as 
 		SonecMoveVerticalSpeed(Sonec)
 		SonecMoveHorizontalSpeed(Sonec)
 		SonecMoveLimitChestWall(Sonec,ChestList)
-
-		Sonec.ObjectData.Position.x = Sonec.ObjectData.Position.x + Sonec.ObjectData.MoveSpeed.x
-		Sonec.ObjectData.Position.y = Sonec.ObjectData.Position.y + Sonec.ObjectData.MoveSpeed.y
-
-		// A balance step uses a small independent displacement, not running momentum.
-		if Sonec.BalanceActive = TRUE
-			if Sonec.State.Stand = FALSE or Sonec.State.Move = TRUE or Sonec.State.Duck = TRUE
-				Sonec.BalanceActive = FALSE
-				Sonec.AnimationData.RepeatAnimation = TRUE
-				Sonec.AnimationData.Finished = FALSE
-			else
-				if Sonec.ObjectData.Position.x < Sonec.BalanceTargetX
-					Sonec.ObjectData.Position.x = Sonec.ObjectData.Position.x + SONEC_BALANCE_X_STEP
-					if Sonec.ObjectData.Position.x > Sonec.BalanceTargetX
-						Sonec.ObjectData.Position.x = Sonec.BalanceTargetX
-					endif
-				endif
-				if Sonec.ObjectData.Position.x > Sonec.BalanceTargetX
-					Sonec.ObjectData.Position.x = Sonec.ObjectData.Position.x - SONEC_BALANCE_X_STEP
-					if Sonec.ObjectData.Position.x < Sonec.BalanceTargetX
-						Sonec.ObjectData.Position.x = Sonec.BalanceTargetX
-					endif
-				endif
-				if Sonec.ObjectData.Position.x = Sonec.BalanceTargetX and Sonec.AnimationData.Finished = TRUE
-					Sonec.BalanceActive = FALSE
-					Sonec.AnimationData.RepeatAnimation = TRUE
-					Sonec.AnimationData.Finished = FALSE
-				endif
-			endif
-		endif
-		
-		// Active jetpack flight takes priority over the Hover air brake.
-		if Sonec.State.Hover = TRUE and Sonec.State.Fly = FALSE
-			Sonec.ObjectData.MoveSpeed.y = Sonec.ObjectData.MoveSpeed.y * SONEC_HOVER_AIR_DAMPING
-		endif
-		
-		// Allow the first descent from off-screen; restore the top boundary afterwards.
-        if Sonec.SpawnEntering = TRUE and Sonec.ObjectData.Position.y >= Sonec.ObjectData.Size.Height*0.5
-            Sonec.SpawnEntering = FALSE
-        endif
-        if Sonec.SpawnEntering = FALSE and Sonec.ObjectData.Position.y < Sonec.ObjectData.Size.Height*0.5
-            Sonec.ObjectData.Position.y = Sonec.ObjectData.Size.Height*0.5
-            Sonec.ObjectData.MoveSpeed.y = 0
-        endif
-		
-		if Sonec.ObjectData.Position.y > World.Size.Height + Sonec.ObjectData.Size.Height*0.5
-			Sonec.IsLost = TRUE
-		endif
-		
-		if Sonec.ObjectData.Position.x < Sonec.ObjectData.Size.Width*0.5
-			Sonec.ObjectData.Position.x =  Sonec.ObjectData.Size.Width*0.5
-			Sonec.ObjectData.MoveSpeed.x = 0
-		endif
-		
-		if Sonec.ObjectData.Position.x > Screen.Width - Sonec.ObjectData.Size.Width*0.5
-			Sonec.ObjectData.Position.x = Screen.Width - Sonec.ObjectData.Size.Width*0.5
-			Sonec.ObjectData.MoveSpeed.x = 0
-		endif
-
+		SonecMoveIntegratePosition(Sonec)
+		SonecMoveBalanceStep(Sonec)
+		SonecMoveHoverBrake(Sonec)
+		SonecMoveWorldBounds(Sonec,World,Screen)
 		SpritePositionCalc(Sonec.SpriteData.Position,Sonec.ObjectData.Position,World.Position)
-		
-		if World.Position.y > 10
-			if Sonec.SpriteData.Position.y < Screen.Height * 0.33
-				World.Position.y = World.Position.y + (Sonec.SpriteData.Position.y - Screen.Height * 0.33)
-			endif
-		endif
-		
-		if World.Position.y < World.Size.Height - Screen.Height - 10
-			if Sonec.SpriteData.Position.y > Screen.Height * 0.66
-				World.Position.y = World.Position.y + (Sonec.SpriteData.Position.y - Screen.Height * 0.66)
-			endif
-		endif
-		
-		SpritePositionCalc(Sonec.SpriteData.Position,Sonec.ObjectData.Position,World.Position)
-		
+		SonecMoveCamera(Sonec,World,Screen)
 		TimeReset(Sonec.ObjectData.MoveTimer,Now)
 		
 	endif
