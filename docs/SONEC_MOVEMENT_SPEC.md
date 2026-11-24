@@ -304,3 +304,10 @@ Die Reihenfolge ist vorläufig; tatsächliche technische Abhängigkeiten können
 - **Umsetzung:** Bevor `SonecCollideChestSideContacts` den ausgewählten Seitenkontakt anwendet, prüft es für dieselbe Kiste eine gültige relative Fußkreuzung von oben. Wenn die Oberseite zuerst oder zeitgleich getroffen wird, entfällt nur dieser Seitenblock; die anschließende B-K1-Landungsroutine entscheidet weiterhin über tatsächlichen Bodenkontakt. Ein früherer Seitenkontakt bleibt erhalten.
 - **Grenze:** Keine vollständige globale Priorisierung von Kisten und Plattformen und noch kein horizontaler Sweep für die Kistenlandung. Der sporadische Durchfallfehler bleibt offen, bis der Entwickler nachgetestet hat.
 - **AGK-Kompilierung und Laufzeittests:** durch den Assistenten nicht ausführbar, ausdrücklich ausstehend.
+
+## 35. Entwicklertest B-K2 – Einzelprüfungen bestanden, Gesamtfehler offen (24.11.2026)
+
+- **Getesteter Code-Commit:** `b6849d6a10f3c3f248f4493e7bc431c6fa9200d6`.
+- **Entwickler bestätigt 7/7 Prüfpunkte, Gesamtergebnis „Bestanden“:** AGK-Kompilierung; kleine und große Kistenlandungen; schnelle diagonale Landung nahe Kistenkante; echte Seitenkollision; Plattformlandung; Jetpack und Durchflug von unten.
+- **Gleichzeitig beobachtete, weiterhin offene Fehler:** Sonec fällt **gelegentlich** durch Kisten, Landungen wirken bei geringer Geschwindigkeit zuverlässiger. Gelegentliches **seitliches Tunneln** durch Kisten besteht fort; ein Zusammenhang mit fehlgeschlagenen Landungen ist möglich, aber nicht bewiesen. Beim Stoppen vor einer Kiste steckt das **Gewehr weiterhin in der Kiste**.
+- **Bewertung:** B-K2-Einzeltests bestanden; die Gesamt-Kistenkollision ist **nicht abgenommen**. Keine neuen Legacy-Sonderfixes. In den geplanten nächsten Architekturbausteinen horizontale Swept-Kontakte, gemeinsame Kontaktreihenfolge und bodengebundene Front-/Gewehr-Kollisionslinie berücksichtigen. Die Gewehrfront ist Teil der vereinbarten Bodenkollisionsgeometrie, während die zwei Kreise für Luft-Seitenkontakte gelten. Keine Behauptung einer bereits behobenen Ursache.
