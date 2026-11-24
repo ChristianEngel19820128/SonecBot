@@ -70,7 +70,7 @@ Legacy-Grafiken (`rakstellung.png`, `spacejet.png`, `falle.bmp`) sind Vorlagen, 
 ### Sonec-Bewegungsumstellung – in Arbeit
 
 - Verbindliche Anforderungen und Phasen A–G: [SONEC_MOVEMENT_SPEC.md](docs/SONEC_MOVEMENT_SPEC.md).
-- Phase A abgeschlossen und lokal geprüft; Phase B: gemeinsamer Kontaktresolver und Restwegprüfung implementiert, AGK-Compile für `18a6154` bestanden, Plattformtests bestanden; richtungsabhängiges Kistentunneln bestätigt, vollständige funktionale Abnahme offen.
+- Phase A abgeschlossen und lokal geprüft; Phase B kompiliert (`18a6154`), Plattformtests bestanden, Kistentunneln bestätigt. Phase C implementiert; gemeinsamer B/C-Regressionstest und AGK-Compile offen.
 - Mechanische Kontakte, Plattformmitnahme, Tiefenebenen, Mini-Hop und Integration gemäß Spezifikation abschließen.
 
 ## 4. Arbeitsblock B – Erfahrung, Ressourcen und Gefahr
@@ -156,6 +156,6 @@ Gefahrenzulassung, Erholungsrhythmus, tatsächlicher Ressourcengewinn und Muniti
 Bekannte Qualitätsfragen erhalten eine ausdrückliche Entscheidung bzw. dokumentierte Grenze; der integrierte Alpha-Build wird auf der Zielplattform geprüft.
 Diese Kriterien sind Prüfaufträge für die Umsetzung, keine bereits bestandene Alpha-Abnahme. itch.io bleibt Draft/Secret URL bis zu einer gesonderten Entscheidung.
 
-**Nächster Schritt:** Phase-B-Testbefund gemäß TODO bewerten und Übergang zu Phase C gemeinsam abstimmen. Weitere Arbeitsblöcke nach Abstimmung auswählen; keine automatische Codefreigabe aus dieser Roadmap ableiten.
+**Nächster Schritt:** Phase-C-Paket gemäß TODO lokal kompilieren und B/C-Funktionstest durchführen. Weitere Arbeitsblöcke nach Abstimmung auswählen; keine automatische Codefreigabe aus dieser Roadmap ableiten.
 
 Spätere Varianten und Ideen stehen in [BACKLOG.md](BACKLOG.md). Frühere Langfassungen liegen im [Archiv](docs/archive/README.md); sie werden nur für konkrete historische Fragen gelesen.

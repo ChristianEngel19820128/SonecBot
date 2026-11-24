@@ -54,13 +54,12 @@ Objektverwaltung und Kollisionen bestehen weitgehend aus eigenen Strukturen/Pool
 
 **Evidenz:** Entwickler hat S1/S1b, S2 (7/7), S3 (7/7) und S4 (8/8) lokal bestanden gemeldet, einschließlich Plattformabschirmung direkt darunter und Treffer außerhalb der Plattformkanten. Kein eigener AGK-Compile durch den Assistenten. Bei neuen Gegnern oder Schadensarten diese Schnittstellen zuerst prüfen und die neuen Trefferfälle lokal testen.
 
-### Sonec-Bewegung: Kisten-Seitenkontakt (24. November 2026, AGK-Nachtest offen)
+### Sonec-Bewegung: Kisten-Seitenkontakt (Phase C, AGK-Test offen)
 
-- `Sonec.LinkedPlateIndex` wird bei Plattform-/Kistenlandung gesetzt und durch normalen Sprung/Fall getragen. Ohne `State.Fly` werden nur aktive Kisten mit dieser Plattform-ID auf Kollisionskontakt geprüft; während `State.Fly` alle aktiven Kisten. Trägerplattform-Landungen bleiben unabhängig davon möglich.
-- Für die Seiten-/Unterseitenprüfung werden **beide** bestehenden Körperkreise (`SonecHitCircleRadius/Y`) samt tatsächlicher Sonec- und Kistenbewegung je Update verwendet. Ein Distanztest gegen die Rechteckform erkennt auch schnelle Treffer an abgerundeten Ecken; Treffer auf der Oberseite verbleiben in der bisherigen Landeroutine.
-- Bei Seitenkontakt wird die geplante X-Bewegung begrenzt, ohne eine nur durch Kistenbewegung verursachte Rückwärtsverschiebung. Der gespeicherte Wandkontakt bremst den nächsten Schritt bereits in `SonecMoveLimitChestWall`; Gegenlenken bleibt möglich.
-- Ein von unten begonnener Kistendurchflug behält die Ausnahme von Kiste und deren Trägerplattform bis zum vollständig verlassenen Kistenkörper. Das ist eine Spielregel, nicht das generelle Abschalten der Plattformkollision.
-- `SonecMoveVerticalSpeed` und `SonecMoveHorizontalSpeed` kapseln die bestehenden Geschwindigkeitsregeln. Ihre Werte sind Konstanten, **unverändert**; Duck-Reibung und Mini-Hop-Vorwärtsimpuls werden gesondert abgestimmt. Bisher nur Quell-/Rechenprüfung, kein AGK-Lauf.
+- Zentraler Sweep/Resolver in `sonec.agc`: frühester gültiger Kontakt, danach Restweg gegen interpolierte Hindernispositionen. `LinkedPlateIndex` bleibt bei Sprung/Fall erhalten; bestehende Kistenrelevanz und Durchflugausnahme bleiben bis Phase E unverändert.
+- Mechanische Bodenfront: `SONEC_MECHANICAL_FRONT_X=25` Welteinheiten beidseitig, volle Körperhöhe. Vorläufiger Abstand entspricht MG-Geschossstart; optisch lokal abgleichen. In der Luft weiterhin die zwei vorhandenen Körperkreise; Schadensgeometrie unverändert.
+- Seitenreaktion berücksichtigt Restweg der Wand; keine Korrektur auf eine neue Frontposition bei schon vorhandener Überlappung. Nur eigene Bewegung in die Wand wird gelöscht; Gegenlenken bleibt frei. Kein separater Vorab-Wandstop; `BlockedChest*` dokumentiert den Kontakt im aktuellen Update und unterstützt die Weltrand-Ausnahme.
+- Weltgrenze links wird eingehalten, dort kann die nach links fahrende Kiste passieren. Vollständiges Mitnahme-/Geschwindigkeitsmodell folgt Phase D; Kanten-Hop und Eingabe-/Kräfteregeln bleiben unverändert. Compile und Laufzeittest offen.
 
 ## 3. Alpha-Walker: unveränderter Referenzstand
 
