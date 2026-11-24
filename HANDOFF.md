@@ -14,9 +14,9 @@
 Verbindliche Grundlage: [SONEC_MOVEMENT_SPEC.md](docs/SONEC_MOVEMENT_SPEC.md).
 
 - Phase A abgeschlossen und lokal geprüft.
-- Phase B: gemeinsamer Kontaktresolver und Restwegschleife implementiert; AGK-Compile des Code-Commits `18a6154` vom Entwickler bestätigt; Plattformtests bestanden, seitliches Kistentunneln links nach rechts bestätigt; vollständige funktionale Abnahme offen.
+- Phase B: gemeinsamer Kontaktresolver und Restwegschleife implementiert, Compile und Plattformtests bestätigt. Die damaligen Kistentunnelbefunde sind im B/C-Nachtest nicht mehr aufgetreten; gezielte Kontaktreihenfolge/Restwegfälle bleiben Integrationsprüfung.
 - Entwickler meldet am 24.11.2026: Spiel verhält sich nachvollziehbar für den aktuellen Stand. B3h im kompilierten Paket enthalten. Anschließender Test: schnelle Plattformlandung und Randverhalten erwartungsgemäß; Kistenseiten beim Laufen und Springen/Fallen links nach rechts durchlässig, rechts nach links blockierend. Direkt vor der Kiste Bewegung und Sprung beidseitig blockierend.
-- Phase C implementiert: mechanische Frontlinie ±25 Welteinheiten (vorläufig am MG-Geschossstart orientiert), zwei Luftkreise unverändert, relative Seitenblockade einschließlich verbleibender Wandverschiebung und Weltrand-Ausnahme; kein separater Vorab-Wandstop mehr. AGK-Compile für `0d0d7a0` und 8/9 Prüfpunkte vom Entwickler bestätigt. Laufen und Springen beidseitig ohne Tunneln; beim Fallen beidseitiges Hineinbewegen in Kisten. Beim Laufen von rechts nach links kleiner optischer Rückversatz beobachtet. Keine vollständige B/C-Abnahme. C-Nachkorrektur der Luft-Eckklassifikation implementiert, AGK-Nachtest offen; Phasen D–F folgen.
+- Phase C: Frontlinie ±25 Welteinheiten am Boden, zwei Luftkreise, relative Seitenblockade. B/C-Test `0d0d7a0` 8/9, Nachtest `b1a21dd` 5/5 einschließlich AGK-Compile, Fallen und Springen beidseitig, Landungen/Unterseitendurchflug bestanden. Entwickler akzeptiert Grundverhalten. Luft-Gewehrüberdeckung links unterschiedlich weit, rechts nicht beobachtet; Bodenabstand korrekt. Kreisgeometrie beabsichtigt, Ursache der Richtungsdifferenz nicht bewiesen. Kleiner optischer Rückversatz beim Lauf rechts nach links aus vorherigem Test bleibt Phase D.
 - Seitliches Tunneln, Zurückwerfen und unbegrenzte Luftbeschleunigung sind bekannte Ausgangsprobleme; keine vorzeitige Abnahme.
 - Phasen C–G gemäß Spezifikation: mechanische Geometrie, Plattformmitnahme, Tiefenebenen, Mini-Hop, Integration/Balancing.
 
@@ -43,7 +43,7 @@ Verbindliche Grundlage: [SONEC_MOVEMENT_SPEC.md](docs/SONEC_MOVEMENT_SPEC.md).
 
 ## Genau ein nächster vereinbarter Schritt
 
-Gezielten Phase-C-Nachtest durchführen: AGK-Compile, fallende schräge Seiten-/Eckkontakte beidseitig, Sprung/Unterseitendurchflug und Landungen als Regression. Entwickler stand/landete mehrfach auf der Kiste zugeordneten Plattform. Luft-Eckklassifikation korrigiert; Wirkung offen. Optischer Rückversatz beim Laufen bleibt zur Prüfung in Phase D.
+Phase D als nächstes Paket gemeinsam beginnen: bisherige Plattformmitnahme analysieren, Eigen- und Trägerbewegung trennen und vorgeschlagenes Modell für Absprung/relative Kistenbewegung gemäß Spezifikation abstimmen. Rückversatz und Luft-Richtungsasymmetrie beim D-Test erneut beobachten. Keine neue Codefreigabe allein aus Testergebnis.
 
 ## Referenzen
 
