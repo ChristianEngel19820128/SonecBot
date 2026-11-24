@@ -119,6 +119,12 @@ function SonecInit(Sonec ref as TSonec,ProtoSonec ref as TProtoSonec,World ref a
 	Sonec.IsLost = False
 	Sonec.BalanceActive = FALSE
 	Sonec.BalanceTargetX = 0
+	Sonec.DebugEdgeFrames = 0
+	Sonec.DebugEdgeEvent = 0
+	Sonec.DebugEdgeChestX = 0
+	Sonec.DebugEdgeChestSpeedX = 0
+	Sonec.DebugEdgeBeforeBalanceX = 0
+	Sonec.DebugEdgeAfterBalanceX = 0
 
 	Sonec.AnimationData.Frame = 0
 	Sonec.AnimationData.RepeatAnimation = TRUE
@@ -1585,10 +1591,18 @@ function SonecCollideChestHorizontal(Sonec ref as TSonec,ChestList ref as TChest
 						// Trigger the active edge hop before the body crosses the edge, allowing for this frame's speed.
 						// Passive departures still use the exact edge, without a hop.
 						if Sonec.State.Move = TRUE and Sonec.State.Alignment = MOVELEFT and Sonec.ObjectData.MoveSpeed.x < 0 and Sonec.State.Duck = FALSE and Sonec.ObjectData.Position.x <= ChestList.Chest[Sonec.CollisionData.Index].ObjectData.Position.x + Sonec.ObjectData.Size.Width*0.5 + abs(Sonec.ObjectData.MoveSpeed.x)
+														Sonec.DebugEdgeFrames = 60
+							Sonec.DebugEdgeEvent = 3
+							Sonec.DebugEdgeChestX = ChestList.Chest[Sonec.CollisionData.Index].ObjectData.Position.x
+							Sonec.DebugEdgeChestSpeedX = ChestList.Chest[Sonec.CollisionData.Index].ObjectData.MoveSpeed.x
 							SonecCollideReset(Sonec)
 							Sonec.ObjectData.MoveSpeed.y = -1.5
 						else
 							if Sonec.State.Move = TRUE and Sonec.State.Alignment = MOVERIGHT and Sonec.ObjectData.MoveSpeed.x > 0 and Sonec.State.Duck = FALSE and Sonec.ObjectData.Position.x >= ChestList.Chest[Sonec.CollisionData.Index].ObjectData.Position.x + ChestList.Chest[Sonec.CollisionData.Index].ObjectData.Size.Width - Sonec.ObjectData.Size.Width*0.5 - abs(Sonec.ObjectData.MoveSpeed.x)
+																Sonec.DebugEdgeFrames = 60
+								Sonec.DebugEdgeEvent = 4
+								Sonec.DebugEdgeChestX = ChestList.Chest[Sonec.CollisionData.Index].ObjectData.Position.x
+								Sonec.DebugEdgeChestSpeedX = ChestList.Chest[Sonec.CollisionData.Index].ObjectData.MoveSpeed.x
 								SonecCollideReset(Sonec)
 								Sonec.ObjectData.MoveSpeed.y = -1.5
 							else
@@ -1623,6 +1637,20 @@ function SonecCollideChestHorizontal(Sonec ref as TSonec,ChestList ref as TChest
 							Sonec.CollisionData.Position.x = Sonec.ObjectData.Position.x - ChestList.Chest[i].ObjectData.Position.x
 							Sonec.CollisionData.Position.y = Sonec.ObjectData.Position.y + Sonec.ObjectData.Size.Height*0.5 - ChestList.Chest[i].ObjectData.Position.y
 							SonecSetGroundContact(Sonec,TYPECHEST,i,ChestList.Chest[i].CollisionData.Index)
+							// Diagnostic only: record either edge landing, even when no balance is activated.
+							if Sonec.ObjectData.Position.x <= ChestList.Chest[i].ObjectData.Position.x + Sonec.ObjectData.Size.Width*0.5
+								Sonec.DebugEdgeFrames = 60
+								Sonec.DebugEdgeEvent = 1
+							else
+								if Sonec.ObjectData.Position.x >= ChestList.Chest[i].ObjectData.Position.x + ChestList.Chest[i].ObjectData.Size.Width - Sonec.ObjectData.Size.Width*0.5
+									Sonec.DebugEdgeFrames = 60
+									Sonec.DebugEdgeEvent = 2
+								endif
+							endif
+							if Sonec.DebugEdgeEvent = 1 or Sonec.DebugEdgeEvent = 2
+								Sonec.DebugEdgeChestX = ChestList.Chest[i].ObjectData.Position.x
+								Sonec.DebugEdgeChestSpeedX = ChestList.Chest[i].ObjectData.MoveSpeed.x
+							endif
 							// Only a slow landing close to an edge needs a short balancing step.
 							Sonec.BalanceActive = FALSE
 							if abs(Sonec.ObjectData.MoveSpeed.x) <= 0.75 and Sonec.State.Move = FALSE and Sonec.State.Duck = FALSE
@@ -1849,7 +1877,9 @@ function SonecMove(Sonec ref as TSonec,ChestList ref as TChestList,World ref as 
 		SonecMoveHorizontalSpeed(Sonec)
 		SonecMoveLimitChestWall(Sonec,ChestList)
 		SonecMoveIntegratePosition(Sonec)
+		Sonec.DebugEdgeBeforeBalanceX = Sonec.ObjectData.Position.x
 		SonecMoveBalanceStep(Sonec)
+		Sonec.DebugEdgeAfterBalanceX = Sonec.ObjectData.Position.x
 		SonecMoveHoverBrake(Sonec)
 		SonecMoveWorldBounds(Sonec,World,Screen)
 		SpritePositionCalc(Sonec.SpriteData.Position,Sonec.ObjectData.Position,World.Position)
@@ -1859,6 +1889,15 @@ function SonecMove(Sonec ref as TSonec,ChestList ref as TChestList,World ref as 
 	endif
 		
 	Sonec.CollisionMoveEnd = Sonec.ObjectData.Position
+	// Temporary diagnostic overlay: 1/2 = left/right edge landing;
+	// 3/4 = left/right mini-hop. No movement values are modified.
+	if Sonec.DebugEdgeFrames > 0
+		Print("EDGE event 1=landL 2=landR 3=hopL 4=hopR: "+str(Sonec.DebugEdgeEvent))
+		Print("x="+str(Sonec.ObjectData.Position.x)+" vx="+str(Sonec.ObjectData.MoveSpeed.x)+" vy="+str(Sonec.ObjectData.MoveSpeed.y)+" carryX="+str(Sonec.ObjectData.AutoSpeed.x))
+		Print("balance="+str(Sonec.BalanceActive)+" target="+str(Sonec.BalanceTargetX)+" dxBalance="+str(Sonec.DebugEdgeAfterBalanceX-Sonec.DebugEdgeBeforeBalanceX))
+		Print("chestX="+str(Sonec.DebugEdgeChestX)+" chestVx="+str(Sonec.DebugEdgeChestSpeedX)+" move="+str(Sonec.State.Move)+" stand="+str(Sonec.State.Stand)+" fall="+str(Sonec.State.Fall))
+		Sonec.DebugEdgeFrames = Sonec.DebugEdgeFrames - 1
+	endif
 	
 endfunction
 	
