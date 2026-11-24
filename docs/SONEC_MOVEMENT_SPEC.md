@@ -197,3 +197,10 @@ Die Reihenfolge ist vorläufig; tatsächliche technische Abhängigkeiten können
 - **Offen:** Keine. **Beobachtungen:** Keine Angaben.
 - **Einordnung:** Die Zentralisierung der Bodenkontakt-Zuweisungen zeigt in diesen Prüfungen keine erkennbare Regression. Die neue Kollisionsphysik ist damit noch nicht implementiert oder abgenommen.
 - **Nächster Schritt:** Phase A fortsetzen, jeweils kleinräumig und mit Entwicklertest; fachliche Änderungen zuerst in der Spezifikation festhalten.
+
+## 21. Phase A4 – Plattformbindungs-Validierung isoliert (24.11.2026)
+
+- **Code-Revision:** `8895d100f5d212b63cce2b32fefcfed00614c3a5` auf `develop`.
+- **Änderung:** Die bisherige Prüfung des `LinkedPlateIndex` auf ungültigen Index bzw. deaktivierte Plattform wurde aus `SonecCollidePlate` unverändert in `SonecValidateLinkedPlate` ausgelagert. Die Prüfung wird an derselben Stelle aufgerufen.
+- **Bewusst unverändert:** Alle bisherigen Bedingungen und Zuweisungen, Landung, Durchflug, Kistenkontakt, Sprung und Jetpack. Es wurde keine neue Tiefenebenenregel umgesetzt. Insbesondere ist die spätere fachliche Vorgabe zur persistenten Bindung noch gesondert umzusetzen; die alte Validierung löscht weiterhin ungültige/deaktivierte Verweise.
+- **Prüfung:** AGK-Kompilierung und Laufzeittest durch den Entwickler stehen noch aus.
