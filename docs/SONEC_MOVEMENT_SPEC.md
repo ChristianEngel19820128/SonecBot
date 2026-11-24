@@ -678,3 +678,8 @@ Die Reihenfolge ist vorläufig; tatsächliche technische Abhängigkeiten können
 - **B3h:** Die Seitenkontaktroutine führt die bereits vorliegenden drei Zeiten (früheste Kistenoberseite, früheste Plattformoberseite, früheste Kistenseite) in einem einzigen `TSonecContactCandidate` als frühesten Treffer zusammen. Für die Auswahl wird die Reihenfolge Kistenoberseite, Plattformoberseite, Kistenseite verwendet, damit die bereits festgelegte Oberseitenentscheidung bei Gleichstand unverändert bleibt. Da der Plattformindex hier noch nicht übergeben wird, ist der Plattformkandidat zunächst ein zeitlicher Platzhalter mit Index -1; keine Auflösung über diesen Platzhalter.
 - **Begrenzung:** Die neue Gewinnerwahl steuert in B3h nur die bisherige Entscheidung, ob ein Kistenseitenkontakt aufgelöst wird. Die eigentlichen getrennten Resolver und ihre Positionierung bleiben unverändert. Restbewegung und vollständige gemeinsame Auflösung folgen später. Keine gezielte Änderung bekannter Fehler erwartet.
 - **Prüfung:** AGK-Kompilierung; Funktionstest gesammelt.
+
+## 91. B3h – Gemeinsame früheste Auswahl umgesetzt (24.11.2026)
+
+- **Code:** `0db1191cefd37baa408b462e41e68d944fc2aa46`. `SonecCollideChestSideContacts` bildet aus dem frühesten Kistenoberseiten-, Plattformoberseiten- und Kistenseitenkontakt einen `EarliestContactCandidate`; bei Gleichstand gewinnen Oberseiten. Nur wenn die Seite früher ist, wird die bestehende Seitenauflösung ausgeführt. Plattformkandidat trägt hier noch Index -1 und darf nicht aufgelöst werden.
+- **Status:** AGK-Kompilierung ausstehend. Funktionstest gebündelt am Ende von Phase B. Der globale Kandidat ist zunächst nur innerhalb der Seitenroutine vorhanden; getrennte Landungsauflösung, Restbewegung und Ablösung der Altpfade bleiben offen.
