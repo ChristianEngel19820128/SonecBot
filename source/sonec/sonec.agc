@@ -1918,6 +1918,7 @@ endfunction
 function SonecMove(Sonec ref as TSonec,ChestList ref as TChestList,World ref as TWorld,Screen as TSize,Now as integer)
 	
 	Sonec.CollisionMoveStart = Sonec.ObjectData.Position
+	Sonec.DebugCsvMoveStartVX = Sonec.ObjectData.MoveSpeed.x
 	Sonec.DebugCsvMoveStartX = Sonec.ObjectData.Position.x
 	Sonec.DebugCsvMoveStartY = Sonec.ObjectData.Position.y
 
@@ -1925,6 +1926,7 @@ function SonecMove(Sonec ref as TSonec,ChestList ref as TChestList,World ref as 
 		
 		SonecMoveVerticalSpeed(Sonec)
 		SonecMoveHorizontalSpeed(Sonec)
+		Sonec.DebugCsvMoveAfterHorizontalVX = Sonec.ObjectData.MoveSpeed.x
 		SonecMoveLimitChestWall(Sonec,ChestList)
 		SonecMoveIntegratePosition(Sonec)
 		Sonec.DebugEdgeBeforeBalanceX = Sonec.ObjectData.Position.x
