@@ -478,3 +478,9 @@ Die Reihenfolge ist vorläufig; tatsächliche technische Abhängigkeiten können
 - **Codebefund:** `source/sonec/main.agc` besitzt kein eigenständiges Debug-Array; das Hauptspiel hält `Game.DebugText as integer[-1]` in `def_game.agc`, initialisiert und zeichnet bisher Slots 0/1 in `game.agc`. Slot 0 ist Schilddiagnose, Slot 1 Zwei-Kreis-Diagnose. Diese Slots nicht überschreiben.
 - **Korrektur:** `Game.DebugText` um Slot 2 erweitern; Diagnose mit `SetTextString(Game.DebugText[2],...)` und `DrawText` in `GameDraw` sichtbar machen, solange `Game.Sonec.DebugEdgeFrames > 0`. Keine `Print`-Ausgabe in `SonecMove`; dort nur Messwerte und Ereignisfenster beibehalten. Bei ruhenden Bildern bleibt der letzte Messstand sichtbar, solange das Fenster aktiv ist. Keine Kollisions-/Bewegungsänderung.
 - **Test:** AGK-Kompilierung, sichtbarer mehrzeiliger Diagnose-Text, 60 Frames nach Randlandung und Mini-Hop, bestehende Debug-Slots unverändert.
+
+## 60. D-R1 Diagnose auf Game.DebugText umgestellt, Test offen (24.11.2026)
+
+- **Code:** `be0a6547c445ec64e1c501bc1fa7244a40dbe51e` entfernt `Print` aus `SonecMove`. `2c114a78c0f7fb502990a2208c185f4b167ceb7a` erweitert `Game.DebugText` von Slots 0–1 auf 0–2 und rendert die Rand-/Mini-Hop-Diagnose in Slot 2 über `SetTextString`/`DrawText` in `GameDraw`. Das Diagnosefenster zählt dort 60 gezeichnete Frames; die vorhandenen Slots 0/1 bleiben unverändert.
+- **Hinweis:** Der Text zeigt Ereignis, aktuelle X-/X-Y-Geschwindigkeit, Carry, Balance und Delta, Kisten-Snapshot sowie Move/Stand/Fall. Die Diagnosedaten werden weiterhin in `Sonec` erfasst; keine Bewegungskorrektur.
+- **Teststatus:** AGK-Kompilierung, mehrzeilige Darstellung und Aufnehmbarkeit vom Entwickler zu bestätigen.
