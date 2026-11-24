@@ -1099,16 +1099,24 @@ function SonecMoveLimitChestWall(Sonec ref as TSonec,ChestList ref as TChestList
 	ContactValid = FALSE
 	if WallIndex >= 0
 		if SonecChestRelevant(Sonec,ChestList,WallIndex) = TRUE and Sonec.PassThroughChestIndex <> WallIndex
-			Radius = SonecHitCircleRadius(Sonec)
 			ChestTop = ChestList.Chest[WallIndex].ObjectData.Position.y
 			ChestBottom = ChestTop + ChestList.Chest[WallIndex].ObjectData.Size.Height
 			HeightOverlap = FALSE
-			for CircleIndex = 0 to 1
-				CircleY = SonecHitCircleY(Sonec,CircleIndex)
-				if CircleY + Radius > ChestTop and CircleY - Radius < ChestBottom
+			// Match the B-K3 full-height grounded front line when
+			// continuing a side contact across movement frames.
+			if Sonec.GroundContactActive = TRUE
+				if Sonec.ObjectData.Position.y + Sonec.ObjectData.Size.Height*0.5 > ChestTop and Sonec.ObjectData.Position.y - Sonec.ObjectData.Size.Height*0.5 < ChestBottom
 					HeightOverlap = TRUE
 				endif
-			next CircleIndex
+			else
+				Radius = SonecHitCircleRadius(Sonec)
+				for CircleIndex = 0 to 1
+					CircleY = SonecHitCircleY(Sonec,CircleIndex)
+					if CircleY + Radius > ChestTop and CircleY - Radius < ChestBottom
+						HeightOverlap = TRUE
+					endif
+				next CircleIndex
+			endif
 
 			if HeightOverlap = TRUE
 				if Sonec.BlockedChestSide = 1
