@@ -4,7 +4,7 @@
 
 ## Jetzt
 
-- [ ] Bewegungsumstellung B/C: `0d0d7a0` kompiliert, 8/9 Prüfpunkte bestätigt. Beidseitiges Hineinbewegen in Kisten beim Fallen und kleiner optischer Rückversatz beim Laufen rechts nach links offen. Fallkisten-Ebene klären und Restbefunde eingrenzen. Danach D–G gemäß [Spezifikation](docs/SONEC_MOVEMENT_SPEC.md).
+- [ ] Bewegungsumstellung B/C: `0d0d7a0` kompiliert, 8/9 bestätigt. Fallkiste auf zugehöriger Plattform; Luft-Eckklassifikation nachkorrigiert, Compile/Fallkontakt beidseitig und Regression offen. Optischer Rückversatz beim Lauf rechts nach links in Phase D prüfen. Danach D–G gemäß [Spezifikation](docs/SONEC_MOVEMENT_SPEC.md).
 
 ## Danach / separat
 

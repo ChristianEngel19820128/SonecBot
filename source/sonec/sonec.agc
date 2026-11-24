@@ -1571,7 +1571,19 @@ function SonecFindChestContact(Sonec ref as TSonec,ChestList ref as TChestList)
 								Bottom = SonecContactChooseEarlier(Bottom,HitTime,TYPECHEST,i,3)
 							endif
 							SideValid = FALSE
-							if Direction <> 0 and NormalX*Direction < 0 and abs(NormalX) >= abs(NormalY)
+							// A falling circle can first touch an upper corner with
+							// a predominantly vertical normal. If it also enters
+							// horizontally, keep that side candidate. The global
+							// feet/top candidate still wins earlier or equal times.
+							if Direction <> 0 and NormalX*Direction < 0
+								if abs(NormalX) >= abs(NormalY) or (NormalY < 0 and RelativeStepY > 0)
+									SideValid = TRUE
+								endif
+							endif
+							// A previously reached side plane can have a zero
+							// horizontal normal at t=0. Block deeper X entry,
+							// but never snap the existing center away from it.
+							if Direction <> 0 and HitTime = 0 and StartX = EdgeX and StartY >= 0 and StartY <= Height
 								SideValid = TRUE
 							endif
 							if SideValid = TRUE

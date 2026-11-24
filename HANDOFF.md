@@ -16,7 +16,7 @@ Verbindliche Grundlage: [SONEC_MOVEMENT_SPEC.md](docs/SONEC_MOVEMENT_SPEC.md).
 - Phase A abgeschlossen und lokal geprüft.
 - Phase B: gemeinsamer Kontaktresolver und Restwegschleife implementiert; AGK-Compile des Code-Commits `18a6154` vom Entwickler bestätigt; Plattformtests bestanden, seitliches Kistentunneln links nach rechts bestätigt; vollständige funktionale Abnahme offen.
 - Entwickler meldet am 24.11.2026: Spiel verhält sich nachvollziehbar für den aktuellen Stand. B3h im kompilierten Paket enthalten. Anschließender Test: schnelle Plattformlandung und Randverhalten erwartungsgemäß; Kistenseiten beim Laufen und Springen/Fallen links nach rechts durchlässig, rechts nach links blockierend. Direkt vor der Kiste Bewegung und Sprung beidseitig blockierend.
-- Phase C implementiert: mechanische Frontlinie ±25 Welteinheiten (vorläufig am MG-Geschossstart orientiert), zwei Luftkreise unverändert, relative Seitenblockade einschließlich verbleibender Wandverschiebung und Weltrand-Ausnahme; kein separater Vorab-Wandstop mehr. AGK-Compile für `0d0d7a0` und 8/9 Prüfpunkte vom Entwickler bestätigt. Laufen und Springen beidseitig ohne Tunneln; beim Fallen beidseitiges Hineinbewegen in Kisten. Beim Laufen von rechts nach links kleiner optischer Rückversatz beobachtet. Keine vollständige B/C-Abnahme. Phasen D–F folgen.
+- Phase C implementiert: mechanische Frontlinie ±25 Welteinheiten (vorläufig am MG-Geschossstart orientiert), zwei Luftkreise unverändert, relative Seitenblockade einschließlich verbleibender Wandverschiebung und Weltrand-Ausnahme; kein separater Vorab-Wandstop mehr. AGK-Compile für `0d0d7a0` und 8/9 Prüfpunkte vom Entwickler bestätigt. Laufen und Springen beidseitig ohne Tunneln; beim Fallen beidseitiges Hineinbewegen in Kisten. Beim Laufen von rechts nach links kleiner optischer Rückversatz beobachtet. Keine vollständige B/C-Abnahme. C-Nachkorrektur der Luft-Eckklassifikation implementiert, AGK-Nachtest offen; Phasen D–F folgen.
 - Seitliches Tunneln, Zurückwerfen und unbegrenzte Luftbeschleunigung sind bekannte Ausgangsprobleme; keine vorzeitige Abnahme.
 - Phasen C–G gemäß Spezifikation: mechanische Geometrie, Plattformmitnahme, Tiefenebenen, Mini-Hop, Integration/Balancing.
 
@@ -43,7 +43,7 @@ Verbindliche Grundlage: [SONEC_MOVEMENT_SPEC.md](docs/SONEC_MOVEMENT_SPEC.md).
 
 ## Genau ein nächster vereinbarter Schritt
 
-B/C-Restbefunde eingrenzen: klären, ob das Hineinbewegen beim Fallen an Kisten der eigenen oder fremden Plattform auftritt; anschließend Luft-Seitenkontakt gezielt korrigieren bzw. Tiefenebenenfall Phase E zuordnen. Optischen Rückversatz beim Laufen rechts nach links getrennt prüfen; Mitnahmemodell nicht vor Phase D umdeuten.
+Gezielten Phase-C-Nachtest durchführen: AGK-Compile, fallende schräge Seiten-/Eckkontakte beidseitig, Sprung/Unterseitendurchflug und Landungen als Regression. Entwickler stand/landete mehrfach auf der Kiste zugeordneten Plattform. Luft-Eckklassifikation korrigiert; Wirkung offen. Optischer Rückversatz beim Laufen bleibt zur Prüfung in Phase D.
 
 ## Referenzen
 
