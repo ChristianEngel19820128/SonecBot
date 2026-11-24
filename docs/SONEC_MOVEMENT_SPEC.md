@@ -642,3 +642,9 @@ Die Reihenfolge ist vorläufig; tatsächliche technische Abhängigkeiten können
 - **Typ:** `3c6d934802e32cbf50fb55d86a991504053795be` ergänzt `TSonecContactCandidate` mit `Valid`, `ContactTime`, `ListType`, `Index` in `def_game.agc`.
 - **Funktion und Nutzung:** `1ce5a6b30869fad4b6108b2d4ec3eddf01260c5b` ergänzt `SonecContactChooseEarlier` und nutzt den Typ bei beiden Plattform-Kandidatensuchen in `SonecCollidePlate` (initial und bei geänderter Durchflugausnahme). Vergleichssemantik: kleinere Zeit gewinnt, Gleichstand behält früheren Kandidaten. Noch kein gemeinsamer Resolver und keine Restbewegungsfortsetzung.
 - **Status:** AGK-Compile/Entwicklertest ausstehend. Phase B offen. Folgeschritt: Kistenoberseiten und Seitenkontakte in dieselbe Kandidatenrepräsentation überführen, bevor getrennte Auflösung ersetzt wird.
+
+## 85. Entwickler bestätigt B3e-Kompilierung; gebündelter Phase-B-Test (24.11.2026)
+
+- **Entwicklerrückmeldung:** B3e kompiliert in AGK Studio. Kein Funktionstest durchgeführt; die Kompilierung ist **keine Verhaltensabnahme**.
+- **Teststrategie:** Die einzelnen B3-Architekturschritte werden vorerst nicht jeweils funktional abgenommen. Zum Abschluss von Phase B werden die tatsächlich testbaren Szenarien, erwarteten Soll-Ergebnisse aus dieser Spezifikation und die bekannten Fehler gezielt in einem gemeinsamen Testplan gegenübergestellt. Neue Zwischenschritte weiterhin klein halten und Compile-Status separat dokumentieren.
+- **Weiterhin offen:** Kistenoberseiten und Seitenkontakte in gemeinsamen Kandidatentyp integrieren, gemeinsame früheste Kontaktentscheidung und Auflösung mit Restbewegung, Altpfade ersetzen; erst dann gebündelter Regressionstest und explizite Phase-B-Freigabe.
