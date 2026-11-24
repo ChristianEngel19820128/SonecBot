@@ -1423,6 +1423,7 @@ function SonecCollideChestSideContacts(Sonec ref as TSonec,ChestList ref as TChe
 	local RelativeEndY as float
 	local TopTime as float
 	local BestTopTime as float
+	local BestChestTopCandidate as TSonecContactCandidate
 	local FrontOffset as float
 	local StartFrontX as float
 	local EndFrontX as float
@@ -1587,15 +1588,17 @@ function SonecCollideChestSideContacts(Sonec ref as TSonec,ChestList ref as TChe
 	// Compare the earliest eligible top across ALL chests with the
 	// earliest side, rather than prioritizing only the side-hit chest.
 	BestTopTime = 2
+	BestChestTopCandidate.Valid = FALSE
 	if Sonec.State.Stand = FALSE and Sonec.State.Fall = TRUE
 		for i = 0 to ChestList.Chest.Length
 			if SonecChestRelevant(Sonec,ChestList,i) = TRUE and Sonec.PassThroughChestIndex <> i
 				TopTime = SonecChestTopContactTime(Sonec,ChestList,i)
-				if TopTime >= 0 and TopTime < BestTopTime
-					BestTopTime = TopTime
-				endif
+				BestChestTopCandidate = SonecContactChooseEarlier(BestChestTopCandidate,TopTime,TYPECHEST,i)
 			endif
 		next i
+	endif
+	if BestChestTopCandidate.Valid = TRUE
+		BestTopTime = BestChestTopCandidate.ContactTime
 	endif
 	// B3c: an earlier platform top also wins over a later chest side.
 	if BestPlateContactTime < BestTopTime
