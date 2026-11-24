@@ -209,6 +209,7 @@ endfunction
 // D-R3 temporary diagnostic: append one simulation frame to the AGK app-local CSV.
 function SonecEdgeCsvWrite(Game ref as TGame,Now as integer)
 	local FileID as integer
+	local CsvPath as TFilePath
 	local EventCode as integer
 	local ChestIndex as integer
 	local ChestX as float
@@ -221,6 +222,11 @@ function SonecEdgeCsvWrite(Game ref as TGame,Now as integer)
 	if GAME_DEBUG_ENABLED = 0
 		exitfunction
 	endif
+
+	// FilePathSetAndCheck sets the app-local root even for a new file.
+	CsvPath.Path = "/"
+	CsvPath.Name = ""
+	FilePathSetAndCheck(CsvPath)
 
 	if SonecEdgeCsvStarted = FALSE
 		FileID = OpenToWrite("sonec_edge_diagnostics.csv",0)
