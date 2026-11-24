@@ -1,0 +1,151 @@
+# SonecBot – Spezifikation der Bewegungs- und Kollisionsphysik
+
+**Stand:** 24. November 2026  
+**Status:** Fachlich besprochener Entwurf zur Prüfung; **keine Implementierungsfreigabe**  
+**Zweig:** `develop`  
+**Geltungsbereich:** Sonec, Plattformen, Kisten, Weltgrenzen, Sprung und Jetpack
+
+## 1. Leitprinzipien
+
+1. Der **erste gültige Kontakt entlang des Bewegungswegs** entscheidet, nicht die zufällige Reihenfolge von Kollisionsabfragen.
+2. Kontakte werden anhand der **relativen Bewegung** von Sonec und Hindernis ermittelt; auch schnelle Bewegungen dürfen nicht tunneln.
+3. Ein Kontakt begrenzt **nur die betroffene Bewegungskomponente**: Seitentreffer horizontal, Landung vertikal.
+4. Physikalische Eigenschaften, Eingaben/Aktionen und Kollisionsergebnisse werden auseinandergehalten. Ein Seitenkontakt darf `Stand` nicht künstlich setzen.
+5. Möglichst wenige allgemeine Regeln; explizite Ausnahmen nur, wo das Spiel sie erfordert. Bereits bestehende Kontakte dürfen nicht automatisch als neue blockierende Kollision gelten.
+
+## 2. Tiefenebenen und Plattformbindung
+
+Die 2D-Darstellung bildet verschiedene räumliche Tiefenebenen ab.
+
+- `LinkedPlateIndex` bezeichnet die zugeordnete Tiefenebene, nicht zwingend die aktuell tragende Oberfläche.
+- Die Zuordnung bleibt beim Springen, Fallen und Fliegen bestehen; sie wird nicht allein aufgrund einer Höhe gelöscht.
+- Sie ändert sich **erst bei einer gültigen Landung** auf einer anderen Plattform oder einer zugehörigen Kiste.
+- Beim Durchflug einer **fremden Plattform von unten** sind deren Boden **und sämtliche ihrer Kisten**, auch seitlich, vorübergehend durchlässig. Sonecs bisherige Ebene bleibt dabei bestehen.
+- **Einfache Erstregel:** Diese Durchflugausnahme endet, sobald Sonecs Füße oberhalb der höchsten Kistenoberkante dieser Plattform liegen.
+- **Späterer Spielgefühl-Test:** Statt der pauschalen Höhenregel eventuell die tatsächlichen Überlappungen einzelner relevanter Elemente prüfen. Das ist ausdrücklich keine Anforderung der ersten Version.
+
+## 3. Landungen und gleichzeitige Kontakte
+
+- Eine Landung ist nur bei einem gültigen **Kontakt von oben** möglich: Die Füße müssen die Oberfläche von oben erreichen und beim Abwärtsweg kreuzen. Dass nur der Kopf eine Höhe erreicht, genügt nicht.
+- Plattformoberflächen und Oberseiten aktiver Kisten sind mögliche Landeflächen.
+- Beim gültigen Landekontakt wird die Plattformzuordnung übernommen.
+- Bei mehreren Kandidaten gewinnt der **früheste gültige Kontakt entlang des Wegs**. Bei gleicher Höhe gilt „first in“: die in Bewegungsrichtung zuerst erreichte gültige Fläche; exakte Gleichstände sind deterministisch aufzulösen.
+- Hohe Fallgeschwindigkeit darf keine gültige Landung überspringen.
+- Bereits vorhandener Bodenkontakt blockiert keine zulässige horizontale Bewegung.
+
+## 4. Mechanische Kollisionsgeometrie
+
+**Mit tatsächlichem Bodenkontakt:** Seitliche Kistenkollision durch eine **vertikale Linie an Sonecs Vorderseite** über seine **physikalische Körperhöhe**, nicht die Spritehöhe. Ihre horizontale Lage wird am gewünschten Gewehrlaufabschluss ausgerichtet und für die Kontaktseite gespiegelt.
+
+**Ohne Bodenkontakt (Sprung, Fall, Flug):** Die bestehenden **zwei Körperkreise** bleiben für die mechanische Kistenkollision erhalten; sie sind fairer als ein Rechteck.
+
+- Der Wechsel der Geometrie darf keine Positionssprünge, Teleports oder künstliches Herausschieben erzeugen.
+- Die vorhandenen Zwei-Kreis-Prüfungen für **Schaden durch Geschosse, Explosionen und andere Gefahren** bleiben unangetastet.
+- Ducken erhält vorerst keine verkleinerte physikalische Höhe: Röhren und Decken sind nicht implementiert.
+
+## 5. Seitenkollisionen
+
+- Beim Anlaufen gegen eine Kiste stoppt Sonec vor dem Hindernis. Bewegung und Geschwindigkeit **in das Hindernis hinein** werden relativ zu dessen Bewegung begrenzt.
+- Weiter gedrückte Richtung darf keine unsichtbar anwachsende Geschwindigkeit gegen die Wand erzeugen.
+- Beim Gegenlenken kann Sonec sofort in die freie Richtung beschleunigen.
+- Ein Seitenkontakt setzt **nicht** `Stand = TRUE` und unterbricht nicht die vertikale Bewegung.
+- Auch im Weitsprung gilt: Ein seitlicher Kistentreffer begrenzt nur die horizontale Komponente; Steigen/Fallen geht weiter.
+- Bewegte Kisten werden über ihre eigene Geschwindigkeit berücksichtigt. Kein pauschales Nullsetzen der Weltgeschwindigkeit bei bewegten Hindernissen.
+
+## 6. Bewegte Plattformen und Weltgrenze
+
+Alle derzeitigen Plattformen bewegen sich **nach links**.
+
+- Sonec wird von seiner tragenden Plattform mitgenommen.
+- Durch aktives Gegenlaufen kann er die Mitnahme zunehmend ausgleichen und schließlich überwinden; seine bisherige maximale Laufgeschwindigkeit bleibt zunächst unverändert.
+- **Technischer Testvorschlag, noch nicht abschließend entschieden:** Eigene Geschwindigkeit und Plattformmitnahme intern trennen, beim Abspringen die resultierende Weltgeschwindigkeit ohne Sprung oder doppelte Addition übernehmen. Das endgültige Modell entscheidet das Spielgefühl.
+- **Einzige ausdrücklich vereinbarte Kisten-Durchdringung am Weltrand:** Wenn eine weiter nach links fahrende Kiste Sonec am linken Weltrand erreicht und er nicht weiter ausweichen kann, darf die Kiste ihn durchdringen. Kein Verschieben aus der Welt und kein Teleport.
+- Plattform-Richtungswechsel sind derzeit nicht vorgesehen; mögliche Bossmechaniken werden später separat entworfen.
+
+## 7. Springen und Schwerkraft
+
+- Der normale Sprung ist wie ein **Weitsprung**: ein einmaliger vertikaler Impuls; der horizontale Anlauf bestimmt den Schwung.
+- Während des normalen Sprungs kann der horizontale Richtungsimpuls **nicht aktiv umgelenkt** werden.
+- Die Schwerkraft wirkt weiter und hebt den anfänglichen vertikalen Impuls allmählich auf.
+- Seitenkontakte beenden den Sprung nicht und setzen keine Bodenhaltung.
+
+## 8. Mini-Hop beim Verlassen einer Kistenkante
+
+- Beim Verlassen einer Kistenkante soll grundsätzlich ein **einmaliger Mini-Hop** ausgelöst werden, unabhängig von der anfänglichen horizontalen Geschwindigkeit.
+- Ein kleiner **vertikaler Impuls** unterstützt den Übergang.
+- Ist die horizontale Geschwindigkeit für ein korrektes Verlassen der Kante zu gering, kommt ein **zusätzlicher horizontaler Impuls in Bewegungsrichtung** hinzu.
+- Wiederholte Impulse für denselben Kantenübergang sind ausgeschlossen.
+- Die exakten Werte und die sichere Erkennung des Kantenübergangs sind per lokalem Spieltest abzustimmen. Die bisherige Versuchsimplementierung war bei sehr geringer Geschwindigkeit unzuverlässig.
+
+## 9. Jetpack, Energie und Eingaben
+
+- Jetpack-Schub muss die Schwerkraft überwinden; `Fly` allein darf Sonec nicht nach oben teleportieren.
+- Verfügbare Energie bestimmt, ob der Schub eingesetzt werden kann.
+- **Bestehendes Verhalten erhalten:** Kreuz nach oben wird mit `ButtonDown` kontinuierlich geprüft. Sammelt Sonec während eines Sprungs Energie, während die Taste gedrückt bleibt, kann das Jetpack **sofort wieder einsetzen**.
+- Beim Übergang soll vorhandene Bewegung nicht ohne Grund zurückgesetzt werden.
+- **Separates Backlog, nicht Bestandteil dieser Umsetzung:** Zweiter Druck auf Kreuz nach oben im Sprung als gezielte Jetpack-Aktivierung; genaue Steuerung und Verhältnis zu `ButtonDown` später festlegen.
+
+## 10. Zustandsmodell
+
+Bisher können mehrere Bool-Werte gleichzeitig wahr sein; verschachtelte `if`-Abfragen entscheiden stellenweise über ihre Priorität.
+
+Künftig klar unterscheiden:
+- **Eingaben/Aktionen:** Laufwunsch, Sprungimpuls, Jetpack-Schub.
+- **Physikalische Eigenschaften:** tatsächlicher Bodenkontakt, Geschwindigkeiten, Tiefenebene.
+- **Kontaktergebnisse:** Landung, seitliche Blockade, tragende Oberfläche.
+
+Bestehende Begriffe und Beziehungen:
+- `Stand` und `Duck`: unterschiedliche, gegenseitig ausgeschlossene Haltungen.
+- `Fall` und `Fly`: unterschiedliche, gegenseitig ausgeschlossene Bewegungszustände.
+- `Jump`: einmaliger Impuls, kein dauerhafter Schub.
+- `Back` und `Forward`: Richtungen relativ zur Ausrichtung.
+
+Die Bool-Werte müssen nicht pauschal entfernt werden. Entscheidend ist, dass versteckte Prioritäten nicht zu widersprüchlichen physikalischen Ergebnissen führen. Die **tatsächliche Bodenberührung**, nicht bloß ein priorisierter Bool-Wert, bestimmt die mechanische Kollisionsgeometrie.
+
+## 11. Technischer Entwurf (Vorschlag, keine Codefreigabe)
+
+1. Eingaben, Kräfte und einmalige Impulse auswerten.
+2. Geplante Sonec-, Plattform- und Kistenbewegungen für den Frame bestimmen.
+3. Anhand der Tiefenebene und aktiver Durchflugphase gültige Kollisionskandidaten wählen.
+4. Frühesten Kontakt entlang der **relativen Bewegungswege** bestimmen (Swept Collision).
+5. Nur die betroffene Bewegungskomponente begrenzen; verbleibende Bewegung gegebenenfalls erneut prüfen.
+6. Position, Bodenkontakt, Trägeroberfläche, Tiefenebene und übrige Zustände konsistent aktualisieren.
+
+Vermeiden: mehrere unabhängige Routinen, die nacheinander dieselbe Position korrigieren und sich gegenseitig überschreiben. Der genaue Ablauf muss mit dem AGK-Updatezyklus abgestimmt werden.
+
+## 12. Vorgeschlagene kleine Umsetzungsschritte
+
+| Phase | Schwerpunkt | Prüfung |
+| --- | --- | --- |
+| A | Zustände, Geschwindigkeiten und Kollisionsdaten entflechten | Bestehende Bewegung bleibt nachvollziehbar |
+| B | Erster Kontakt / Swept Collision | Kein Tunneln bei hoher Geschwindigkeit |
+| C | Linie am Boden, zwei Kreise in der Luft; Seitenkontakt | Gewehr stoppt vor Kiste, Gegenlenken funktioniert |
+| D | Plattformmitnahme und relative Kistenbewegung | Stehen, Gegenlaufen, Abspringen |
+| E | Tiefenebenen, Durchflug, Landungen | Gültige Ebenenwechsel, keine Fremdkisten-Blockade |
+| F | Mini-Hop an Kistenkanten | Funktioniert auch bei sehr geringer Geschwindigkeit |
+| G | Integration und Balancing | Regressionstests und Spielgefühl |
+
+Die Reihenfolge ist vorläufig; tatsächliche technische Abhängigkeiten können eine andere Aufteilung erfordern.
+
+## 13. Offene Detailfragen für technische Durchsicht und Tests
+
+- Exakte horizontale Lage der Boden-Kollisionslinie und Übergang zu den Kreisen.
+- Gleichzeitige Kontakte und bestehende Überlappungen ohne Positionssprünge.
+- Exakte Mini-Hop-Impulse und Erkennung der Kantenereignisse.
+- Feinabstimmung der Geschwindigkeitsübernahme beim Abspringen/Landen.
+- Eventuelle spätere elementweise Durchflugprüfung statt pauschaler Höhenregel.
+
+## 14. Abnahmefälle
+
+- Kisten von beiden Seiten langsam/schnell anlaufen; sofortiges Gegenlenken.
+- Seitlicher Kistenkontakt im Weitsprung ohne vertikalen Stopp.
+- Landung auf kleinen/großen Kisten, schnelles Fallen ohne Durchtunneln.
+- Durchflug einer fremden Plattform von unten, anschließend gültige Landung und Ebenenwechsel.
+- Mehrere gleichzeitige Plattformkandidaten.
+- Mitnahme auf nach links fahrender Plattform, Gegenlaufen und Absprung ohne ungewollten Geschwindigkeitssprung.
+- Mini-Hop an Kistenkante auch bei sehr niedriger Geschwindigkeit.
+- Verhalten am linken Weltrand.
+- Jetpack nach Energieaufnahme bei gehaltenem Kreuz nach oben.
+- Unveränderte Schadens-Hitboxen, Waffenfunktionen und bestehende Steuerung.
+
+**AGK-Kompilierung und Laufzeittests erfolgen lokal durch den Entwickler. Bis zu einer ausdrücklichen Freigabe erfolgen keine Codeänderungen.**
