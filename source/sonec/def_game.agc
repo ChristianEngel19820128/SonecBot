@@ -557,6 +557,7 @@ type TProtoPlate
 endtype
 	
 type TPlate
+	CollisionMoveStart as TPosition
 	Enabled as integer
 	ProtoIndex as integer
 	ObjectData as TObjectData
