@@ -54,12 +54,12 @@ Objektverwaltung und Kollisionen bestehen weitgehend aus eigenen Strukturen/Pool
 
 **Evidenz:** Entwickler hat S1/S1b, S2 (7/7), S3 (7/7) und S4 (8/8) lokal bestanden gemeldet, einschließlich Plattformabschirmung direkt darunter und Treffer außerhalb der Plattformkanten. Kein eigener AGK-Compile durch den Assistenten. Bei neuen Gegnern oder Schadensarten diese Schnittstellen zuerst prüfen und die neuen Trefferfälle lokal testen.
 
-### Sonec-Bewegung: Kisten-Seitenkontakt (Phase C, AGK-Test offen)
+### Sonec-Bewegung: Kisten-Seitenkontakt (Phase C, AGK-Compile bestanden)
 
 - Zentraler Sweep/Resolver in `sonec.agc`: frühester gültiger Kontakt, danach Restweg gegen interpolierte Hindernispositionen. `LinkedPlateIndex` bleibt bei Sprung/Fall erhalten; bestehende Kistenrelevanz und Durchflugausnahme bleiben bis Phase E unverändert.
 - Mechanische Bodenfront: `SONEC_MECHANICAL_FRONT_X=25` Welteinheiten beidseitig, volle Körperhöhe. Vorläufiger Abstand entspricht MG-Geschossstart; optisch lokal abgleichen. In der Luft weiterhin die zwei vorhandenen Körperkreise; Schadensgeometrie unverändert.
 - Seitenreaktion berücksichtigt Restweg der Wand; keine Korrektur auf eine neue Frontposition bei schon vorhandener Überlappung. Nur eigene Bewegung in die Wand wird gelöscht; Gegenlenken bleibt frei. Kein separater Vorab-Wandstop; `BlockedChest*` dokumentiert den Kontakt im aktuellen Update und unterstützt die Weltrand-Ausnahme.
-- Weltgrenze links wird eingehalten, dort kann die nach links fahrende Kiste passieren. Vollständiges Mitnahme-/Geschwindigkeitsmodell folgt Phase D; Kanten-Hop und Eingabe-/Kräfteregeln bleiben unverändert. Compile und Laufzeittest offen.
+- Weltgrenze links wird eingehalten, dort kann die nach links fahrende Kiste passieren. Vollständiges Mitnahme-/Geschwindigkeitsmodell folgt Phase D; Kanten-Hop und Eingabe-/Kräfteregeln bleiben unverändert. Entwickler bestätigt Compile und 8/9 B/C-Prüfpunkte für `0d0d7a0`; Fallen beidseitig mit Hineinbewegen in Kisten, kleiner optischer Rückversatz rechts nach links offen. Siehe aktuelle Bewegungsspezifikation; vollständige Abnahme offen.
 
 ## 3. Alpha-Walker: unveränderter Referenzstand
 

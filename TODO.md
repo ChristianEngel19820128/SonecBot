@@ -4,7 +4,7 @@
 
 ## Jetzt
 
-- [ ] Bewegungsumstellung Phase C: relative Seitenreaktion und mechanische Frontlinie implementiert, AGK-Compile und gemeinsamer B/C-Funktionstest offen. Phase B: Plattformtests bestätigt, bisheriges Kistentunneln noch nicht nachgetestet. Danach D–G gemäß [Spezifikation](docs/SONEC_MOVEMENT_SPEC.md).
+- [ ] Bewegungsumstellung B/C: `0d0d7a0` kompiliert, 8/9 Prüfpunkte bestätigt. Beidseitiges Hineinbewegen in Kisten beim Fallen und kleiner optischer Rückversatz beim Laufen rechts nach links offen. Fallkisten-Ebene klären und Restbefunde eingrenzen. Danach D–G gemäß [Spezifikation](docs/SONEC_MOVEMENT_SPEC.md).
 
 ## Danach / separat
 
