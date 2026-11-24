@@ -560,3 +560,8 @@ Die Reihenfolge ist vorläufig; tatsächliche technische Abhängigkeiten können
 - **Entwickler-CSV:** `sonec_edge_diagnostics(1).csv`, 290 Zeilen, Zeit 6897–11719 ms (4.822 s), alle `event=0`; kein Randlandungs- oder Hop-Ereignis, `balance_active=0` durchgehend. Kein Kistensupport (`chest_index=-1`); Test wegen kurzer Laufzeit/weniger Kisten für Hop-Ursache nicht aussagekräftig.
 - **Messfehler:** `pre_collision_vx` ist in allen Zeilen 0, obwohl `vx` variiert. Codeprüfung: die neue Zuweisung `DebugCsvPreCollisionVX/VY` wurde versehentlich nach `CollisionMoveEnd` in `SonecInit` statt in `SonecMove` eingefügt. Daher ist die bisherige Vor-/Nach-Kollision-Messung ungültig.
 - **Korrekturumfang:** Ausschließlich Zuweisungen aus `SonecInit` entfernen und am Ende von `SonecMove` direkt nach dem Setzen von `CollisionMoveEnd` platzieren. Keine Bewegungs-/Kollisionsänderung; AGK-Kompilierung und neuer CSV-Test ausstehend.
+
+## 72. D-R4 Vor-Kollisionsmessung korrigiert (24.11.2026)
+
+- **Code-Commit:** `0e983e95d5164901efe536c11755193550f47721`. `DebugCsvPreCollisionVX/VY` wird nun in `SonecMove` direkt nach `CollisionMoveEnd` gesetzt; falsche einmalige Initialisierungs-Zuweisung entfernt. Die CSV-Schreibfunktion und die Bewegungslogik bleiben unverändert.
+- **Teststatus:** erneute AGK-Kompilierung und CSV-Test erforderlich; alte Datei darf für `pre_collision_vx/vy` nicht als Beleg verwendet werden.
