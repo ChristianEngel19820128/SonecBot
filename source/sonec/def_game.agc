@@ -525,6 +525,12 @@ type TFlameGun
 endtype
 
 type TSonec
+	DebugEdgeFrames as integer
+	DebugEdgeEvent as integer
+	DebugEdgeChestX as float
+	DebugEdgeChestSpeedX as float
+	DebugEdgeBeforeBalanceX as float
+	DebugEdgeAfterBalanceX as float
 	ChestSideContactTime as float
 	GroundContactActive as integer
 	PassThroughChestIndex as integer
