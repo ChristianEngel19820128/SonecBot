@@ -648,3 +648,9 @@ Die Reihenfolge ist vorläufig; tatsächliche technische Abhängigkeiten können
 - **Entwicklerrückmeldung:** B3e kompiliert in AGK Studio. Kein Funktionstest durchgeführt; die Kompilierung ist **keine Verhaltensabnahme**.
 - **Teststrategie:** Die einzelnen B3-Architekturschritte werden vorerst nicht jeweils funktional abgenommen. Zum Abschluss von Phase B werden die tatsächlich testbaren Szenarien, erwarteten Soll-Ergebnisse aus dieser Spezifikation und die bekannten Fehler gezielt in einem gemeinsamen Testplan gegenübergestellt. Neue Zwischenschritte weiterhin klein halten und Compile-Status separat dokumentieren.
 - **Weiterhin offen:** Kistenoberseiten und Seitenkontakte in gemeinsamen Kandidatentyp integrieren, gemeinsame früheste Kontaktentscheidung und Auflösung mit Restbewegung, Altpfade ersetzen; erst dann gebündelter Regressionstest und explizite Phase-B-Freigabe.
+
+## 86. B3f – Kistenoberseiten in gemeinsame Kandidatenstruktur (vor Code, 24.11.2026)
+
+- **Umfang:** Die bereits bestehende globale Suche nach der frühesten gültigen Kistenoberseite in `SonecCollideChestSideContacts` verwendet künftig `TSonecContactCandidate` und `SonecContactChooseEarlier` anstelle eines eigenen Float-Minimums. Der vorhandene Vergleich gegen Plattformoberseitenzeit und Seitenzeit bleibt identisch; die getrennten Resolver bleiben in diesem Schritt bestehen.
+- **Architekturziel:** Plattform- und Kistenoberseiten verwenden denselben Zeitvergleich und speichern Typ/Index, sodass die spätere globale Auswahl auf derselben Repräsentation aufbauen kann. Die nächste Teilaufgabe ist, die Seitentreffer ebenfalls als Kandidaten zu erfassen und danach die Auflösung zu vereinheitlichen.
+- **Teststrategie:** AGK-Kompilierung einzeln, Funktionstest gesammelt zum Phase-B-Abschluss. Keine gezielte Verhaltensänderung in B3f.
