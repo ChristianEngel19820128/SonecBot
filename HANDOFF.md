@@ -14,8 +14,8 @@
 Verbindliche Grundlage: [SONEC_MOVEMENT_SPEC.md](docs/SONEC_MOVEMENT_SPEC.md).
 
 - Phase A abgeschlossen und lokal geprüft.
-- Phase B: gemeinsamer Kontaktresolver und Restwegschleife implementiert; AGK-Compile des Code-Commits `18a6154` vom Entwickler bestätigt; funktionale Abnahme offen.
-- Entwickler meldet am 24.11.2026: Spiel verhält sich nachvollziehbar für den aktuellen Stand. Keine gezielten Einzelprüfungen gemeldet; B3h im kompilierten Paket enthalten.
+- Phase B: gemeinsamer Kontaktresolver und Restwegschleife implementiert; AGK-Compile des Code-Commits `18a6154` vom Entwickler bestätigt; Plattformtests bestanden, seitliches Kistentunneln links nach rechts bestätigt; vollständige funktionale Abnahme offen.
+- Entwickler meldet am 24.11.2026: Spiel verhält sich nachvollziehbar für den aktuellen Stand. B3h im kompilierten Paket enthalten. Anschließender Test: schnelle Plattformlandung und Randverhalten erwartungsgemäß; Kistenseiten beim Laufen und Springen/Fallen links nach rechts durchlässig, rechts nach links blockierend. Direkt vor der Kiste Bewegung und Sprung beidseitig blockierend.
 - Kontaktwahl: Kisten-/Plattformoberseite, Kistenseite, Durchflugeintritt und Stützverlust; zeitlich interpolierte Restwegprüfung, alte getrennte Resolver entfernt. Phasen C–F bleiben fachlich offen.
 - Seitliches Tunneln, Zurückwerfen und unbegrenzte Luftbeschleunigung sind bekannte Ausgangsprobleme; keine vorzeitige Abnahme.
 - Phasen C–G gemäß Spezifikation: mechanische Geometrie, Plattformmitnahme, Tiefenebenen, Mini-Hop, Integration/Balancing.
@@ -43,7 +43,7 @@ Verbindliche Grundlage: [SONEC_MOVEMENT_SPEC.md](docs/SONEC_MOVEMENT_SPEC.md).
 
 ## Genau ein nächster vereinbarter Schritt
 
-Gezielte Phase-B-Funktionsprüfung gemeinsam abstimmen: schnelle Oberseitenlandung, Seite vor Oberseite mit vertikaler Restbewegung, Oberseite vor Seite mit horizontaler Restbewegung. Falls nicht zuverlässig isolierbar, mit Phase C bündeln; Übergang gemeinsam entscheiden.
+Phase-B-Testbefund gemeinsam bewerten: Plattformlandung im getesteten Umfang bestätigt; richtungsabhängiges Kistentunneln nicht abgenommen. Vorschlag: Seitenauflösung im Rahmen Phase C korrigieren, relative Mitnahme mit Phase D abstimmen und offene Kontaktreihenfolge/Restbewegung im gemeinsamen Regressionstest prüfen. Übergang gemeinsam entscheiden.
 
 ## Referenzen
 
