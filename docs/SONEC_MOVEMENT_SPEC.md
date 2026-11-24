@@ -229,3 +229,12 @@ Die Reihenfolge ist vorläufig; tatsächliche technische Abhängigkeiten können
 - **Unverändert:** Kistenkontakt- und Kistenlandelogik laufen vorher; Jetpack, Seitenkollision, Durchflug-Ausnahme und Geschwindigkeitsmodell wurden nicht umgestellt.
 - **Noch offen:** Plattform-/Kistenbewegung relativ zum Sweep, zeitgenauer horizontaler Kontakt und gemeinsame Priorisierung von Kisten- und Plattformkontakten; B1 ist kein vollständiger Swept-Resolver.
 - **Entwicklerprüfung ausstehend:** AGK-Kompilierung, normale Plattformlandung, Landung nach Sprung/Jetpack, schneller Fall auf Plattform und Plattformen auf unterschiedlichen Höhen. Keine Testergebnisse vorweggenommen.
+
+## 25. Entwicklertest Phase B1 (24.11.2026)
+
+- **Getesteter Code-Commit:** `6a6c85bfb3061d469db4494c6864aa6404330c23` auf `develop`.
+- **Gesamtergebnis:** **Bestanden, 6/6 bestätigt**, vom Entwickler lokal in AGK Studio gemeldet.
+- **Bestätigt:** AGK-Kompilierung erfolgreich; normale Plattformlandung funktioniert; Landung nach Sprung funktioniert; Landung nach Jetpack funktioniert; schneller Fall auf Plattform funktioniert; mehrere Plattformhöhen unauffällig.
+- **Offen:** Keine. **Beobachtungen:** Keine Angaben.
+- **Einordnung:** B1 ist für diese sechs Fälle erfolgreich geprüft. Die noch ausstehenden Aspekte der vollständigen Swept Collision (relative Hindernisbewegung, horizontaler Kontaktzeitpunkt und gemeinsame Kontaktpriorisierung) sind damit nicht automatisch abgenommen.
+- **Nächster Schritt:** B2 als kleinsten weiteren, separat testbaren Schritt vorbereiten; jede neue Bewegungsentscheidung zuerst in dieser Spezifikation dokumentieren.
