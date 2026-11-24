@@ -695,6 +695,18 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
+// Phase D: ground MoveSpeed is relative to the support, air MoveSpeed is
+// world momentum. Transfer cached support motion exactly once on release.
+function SonecReleaseSupportMotion(Sonec ref as TSonec)
+	if Sonec.GroundContactActive = TRUE
+		Sonec.ObjectData.MoveSpeed.x = Sonec.ObjectData.MoveSpeed.x + Sonec.ObjectData.AutoSpeed.x
+		Sonec.ObjectData.MoveSpeed.y = Sonec.ObjectData.MoveSpeed.y + Sonec.ObjectData.AutoSpeed.y
+	endif
+	Sonec.GroundContactActive = FALSE
+	Sonec.ObjectData.AutoSpeed.x = 0
+	Sonec.ObjectData.AutoSpeed.y = 0
+endfunction
+
 // Phase A2: Keep all Up-button flight/jump/fall transitions in one place.
 // This extraction preserves the old branch priority and energy thresholds.
 // It does not yet redefine the physical grounded/contact model.
@@ -706,13 +718,13 @@ function SonecInputVerticalState(Sonec ref as TSonec,JetfireList ref as TJetfire
 		Sonec.State.Fly = TRUE
 		Sonec.State.Fall = FALSE
 		Sonec.State.Stand = FALSE
-		Sonec.GroundContactActive = FALSE
+		SonecReleaseSupportMotion(Sonec)
 		Sonec.AnimationData.Frame = 0
 		SonecJetfireAdd(Sonec,JetfireList,ProtoJetfire,World,Position,Now)
 	else
 		if UpHeld and Sonec.State.Stand = TRUE
 			Sonec.State.Jump = TRUE
-			Sonec.GroundContactActive = FALSE
+			SonecReleaseSupportMotion(Sonec)
 			Sonec.State.Stand = FALSE
 			Sonec.State.Fly = FALSE
 			Sonec.State.Fall = FALSE
@@ -830,14 +842,12 @@ endfunction
 // LinkedPlateIndex intentionally survives: it represents the depth plane,
 // whereas CollisionData.ListType/Index identifies the current support.
 function SonecCollideReset(Sonec ref as TSonec)
+	SonecReleaseSupportMotion(Sonec)
 	
 	Sonec.CollisionData.ListType = 0
 	Sonec.CollisionData.Index = -1
-	Sonec.GroundContactActive = FALSE
 	Sonec.State.Fall = TRUE
 	Sonec.State.Stand = FALSE
-	Sonec.ObjectData.AutoSpeed.x = 0
-	Sonec.ObjectData.AutoSpeed.y = 0
 	Sonec.BalanceActive = FALSE
 	Sonec.AnimationData.RepeatAnimation = TRUE
 	Sonec.AnimationData.Finished = FALSE
@@ -850,7 +860,13 @@ endfunction
 
 // Phase A3: A valid landing updates support and depth-plane association.
 // Eligibility and timing remain with the existing collision callers.
-function SonecSetGroundContact(Sonec ref as TSonec,SurfaceType as integer,SurfaceIndex as integer,PlateIndex as integer)
+function SonecSetGroundContact(Sonec ref as TSonec,SurfaceType as integer,SurfaceIndex as integer,PlateIndex as integer,Carry as TSpeed)
+	// Convert world momentum to support-relative momentum at the contact.
+	// The current residual X path is already world space: do not add carry twice.
+	if Sonec.GroundContactActive = FALSE
+		Sonec.ObjectData.MoveSpeed.x = Sonec.ObjectData.MoveSpeed.x - Carry.x
+	endif
+	Sonec.ObjectData.AutoSpeed = Carry
 	Sonec.GroundContactActive = TRUE
 	Sonec.State.Fall = FALSE
 	Sonec.State.Stand = TRUE
@@ -917,10 +933,36 @@ endfunction ContactTime
 function SonecCollisionAxisAt(StartValue as float,EndValue as float,FrameTime as float)
 endfunction StartValue + (EndValue-StartValue)*FrameTime
 
-// Preserve the existing support carry policy until Phase D, but apply it
-// to the intended path BEFORE collision selection, never after a side hit.
+// Actual support displacement is sampled once per GameDo, including zero
+// when the plate timer did not advance. AutoSpeed, in contrast, is the
+// signed carrier momentum in units of the last Sonec movement update.
+function SonecCarrierVelocity(Sonec ref as TSonec,PlateList ref as TPlateList,PlateIndex as integer)
+	local Carry as TSpeed
+	local StepRange as float
+	Carry.x = 0
+	Carry.y = 0
+	if PlateIndex >= 0 and PlateIndex <= PlateList.Plate.Length
+		if PlateList.Plate[PlateIndex].Enabled = TRUE
+			StepRange = Sonec.ObjectData.MoveTimer.CalcRange
+			if StepRange <= 0 then StepRange = Sonec.ObjectData.MoveTimer.Range
+			// PlateMove subtracts X speed; both timers use the same range units.
+			Carry.x = -PlateList.Plate[PlateIndex].ObjectData.MoveSpeed.x*StepRange
+			if PlateList.Plate[PlateIndex].YShift.Enabled = TRUE and PlateList.Plate[PlateIndex].YShift.Min < PlateList.Plate[PlateIndex].YShift.Max
+				if PlateList.Plate[PlateIndex].YShift.Alignment = MOVEUP
+					Carry.y = -PlateList.Plate[PlateIndex].ObjectData.MoveSpeed.y*StepRange
+				else
+					Carry.y = PlateList.Plate[PlateIndex].ObjectData.MoveSpeed.y*StepRange
+				endif
+			endif
+		endif
+	endif
+endfunction Carry
+
 function SonecPrepareSupportPath(Sonec ref as TSonec,PlateList ref as TPlateList,ChestList ref as TChestList)
 	local i as integer
+	local PlateIndex as integer
+	local CarryX as float
+	local SurfaceY as float
 	if Sonec.GroundContactActive = FALSE then exitfunction
 	i = Sonec.CollisionData.Index
 	if Sonec.CollisionData.ListType = TYPEPLATE
@@ -932,41 +974,46 @@ function SonecPrepareSupportPath(Sonec ref as TSonec,PlateList ref as TPlateList
 			SonecCollideReset(Sonec)
 			exitfunction
 		endif
-		Sonec.ObjectData.AutoSpeed.y = PlateList.Plate[i].ObjectData.MoveSpeed.y
-		Sonec.CollisionMoveEnd.y = PlateList.Plate[i].ObjectData.Position.y - Sonec.ObjectData.Size.Height*0.5
-		if Sonec.CollisionMoveEnd.x > Sonec.ObjectData.Size.Width*0.5
-			if Sonec.ObjectData.MoveSpeed.x <> 0
-				Sonec.ObjectData.AutoSpeed.x = 0
-			else
-				Sonec.ObjectData.AutoSpeed.x = -PlateList.Plate[i].ObjectData.MoveSpeed.x
-				Sonec.CollisionMoveEnd.x = PlateList.Plate[i].ObjectData.Position.x + Sonec.CollisionData.Position.x
-			endif
-		endif
+		PlateIndex = i
+		CarryX = PlateList.Plate[i].ObjectData.Position.x - PlateList.Plate[i].CollisionMoveStart.x
+		SurfaceY = PlateList.Plate[i].ObjectData.Position.y
 	else
-		if Sonec.CollisionData.ListType = TYPECHEST
-			if i < 0 or i > ChestList.Chest.Length
-				SonecCollideReset(Sonec)
-				exitfunction
-			endif
-			if ChestList.Chest[i].Enabled = FALSE
-				SonecCollideReset(Sonec)
-				exitfunction
-			endif
-			Sonec.ObjectData.AutoSpeed.y = ChestList.Chest[i].ObjectData.MoveSpeed.y
-			Sonec.CollisionMoveEnd.y = ChestList.Chest[i].ObjectData.Position.y - Sonec.ObjectData.Size.Height*0.5
-			if Sonec.CollisionMoveEnd.x > 0
-				Sonec.ObjectData.AutoSpeed.x = -ChestList.Chest[i].ObjectData.MoveSpeed.x
-				if Sonec.ObjectData.MoveSpeed.x = 0 and Sonec.BalanceActive = FALSE
-					Sonec.CollisionMoveEnd.x = ChestList.Chest[i].ObjectData.Position.x + Sonec.CollisionData.Position.x
-				endif
-			endif
-		else
+		if Sonec.CollisionData.ListType <> TYPECHEST
 			SonecCollideReset(Sonec)
+			exitfunction
 		endif
+		if i < 0 or i > ChestList.Chest.Length
+			SonecCollideReset(Sonec)
+			exitfunction
+		endif
+		if ChestList.Chest[i].Enabled = FALSE
+			SonecCollideReset(Sonec)
+			exitfunction
+		endif
+		PlateIndex = ChestList.Chest[i].CollisionData.Index
+		CarryX = ChestList.Chest[i].ObjectData.Position.x - ChestList.Chest[i].CollisionMoveStart.x
+		SurfaceY = ChestList.Chest[i].ObjectData.Position.y
 	endif
-	if Sonec.CollisionMoveEnd.x < Sonec.ObjectData.Size.Width*0.5
-		Sonec.CollisionMoveEnd.x = Sonec.ObjectData.Size.Width*0.5
-		Sonec.ObjectData.MoveSpeed.x = 0
+	Sonec.ObjectData.AutoSpeed = SonecCarrierVelocity(Sonec,PlateList,PlateIndex)
+	// The own path (including balance/recoil) is added to actual carry,
+	// regardless of the sign or magnitude of the own movement.
+	Sonec.CollisionMoveEnd.x = Sonec.CollisionMoveEnd.x + CarryX
+	Sonec.CollisionMoveEnd.y = SurfaceY - Sonec.ObjectData.Size.Height*0.5
+	if Sonec.BalanceActive = TRUE then Sonec.BalanceTargetX = Sonec.BalanceTargetX + CarryX
+endfunction
+
+// Clamp the combined proposal, not the own path before support carry.
+// Do not erase an own velocity that already points away from the boundary.
+function SonecClampCombinedPath(Sonec ref as TSonec,Screen as TSize)
+	local HalfWidth as float
+	HalfWidth = Sonec.ObjectData.Size.Width*0.5
+	if Sonec.CollisionMoveEnd.x < HalfWidth
+		Sonec.CollisionMoveEnd.x = HalfWidth
+		if Sonec.ObjectData.MoveSpeed.x < 0 then Sonec.ObjectData.MoveSpeed.x = 0
+	endif
+	if Sonec.CollisionMoveEnd.x > Screen.Width - HalfWidth
+		Sonec.CollisionMoveEnd.x = Screen.Width - HalfWidth
+		if Sonec.ObjectData.MoveSpeed.x > 0 then Sonec.ObjectData.MoveSpeed.x = 0
 	endif
 endfunction
 
@@ -1051,6 +1098,9 @@ function SonecResolveContact(Sonec ref as TSonec,PlateList ref as TPlateList,Che
 	local SurfaceY as float
 	local SurfaceEndY as float
 	local ContactX as float
+	local Carry as TSpeed
+	local WallSpeed as TSpeed
+	local TargetVX as float
 	i = Best.Index
 	Sonec.CollisionMoveStart.x = SonecCollisionAxisAt(Sonec.CollisionMoveStart.x,Sonec.CollisionMoveEnd.x,Best.ContactTime)
 	Sonec.CollisionMoveStart.y = SonecCollisionAxisAt(Sonec.CollisionMoveStart.y,Sonec.CollisionMoveEnd.y,Best.ContactTime)
@@ -1059,11 +1109,13 @@ function SonecResolveContact(Sonec ref as TSonec,PlateList ref as TPlateList,Che
 		if Best.ListType = TYPECHEST
 			SurfaceY = SonecCollisionAxisAt(ChestList.Chest[i].CollisionMoveStart.y,ChestList.Chest[i].ObjectData.Position.y,Sonec.CollisionSegmentStartTime)
 			SurfaceEndY = ChestList.Chest[i].ObjectData.Position.y
-			SonecSetGroundContact(Sonec,TYPECHEST,i,ChestList.Chest[i].CollisionData.Index)
+			Carry = SonecCarrierVelocity(Sonec,PlateList,ChestList.Chest[i].CollisionData.Index)
+			SonecSetGroundContact(Sonec,TYPECHEST,i,ChestList.Chest[i].CollisionData.Index,Carry)
 		else
 			SurfaceY = SonecCollisionAxisAt(PlateList.Plate[i].CollisionMoveStart.y,PlateList.Plate[i].ObjectData.Position.y,Sonec.CollisionSegmentStartTime)
 			SurfaceEndY = PlateList.Plate[i].ObjectData.Position.y
-			SonecSetGroundContact(Sonec,TYPEPLATE,i,i)
+			Carry = SonecCarrierVelocity(Sonec,PlateList,i)
+			SonecSetGroundContact(Sonec,TYPEPLATE,i,i,Carry)
 		endif
 		Sonec.CollisionMoveStart.y = SurfaceY - Sonec.ObjectData.Size.Height*0.5
 		Sonec.CollisionMoveEnd.y = SurfaceEndY - Sonec.ObjectData.Size.Height*0.5
@@ -1074,9 +1126,11 @@ function SonecResolveContact(Sonec ref as TSonec,PlateList ref as TPlateList,Che
 		ContactX = Best.HitPositionX
 		if ContactX < Sonec.ObjectData.Size.Width*0.5 then ContactX = Sonec.ObjectData.Size.Width*0.5
 		Sonec.CollisionMoveEnd.x = ContactX
-		// MoveSpeed stores own movement in the current transitional model.
-		// Never cancel a velocity pointing away from the contacted side.
-		if Sonec.ObjectData.MoveSpeed.x*Best.HitSide > 0 then Sonec.ObjectData.MoveSpeed.x = 0
+		// Limit only the velocity entering the wall, in the same reference
+		// frame as MoveSpeed. Same-platform wall and carrier velocities cancel.
+		WallSpeed = SonecCarrierVelocity(Sonec,PlateList,ChestList.Chest[i].CollisionData.Index)
+		TargetVX = WallSpeed.x - Sonec.ObjectData.AutoSpeed.x
+		if (Sonec.ObjectData.MoveSpeed.x-TargetVX)*Best.HitSide > 0 then Sonec.ObjectData.MoveSpeed.x = TargetVX
 		Sonec.BlockedChestIndex = i
 		Sonec.BlockedChestSide = Best.HitSide
 		Sonec.BlockedChestOffsetX = Best.HitOffsetX
@@ -1098,7 +1152,7 @@ function SonecResolveContact(Sonec ref as TSonec,PlateList ref as TPlateList,Che
 	endif
 endfunction
 
-function SonecCollidePlate(Sonec ref as TSonec,PlateList ref as TPlateList,ChestList ref as TChestList,World ref as TWorld)
+function SonecCollidePlate(Sonec ref as TSonec,PlateList ref as TPlateList,ChestList ref as TChestList,World ref as TWorld,Screen as TSize)
 	local OriginalStart as TPosition
 	local OriginalEnd as TPosition
 	local Best as TSonecContactCandidate
@@ -1149,6 +1203,7 @@ function SonecCollidePlate(Sonec ref as TSonec,PlateList ref as TPlateList,Chest
 	OriginalEnd = Sonec.CollisionMoveEnd
 	Sonec.CollisionSegmentStartTime = 0
 	SonecPrepareSupportPath(Sonec,PlateList,ChestList)
+	SonecClampCombinedPath(Sonec,Screen)
 	// Contact memory is diagnostic only; all blocking is resolved in the sweep.
 	Sonec.BlockedChestIndex = -1
 	Sonec.BlockedChestSide = 0
@@ -1639,7 +1694,7 @@ function SonecFinishChestEdge(Sonec ref as TSonec,ChestList ref as TChestList,Fr
 		Sonec.DebugCsvHopPreVX = Sonec.ObjectData.MoveSpeed.x
 		Sonec.DebugCsvHopPreVY = Sonec.ObjectData.MoveSpeed.y
 		SonecCollideReset(Sonec)
-		Sonec.ObjectData.MoveSpeed.y = -1.5
+		Sonec.ObjectData.MoveSpeed.y = Sonec.ObjectData.MoveSpeed.y - 1.5
 		Sonec.DebugCsvHopPostVX = Sonec.ObjectData.MoveSpeed.x
 		Sonec.DebugCsvHopPostVY = Sonec.ObjectData.MoveSpeed.y
 	endif
@@ -1696,7 +1751,7 @@ function SonecMoveVerticalSpeed(Sonec ref as TSonec)
 	if Sonec.State.Jump = TRUE
 		
 		Sonec.State.Jump = FALSE
-		Sonec.ObjectData.MoveSpeed.y = -Sonec.ObjectData.MoveSpeedMax.y
+		Sonec.ObjectData.MoveSpeed.y = Sonec.ObjectData.MoveSpeed.y - Sonec.ObjectData.MoveSpeedMax.y
 		
 	endif
 	
@@ -1839,12 +1894,12 @@ function SonecMoveWorldBounds(Sonec ref as TSonec,World ref as TWorld,Screen as 
 	
 	if Sonec.ObjectData.Position.x < Sonec.ObjectData.Size.Width*0.5
 		Sonec.ObjectData.Position.x =  Sonec.ObjectData.Size.Width*0.5
-		Sonec.ObjectData.MoveSpeed.x = 0
+		if Sonec.GroundContactActive = FALSE then Sonec.ObjectData.MoveSpeed.x = 0
 	endif
 	
 	if Sonec.ObjectData.Position.x > Screen.Width - Sonec.ObjectData.Size.Width*0.5
 		Sonec.ObjectData.Position.x = Screen.Width - Sonec.ObjectData.Size.Width*0.5
-		Sonec.ObjectData.MoveSpeed.x = 0
+		if Sonec.GroundContactActive = FALSE then Sonec.ObjectData.MoveSpeed.x = 0
 	endif
 
 
@@ -1871,14 +1926,17 @@ endfunction
 
 // Phase A1: Movement computes the intended path in CollisionMoveStart/End.
 // The later collision pass may resolve that path and update support state.
-// AutoSpeed is platform carry, not a synonym for MoveSpeed or LinkedPlateIndex.
+// Phase D: ground MoveSpeed is support-relative, air MoveSpeed is world momentum.
+// AutoSpeed is signed carrier momentum; actual carry uses position snapshots.
 function SonecMove(Sonec ref as TSonec,ChestList ref as TChestList,World ref as TWorld,Screen as TSize,Now as integer)
+	local OwnProposalX as float
 	
 	Sonec.CollisionSegmentStartTime = 0
 	Sonec.CollisionMoveStart = Sonec.ObjectData.Position
 	Sonec.DebugCsvMoveStartVX = Sonec.ObjectData.MoveSpeed.x
 	Sonec.DebugCsvMoveStartX = Sonec.ObjectData.Position.x
 	Sonec.DebugCsvMoveStartY = Sonec.ObjectData.Position.y
+	OwnProposalX = Sonec.ObjectData.Position.x
 
 	if TimeGet(Sonec.ObjectData.MoveTimer,Now) > 0
 		
@@ -1890,6 +1948,7 @@ function SonecMove(Sonec ref as TSonec,ChestList ref as TChestList,World ref as 
 		SonecMoveBalanceStep(Sonec)
 		Sonec.DebugEdgeAfterBalanceX = Sonec.ObjectData.Position.x
 		SonecMoveHoverBrake(Sonec)
+		OwnProposalX = Sonec.ObjectData.Position.x
 		SonecMoveWorldBounds(Sonec,World,Screen)
 		SpritePositionCalc(Sonec.SpriteData.Position,Sonec.ObjectData.Position,World.Position)
 		SonecMoveCamera(Sonec,World,Screen)
@@ -1898,6 +1957,7 @@ function SonecMove(Sonec ref as TSonec,ChestList ref as TChestList,World ref as 
 	endif
 		
 	Sonec.CollisionMoveEnd = Sonec.ObjectData.Position
+	if Sonec.GroundContactActive = TRUE then Sonec.CollisionMoveEnd.x = OwnProposalX
 	Sonec.DebugCsvPreCollisionVX = Sonec.ObjectData.MoveSpeed.x
 	Sonec.DebugCsvPreCollisionVY = Sonec.ObjectData.MoveSpeed.y
 	// Rolling history of the last four movement updates, frozen at a contact event.

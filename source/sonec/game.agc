@@ -435,7 +435,7 @@ function GameDo(Game ref as TGame,Now as integer)
 	ChestCheckAll(Game.ChestList,Game.ProtoChest)
 	PlateCheckAll(Game.PlateList,Game.ProtoPlate)
 	ChestHealthRegenerate(Game.ChestList,Game,Now)
-	SonecCollidePlate(Game.Sonec,Game.PlateList,Game.ChestList,Game.World)
+	SonecCollidePlate(Game.Sonec,Game.PlateList,Game.ChestList,Game.World,Game.Screen)
 	SonecEdgeCsvWrite(Game,Now)
 	
 	FlashLifeCycle(Game.FlashList,Now)

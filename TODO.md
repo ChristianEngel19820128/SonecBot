@@ -4,7 +4,7 @@
 
 ## Jetzt
 
-- [ ] Bewegungsumstellung Phase D: Plattformmitnahme und relatives Geschwindigkeitsmodell gemäß [Spezifikation](docs/SONEC_MOVEMENT_SPEC.md) abstimmen und umsetzen. B/C-Grundverhalten bestätigt (C-Nachtest `b1a21dd` 5/5); Rückversatz beim Lauf rechts nach links und unterschiedliche Luft-Gewehrüberdeckung im D-Test beobachten. Gezielte Restweg-/Kontaktreihenfolgefälle bei Integration prüfen. Danach E–G.
+- [ ] Phase D: Testmodell für Plattformmitnahme und relative Geschwindigkeit implementiert; AGK-Compile und Funktionstest offen. Rückversatz, Luft-Gewehrüberdeckung, Absprung und B/C-Regression prüfen. Danach E–G gemäß [Spezifikation](docs/SONEC_MOVEMENT_SPEC.md).
 
 ## Danach / separat
 

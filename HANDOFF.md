@@ -18,7 +18,7 @@ Verbindliche Grundlage: [SONEC_MOVEMENT_SPEC.md](docs/SONEC_MOVEMENT_SPEC.md).
 - Entwickler meldet am 24.11.2026: Spiel verhält sich nachvollziehbar für den aktuellen Stand. B3h im kompilierten Paket enthalten. Anschließender Test: schnelle Plattformlandung und Randverhalten erwartungsgemäß; Kistenseiten beim Laufen und Springen/Fallen links nach rechts durchlässig, rechts nach links blockierend. Direkt vor der Kiste Bewegung und Sprung beidseitig blockierend.
 - Phase C: Frontlinie ±25 Welteinheiten am Boden, zwei Luftkreise, relative Seitenblockade. B/C-Test `0d0d7a0` 8/9, Nachtest `b1a21dd` 5/5 einschließlich AGK-Compile, Fallen und Springen beidseitig, Landungen/Unterseitendurchflug bestanden. Entwickler akzeptiert Grundverhalten. Luft-Gewehrüberdeckung links unterschiedlich weit, rechts nicht beobachtet; Bodenabstand korrekt. Kreisgeometrie beabsichtigt, Ursache der Richtungsdifferenz nicht bewiesen. Kleiner optischer Rückversatz beim Lauf rechts nach links aus vorherigem Test bleibt Phase D.
 - Seitliches Tunneln, Zurückwerfen und unbegrenzte Luftbeschleunigung sind bekannte Ausgangsprobleme; keine vorzeitige Abnahme.
-- Phasen C–G gemäß Spezifikation: mechanische Geometrie, Plattformmitnahme, Tiefenebenen, Mini-Hop, Integration/Balancing.
+- Phase D implementiert: additiver tatsächlicher Trägerweg, Eigen-/Weltgeschwindigkeit bei Bodenkontaktwechsel umgerechnet, relative Wandgeschwindigkeit und kombinierte Weltgrenze. Vorläufiger Umrechnungsmaßstab: letzter Sonec-Timerschritt; Compile und Spielgefühl offen. E–G folgen.
 
 ## Vereinbarter Arbeitsmodus für die Bewegungsumstellung
 
@@ -43,7 +43,7 @@ Verbindliche Grundlage: [SONEC_MOVEMENT_SPEC.md](docs/SONEC_MOVEMENT_SPEC.md).
 
 ## Genau ein nächster vereinbarter Schritt
 
-Phase D als nächstes Paket gemeinsam beginnen: bisherige Plattformmitnahme analysieren, Eigen- und Trägerbewegung trennen und vorgeschlagenes Modell für Absprung/relative Kistenbewegung gemäß Spezifikation abstimmen. Rückversatz und Luft-Richtungsasymmetrie beim D-Test erneut beobachten. Keine neue Codefreigabe allein aus Testergebnis.
+Phase-D-Testmodell in AGK Studio kompilieren und prüfen: passive Mitnahme, Gegenlaufen bis zum Stillstand/Überholen, Absprung/Abgang mit Weltgeschwindigkeit, bewegte Kisten beidseitig, Weltgrenze, B/C-Regression. Rückversatz und Luft-Gewehrüberdeckung beobachten; Modell erst nach Spielgefühl bewerten.
 
 ## Referenzen
 
