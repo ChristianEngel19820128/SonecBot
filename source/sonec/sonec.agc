@@ -119,7 +119,6 @@ function SonecInit(Sonec ref as TSonec,ProtoSonec ref as TProtoSonec,World ref a
 	Sonec.IsLost = False
 	Sonec.BalanceActive = FALSE
 	Sonec.BalanceTargetX = 0
-	Sonec.DebugEdgeFrames = 0
 	Sonec.DebugEdgeVisible = FALSE
 	Sonec.DebugEdgePending = FALSE
 	Sonec.DebugEdgeSnapshot = ""
@@ -1614,7 +1613,6 @@ function SonecCollideChestHorizontal(Sonec ref as TSonec,ChestList ref as TChest
 						// Trigger the active edge hop before the body crosses the edge, allowing for this frame's speed.
 						// Passive departures still use the exact edge, without a hop.
 						if Sonec.State.Move = TRUE and Sonec.State.Alignment = MOVELEFT and Sonec.ObjectData.MoveSpeed.x < 0 and Sonec.State.Duck = FALSE and Sonec.ObjectData.Position.x <= ChestList.Chest[Sonec.CollisionData.Index].ObjectData.Position.x + Sonec.ObjectData.Size.Width*0.5 + abs(Sonec.ObjectData.MoveSpeed.x)
-														Sonec.DebugEdgeFrames = 60
 							Sonec.DebugEdgeEvent = 3
 							Sonec.DebugEdgePending = TRUE
 							Sonec.DebugEdgeChestX = ChestList.Chest[Sonec.CollisionData.Index].ObjectData.Position.x
@@ -1623,7 +1621,6 @@ function SonecCollideChestHorizontal(Sonec ref as TSonec,ChestList ref as TChest
 							Sonec.ObjectData.MoveSpeed.y = -1.5
 						else
 							if Sonec.State.Move = TRUE and Sonec.State.Alignment = MOVERIGHT and Sonec.ObjectData.MoveSpeed.x > 0 and Sonec.State.Duck = FALSE and Sonec.ObjectData.Position.x >= ChestList.Chest[Sonec.CollisionData.Index].ObjectData.Position.x + ChestList.Chest[Sonec.CollisionData.Index].ObjectData.Size.Width - Sonec.ObjectData.Size.Width*0.5 - abs(Sonec.ObjectData.MoveSpeed.x)
-																Sonec.DebugEdgeFrames = 60
 								Sonec.DebugEdgeEvent = 4
 							Sonec.DebugEdgePending = TRUE
 								Sonec.DebugEdgeChestX = ChestList.Chest[Sonec.CollisionData.Index].ObjectData.Position.x
@@ -1664,12 +1661,10 @@ function SonecCollideChestHorizontal(Sonec ref as TSonec,ChestList ref as TChest
 							SonecSetGroundContact(Sonec,TYPECHEST,i,ChestList.Chest[i].CollisionData.Index)
 							// Diagnostic only: record either edge landing, even when no balance is activated.
 							if Sonec.ObjectData.Position.x <= ChestList.Chest[i].ObjectData.Position.x + Sonec.ObjectData.Size.Width*0.5
-								Sonec.DebugEdgeFrames = 60
 								Sonec.DebugEdgeEvent = 1
 								Sonec.DebugEdgePending = TRUE
 							else
 								if Sonec.ObjectData.Position.x >= ChestList.Chest[i].ObjectData.Position.x + ChestList.Chest[i].ObjectData.Size.Width - Sonec.ObjectData.Size.Width*0.5
-									Sonec.DebugEdgeFrames = 60
 									Sonec.DebugEdgeEvent = 2
 								Sonec.DebugEdgePending = TRUE
 								endif
