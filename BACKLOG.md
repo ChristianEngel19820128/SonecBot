@@ -8,6 +8,9 @@ Bomber, Flarak, hilfreicher Jumppod, Gefahren-/Erfahrungsgrundsystem, kleine Zie
 
 ## Varianten und Unterstützung
 
+- **Minen-Mod „Rudelformation“ (Idee, 24.11.2026):** Die bislang sehr statische Anordnung der Minen durch kontrollierten Zufallscharakter in X-/Y-Positionen sowie variierenden Zeilenhöhen und Spaltenabständen auflockern. Verteilung, Mindestabstände, Kollisionsfreiheit und Spielbalance vor Umsetzung festlegen. Keine Implementierungsfreigabe.
+
+
 - **Dunkle Hintergrundkisten:** Als Variante/Mod der normalen Kisten vorgesehen: optisch dunkler und im Hintergrund; Sonec kann hindurchlaufen und hindurchspringen (keine blockierende Sonec-Kollision). Alle übrigen Eigenschaften und Funktionen sollen wie bei normalen Kisten bleiben. Spätere Umsetzung separat vereinbaren; aktuell nur vorgemerkt.
 
 - **Quadrokopter:** eigenständiges, noch offenes Konzept. Möglich sind zeitweilige verbündete Unterstützung, etwa als Belohnung nach zerstörten Flaraks, ein auf Abstand angreifender Verfolger oder Aufklärung. Keine Rolle endgültig gewählt; keine weitere Kamikaze-Kopie der intelligenten Mine als Vorgabe.
