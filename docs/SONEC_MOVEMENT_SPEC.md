@@ -1,7 +1,7 @@
 # SonecBot – Spezifikation der Bewegungs- und Kollisionsphysik
 
 **Stand:** 24. November 2026  
-**Status:** Fachlich besprochener Entwurf zur Prüfung; **keine Implementierungsfreigabe**  
+**Status:** Fachlich freigegebenes Ziel für die erste Implementierung (Phasen A–G); Umsetzung schrittweise auf `develop`, mit lokalem Entwicklertest nach jedem Schritt  
 **Zweig:** `develop`  
 **Geltungsbereich:** Sonec, Plattformen, Kisten, Weltgrenzen, Sprung und Jetpack
 
@@ -102,7 +102,7 @@ Bestehende Begriffe und Beziehungen:
 
 Die Bool-Werte müssen nicht pauschal entfernt werden. Entscheidend ist, dass versteckte Prioritäten nicht zu widersprüchlichen physikalischen Ergebnissen führen. Die **tatsächliche Bodenberührung**, nicht bloß ein priorisierter Bool-Wert, bestimmt die mechanische Kollisionsgeometrie.
 
-## 11. Technischer Entwurf (Vorschlag, keine Codefreigabe)
+## 11. Technischer Entwurf (schrittweise umzusetzen)
 
 1. Eingaben, Kräfte und einmalige Impulse auswerten.
 2. Geplante Sonec-, Plattform- und Kistenbewegungen für den Frame bestimmen.
@@ -148,4 +148,12 @@ Die Reihenfolge ist vorläufig; tatsächliche technische Abhängigkeiten können
 - Jetpack nach Energieaufnahme bei gehaltenem Kreuz nach oben.
 - Unveränderte Schadens-Hitboxen, Waffenfunktionen und bestehende Steuerung.
 
-**AGK-Kompilierung und Laufzeittests erfolgen lokal durch den Entwickler. Bis zu einer ausdrücklichen Freigabe erfolgen keine Codeänderungen.**
+**AGK-Kompilierung und Laufzeittests erfolgen lokal durch den Entwickler. Die fachliche Freigabe für die schrittweise Erstimplementierung A–G liegt vor; jede spätere Regeländerung wird vor der betreffenden Umsetzung hier nachgeführt.**
+
+## 15. Start Phase A – Quellbefund und Abgrenzung (24.11.2026)
+
+- Die Zustandsflags `Fly`, `Fall`, `Stand`, `Duck`, `Move`, `Jump` und Ausrichtungen liegen in `TObjectState` (`source/sonec/def_game.agc`); die Bewegungsgeschwindigkeiten `MoveSpeed` und die Plattformmitnahme `AutoSpeed` in `TObjectData`.
+- `TSonec` hält daneben `LinkedPlateIndex` (Tiefenebene), `CollisionData` (aktuelle Kontaktoberfläche), `CollisionMoveStart/End` (Bewegungsweg) sowie `BlockedChest*` und `PassThroughChestIndex` (derzeitige Kontakt-/Durchflug-Ausnahmen). Diese Daten haben unterschiedliche Aufgaben und dürfen nicht als austauschbare Zustände behandelt werden.
+- `SonecInput` setzt Zustandsflags, `SonecMoveVerticalSpeed` konsumiert `Jump` und verändert die Vertikalgeschwindigkeit, `SonecMoveHorizontalSpeed` verändert die Horizontalgeschwindigkeit, `SonecCollidePlate` und `SonecCollideChestHorizontal` setzen Bodenkontakt und Plattformzuordnung. Die bisherige Kollisionsauflösung ist noch auf mehrere Routinen verteilt.
+- **A1-Ziel:** Zunächst diese Zuständigkeiten und ihre Übergänge im Code eindeutig kennzeichnen bzw. kleinräumig entflechten, **ohne** die bestehende Bewegungs- oder Kollisionswirkung zu verändern. Erst nach lokalem AGK-Compile folgt der nächste Eingriff. Keine vorzeitige Einführung der Phasen B–F.
+
