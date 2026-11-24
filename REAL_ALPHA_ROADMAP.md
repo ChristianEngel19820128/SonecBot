@@ -1,7 +1,7 @@
 # SonecBot – Real Alpha Roadmap
 
-**Stand:** 20. November 2026 · **Arbeitsbranch:** `develop`
-**Status:** Real-Alpha-Umsetzung begonnen; animierter Explosionsradius und alle drei Minenformationen lokal in AGK abgenommen.
+**Stand:** 24. November 2026 · **Arbeitsbranch:** `develop`
+**Status:** Gegnergrundversionen weitgehend abgeschlossen; Bewegungsumstellung in Arbeit; Jumppod und Grundsysteme offen.
 **Quellenbasis:** Entwicklerentscheidungen im Gespräch; Dokumentstand [`87927e5`](https://github.com/ChristianEngel19820128/SonecBot/commit/87927e564d5ce1539878b84773c8f8ea40c258d5), letzte Code-Referenz [`c2a2d4e`](https://github.com/ChristianEngel19820128/SonecBot/commit/c2a2d4ed1dd7b27de6aa13f1058a5431509b2d45).
 Nächste Aufgaben: [TODO.md](TODO.md) · Chatübergabe: [HANDOFF.md](HANDOFF.md) · Spätere Ideen: [BACKLOG.md](BACKLOG.md).
 Die Roadmap legt den Entwicklungsrahmen fest. Einzelne Codeänderungen, `main`-Merge und Veröffentlichung werden separat vereinbart.
@@ -30,7 +30,7 @@ Es gibt keine feste Deadline. Umfangreiche Politur und endgültiges Balancing bi
 
 Der Entwickler bestätigt alle implementierten Änderungen der Abendrunde zusammenfassend als erfolgreich getestet.
 Fehlende Einzelmatrizen oder genaue Plattformzuordnungen werden nicht erfunden; der Assistent hat keine eigenen AGK-/Browserläufe durchgeführt.
-Der Draft-Test vom 18.11. belegt keine Auslieferung späterer Alpha-Änderungen. Ausführlicher aktueller Teststand: [HANDOFF.md](HANDOFF.md).
+Der Draft-Test vom 18.11. belegt keine Auslieferung späterer Alpha-Änderungen. Aktueller Arbeitsstand: [HANDOFF.md](HANDOFF.md); historische Einzelabnahmen bleiben in Git.
 
 ## 3. Arbeitsblock A – Gegner und hilfreiche Weltobjekte
 
@@ -46,23 +46,20 @@ Der Draft-Test vom 18.11. belegt keine Auslieferung späterer Alpha-Änderungen.
 - **Teststand:** D4b 6/6, D5a 7/7, D5b 7/7, D5c 8/8 und D6 8/8 lokal abgenommen. Letzte Jetstream-Positionierung per Screenshot optisch bestätigt; ein vollständiger erneuter Funktionstest nach der letzten Höhenkorrektur ist nicht separat dokumentiert.
 - **Integration später:** Provisorischer 20–35-Sekunden-Spawn-Timer wird durch Chat B bei der Wellensteuerung ersetzt; maximal eine Drohne gleichzeitig. Grafischer Art-Pass, Biep-Sound und Dauerlaser sind nicht als abgeschlossene Basisfunktionen belegt; Dauerlaser bleibt spätere Variante.
 
-### Flarakstellung
+### Flarakstellung und Flak
 
-- Stationäre Luftabwehr für einen begrenzten Luftraum; inaktiv äußerlich einem Jumppod bzw. der getarnten Mine ähnlich.
-- **Annäherung → sichtbar hochfahren → ausrichten → ungefähr zwei Raketen abfeuern.** Die Aktivierung muss eine Reaktionsmöglichkeit geben.
-- Vorhandene Animationsvorlage nutzen; genaue Raketenlenkung, Reichweite und Rückkehr in den Ruhezustand vor Umsetzung klären.
-- Massenraketenwerfer ohne Zielsuchraketen und missionsabhängige Luftunterstützung bleiben spätere Erweiterungen.
+- **Grundversion abgeschlossen:** Entwickler bestätigt beide Stellungen vollständig funktionsfähig, einschließlich abschießbarer Raketen (früheres TODO, vor Bereinigung 759298e).
+- Stationäre Luftabwehr mit sichtbarer Aktivierung, Ausrichtung und Doppelraketen; Flak als Variante mit Viererschuss-Salve und explosiven Geschossen.
+- Gelegentlich fehlende Direkttreffer des Granatwerfers bleiben separater Fehlerverdacht; keine erneute pauschale Öffnung der Gegnerabnahme.
+- Massenraketenwerfer und missionsabhängige Luftunterstützung bleiben spätere Erweiterungen.
 
 ### Bomber
 
-- **B1-Basis lokal mit 6/6 bestanden:** Der 176×64-px-Spacejet fliegt einmalig von rechts nach links, mit Vorwarnung und eigenem Jetstream-Takt. **Feinschliff noch ungetestet:** 0,40 px/ms, Jetfire alle 20 ms, Grün RGB (80,232,80). Weiterhin keine Waffen oder Kollisionen.
-- **Flughöhe:** nach erstem B1-Test um 10 Prozentpunkte nach oben korrigiert, jetzt **1/10 bis 3/10 der gesamten Welt-Y-Höhe**. Der einmalige Testanflug wartet auf einen sichtbaren Teil dieses Höhenbands.
-- **Bombenteppich:** fünf zeitversetzt abgeworfene Bomben. Sie übernehmen beim Abwurf die horizontale Geschwindigkeit des Bombers und werden danach durch Luftwiderstand gebremst.
-- **Kampfmodell für spätere Schritte:** Bomben sind durch Sonec zerstörbar und explodieren dabei; ein direkter Bombentreffer erzeugt kinetischen Schaden **und** eine Explosion. Bomber selbst ist abschießbar, aber ein Abschuss soll selten bleiben. Kein Vernichtungszwang.
-- **Deckung:** Plattformen sollen Bomben und Explosionsschaden abschirmen. Dafür die allgemeine Explosionsphysik und eine eventuell sichtbar an Plattformen gekappte Explosionsanimation separat prüfen; noch nicht implementiert.
-- Charakteristischer Ankündigungssound laut Entwickler aus Legacy vorhanden; noch nicht in B1 eingebaut. Keine eigene Fluganimation nötig. Unterschiedliche Explosionstypen bei Aufschlag und Abschuss sind spätere Politur.
+- **Grundversion abgeschlossen:** Überflug mit Vorwarnung, Doppeljetstream, Bombenabwurf, zerstörbare Bomben und abschießbarer Bomber umgesetzt; frühere Entwicklerabnahmen in Git.
+- Plattformdeckung und Explosionsschaden wurden implementiert und lokal geprüft; abschließendes Balancing bleibt offen.
+- Bomber-Abschüsse sollen selten bleiben; kein Vernichtungszwang. Charakteristischer Ankündigungssound und weitere Politur bei Bedarf prüfen.
 
-### Jumppod
+### Jumppod – offen
 
 - **Hilfreiches Weltobjekt:** löst einen deutlich höheren Sprung ohne Energieverbrauch aus. Die vorhandene Animation gehört zum Sprung.
 - Kein Gegnertyp. Die seltene explodierende Täuschungsvariante ist optional und müsste rechtzeitig erkennbar sein; hilfreicher Jumppod bleibt die Basis.
@@ -70,9 +67,15 @@ Der Draft-Test vom 18.11. belegt keine Auslieferung späterer Alpha-Änderungen.
 Legacy-Grafiken (`rakstellung.png`, `spacejet.png`, `falle.bmp`) sind Vorlagen, kein Beweis fertig implementierter Altmechaniken.
 `falle.bmp` bezeichnet den Jumppod. Neue Grafikfassungen können separat entstehen; alte Konzepte müssen nicht unverändert übernommen werden.
 
+### Sonec-Bewegungsumstellung – in Arbeit
+
+- Verbindliche Anforderungen und Phasen A–G: [SONEC_MOVEMENT_SPEC.md](docs/SONEC_MOVEMENT_SPEC.md).
+- Phase A abgeschlossen und lokal geprüft; Phase B in Bearbeitung, B3h implementiert, gemeinsamer AGK-Compile offen.
+- Mechanische Kontakte, Plattformmitnahme, Tiefenebenen, Mini-Hop und Integration gemäß Spezifikation abschließen.
+
 ## 4. Arbeitsblock B – Erfahrung, Ressourcen und Gefahr
 
-### Erfahrung durch Leistung und Überleben
+### Erfahrung durch Leistung und Überleben – offen
 
 - Erfahrung steuert den dauerhaften Level-/Gefahrenfortschritt; sie ist **keine Währung für einen Perk-Shop**.
 - Tatsächlicher Schaden zählt, Zerstörung grundsätzlich mehr als bloßes Verletzen; eine besondere taktische Beeinträchtigung kann zusätzlich wertvoll sein.
@@ -82,7 +85,7 @@ Legacy-Grafiken (`rakstellung.png`, `spacejet.png`, `falle.bmp`) sind Vorlagen, 
 - Mehr bedeutsame Wirkung in kurzer Zeit bedeutet schnelleren Fortschritt. Eine zusätzliche kurzfristige Aktivitätskennzahl ist nicht beschlossen.
 - Höhe und Takt der Zeitbelohnung, Erfahrungswerte und Levelschwellen bleiben Balancingfragen; kein bestimmter linearer oder beschleunigter Zeitbonus ist festgelegt.
 
-### Ressourcen, auswählbare Munition und Panzerung
+### Ressourcen, auswählbare Munition und Panzerung – offen
 
 - Eine **spielbare, erweiterbare Grundversion** von auswählbaren Munitionsarten und Schadens-/Panzerungswirkung gehört zur Real Alpha.
 - Aktive Auswahl durch den Spieler wird gegenüber automatischer Munitionspriorisierung bevorzugt; Bedienung und erste Typenauswahl im Themenchat festlegen.
@@ -93,7 +96,7 @@ Legacy-Grafiken (`rakstellung.png`, `spacejet.png`, `falle.bmp`) sind Vorlagen, 
 - Einfache Schadenskategorien/Widerstände ermöglichen später das Konterprinzip. Keine vollständige Rüstungsmatrix oder endgültigen Multiplikatoren für die Alpha verlangen.
 - Walker-Beinschäden sind ein Beispiel für taktische Wirkung, kein beschlossener Umbau der akzeptierten Walker-Kollision.
 
-### Gefahrenbudget und Erholung
+### Gefahrenbudget und Erholung – offen
 
 `G` ist die aktuelle Gefahr aus aktiven Gegnerkosten, `B` das momentan erlaubte Budget, `P` der Preis eines gewürfelten Gegners oder einer gesamten Formation.
 
@@ -111,6 +114,9 @@ Legacy-Grafiken (`rakstellung.png`, `spacejet.png`, `falle.bmp`) sind Vorlagen, 
 
 ## 5. Arbeitsblock C – Kleine Spielziele und Belohnungen
 
+- **Zentrales Belohnungssystem: Grundversion abgeschlossen.** Vorhandene Drops zentralisiert und fehlende Drops für Kisten, Drohnen und Bomber ergänzt; Entwicklerabnahmen E2d/E2e in Git. Mengen und Ersatznutzen bleiben Balancingfragen.
+- **Kleine Spielziele: offen.**
+
 - Kleine, verständliche Ziele gehören zur Alpha-Grundlage; konkrete erste Ziele und Erfolgserkennung im eigenen Themenchat auswählen.
 - Belohnungen können Ressourcen, Munition oder Upgrades sein. Sie müssen zur zunehmenden Gefahr passen; genaue Mengen bleiben offen.
 - Ziele dürfen unterschiedliche Spielweisen berücksichtigen. Allgemeiner Spielfortschritt verlangt nicht, alle Gegner zu vernichten.
@@ -126,7 +132,7 @@ Avatar/Sprachausgabe und umfangreiche Grafikpolitur sind keine Voraussetzung. Wa
 | --- | --- |
 | M1 / Bewegungsruckeln | Untersuchung zurückgestellt; bei 75 Hz laut Entwickler nicht mehr vorhanden, Ursache unbewiesen. Behandlung des früher vereinbarten Release-Gates vor Release ausdrücklich entscheiden; keine automatische Migration. |
 | K1 / Treffer | K1b/K1c abgenommen, K1d/Abendrunde erfolgreich rückgemeldet. Zwei spezielle K1a-Minenanordnungen waren nicht durchführbar; gezielten Nachtestbedarf festlegen, keine pauschale Wiederöffnung bestandener Tests. |
-| Plattformen / Walker | Laufbegrenzung/Bremsen korrigiert, schnelles Durchfallen beabsichtigt. Sonec kann in den Walker springen; konkreten Körperkontakt separat bewerten, IK und Turm-Schadenszone schützen. |
+| Plattformen / Walker | Laufbegrenzung/Bremsen früher korrigiert; gemeldete Durchfall- und Seitenkontaktprobleme werden in der Bewegungsumstellung untersucht. Sonec kann in den Walker springen; konkreten Körperkontakt separat bewerten, IK und Turm-Schadenszone schützen. |
 | Audio | Kratzen/Überlagerung mehrerer Sounds, etwa Kettenexplosionen, gezielt untersuchen. Kein bewiesener Enginefehler; Soundpolitur nach spielerischem Bedarf begrenzen. |
 | Minen / Browser | Welt-Y-Korrektur positiv rückgemeldet, längere Randbeobachtungen nicht vollständig protokolliert. Minen-/Warnhäufigkeit ins Balancing; frische und längere Browsersitzung getrennt beobachten. |
 | Paintball | Abgeschlossen und vom Entwickler unter Windows visuell bestätigt: ein Pixel breite farblich passende Laufnasen nach unten, korrekte Fleckenausrichtung nach AGK-UV-Korrektur und normales Orb-/Menüverhalten. Kein weiterer Grafikumbau. |
@@ -150,6 +156,6 @@ Gefahrenzulassung, Erholungsrhythmus, tatsächlicher Ressourcengewinn und Muniti
 Bekannte Qualitätsfragen erhalten eine ausdrückliche Entscheidung bzw. dokumentierte Grenze; der integrierte Alpha-Build wird auf der Zielplattform geprüft.
 Diese Kriterien sind Prüfaufträge für die Umsetzung, keine bereits bestandene Alpha-Abnahme. itch.io bleibt Draft/Secret URL bis zu einer gesonderten Entscheidung.
 
-**Nächster Schritt:** Im passenden Themenchat den ersten kleinen Umsetzungsblock samt Ziel, Dateien und Abnahme auswählen; keine automatische Reihenfolge oder Codefreigabe aus dieser Roadmap ableiten.
+**Nächster Schritt:** Bewegungsumstellung Phase B gemäß TODO und Spezifikation abschließen. Weitere Arbeitsblöcke nach Abstimmung auswählen; keine automatische Codefreigabe aus dieser Roadmap ableiten.
 
 Spätere Varianten und Ideen stehen in [BACKLOG.md](BACKLOG.md). Frühere Langfassungen liegen im [Archiv](docs/archive/README.md); sie werden nur für konkrete historische Fragen gelesen.
