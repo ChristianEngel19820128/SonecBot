@@ -238,3 +238,11 @@ Die Reihenfolge ist vorläufig; tatsächliche technische Abhängigkeiten können
 - **Offen:** Keine. **Beobachtungen:** Keine Angaben.
 - **Einordnung:** B1 ist für diese sechs Fälle erfolgreich geprüft. Die noch ausstehenden Aspekte der vollständigen Swept Collision (relative Hindernisbewegung, horizontaler Kontaktzeitpunkt und gemeinsame Kontaktpriorisierung) sind damit nicht automatisch abgenommen.
 - **Nächster Schritt:** B2 als kleinsten weiteren, separat testbaren Schritt vorbereiten; jede neue Bewegungsentscheidung zuerst in dieser Spezifikation dokumentieren.
+
+## 26. Phase B2 – Beschlossene relative Plattformoberflächen-Kreuzung (24.11.2026)
+
+- **Regel vor Codeänderung:** Für die Prüfung der Landung auf bewegten Plattformen zählt die relative vertikale Bewegung von Sonecs Füßen gegenüber der Plattformoberkante. Die Oberkante wird am Anfang und Ende desselben Bewegungsupdates betrachtet. Eine gültige Kreuzung erfordert, dass die Füße zu Beginn auf oder oberhalb der damaligen Oberkante liegen, am Ende die neue Oberkante erreichen/überschreiten und sich relativ zur Plattform nach unten bewegen.
+- **Technik:** Jede Plattform erhält eine für die Kollisionsphysik gespeicherte Anfangsposition des aktuellen Bewegungsschritts. Diese wird auch bei Updates ohne Plattformbewegung erneuert. Die neue Prüfung betrifft zunächst ausschließlich die Plattformlandung, nicht Kisten oder Seitenkontakte.
+- **Kandidatenauswahl:** Bei mehreren gekreuzten Plattformen wird die kleinste relative Kontaktzeit innerhalb des Updates gewählt, statt allein die Höhe am Ende zu vergleichen. Exakte Gleichstände bleiben stabil in Plattform-Array-Reihenfolge.
+- **Grenzen B2:** Horizontale Kontaktprüfung bleibt zunächst die bestehende Endpositionsprüfung; Kisten-/Plattformkontakte werden noch nicht gemeinsam priorisiert. Pass-through-Ausnahme und Zustandslogik bleiben unverändert.
+- **Entwicklertest:** AGK-Kompilierung; ruhende und bewegte Plattformlandungen; Sprung/Jetpack; schneller Fall; Plattformen unterschiedlicher Höhen. Noch keine Testbestätigung.
