@@ -1890,16 +1890,7 @@ function SonecMove(Sonec ref as TSonec,ChestList ref as TChestList,World ref as 
 	endif
 		
 	Sonec.CollisionMoveEnd = Sonec.ObjectData.Position
-	// Temporary diagnostic overlay: 1/2 = left/right edge landing;
-	// 3/4 = left/right mini-hop. No movement values are modified.
-	if Sonec.DebugEdgeFrames > 0
-		Print("EDGE event 1=landL 2=landR 3=hopL 4=hopR: "+str(Sonec.DebugEdgeEvent))
-		Print("x="+str(Sonec.ObjectData.Position.x)+" vx="+str(Sonec.ObjectData.MoveSpeed.x)+" vy="+str(Sonec.ObjectData.MoveSpeed.y)+" carryX="+str(Sonec.ObjectData.AutoSpeed.x))
-		Print("balance="+str(Sonec.BalanceActive)+" target="+str(Sonec.BalanceTargetX)+" dxBalance="+str(Sonec.DebugEdgeAfterBalanceX-Sonec.DebugEdgeBeforeBalanceX))
-		Print("chestX="+str(Sonec.DebugEdgeChestX)+" chestVx="+str(Sonec.DebugEdgeChestSpeedX)+" move="+str(Sonec.State.Move)+" stand="+str(Sonec.State.Stand)+" fall="+str(Sonec.State.Fall))
-		Sonec.DebugEdgeFrames = Sonec.DebugEdgeFrames - 1
-	endif
-	
+
 endfunction
 	
 //----------------------------------------------------------------------
