@@ -4,7 +4,7 @@
 
 ## Jetzt
 
-- [ ] Bewegungsumstellung Phase B: gemeinsamer Kontaktresolver und Restbewegung implementiert; gemeinsamer AGK-Compile und Bewertung geeigneter Funktionstests offen. Danach Phasen C–G gemäß [Spezifikation](docs/SONEC_MOVEMENT_SPEC.md).
+- [ ] Bewegungsumstellung Phase B: gemeinsamer Kontaktresolver und Restbewegung implementiert; AGK-Compile für `18a6154` bestanden; gezielte Funktionstests zur Kontaktreihenfolge und Restbewegung gemeinsam bewerten. Danach Phasen C–G gemäß [Spezifikation](docs/SONEC_MOVEMENT_SPEC.md).
 
 ## Danach / separat
 
