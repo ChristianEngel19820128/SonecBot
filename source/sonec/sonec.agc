@@ -18,6 +18,8 @@
 #constant SONEC_MINI_HOP_MIN_RELATIVE_X 1.0
 #constant SONEC_HOVER_AIR_DAMPING 0.20
 #constant SONEC_MAX_GROUND_SPEED 5
+#constant SONEC_MAX_AIR_THRUST_SPEED 5
+#constant SONEC_INTEGRATION_TRACE 1
 #constant SONEC_MAX_VERTICAL_SPEED 8
 #constant SONEC_GROUND_ACCELERATION 0.005
 #constant SONEC_VERTICAL_ACCELERATION 0.01
@@ -142,6 +144,9 @@ function SonecInit(Sonec ref as TSonec,ProtoSonec ref as TProtoSonec,World ref a
 		
 	Sonec.CollisionData.Index = -1
 	Sonec.GroundContactActive = FALSE
+	Sonec.NormalJumpActive = FALSE
+	Sonec.AirThrustDirection = 0
+	Sonec.DebugTopTrace = ""
 
 	Sonec.State.Fall  = TRUE
 	Sonec.State.Fly   = FALSE
@@ -721,6 +726,9 @@ function SonecInputVerticalState(Sonec ref as TSonec,JetfireList ref as TJetfire
 		if Sonec.State.Fly = FALSE
 			Sonec.Energy.State = Sonec.Energy.State - COSTJETFIRE*10
 		endif
+		// Powered flight supersedes a normal jump, including a queued impulse.
+		Sonec.NormalJumpActive = FALSE
+		Sonec.State.Jump = FALSE
 		Sonec.State.Fly = TRUE
 		Sonec.State.Fall = FALSE
 		Sonec.State.Stand = FALSE
@@ -730,6 +738,8 @@ function SonecInputVerticalState(Sonec ref as TSonec,JetfireList ref as TJetfire
 	else
 		if UpHeld and Sonec.State.Stand = TRUE
 			Sonec.State.Jump = TRUE
+			Sonec.NormalJumpActive = TRUE
+			Sonec.AirThrustDirection = 0
 			SonecReleaseSupportMotion(Sonec)
 			Sonec.State.Stand = FALSE
 			Sonec.State.Fly = FALSE
@@ -785,6 +795,7 @@ function SonecInput(Sonec ref as TSonec,JetfireList ref as TJetfireList,ProtoJet
 		endif
 		
 		Sonec.State.Move = FALSE
+		Sonec.AirThrustDirection = 0
 		
 		if InputActionState(Keys,JoystickIndex,ACTION_MOVE_LEFT) = 1 or InputActionState(Keys,JoystickIndex,ACTION_MOVE_BACK_LEFT) = 1 or GetJoyX(JoystickIndex) < -0.5 or GetJoyZ(JoystickIndex) > 0.5
 			if InputActionState(Keys,JoystickIndex,ACTION_MOVE_LEFT) = 1 or GetJoyX(JoystickIndex) < -0.5
@@ -795,7 +806,8 @@ function SonecInput(Sonec ref as TSonec,JetfireList ref as TJetfireList,ProtoJet
 			if InputActionState(Keys,JoystickIndex,ACTION_MOVE_BACK_LEFT) = 1 or GetJoyZ(1) > 0.5
 				Sonec.State.LookAlignment = LOOKRIGHT
 			endif
-			if (Sonec.State.Fly = TRUE or Sonec.State.Fall = TRUE) and Sonec.Energy.State >= COSTJETFIRE
+			if Sonec.GroundContactActive = FALSE and Sonec.NormalJumpActive = FALSE and (Sonec.State.Fly = TRUE or Sonec.State.Fall = TRUE) and Sonec.Energy.State >= COSTJETFIRE
+				Sonec.AirThrustDirection = -1
 				Sonec.State.Move = TRUE
 				Sonec.State.Alignment = MOVELEFT
 				SonecJetfireAdd(Sonec,JetfireList,ProtoJetfire,World,Position,Now)
@@ -815,7 +827,8 @@ function SonecInput(Sonec ref as TSonec,JetfireList ref as TJetfireList,ProtoJet
 			if InputActionState(Keys,JoystickIndex,ACTION_MOVE_BACK_RIGHT) = 1 or GetJoyRZ(JoystickIndex) > 0.5
 				Sonec.State.LookAlignment = LOOKLEFT
 			endif
-			if (Sonec.State.Fly = TRUE or Sonec.State.Fall = TRUE) and Sonec.Energy.State >= COSTJETFIRE
+			if Sonec.GroundContactActive = FALSE and Sonec.NormalJumpActive = FALSE and (Sonec.State.Fly = TRUE or Sonec.State.Fall = TRUE) and Sonec.Energy.State >= COSTJETFIRE
+				Sonec.AirThrustDirection = 1
 				Sonec.State.Move = TRUE
 				Sonec.State.Alignment = MOVERIGHT
 				SonecJetfireAdd(Sonec,JetfireList,ProtoJetfire,World,Position,Now)
@@ -874,6 +887,8 @@ function SonecSetGroundContact(Sonec ref as TSonec,SurfaceType as integer,Surfac
 	endif
 	Sonec.ObjectData.AutoSpeed = Carry
 	Sonec.GroundContactActive = TRUE
+	Sonec.NormalJumpActive = FALSE
+	Sonec.AirThrustDirection = 0
 	// A real landing ends the current flight. Held Up is evaluated again
 	// by the existing input path, with its normal activation energy rule.
 	Sonec.State.Fly = FALSE
@@ -1126,12 +1141,62 @@ function SonecDepthClearTime(Sonec ref as TSonec,PlateList ref as TPlateList,Che
 	endif
 endfunction ContactTime
 
+// G integration trace: record relative feet crossings near a possible
+// top, even if the real eligibility or midpoint test rejects it.
+// Only diagnostic output: never select or modify a contact here.
+function SonecTraceTopContact(Sonec ref as TSonec,PlateList ref as TPlateList,ChestList ref as TChestList,SurfaceType as integer,SurfaceIndex as integer,Eligible as integer,AcceptedTime as float)
+	local PlateIndex as integer
+	local SurfaceStart as TPosition
+	local SurfaceEnd as TPosition
+	local Width as float
+	local StartY as float
+	local StartX as float
+	local RelativeStart as float
+	local RelativeEnd as float
+	local HitTime as float
+	local FrameTime as float
+	local RelativeX as float
+	local FeetY as float
+	local PlateY as float
+	local HighestY as float
+	local Highest as TPosition
+	if GAME_DEBUG_ENABLED = 0 or SONEC_INTEGRATION_TRACE = 0 then exitfunction
+	if SurfaceType = TYPECHEST
+		PlateIndex = ChestList.Chest[SurfaceIndex].CollisionData.Index
+		SurfaceStart = ChestList.Chest[SurfaceIndex].CollisionMoveStart
+		SurfaceEnd = ChestList.Chest[SurfaceIndex].ObjectData.Position
+		Width = ChestList.Chest[SurfaceIndex].ObjectData.Size.Width
+	else
+		PlateIndex = SurfaceIndex
+		SurfaceStart = PlateList.Plate[SurfaceIndex].CollisionMoveStart
+		SurfaceEnd = PlateList.Plate[SurfaceIndex].ObjectData.Position
+		Width = PlateList.Plate[SurfaceIndex].ObjectData.Size.Width
+	endif
+	if PlateIndex < 0 or PlateIndex > PlateList.Plate.Length then exitfunction
+	if PlateList.Plate[PlateIndex].Enabled = FALSE then exitfunction
+	StartY = SonecCollisionAxisAt(SurfaceStart.y,SurfaceEnd.y,Sonec.CollisionSegmentStartTime)
+	RelativeStart = Sonec.CollisionMoveStart.y + Sonec.ObjectData.Size.Height*0.5 - StartY
+	RelativeEnd = Sonec.CollisionMoveEnd.y + Sonec.ObjectData.Size.Height*0.5 - SurfaceEnd.y
+	if RelativeStart > 0 or RelativeEnd < 0 or RelativeEnd <= RelativeStart then exitfunction
+	HitTime = -RelativeStart/(RelativeEnd-RelativeStart)
+	StartX = SonecCollisionAxisAt(SurfaceStart.x,SurfaceEnd.x,Sonec.CollisionSegmentStartTime)
+	RelativeX = SonecCollisionAxisAt(Sonec.CollisionMoveStart.x,Sonec.CollisionMoveEnd.x,HitTime) - SonecCollisionAxisAt(StartX,SurfaceEnd.x,HitTime)
+	if RelativeX < -Sonec.ObjectData.Size.Width*0.5 or RelativeX > Width + Sonec.ObjectData.Size.Width*0.5 then exitfunction
+	FrameTime = SonecCollisionAxisAt(Sonec.CollisionSegmentStartTime,1.0,HitTime)
+	FeetY = SonecCollisionAxisAt(Sonec.CollisionMoveStart.y,Sonec.CollisionMoveEnd.y,HitTime) + Sonec.ObjectData.Size.Height*0.5
+	PlateY = SonecCollisionAxisAt(PlateList.Plate[PlateIndex].CollisionMoveStart.y,PlateList.Plate[PlateIndex].ObjectData.Position.y,FrameTime)
+	Highest = SonecDepthHighestTop(PlateList,ChestList,PlateIndex)
+	HighestY = SonecCollisionAxisAt(Highest.x,Highest.y,FrameTime)
+	Sonec.DebugTopTrace = Sonec.DebugTopTrace+"|T;"+Str(SurfaceType)+";"+Str(SurfaceIndex)+";"+Str(PlateIndex)+";"+Str(Sonec.LinkedPlateIndex)+";"+Str(PlateList.Plate[PlateIndex].SonecDepthState)+";"+Str(Eligible)+";"+Str(AcceptedTime)+";"+Str(FrameTime)+";"+Str(RelativeX)+";"+Str(Width)+";"+Str(FeetY)+";"+Str(PlateY)+";"+Str(HighestY)+";"+Str(RelativeStart)+";"+Str(RelativeEnd)+";"+Str(PlateList.Plate[PlateIndex].ObjectData.Position.y-PlateList.Plate[PlateIndex].CollisionMoveStart.y)
+endfunction
+
 function SonecFindContact(Sonec ref as TSonec,PlateList ref as TPlateList,ChestList ref as TChestList)
 	local Best as TSonecContactCandidate
 	local Side as TSonecContactCandidate
 	local i as integer
 	local PassPlateIndex as integer
 	local ContactTime as float
+	local Eligible as integer
 	Best.Valid = FALSE
 	PassPlateIndex = -1
 	if Sonec.PassThroughChestIndex >= 0
@@ -1144,15 +1209,26 @@ function SonecFindContact(Sonec ref as TSonec,PlateList ref as TPlateList,ChestL
 	// decides whether an unsupported Sonec crosses a surface from above.
 	if Sonec.GroundContactActive = FALSE
 		for i = 0 to ChestList.Chest.Length
-			if SonecChestRelevant(Sonec,PlateList,ChestList,i,TRUE) = TRUE
+			Eligible = SonecChestRelevant(Sonec,PlateList,ChestList,i,TRUE)
+			ContactTime = -1
+			if Eligible = TRUE
 				ContactTime = SonecChestTopContactTime(Sonec,ChestList,i)
 				Best = SonecContactChooseEarlier(Best,ContactTime,TYPECHEST,i,1)
 			endif
+			if GAME_DEBUG_ENABLED = 1 and SONEC_INTEGRATION_TRACE = 1 and ChestList.Chest[i].Enabled = TRUE
+				SonecTraceTopContact(Sonec,PlateList,ChestList,TYPECHEST,i,Eligible,ContactTime)
+			endif
 		next i
 		for i = 0 to PlateList.Plate.Length
+			Eligible = FALSE
+			ContactTime = -1
 			if i <> PassPlateIndex and PlateList.Plate[i].Enabled = TRUE and PlateList.Plate[i].SonecDepthState <> SONEC_DEPTH_PASSAGE
+				Eligible = TRUE
 				ContactTime = SonecPlateTopContactTime(Sonec,PlateList,i)
 				Best = SonecContactChooseEarlier(Best,ContactTime,TYPEPLATE,i,1)
+			endif
+			if GAME_DEBUG_ENABLED = 1 and SONEC_INTEGRATION_TRACE = 1 and PlateList.Plate[i].Enabled = TRUE
+				SonecTraceTopContact(Sonec,PlateList,ChestList,TYPEPLATE,i,Eligible,ContactTime)
 			endif
 		next i
 	endif
@@ -1259,6 +1335,7 @@ function SonecCollidePlate(Sonec ref as TSonec,PlateList ref as TPlateList,Chest
 	local DebugHistoryText as string
 
 	Sonec.DebugEdgePending = FALSE
+	Sonec.DebugTopTrace = ""
 	Sonec.DebugCsvHopPreVX = 0
 	Sonec.DebugCsvHopPreVY = 0
 	Sonec.DebugCsvHopPostVX = 0
@@ -1308,6 +1385,9 @@ function SonecCollidePlate(Sonec ref as TSonec,PlateList ref as TPlateList,Chest
 				Sonec.CollisionSegmentStartTime = 1
 				Done = TRUE
 			else
+				if GAME_DEBUG_ENABLED = 1 and SONEC_INTEGRATION_TRACE = 1 and Sonec.DebugTopTrace <> ""
+					Sonec.DebugTopTrace = Sonec.DebugTopTrace+"|W;"+Str(Best.Kind)+";"+Str(Best.ListType)+";"+Str(Best.Index)+";"+Str(SonecCollisionAxisAt(Sonec.CollisionSegmentStartTime,1.0,Best.ContactTime))
+				endif
 				SonecResolveContact(Sonec,PlateList,ChestList,Best,Screen)
 				if Best.Kind <> 5 then MechanicalCount = MechanicalCount + 1
 				if Sonec.CollisionSegmentStartTime >= 1
@@ -1869,28 +1949,25 @@ endfunction
 // select the current vertical acceleration. This function does not establish
 // ground contact or change the depth-plane association.
 function SonecMoveVerticalSpeed(Sonec ref as TSonec)
-	local a as float
 	if Sonec.State.Jump = TRUE
-		
+		// One impulse, with carrier Y already transferred on release.
 		Sonec.State.Jump = FALSE
 		Sonec.ObjectData.MoveSpeed.y = Sonec.ObjectData.MoveSpeed.y - Sonec.ObjectData.MoveSpeedMax.y
-		
+		Sonec.State.Fall = TRUE
+		exitfunction
 	endif
-	
 	if Sonec.State.Fly = TRUE
+		// Existing net thrust acceleration; only cap upward powered speed.
+		// Downward momentum must be reduced by thrust, never by a sudden cap.
 		Sonec.ObjectData.MoveSpeed.y = Sonec.ObjectData.MoveSpeed.y - Sonec.ObjectData.MoveAcceleration.y * Sonec.ObjectData.MoveTimer.CalcRange
-		if Sonec.ObjectData.MoveSpeed.y <> 0
-			a = Sonec.ObjectData.MoveSpeed.y/abs(Sonec.ObjectData.MoveSpeed.y)	
-			if abs(Sonec.ObjectData.MoveSpeed.y) > Sonec.ObjectData.MoveSpeedMax.y
-				Sonec.ObjectData.MoveSpeed.y = Sonec.ObjectData.MoveSpeedMax.y * a
-			endif
+		if Sonec.ObjectData.MoveSpeed.y < -Sonec.ObjectData.MoveSpeedMax.y
+			Sonec.ObjectData.MoveSpeed.y = -Sonec.ObjectData.MoveSpeedMax.y
 		endif
 	else
 		if Sonec.State.Fall = TRUE
 			Sonec.ObjectData.MoveSpeed.y = Sonec.ObjectData.MoveSpeed.y + FALLACCELERATION * Sonec.ObjectData.MoveTimer.CalcRange
 		endif
 	endif
-	
 endfunction
 
 // Phase A1: Move/Alignment express the active movement request; MoveSpeed.x
@@ -1898,11 +1975,50 @@ endfunction
 // Keep these existing decisions unchanged until their planned redesign.
 function SonecMoveHorizontalSpeed(Sonec ref as TSonec)
 	local acc as float
+	local VX as float
+	local StepX as float
+	// Normal unpowered jump keeps its launch momentum until landing or
+	// powered flight. Collision and weapon recoil can still change it.
+	if Sonec.GroundContactActive = FALSE
+		if Sonec.NormalJumpActive = TRUE then exitfunction
+		VX = Sonec.ObjectData.MoveSpeed.x
+		StepX = Sonec.ObjectData.MoveAcceleration.x * Sonec.ObjectData.MoveTimer.CalcRange
+		if Sonec.AirThrustDirection < 0
+			// Limit the added thrust, not inherited momentum above the limit.
+			if VX > -SONEC_MAX_AIR_THRUST_SPEED
+				VX = VX - StepX
+				if VX < -SONEC_MAX_AIR_THRUST_SPEED then VX = -SONEC_MAX_AIR_THRUST_SPEED
+			endif
+		else
+			if Sonec.AirThrustDirection > 0
+				if VX < SONEC_MAX_AIR_THRUST_SPEED
+					VX = VX + StepX
+					if VX > SONEC_MAX_AIR_THRUST_SPEED then VX = SONEC_MAX_AIR_THRUST_SPEED
+				endif
+			else
+				// Preserve passive air coast without crossing zero.
+				if abs(VX) <= SONEC_COAST_ZERO_SPEED
+					VX = 0
+				else
+					if VX < 0
+						VX = VX + SONEC_AIR_COAST_FACTOR*StepX
+						if VX > 0 then VX = 0
+					else
+						VX = VX - SONEC_AIR_COAST_FACTOR*StepX
+						if VX < 0 then VX = 0
+					endif
+				endif
+			endif
+		endif
+		Sonec.ObjectData.MoveSpeed.x = VX
+		exitfunction
+	endif
+	// Ground control still uses the original acceleration and coast.
 	if Sonec.State.Move = TRUE
 		// Countersteering on a chest brakes harder than releasing the direction.
-		// Keep airborne movement and normal acceleration unchanged.
+		// Keep normal ground acceleration unchanged.
 		acc = SONEC_NORMAL_ACCELERATION_FACTOR
-		if Sonec.State.Stand = TRUE and Sonec.CollisionData.ListType = TYPECHEST
+		if Sonec.CollisionData.ListType = TYPECHEST
 			if Sonec.State.Alignment = MOVELEFT and Sonec.ObjectData.MoveSpeed.x > 0
 				acc = SONEC_COUNTERSTEER_FACTOR
 			endif
@@ -1915,8 +2031,8 @@ function SonecMoveHorizontalSpeed(Sonec ref as TSonec)
 		else
 			Sonec.ObjectData.MoveSpeed.x = Sonec.ObjectData.MoveSpeed.x + acc * Sonec.ObjectData.MoveAcceleration.x * Sonec.ObjectData.MoveTimer.CalcRange
 		endif
-		// Limit powered ground running only; leave airborne thrust and recoil untouched.
-		if Sonec.State.Stand = TRUE
+			// Limit powered ground running only.
+		if Sonec.GroundContactActive = TRUE
 			if Sonec.ObjectData.MoveSpeed.x > Sonec.ObjectData.MoveSpeedMax.x
 				Sonec.ObjectData.MoveSpeed.x = Sonec.ObjectData.MoveSpeedMax.x
 			endif
@@ -1925,20 +2041,16 @@ function SonecMoveHorizontalSpeed(Sonec ref as TSonec)
 			endif
 		endif
 	else
-		if Sonec.State.Stand = TRUE
-			acc = SONEC_GROUND_COAST_FACTOR
-		else
-			acc = SONEC_AIR_COAST_FACTOR
-		endif
+		acc = SONEC_GROUND_COAST_FACTOR
 		if abs(Sonec.ObjectData.MoveSpeed.x) > SONEC_COAST_ZERO_SPEED
 			if Sonec.ObjectData.MoveSpeed.x < 0
 				Sonec.ObjectData.MoveSpeed.x = Sonec.ObjectData.MoveSpeed.x + acc * Sonec.ObjectData.MoveAcceleration.x * Sonec.ObjectData.MoveTimer.CalcRange
-				if Sonec.State.Stand = TRUE and Sonec.ObjectData.MoveSpeed.x > 0
+				if Sonec.GroundContactActive = TRUE and Sonec.ObjectData.MoveSpeed.x > 0
 					Sonec.ObjectData.MoveSpeed.x = 0
 				endif
 			else
 				Sonec.ObjectData.MoveSpeed.x = Sonec.ObjectData.MoveSpeed.x - acc * Sonec.ObjectData.MoveAcceleration.x * Sonec.ObjectData.MoveTimer.CalcRange
-				if Sonec.State.Stand = TRUE and Sonec.ObjectData.MoveSpeed.x < 0
+				if Sonec.GroundContactActive = TRUE and Sonec.ObjectData.MoveSpeed.x < 0
 					Sonec.ObjectData.MoveSpeed.x = 0
 				endif
 			endif

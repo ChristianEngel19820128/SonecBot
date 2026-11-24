@@ -67,6 +67,7 @@ Alle derzeitigen Plattformen bewegen sich **nach links**.
 
 - Der normale Sprung ist wie ein **Weitsprung**: ein einmaliger vertikaler Impuls; der horizontale Anlauf bestimmt den Schwung.
 - Während des normalen Sprungs kann der horizontale Richtungsimpuls **nicht aktiv umgelenkt** werden.
+- **Phase G1:** `NormalJumpActive` hält den X-Schwung eines ungetriebenen normalen Sprungs ohne Richtungsschub oder Ausrollbremsung bis zur Landung bzw. tatsächlicher Jetpack-Aktivierung. Mechanische Kontakte und Waffenrückstoß bleiben wirksam; Blickrichtung kann weiterhin geändert werden. Der Sprungimpuls wird einmal konsumiert, Fallzustand danach aktiv. Jetpack-Aktivierung vor Konsum eines noch ausstehenden Sprungimpulses ersetzt diesen statt beides zu stapeln.
 - Die Schwerkraft wirkt weiter und hebt den anfänglichen vertikalen Impuls allmählich auf.
 - Seitenkontakte beenden den Sprung nicht und setzen keine Bodenhaltung.
 
@@ -85,6 +86,7 @@ Alle derzeitigen Plattformen bewegen sich **nach links**.
 - Verfügbare Energie bestimmt, ob der Schub eingesetzt werden kann.
 - **Bestehendes Verhalten erhalten:** Kreuz nach oben wird mit `ButtonDown` kontinuierlich geprüft. Sammelt Sonec während eines Sprungs Energie, während die Taste gedrückt bleibt, kann das Jetpack **sofort wieder einsetzen**.
 - Beim Übergang soll vorhandene Bewegung nicht ohne Grund zurückgesetzt werden.
+- **Phase G1:** expliziter `AirThrustDirection` wird bei regulärer Eingabe nur im freien Flug/Fall mit Energie gesetzt, nicht bei normalem Sprung, Rückstoß oder alter Bodeneingabe; bei Landung gelöscht. Bestehende seitliche Energieschubmöglichkeit im normalen Fall bleibt. `SONEC_MAX_AIR_THRUST_SPEED=5` vorläufig analog Laufmaximum: aktiver Schub erhöht den Betrag nur bis dahin, stärkeres vorhandenes Weltmomentum wird nicht abgeschnitten; Gegenschub zulässig. Ohne Schub bleibt bisheriges passives Ausrollen mit Nullgrenze (kein Vorzeichenwechsel). Fly-Y-Zweig behält bisherigen Netto-Schubwert und begrenzt nur aufwärts, nicht abwärts; schnelles Fallen wird schrittweise abgebremst. Energie-Aktivierungsschwellen, Kosten pro Effekt und Hover unverändert; normaler Sprung erzeugt keinen seitlichen Jet-Effekt. G1: 22 übersetzte Rechenfälle und statischer Vergleich von 19 unveränderten Kontakt-/Geometrie-/Mitnahme-/Hop-/Effekthilfen bestanden; AGK-Compile und Gesamtspieltest offen.
 - **Separates Backlog, nicht Bestandteil dieser Umsetzung:** Zweiter Druck auf Kreuz nach oben im Sprung als gezielte Jetpack-Aktivierung; genaue Steuerung und Verhältnis zu `ButtonDown` später festlegen.
 
 ## 10. Zustandsmodell
@@ -135,7 +137,8 @@ Die Reihenfolge ist vorläufig; tatsächliche technische Abhängigkeiten können
 - Gleichzeitige Kontakte und bestehende Überlappungen ohne Positionssprünge.
 - Exakte Mini-Hop-Impulse und Erkennung der Kantenereignisse.
 - Feinabstimmung der Geschwindigkeitsübernahme beim Abspringen/Landen.
-- Eventuelle spätere elementweise Durchflugprüfung statt pauschaler Höhenregel. Gemeinsam beschlossen: E-Regel bis vollständiger Bewegungsimplementierung unverändert lassen; beide E-Beobachtungen im G-Gesamtspieltest gezielt untersuchen (Fuß-/Plattform-/Kistenhöhe, Passagezustand, relative Fußkreuzung), danach Regeländerung entscheiden.
+- Eventuelle spätere elementweise Durchflugprüfung statt pauschaler Höhenregel. Gemeinsam beschlossen: E-Regel bis zur Gesamtbewertung unverändert lassen; G1 ergänzt Diagnose, G2 wertet E/F-Beobachtungen aus und entscheidet Regeländerung gemeinsam. Keine Änderung der Landeflächen oder Tiefenebenenfilter in G1.
+- G1-Diagnose: vorhandene `sonec_edge_diagnostics.csv` erhält `normal_jump`, `air_thrust_direction`, `top_contact_trace`. Nur bei `GAME_DEBUG_ENABLED=1` und `SONEC_INTEGRATION_TRACE=1` (aktuell 1) werden nahe relative Fußkreuzungen protokolliert, auch abgewiesene (Mittelpunkt bis halbe Körperbreite außerhalb der Oberfläche). Trace-Blöcke sind mit `|` getrennt; `T;surface_type;surface_index;plate_index;linked_plate;depth_state;eligible;accepted_segment_time;absolute_frame_time;relative_x;width;feet_y;plate_y;highest_y;relative_start_y;relative_end_y;plate_delta_y`. `W;kind;surface_type;index;absolute_frame_time` bezeichnet nach dem ersten T-Eintrag im Frame gewählten Kontakt. `accepted_segment_time=-1` heißt kein gültiger Oberseitenkandidat, `eligible=0` Filter sperrt, `eligible=1` und relative X außerhalb (0,width) Randprüfung verwirft. Keine Trace-Erfassung ohne tatsächliche relative Abwärtskreuzung. Nicht jeder Frame hat einen Trace. Bestehende CSV-Spalten und Master-Schalter erhalten; zusätzliche Daten rein diagnostisch, AGK-Ausgabe noch nicht lokal verifiziert.
 
 ## 14. Abnahmefälle
 

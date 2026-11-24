@@ -4,7 +4,7 @@
 
 ## Jetzt
 
-- [ ] Phase G: Gesamtintegration und Spielgefühl gemäß [Spezifikation](docs/SONEC_MOVEMENT_SPEC.md). F `f4424a1` 9/9 bestanden; gezielt Kistenrand-Fall mit teilweiser Durchdringung/fehlendem Hop prüfen (Mittelpunkt bei Fußkreuzung, eigene/fremde Ebene, Kontaktstatus); E-Beobachtungen unfaire Übernahme/vertikale Fremdplattformberechtigung eingrenzen und Regeländerung gemeinsam entscheiden. Danach Balancing.
+- [ ] Phase G1: Sprung-/Schubregeln und Kontaktdiagnose implementiert; AGK-Compile und Gesamtspieltest offen. G2: Kistenrand-Fall und E-Übernahmebeobachtungen anhand `sonec_edge_diagnostics.csv` eingrenzen, gewünschte Regel gemeinsam entscheiden, danach abschließendes Balancing gemäß [Spezifikation](docs/SONEC_MOVEMENT_SPEC.md).
 
 ## Danach / separat
 

@@ -567,6 +567,9 @@ type TSonec
 	DebugEdgeAfterBalanceX as float
 	CollisionSegmentStartTime as float
 	GroundContactActive as integer
+	NormalJumpActive as integer
+	AirThrustDirection as integer
+	DebugTopTrace as string
 	PassThroughChestIndex as integer
 	LinkedPlateIndex as integer
 	BlockedChestIndex as integer
