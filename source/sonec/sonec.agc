@@ -684,6 +684,9 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
+// Phase A1: Input owns control intent and the existing Fly/Fall/Stand/Jump
+// transitions. Do not treat these flags as a collision result without checking
+// the actual support recorded in CollisionData. Keep ButtonDown energy behavior.
 function SonecInput(Sonec ref as TSonec,JetfireList ref as TJetfireList,ProtoJetfire ref as TProtoJetfire,World ref as TWorld,Keys ref as TKeys,Options ref as TGameOptions,JoystickIndex as integer,Now as integer)
 	
 	local Position as TPosition
@@ -802,6 +805,9 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
+// Phase A1: Release the current supporting surface and enter falling.
+// LinkedPlateIndex intentionally survives: it represents the depth plane,
+// whereas CollisionData.ListType/Index identifies the current support.
 function SonecCollideReset(Sonec ref as TSonec)
 	
 	Sonec.CollisionData.ListType = 0
@@ -820,6 +826,9 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
+// Phase A1: Legacy collision owner for platform support/landing and
+// chest-contact dispatch. This routine currently updates Stand/Fall,
+// CollisionData and LinkedPlateIndex; Phase E will unify those decisions.
 function SonecCollidePlate(Sonec ref as TSonec,PlateList ref as TPlateList,ChestList ref as TChestList,World ref as TWorld)
 	
 	local i as integer
@@ -1443,6 +1452,9 @@ endfunction
 //----------------------------------------------------------------------
 
 // Keep movement forces independent from collision resolution and input binding.
+// Phase A1: Jump is a one-shot request consumed here, while Fly/Fall
+// select the current vertical acceleration. This function does not establish
+// ground contact or change the depth-plane association.
 function SonecMoveVerticalSpeed(Sonec ref as TSonec)
 	local a as float
 	if Sonec.State.Jump = TRUE
@@ -1468,6 +1480,9 @@ function SonecMoveVerticalSpeed(Sonec ref as TSonec)
 	
 endfunction
 
+// Phase A1: Move/Alignment express the active movement request; MoveSpeed.x
+// stores momentum. Stand currently selects ground acceleration/coasting.
+// Keep these existing decisions unchanged until their planned redesign.
 function SonecMoveHorizontalSpeed(Sonec ref as TSonec)
 	local acc as float
 	if Sonec.State.Move = TRUE
@@ -1618,6 +1633,9 @@ function SonecMoveCamera(Sonec ref as TSonec,World ref as TWorld,Screen as TSize
 
 endfunction
 
+// Phase A1: Movement computes the intended path in CollisionMoveStart/End.
+// The later collision pass may resolve that path and update support state.
+// AutoSpeed is platform carry, not a synonym for MoveSpeed or LinkedPlateIndex.
 function SonecMove(Sonec ref as TSonec,ChestList ref as TChestList,World ref as TWorld,Screen as TSize,Now as integer)
 	
 	Sonec.CollisionMoveStart = Sonec.ObjectData.Position
