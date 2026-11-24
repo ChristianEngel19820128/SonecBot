@@ -845,6 +845,21 @@ function SonecSetGroundContact(Sonec ref as TSonec,SurfaceType as integer,Surfac
 	Sonec.ObjectData.MoveSpeed.y = 0
 endfunction
 
+// Phase A4: Validate only whether the linked platform still exists.
+// Do not clear linkage merely because Sonec is airborne or above a chest.
+// Existing invalid-index/disabled-platform behavior is preserved.
+function SonecValidateLinkedPlate(Sonec ref as TSonec,PlateList ref as TPlateList)
+	if Sonec.LinkedPlateIndex >= 0
+		if Sonec.LinkedPlateIndex > PlateList.Plate.Length
+			Sonec.LinkedPlateIndex = -1
+		else
+			if PlateList.Plate[Sonec.LinkedPlateIndex].Enabled = FALSE
+				Sonec.LinkedPlateIndex = -1
+			endif
+		endif
+	endif
+endfunction
+
 // Phase A1: Legacy collision owner for platform support/landing and
 // chest-contact dispatch. This routine currently updates Stand/Fall,
 // CollisionData and LinkedPlateIndex; Phase E will unify those decisions.
@@ -862,15 +877,7 @@ function SonecCollidePlate(Sonec ref as TSonec,PlateList ref as TPlateList,Chest
 	PlateIndex = -1
 	// The association survives a jump and normal falling; only actual
 	// jetpack flight ignores it when finding solid chests.
-	if Sonec.LinkedPlateIndex >= 0
-		if Sonec.LinkedPlateIndex > PlateList.Plate.Length
-			Sonec.LinkedPlateIndex = -1
-		else
-			if PlateList.Plate[Sonec.LinkedPlateIndex].Enabled = FALSE
-				Sonec.LinkedPlateIndex = -1
-			endif
-		endif
-	endif
+	SonecValidateLinkedPlate(Sonec,PlateList)
 	PassPlateIndex = -1
 	PassIndex = Sonec.PassThroughChestIndex
 	if PassIndex >= 0
