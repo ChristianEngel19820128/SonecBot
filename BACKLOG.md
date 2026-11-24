@@ -81,6 +81,13 @@ Bomber, Flarak, hilfreicher Jumppod, Gefahren-/Erfahrungsgrundsystem, kleine Zie
 - **Granatwerfer aufladen:** Granatwerfer-Taste gedrückt halten soll einen regulären Granatenwurf auslösen; die Granate fliegt ballistisch, die Haltedauer beeinflusst die Wurfstärke/Flugbahn. Genaue Auslöse- und Stärkegrenzen sowie Verhältnis zum bisherigen Rückstoß vor Umsetzung festlegen. **Nur Idee, nicht implementiert.**
 - **Steuerkreuz hoch – Tippen/Halten:** Kurzes Tippen löst einen Sprung aus; Halten aktiviert das Jetpack nach kurzer Verzögerung. Zeitgrenzen, Energiebedingungen und Verhalten bei Sprung/Fall später spezifizieren. **Nur Idee, nicht implementiert.**
 
+## HUD, Warnungen und Trefferpartikel (24. November 2026)
+
+- **HUD kompakter gestalten:** Balken und prozentuale Anzeigen mit angepassten Prozentwerten/Größen verkleinern; gesamte HUD-Höhe reduzieren. Kleine, vertikal unter den Balken ausgerichtete Beschriftungen pro Anzeige ergänzen. Bestehende HUD-Transparenz auch auf Texte anwenden. Lesbarkeit und konkrete Maße vor Umsetzung abstimmen.
+- **Punktzahl und Spielzeit:** Im HUD beziehungsweise Bildschirmaufbau geeignete, dauerhaft reservierte Bereiche für Punktzahl und Spielzeit vorsehen; genaue Position ist ausdrücklich noch zu bewerten.
+- **Warnungsanzeige:** Neue Warnungen verdrängen bisherige Warnungen zu schnell; Anzeigepriorität, Mindestlesedauer und gegebenenfalls Warteschlange vor Umsetzung klären.
+- **ShipHit-Explosionspartikel:** Partikeleffekt nachbearbeiten und grün einfärben; optional einzelne Partikel vergrößern. Größen und Optik später im Spiel prüfen.
+
 ## Pflege
 
 - Kurze Einträge, vorhandenen Themen zuordnen; keine Chatprotokolle anhängen.
