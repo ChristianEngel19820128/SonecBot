@@ -524,6 +524,14 @@ type TFlameGun
 	FireTimer as TTime
 endtype
 
+// Phase B3e: shared collision candidate; 0 = no candidate.
+type TSonecContactCandidate
+	Valid as integer
+	ContactTime as float
+	ListType as integer
+	Index as integer
+endtype
+
 type TSonec
 	DebugCsvMoveStartVX as float
 	DebugCsvMoveAfterHorizontalVX as float
