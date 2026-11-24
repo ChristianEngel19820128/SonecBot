@@ -188,3 +188,12 @@ Die Reihenfolge ist vorläufig; tatsächliche technische Abhängigkeiten können
 - **Änderung:** `SonecSetGroundContact` bündelt die bisher identischen Zuweisungen von `Fall`, `Stand`, `CollisionData.ListType/Index`, `LinkedPlateIndex` und vertikaler Geschwindigkeit bei gültiger Landung auf Plattform oder Kiste. Beide bisherigen Landestellen rufen diesen Helfer auf.
 - **Bewusst unverändert:** Kontaktprüfung, Kollisionsreihenfolge, Positionsberechnung, Kisten-Ausgleichsschritt und alle fachlichen Regeln. Die bestehende separate Bereinigung ungültiger `LinkedPlateIndex`-Werte ist noch nicht neu gestaltet.
 - **Prüfung:** Quellseitige Prüfung der Ersetzung; AGK-Kompilierung und Laufzeitverhalten durch den Entwickler noch offen. Nächster Schritt erst nach Rückmeldung.
+
+## 20. Entwicklertest Phase A3 (24.11.2026)
+
+- **Getesteter Code-Commit:** `a330ff71031e76c46879b8fbc030f6902a26039e` auf `develop`.
+- **Gesamtergebnis:** **Bestanden, 5/5 bestätigt**, vom Entwickler lokal in AGK Studio gemeldet.
+- **Bestätigt:** AGK-Kompilierung erfolgreich; Landung auf Plattform funktioniert; Landung auf Kiste funktioniert; Absprung und erneute Landung funktionieren; Kistenrand und Ausgleichsschritt weiterhin unauffällig.
+- **Offen:** Keine. **Beobachtungen:** Keine Angaben.
+- **Einordnung:** Die Zentralisierung der Bodenkontakt-Zuweisungen zeigt in diesen Prüfungen keine erkennbare Regression. Die neue Kollisionsphysik ist damit noch nicht implementiert oder abgenommen.
+- **Nächster Schritt:** Phase A fortsetzen, jeweils kleinräumig und mit Entwicklertest; fachliche Änderungen zuerst in der Spezifikation festhalten.
