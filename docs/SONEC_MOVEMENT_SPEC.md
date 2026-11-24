@@ -624,3 +624,8 @@ Die Reihenfolge ist vorläufig; tatsächliche technische Abhängigkeiten können
 - **Befund:** `SonecCollidePlate` durchsucht Plattformoberseiten zweimal: zuerst für die Zeit, dann nach der Kistenbehandlung nochmals für den Index. Die zweite Suche kann eine andere Durchflug-Ausnahme sehen und ist kein gemeinsamer Kandidatenzustand.
 - **Kleiner Architekturbaustein:** Den besten Plattform-Index, die Kontaktzeit und die Zielhöhe in der ersten Suche gemeinsam speichern und bei der späteren Landungsauflösung wiederverwenden. Wird während der Kistenprüfung `PassThroughChestIndex` aktiv und betrifft dessen Plattform den zuvor gewählten Kandidaten, den Kandidaten vor der Landung verwerfen. Bestehende Kisten-/Seitenauflösung, Restbewegung und Zustände unverändert lassen. Dies bereitet den einzigen Kontaktresolver vor; ersetzt ihn noch nicht.
 - **Test:** AGK-Compile, Plattform-/Kistenlandungen, Durchflug von unten, Mini-Hop, Seitenkontakt. Eine Änderung der bekannten Fehler wird nicht erwartet.
+
+## 82. B3d – Implementiert, AGK-Test offen (24.11.2026)
+
+- **Code:** `ac5429166855a7311ed1e699d0b7e0c510f0b1ce`. Die erste Plattformkandidatensuche speichert nun `BestPlateIndex`, `BestPlateContactTime` und `BestPlateY`; die Landung verwendet denselben Kandidaten. **Ausnahme:** Wenn die Kistenprüfung `PassPlateIndex` ändert, wird der Kandidat mit der neuen Durchflugausnahme neu berechnet, damit eine andere gültige Plattform weiterhin gewählt werden kann.
+- **Status:** Noch kein AGK-Compile/Entwicklertest. Die getrennte Auflösung von Seitenkontakt und Landung bleibt; Phase B ist nicht abgeschlossen. Nächster Architekturbaustein: gemeinsame Kontaktrepräsentation und früheste Auswahl vor Auflösung.
