@@ -484,3 +484,10 @@ Die Reihenfolge ist vorläufig; tatsächliche technische Abhängigkeiten können
 - **Code:** `be0a6547c445ec64e1c501bc1fa7244a40dbe51e` entfernt `Print` aus `SonecMove`. `2c114a78c0f7fb502990a2208c185f4b167ceb7a` erweitert `Game.DebugText` von Slots 0–1 auf 0–2 und rendert die Rand-/Mini-Hop-Diagnose in Slot 2 über `SetTextString`/`DrawText` in `GameDraw`. Das Diagnosefenster zählt dort 60 gezeichnete Frames; die vorhandenen Slots 0/1 bleiben unverändert.
 - **Hinweis:** Der Text zeigt Ereignis, aktuelle X-/X-Y-Geschwindigkeit, Carry, Balance und Delta, Kisten-Snapshot sowie Move/Stand/Fall. Die Diagnosedaten werden weiterhin in `Sonec` erfasst; keine Bewegungskorrektur.
 - **Teststatus:** AGK-Kompilierung, mehrzeilige Darstellung und Aufnehmbarkeit vom Entwickler zu bestätigen.
+
+## 61. Entwicklerbeobachtung D-R1: Screenshots Randlandung (24.11.2026)
+
+- **Bild 1, rechte Seite:** Debug `event=2`, `x=602.344604`, `vx=0`, `vy=0`, `carryX=-0.055000`, `balance=0`, `target=603.035156`, `dxBalance=0`, `chestX=540.535156`, `chestVx=0`, `move=0`, `stand=1`, `fall=0`.
+- **Bild 2, linke Seite:** Debug `event=0`, `x=299.052032`, `vx=0`, `vy=0`, `carryX=0`, `balance=0`, `target=603.035156`, `dxBalance=0`, `chestX=327.520325`, `chestVx=0`, `move=0`, `stand=1`, `fall=0`. Entwickler: Werte veränderten sich im Zeitverlauf.
+- **Einordnung:** Momentaufnahmen zeigen weder aktive Balance noch aktuelle horizontale Eigengeschwindigkeit. `target` bleibt nach abgeschlossener Balance als alter Wert stehen. `event=0` im zweiten Bild entsteht im aktuellen Diagnosecode beim neuen Kisten-Topkontakt ohne Randklassifikation; der alte 60-Frame-Zähler wird dabei nicht zurückgesetzt. `chestX` und `chestVx` sind Snapshots, `carryX` dagegen aktueller Wert. Diese Diagnose kann den Verlauf des Rechtsdralls oder einen fehlerhaften Mini-Hop noch nicht beweisen/widerlegen.
+- **Nächste geeignete Prüfung (noch nicht freigegeben):** Diagnosetext um aktuelle Kistenposition, vor/nach Kollisionskorrektur X, Verlauf der letzten Frames und getrennte Ereignismarkierung für Balance-/Hop-Beginn erweitern, ohne Bewegungslogik zu verändern. Erst danach gezielte Fehlerkorrektur planen.
