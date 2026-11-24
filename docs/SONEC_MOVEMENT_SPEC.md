@@ -181,3 +181,10 @@ Die Reihenfolge ist vorläufig; tatsächliche technische Abhängigkeiten können
 - **Offen:** Keine. **Beobachtungen:** Keine Angaben.
 - **Einordnung:** Die Extraktion der vertikalen Eingabezustände hat in diesen Prüfungen keine erkennbare Regression verursacht. Das ist keine Abnahme der späteren neuen Kollisionsphysik.
 - **Nächster Schritt:** Phase A3 – weitere Zuständigkeiten von Bewegung und Bodenkontakt kleinräumig trennen, ohne fachliche Regeln stillschweigend zu ändern.
+
+## 19. Phase A3 – Bodenkontakt-Zuweisung zentralisiert (24.11.2026)
+
+- **Code-Revision:** `a330ff71031e76c46879b8fbc030f6902a26039e` auf `develop`.
+- **Änderung:** `SonecSetGroundContact` bündelt die bisher identischen Zuweisungen von `Fall`, `Stand`, `CollisionData.ListType/Index`, `LinkedPlateIndex` und vertikaler Geschwindigkeit bei gültiger Landung auf Plattform oder Kiste. Beide bisherigen Landestellen rufen diesen Helfer auf.
+- **Bewusst unverändert:** Kontaktprüfung, Kollisionsreihenfolge, Positionsberechnung, Kisten-Ausgleichsschritt und alle fachlichen Regeln. Die bestehende separate Bereinigung ungültiger `LinkedPlateIndex`-Werte ist noch nicht neu gestaltet.
+- **Prüfung:** Quellseitige Prüfung der Ersetzung; AGK-Kompilierung und Laufzeitverhalten durch den Entwickler noch offen. Nächster Schritt erst nach Rückmeldung.
