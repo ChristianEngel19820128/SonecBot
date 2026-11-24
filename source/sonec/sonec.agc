@@ -1392,6 +1392,13 @@ endfunction HitIndex HitIndex
 function SonecCollideChestHorizontal(Sonec ref as TSonec,ChestList ref as TChestList,World ref as TWorld,SideHitIndex as integer)
 	
 	local i as integer
+	local BestChestIndex as integer
+	local BestContactTime as float
+	local ContactTime as float
+	local RelativeStartY as float
+	local RelativeEndY as float
+	local StartFeetY as float
+	local EndFeetY as float
 	
 	if Sonec.State.Stand = TRUE
 		if Sonec.CollisionData.ListType = TYPECHEST
@@ -1443,14 +1450,32 @@ function SonecCollideChestHorizontal(Sonec ref as TSonec,ChestList ref as TChest
 		endif
 	endif
 		
-	// Only the chest hit from the side is excluded from landing.
+	// B-K1: Relative swept crossing of moving chest tops.
+	// Legacy side-hit exclusion remains until unified contact ordering.
 	if Sonec.State.Stand = FALSE and Sonec.State.Fall = TRUE
+		BestChestIndex = -1
+		BestContactTime = 2
+		StartFeetY = Sonec.CollisionMoveStart.y + Sonec.ObjectData.Size.Height*0.5
+		EndFeetY = Sonec.CollisionMoveEnd.y + Sonec.ObjectData.Size.Height*0.5
 		for i = 0 to ChestList.Chest.Length
-            if SonecChestRelevant(Sonec,ChestList,i) = TRUE and Sonec.PassThroughChestIndex <> i and SideHitIndex <> i
-			if Sonec.ObjectData.Position.x > ChestList.Chest[i].ObjectData.Position.x
-				if Sonec.ObjectData.Position.x < ChestList.Chest[i].ObjectData.Position.x + ChestList.Chest[i].ObjectData.Size.Width
-					if Sonec.ObjectData.Position.y + Sonec.ObjectData.Size.Height*0.5 > ChestList.Chest[i].ObjectData.Position.y
-						if Sonec.ObjectData.Position.y + Sonec.ObjectData.Size.Height*0.5 < ChestList.Chest[i].ObjectData.Position.y + Sonec.ObjectData.MoveSpeed.y
+			if SonecChestRelevant(Sonec,ChestList,i) = TRUE and Sonec.PassThroughChestIndex <> i and SideHitIndex <> i
+				if Sonec.ObjectData.Position.x > ChestList.Chest[i].ObjectData.Position.x
+					if Sonec.ObjectData.Position.x < ChestList.Chest[i].ObjectData.Position.x + ChestList.Chest[i].ObjectData.Size.Width
+						RelativeStartY = StartFeetY - ChestList.Chest[i].CollisionMoveStart.y
+						RelativeEndY = EndFeetY - ChestList.Chest[i].ObjectData.Position.y
+						if RelativeEndY > RelativeStartY and RelativeStartY <= 0 and RelativeEndY >= 0
+							ContactTime = -RelativeStartY/(RelativeEndY-RelativeStartY)
+							if ContactTime < BestContactTime
+								BestContactTime = ContactTime
+								BestChestIndex = i
+							endif
+						endif
+					endif
+				endif
+			endif
+		next i
+		if BestChestIndex >= 0
+			i = BestChestIndex
 							Sonec.ObjectData.Position.y = ChestList.Chest[i].ObjectData.Position.y - Sonec.ObjectData.Size.Height*0.5
 							Sonec.CollisionData.Position.x = Sonec.ObjectData.Position.x - ChestList.Chest[i].ObjectData.Position.x
 							Sonec.CollisionData.Position.y = Sonec.ObjectData.Position.y + Sonec.ObjectData.Size.Height*0.5 - ChestList.Chest[i].ObjectData.Position.y
@@ -1477,12 +1502,7 @@ function SonecCollideChestHorizontal(Sonec ref as TSonec,ChestList ref as TChest
 								endif
 							endif
 							SpritePositionCalc(Sonec.SpriteData.Position,Sonec.ObjectData.Position,World.Position)
-						endif
-					endif
-				endif
-			endif
-            endif
-		next i
+		endif
 	endif
 
 endfunction
