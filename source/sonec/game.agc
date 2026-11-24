@@ -551,11 +551,10 @@ function GameDraw(Game ref as TGame)
 		SetTextString(Game.DebugText[1],"K1d checks "+Str(SonecTwoCircleChecks)+" both "+Str(SonecTwoCircleBoth)+" old-only "+Str(SonecTwoCircleOldOnly)+" new-only "+Str(SonecTwoCircleNewOnly))
 		DrawText(Game.DebugText[1])
 	endif
-	// D-R1: use the game's persistent debug text array, not AGK Print.
-	if Game.Sonec.DebugEdgeFrames > 0
-		SetTextString(Game.DebugText[2],"EDGE 1=landL 2=landR 3=hopL 4=hopR: "+Str(Game.Sonec.DebugEdgeEvent)+Chr(10)+ "x="+Str(Game.Sonec.ObjectData.Position.x)+" vx="+Str(Game.Sonec.ObjectData.MoveSpeed.x)+" vy="+Str(Game.Sonec.ObjectData.MoveSpeed.y)+" carryX="+Str(Game.Sonec.ObjectData.AutoSpeed.x)+Chr(10)+"balance="+Str(Game.Sonec.BalanceActive)+" target="+Str(Game.Sonec.BalanceTargetX)+" dxBalance="+Str(Game.Sonec.DebugEdgeAfterBalanceX-Game.Sonec.DebugEdgeBeforeBalanceX)+Chr(10)+"chestX="+Str(Game.Sonec.DebugEdgeChestX)+" chestVx="+Str(Game.Sonec.DebugEdgeChestSpeedX)+" move="+Str(Game.Sonec.State.Move)+" stand="+Str(Game.Sonec.State.Stand)+" fall="+Str(Game.Sonec.State.Fall))
+	// D-R2: frozen diagnostic remains visible until another edge/hop event.
+	if Game.Sonec.DebugEdgeVisible = TRUE
+		SetTextString(Game.DebugText[2],Game.Sonec.DebugEdgeSnapshot)
 		DrawText(Game.DebugText[2])
-		Game.Sonec.DebugEdgeFrames = Game.Sonec.DebugEdgeFrames - 1
 	endif
 	// Temporary developer HUD for Flak firing from either side.
     FlarakDebugDrawAll(Game.World)
