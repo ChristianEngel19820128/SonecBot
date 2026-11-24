@@ -4,7 +4,7 @@
 
 ## Jetzt
 
-- [ ] Phase E: Tiefenebenen und Durchflug fremder Plattformen samt zugehörigen Kisten gemäß [Spezifikation](docs/SONEC_MOVEMENT_SPEC.md) umsetzen. Phase D 9/9 und Jetpack-Nachtest `be7dc31` 6/6 bestanden. Danach F–G.
+- [ ] Phase E: plattformweite Durchflug-/Tiefenebenenlogik implementiert, AGK-Compile und gezielter Funktionstest offen. Phase D 9/9 und Jetpack-Nachtest 6/6 bestanden. Danach F–G gemäß [Spezifikation](docs/SONEC_MOVEMENT_SPEC.md).
 
 ## Danach / separat
 

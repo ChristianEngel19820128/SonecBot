@@ -3,6 +3,10 @@
 #constant SONEC_DUCK_SECOND_CIRCLE_Y 10
 #constant SONEC_MECHANICAL_FRONT_X 25
 #constant SONEC_MECHANICAL_RELATIVE_EPSILON 0.0001
+#constant SONEC_DEPTH_NEUTRAL 0
+#constant SONEC_DEPTH_PASSAGE 1
+#constant SONEC_DEPTH_CLEARED 2
+#constant SONEC_DEPTH_EPSILON 0.0001
 #constant SONEC_CHEST_SWEEP_EPSILON 0.01
 #constant SONEC_CHEST_SWEEP_ITERATIONS 18
 #constant SONEC_COUNTERSTEER_FACTOR 1.5
@@ -875,6 +879,8 @@ function SonecSetGroundContact(Sonec ref as TSonec,SurfaceType as integer,Surfac
 	Sonec.State.Stand = TRUE
 	Sonec.CollisionData.ListType = SurfaceType
 	Sonec.CollisionData.Index = SurfaceIndex
+	// A valid landing alone assigns a new active depth plane.
+	if Sonec.LinkedPlateIndex <> PlateIndex then Sonec.PassThroughChestIndex = -1
 	Sonec.LinkedPlateIndex = PlateIndex
 	Sonec.ObjectData.MoveSpeed.y = 0
 endfunction
@@ -1057,6 +1063,67 @@ function SonecSupportExitTime(Sonec ref as TSonec,PlateList ref as TPlateList,Ch
 	endif
 endfunction ContactTime
 
+// Highest active chest top at the original frame's start and end.
+// Chests follow their carrier rigidly; the same minimum height is valid
+// throughout the linear segment. Without a chest, use the plate top.
+function SonecDepthHighestTop(PlateList ref as TPlateList,ChestList ref as TChestList,PlateIndex as integer)
+	local Height as TPosition
+	local i as integer
+	local ChestStartY as float
+	Height.x = PlateList.Plate[PlateIndex].CollisionMoveStart.y
+	Height.y = PlateList.Plate[PlateIndex].ObjectData.Position.y
+	for i = 0 to ChestList.Chest.Length
+		if ChestList.Chest[i].Enabled = TRUE and ChestList.Chest[i].CollisionData.Index = PlateIndex
+			ChestStartY = ChestList.Chest[i].CollisionMoveStart.y
+			if ChestStartY < Height.x then Height.x = ChestStartY
+			if ChestList.Chest[i].ObjectData.Position.y < Height.y then Height.y = ChestList.Chest[i].ObjectData.Position.y
+		endif
+	next i
+endfunction Height
+
+// Passage belongs to a foreign platform, not to a specific chest.
+// Starting below its top makes it permeable; once in passage, the
+// entire group stays permeable until the feet clear its highest top.
+// Treat relative vertical alignment independently of horizontal overlap.
+function SonecDepthRefresh(Sonec ref as TSonec,PlateList ref as TPlateList,ChestList ref as TChestList,FeetY as float,FrameTime as float)
+	local i as integer
+	local PlateY as float
+	local HighestY as float
+	local Height as TPosition
+	for i = 0 to PlateList.Plate.Length
+		if PlateList.Plate[i].Enabled = FALSE or i = Sonec.LinkedPlateIndex
+			PlateList.Plate[i].SonecDepthState = SONEC_DEPTH_NEUTRAL
+		else
+			PlateY = SonecCollisionAxisAt(PlateList.Plate[i].CollisionMoveStart.y,PlateList.Plate[i].ObjectData.Position.y,FrameTime)
+			if FeetY > PlateY + SONEC_DEPTH_EPSILON
+				PlateList.Plate[i].SonecDepthState = SONEC_DEPTH_PASSAGE
+			else
+				Height = SonecDepthHighestTop(PlateList,ChestList,i)
+				HighestY = SonecCollisionAxisAt(Height.x,Height.y,FrameTime)
+				if FeetY <= HighestY + SONEC_DEPTH_EPSILON
+					PlateList.Plate[i].SonecDepthState = SONEC_DEPTH_CLEARED
+				endif
+			endif
+		endif
+	next i
+endfunction
+
+// The clearance itself is a nonblocking event in the common time order.
+// A later contact in the same frame therefore sees the newly solid group.
+function SonecDepthClearTime(Sonec ref as TSonec,PlateList ref as TPlateList,ChestList ref as TChestList,PlateIndex as integer)
+	local Height as TPosition
+	local RelativeStart as float
+	local RelativeEnd as float
+	local ContactTime as float
+	ContactTime = -1
+	Height = SonecDepthHighestTop(PlateList,ChestList,PlateIndex)
+	RelativeStart = Sonec.CollisionMoveStart.y + Sonec.ObjectData.Size.Height*0.5 - SonecCollisionAxisAt(Height.x,Height.y,Sonec.CollisionSegmentStartTime)
+	RelativeEnd = Sonec.CollisionMoveEnd.y + Sonec.ObjectData.Size.Height*0.5 - Height.y
+	if RelativeStart > SONEC_DEPTH_EPSILON and RelativeEnd <= 0 and RelativeEnd < RelativeStart
+		ContactTime = RelativeStart/(RelativeStart-RelativeEnd)
+	endif
+endfunction ContactTime
+
 function SonecFindContact(Sonec ref as TSonec,PlateList ref as TPlateList,ChestList ref as TChestList)
 	local Best as TSonecContactCandidate
 	local Side as TSonecContactCandidate
@@ -1069,23 +1136,25 @@ function SonecFindContact(Sonec ref as TSonec,PlateList ref as TPlateList,ChestL
 		PassPlateIndex = ChestList.Chest[Sonec.PassThroughChestIndex].CollisionData.Index
 	endif
 	// Deterministic tie order: chest top, plate top, side/underside, support exit.
+	// Update all platform groups at the actual start of this residual sweep.
+	SonecDepthRefresh(Sonec,PlateList,ChestList,Sonec.CollisionMoveStart.y + Sonec.ObjectData.Size.Height*0.5,Sonec.CollisionSegmentStartTime)
 	// Thrust intent is not the direction of travel: the relative feet sweep
 	// decides whether an unsupported Sonec crosses a surface from above.
 	if Sonec.GroundContactActive = FALSE
 		for i = 0 to ChestList.Chest.Length
-			if SonecChestRelevant(Sonec,ChestList,i) = TRUE and Sonec.PassThroughChestIndex <> i
+			if SonecChestRelevant(Sonec,PlateList,ChestList,i,TRUE) = TRUE
 				ContactTime = SonecChestTopContactTime(Sonec,ChestList,i)
 				Best = SonecContactChooseEarlier(Best,ContactTime,TYPECHEST,i,1)
 			endif
 		next i
 		for i = 0 to PlateList.Plate.Length
-			if i <> PassPlateIndex and PlateList.Plate[i].Enabled = TRUE
+			if i <> PassPlateIndex and PlateList.Plate[i].Enabled = TRUE and PlateList.Plate[i].SonecDepthState <> SONEC_DEPTH_PASSAGE
 				ContactTime = SonecPlateTopContactTime(Sonec,PlateList,i)
 				Best = SonecContactChooseEarlier(Best,ContactTime,TYPEPLATE,i,1)
 			endif
 		next i
 	endif
-	Side = SonecFindChestContact(Sonec,ChestList)
+	Side = SonecFindChestContact(Sonec,PlateList,ChestList)
 	if Side.Valid = TRUE
 		if Best.Valid = FALSE or Side.ContactTime < Best.ContactTime
 			Best = Side
@@ -1093,6 +1162,14 @@ function SonecFindContact(Sonec ref as TSonec,PlateList ref as TPlateList,ChestL
 	endif
 	ContactTime = SonecSupportExitTime(Sonec,PlateList,ChestList)
 	Best = SonecContactChooseEarlier(Best,ContactTime,Sonec.CollisionData.ListType,Sonec.CollisionData.Index,4)
+	if Sonec.GroundContactActive = FALSE
+		for i = 0 to PlateList.Plate.Length
+			if PlateList.Plate[i].Enabled = TRUE and i <> Sonec.LinkedPlateIndex and PlateList.Plate[i].SonecDepthState <> SONEC_DEPTH_CLEARED
+				ContactTime = SonecDepthClearTime(Sonec,PlateList,ChestList,i)
+				Best = SonecContactChooseEarlier(Best,ContactTime,TYPEPLATE,i,5)
+			endif
+		next i
+	endif
 endfunction Best
 
 // Exactly one selected contact modifies the path and its affected component.
@@ -1148,6 +1225,10 @@ function SonecResolveContact(Sonec ref as TSonec,PlateList ref as TPlateList,Che
 	if Best.Kind = 3
 		Sonec.PassThroughChestIndex = i
 	endif
+	if Best.Kind = 5
+		PlateList.Plate[i].SonecDepthState = SONEC_DEPTH_CLEARED
+		SonecDepthRefresh(Sonec,PlateList,ChestList,Sonec.CollisionMoveStart.y + Sonec.ObjectData.Size.Height*0.5,Sonec.CollisionSegmentStartTime)
+	endif
 	if Best.Kind = 4
 		Sonec.ObjectData.Position = Sonec.CollisionMoveStart
 		if Best.ListType = InitialSupportType and i = InitialSupportIndex and Best.ListType = TYPECHEST
@@ -1165,8 +1246,8 @@ function SonecCollidePlate(Sonec ref as TSonec,PlateList ref as TPlateList,Chest
 	local InitialSupportIndex as integer
 	local i as integer
 	local Iteration as integer
+	local MechanicalCount as integer
 	local Done as integer
-	local PassPlateIndex as integer
 	local PassIndex as integer
 	local HalfWidth as float
 	local HalfHeight as float
@@ -1190,16 +1271,13 @@ function SonecCollidePlate(Sonec ref as TSonec,PlateList ref as TPlateList,Chest
 		Sonec.State.Fall = FALSE
 	endif
 	SonecValidateLinkedPlate(Sonec,PlateList)
-	PassPlateIndex = -1
 	PassIndex = Sonec.PassThroughChestIndex
 	if PassIndex >= 0
 		if PassIndex > ChestList.Chest.Length
 			Sonec.PassThroughChestIndex = -1
 		else
-			if ChestList.Chest[PassIndex].Enabled = FALSE
+			if ChestList.Chest[PassIndex].Enabled = FALSE or ChestList.Chest[PassIndex].CollisionData.Index <> Sonec.LinkedPlateIndex
 				Sonec.PassThroughChestIndex = -1
-			else
-				PassPlateIndex = ChestList.Chest[PassIndex].CollisionData.Index
 			endif
 		endif
 	endif
@@ -1216,10 +1294,11 @@ function SonecCollidePlate(Sonec ref as TSonec,PlateList ref as TPlateList,Chest
 	InitialSupportType = Sonec.CollisionData.ListType
 	InitialSupportIndex = Sonec.CollisionData.Index
 	Done = FALSE
-	// Finite guard for degenerate zero-time contacts. If exhausted, keep
-	// the last reached contact position, never jump to an unchecked end.
-	for Iteration = 1 to 8
-		if Done = FALSE
+	MechanicalCount = 0
+	// Keep the eight mechanical-contact guard and allow one depth-clear
+	// event per active platform slot. A guard exit never skips residual motion.
+	for Iteration = 1 to 8 + PlateList.Plate.Length + 1
+		if Done = FALSE and MechanicalCount < 8
 			Best = SonecFindContact(Sonec,PlateList,ChestList)
 			if Best.Valid = FALSE
 				Sonec.CollisionMoveStart = Sonec.CollisionMoveEnd
@@ -1227,6 +1306,7 @@ function SonecCollidePlate(Sonec ref as TSonec,PlateList ref as TPlateList,Chest
 				Done = TRUE
 			else
 				SonecResolveContact(Sonec,PlateList,ChestList,Best,InitialSupportType,InitialSupportIndex)
+				if Best.Kind <> 5 then MechanicalCount = MechanicalCount + 1
 				if Sonec.CollisionSegmentStartTime >= 1
 					Done = TRUE
 				endif
@@ -1252,13 +1332,15 @@ function SonecCollidePlate(Sonec ref as TSonec,PlateList ref as TPlateList,Chest
 			endif
 		endif
 	endif
+	// Persist group state at the reached time, before restoring debug snapshots.
+	SonecDepthRefresh(Sonec,PlateList,ChestList,Sonec.ObjectData.Position.y + Sonec.ObjectData.Size.Height*0.5,Sonec.CollisionSegmentStartTime)
 	Sonec.CollisionMoveStart = OriginalStart
 	Sonec.CollisionMoveEnd = OriginalEnd
 	Sonec.CollisionSegmentStartTime = 0
 	SpritePositionCalc(Sonec.SpriteData.Position,Sonec.ObjectData.Position,World.Position)
 
-	// Retain the pass-through until after ALL landing checks, including
-	// the frame in which Sonec has just exited through the bottom.
+	// Legacy underside exception is now ONLY for a chest of the own plane.
+	// Foreign passages are retained by the platform state above.
 	PassIndex = Sonec.PassThroughChestIndex
 	if PassIndex >= 0
 		if PassIndex > ChestList.Chest.Length
@@ -1337,24 +1419,26 @@ endfunction Value
 // 
 //----------------------------------------------------------------------
 
-// Keep the platform association after jumping or leaving an edge.
-// Jetpack flight intentionally sees every active chest.
-function SonecChestRelevant(Sonec ref as TSonec,ChestList ref as TChestList,ChestIndex as integer)
+// Phase E: mechanical relevance depends on actual depth and passage,
+// not on the jetpack action flag.
+function SonecChestRelevant(Sonec ref as TSonec,PlateList ref as TPlateList,ChestList ref as TChestList,ChestIndex as integer,TopQuery as integer)
 	local Relevant as integer
+	local PlateIndex as integer
 	Relevant = FALSE
 	if ChestIndex >= 0 and ChestIndex <= ChestList.Chest.Length
-		if ChestList.Chest[ChestIndex].Enabled = TRUE
-			if Sonec.State.Fly = TRUE
-				Relevant = TRUE
-			else
-				if Sonec.LinkedPlateIndex >= 0 and ChestList.Chest[ChestIndex].CollisionData.Index = Sonec.LinkedPlateIndex
-					Relevant = TRUE
-				else
-					// A foreign chest can be reached while falling from above.
-					// Keep it intangible when entering from underneath.
-					if Sonec.State.Fall = TRUE
-						if Sonec.CollisionMoveStart.y + Sonec.ObjectData.Size.Height*0.5 <= SonecCollisionAxisAt(ChestList.Chest[ChestIndex].CollisionMoveStart.y,ChestList.Chest[ChestIndex].ObjectData.Position.y,Sonec.CollisionSegmentStartTime)
-							Relevant = TRUE
+		if ChestList.Chest[ChestIndex].Enabled = TRUE and Sonec.PassThroughChestIndex <> ChestIndex
+			PlateIndex = ChestList.Chest[ChestIndex].CollisionData.Index
+			if PlateIndex >= 0 and PlateIndex <= PlateList.Plate.Length
+				if PlateList.Plate[PlateIndex].Enabled = TRUE
+					if PlateIndex = Sonec.LinkedPlateIndex
+						Relevant = TRUE
+					else
+						if Sonec.GroundContactActive = FALSE and PlateList.Plate[PlateIndex].SonecDepthState <> SONEC_DEPTH_PASSAGE
+							// Non-passing foreign tops may be landed on from above.
+							// Side contacts need an approach from the cleared region.
+							if TopQuery = TRUE or PlateList.Plate[PlateIndex].SonecDepthState = SONEC_DEPTH_CLEARED
+								Relevant = TRUE
+							endif
 						endif
 					endif
 				endif
@@ -1524,7 +1608,7 @@ endfunction ContactTime
 // mirrored vertical front line; air uses the existing two body circles.
 // A geometry change can start overlapped: prevent deeper entry without
 // snapping the center to a newly expanded shape.
-function SonecFindChestContact(Sonec ref as TSonec,ChestList ref as TChestList)
+function SonecFindChestContact(Sonec ref as TSonec,PlateList ref as TPlateList,ChestList ref as TChestList)
 	local i as integer
 	local Direction as integer
 	local CircleIndex as integer
@@ -1564,7 +1648,7 @@ function SonecFindChestContact(Sonec ref as TSonec,ChestList ref as TChestList)
 	Radius = SonecHitCircleRadius(Sonec)
 	WorldMinX = Sonec.ObjectData.Size.Width*0.5
 	for i = 0 to ChestList.Chest.Length
-		if SonecChestRelevant(Sonec,ChestList,i) = TRUE and Sonec.PassThroughChestIndex <> i
+		if SonecChestRelevant(Sonec,PlateList,ChestList,i,FALSE) = TRUE
 			if Sonec.GroundContactActive = FALSE or Sonec.CollisionData.ListType <> TYPECHEST or Sonec.CollisionData.Index <> i
 				ChestStartX = SonecCollisionAxisAt(ChestList.Chest[i].CollisionMoveStart.x,ChestList.Chest[i].ObjectData.Position.x,Sonec.CollisionSegmentStartTime)
 				ChestStartY = SonecCollisionAxisAt(ChestList.Chest[i].CollisionMoveStart.y,ChestList.Chest[i].ObjectData.Position.y,Sonec.CollisionSegmentStartTime)
@@ -1626,8 +1710,9 @@ function SonecFindChestContact(Sonec ref as TSonec,ChestList ref as TChestList)
 							if ClosestY > Height then ClosestY = Height
 							NormalX = ContactX - ClosestX
 							NormalY = ContactY - ClosestY
-							// Preserve the existing underside traversal rule until E.
-							if NormalY > 0 and abs(NormalY) > abs(NormalX) and PlayerStepY < 0 and RelativeStepY < 0
+							// Preserve the own-plane underside rule only. Foreign
+							// passages are managed as whole platform groups.
+							if ChestList.Chest[i].CollisionData.Index = Sonec.LinkedPlateIndex and NormalY > 0 and abs(NormalY) > abs(NormalX) and PlayerStepY < 0 and RelativeStepY < 0
 								Bottom = SonecContactChooseEarlier(Bottom,HitTime,TYPECHEST,i,3)
 							endif
 							SideValid = FALSE

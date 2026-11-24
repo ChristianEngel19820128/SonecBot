@@ -40,6 +40,7 @@ endfunction
 function PlateNew(Plate ref as TPlate,ProtoPlate ref as TProtoPlate,World ref as TWorld,y as integer,Now as integer)
 	
 	Plate.Enabled = TRUE
+	Plate.SonecDepthState = 0
 	Plate.DebugDeltaX = 0
 	Plate.DebugDeltaY = 0
 	Plate.DebugCalcRange = 0

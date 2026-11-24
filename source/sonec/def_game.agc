@@ -599,6 +599,8 @@ type TProtoPlate
 endtype
 	
 type TPlate
+	// Mechanical depth state for the single player: 0 neutral, 1 passage, 2 cleared.
+	SonecDepthState as integer
 	CollisionMoveStart as TPosition
 	Enabled as integer
 	ProtoIndex as integer
