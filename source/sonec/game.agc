@@ -227,7 +227,7 @@ function SonecEdgeCsvWrite(Game ref as TGame,Now as integer)
 		if FileID = 0
 			exitfunction
 		endif
-		WriteLine(FileID,"time_ms,event,x,y,vx,vy,carry_x,balance_active,balance_target_x,balance_dx,collision_start_x,collision_end_x,chest_index,chest_x,chest_vx,stand,fall,fly,move,ground_contact,linked_plate,support_type,support_index,hop_impulse_y,move_start_x,move_start_y,pre_collision_vx,pre_collision_vy,post_collision_vx,post_collision_vy,hop_pre_vx,hop_pre_vy,hop_post_vx,hop_post_vy,hop_chest_index,hop_chest_left,hop_chest_right,alignment,world_x,screen_x,plate_x,plate_vx")
+		WriteLine(FileID,"time_ms,event,x,y,vx,vy,carry_x,balance_active,balance_target_x,balance_dx,collision_start_x,collision_end_x,chest_index,chest_x,chest_vx,stand,fall,fly,move,ground_contact,linked_plate,support_type,support_index,hop_impulse_y,move_start_x,move_start_y,pre_collision_vx,pre_collision_vy,post_collision_vx,post_collision_vy,hop_pre_vx,hop_pre_vy,hop_post_vx,hop_post_vy,hop_chest_index,hop_chest_left,hop_chest_right,alignment,world_x,screen_x,plate_x,plate_vx,move_start_vx,after_horizontal_vx")
 		CloseFile(FileID)
 		SonecEdgeCsvStarted = TRUE
 	endif
@@ -275,6 +275,7 @@ function SonecEdgeCsvWrite(Game ref as TGame,Now as integer)
 	CsvRow = CsvRow+","+Str(Game.Sonec.DebugCsvMoveStartX)+","+Str(Game.Sonec.DebugCsvMoveStartY)+","+Str(Game.Sonec.DebugCsvPreCollisionVX)+","+Str(Game.Sonec.DebugCsvPreCollisionVY)+","+Str(Game.Sonec.DebugCsvPostCollisionVX)+","+Str(Game.Sonec.DebugCsvPostCollisionVY)
 	CsvRow = CsvRow+","+Str(Game.Sonec.DebugCsvHopPreVX)+","+Str(Game.Sonec.DebugCsvHopPreVY)+","+Str(Game.Sonec.DebugCsvHopPostVX)+","+Str(Game.Sonec.DebugCsvHopPostVY)+","+Str(Game.Sonec.DebugCsvHopChestIndex)+","+Str(Game.Sonec.DebugCsvHopChestLeft)+","+Str(Game.Sonec.DebugCsvHopChestRight)
 	CsvRow = CsvRow+","+Str(Game.Sonec.State.Alignment)+","+Str(Game.World.Position.x)+","+Str(Game.Sonec.SpriteData.Position.x)+","+Str(PlateX)+","+Str(PlateVx)
+	CsvRow = CsvRow+","+Str(Game.Sonec.DebugCsvMoveStartVX)+","+Str(Game.Sonec.DebugCsvMoveAfterHorizontalVX)
 
 	FileID = OpenToWrite("sonec_edge_diagnostics.csv",1)
 	if FileID > 0
