@@ -565,3 +565,13 @@ Die Reihenfolge ist vorläufig; tatsächliche technische Abhängigkeiten können
 
 - **Code-Commit:** `0e983e95d5164901efe536c11755193550f47721`. `DebugCsvPreCollisionVX/VY` wird nun in `SonecMove` direkt nach `CollisionMoveEnd` gesetzt; falsche einmalige Initialisierungs-Zuweisung entfernt. Die CSV-Schreibfunktion und die Bewegungslogik bleiben unverändert.
 - **Teststatus:** erneute AGK-Kompilierung und CSV-Test erforderlich; alte Datei darf für `pre_collision_vx/vy` nicht als Beleg verwendet werden.
+
+## 73. D-R4 Entwickler-CSV 3 ausgewertet (24.11.2026)
+
+- **Datengrundlage:** `sonec_edge_diagnostics(2).csv`, 853 Simulationszeilen von 4779–18991 ms (~14.2 s), 44 Spalten. `event=4` einmal, `event=3` einmal, `event=2` einmal, `event=1` dreimal; `balance_active=1` in 28 Zeilen. Die korrigierte `pre_collision_vx`-Messung enthält nicht-null Werte (350 Zeilen).
+- **Rechter Mini-Hop 14938 ms:** vor Horizontalbeschleunigung `move_start_vx=0`, danach `after_horizontal_vx=+0.085`, `hop_pre_vx=hop_post_vx=+0.085`, `hop_pre_vy=0`, `hop_post_vy=-1.5`; `post_collision_vy=-1.5`. Folgesteps `vx=+0.170,+0.255,+0.335`. Die X-Beschleunigung entsteht vor Hop-Auslösung in `SonecMoveHorizontalSpeed`; Hop selbst ändert VX hier nicht.
+- **Linker Mini-Hop 18224 ms:** `move_start_vx=0`, `after_horizontal_vx=-0.085`, `hop_pre_vx=hop_post_vx=-0.085`, `hop_pre_vy=0`, `hop_post_vy=-1.5`, `post_collision_vy=-1.5`. Danach linksgerichtete Beschleunigung. Kein in diesen Hop-Frames verlorener Vertikalimpuls.
+- **Rechte Randlandung 15222 ms:** `vx=+0.405`, `balance_active=1`, im Nachlauf `balance_dx=-0.5` pro Frame: automatische Korrektur nach links trotz anfänglich positiver VX.
+- **Linke Randlandung 18508 ms:** `vx=-0.3115`, `balance_active=1`, Nachlauf `balance_dx=+0.5` pro Frame: automatische Korrektur nach rechts trotz anfänglich negativer VX. Bei 18558 ms `vx=0`, aber Balance schiebt weiter bis `x=679.454041` (18658 ms). **Rechtsdrall nach linker Landung ist damit als Balancebewegung messbar**; nicht mit zusätzlichem positiven VX-Impuls verwechseln.
+- **Zusatzbeobachtung:** Bei 18908 ms fällt `stand` von 1 auf 0 und `fall` von 0 auf 1, bei unverändertem `x=679.454041`; Ursache dieser Kontaktaufhebung aus CSV allein nicht beweisbar. Keine Aussagen über Tod/Gegnerkontakte, da nicht mitgeloggt.
+- **Status:** Reine Auswertung, keine Codeänderung. Vor Verhaltenskorrektur geplante Randbalance gegen Bewegungsspezifikation und tatsächlichen gewünschten Effekt abgleichen.
