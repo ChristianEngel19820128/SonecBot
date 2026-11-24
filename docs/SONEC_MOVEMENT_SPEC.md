@@ -471,3 +471,10 @@ Die Reihenfolge ist vorläufig; tatsächliche technische Abhängigkeiten können
 - **Ereignisse:** 1 = linke Randlandung, 2 = rechte Randlandung, 3 = Mini-Hop links, 4 = Mini-Hop rechts. Je Ereignis 60 Bewegungsframes Overlay: aktuelle X-Position, X-/Y-Geschwindigkeit, AutoSpeed.x, Balance aktiv/Ziel, tatsächlich durch Balance erzeugtes X-Delta, Kisten-X/-Geschwindigkeit und Bewegungs-/Boden-/Fallstatus. Bei Hop wird Kistenbezug **vor** `SonecCollideReset` erfasst. Der Mini-Hop-Impuls `MoveSpeed.y = -1.5` bleibt unverändert.
 - **Einschränkung:** Die Overlay-Ausgabe erfolgt in `SonecMove`; die Landung wird danach in der Kollisionsphase erkannt, deshalb erscheint das Landungsereignis ab dem nächsten Bewegungsdurchlauf. Kisten-X/-Geschwindigkeit sind Ereignis-Snapshots, keine laufend aktualisierten Werte. Nur Diagnose; kein automatischer Fehlerbeweis.
 - **Status:** AGK-Kompilierung und Sichtbarkeit des Overlays durch Entwickler zu prüfen. Besonders Rechtsdrall bei linker/rechter Kistenecke und möglicher ungewollter Mini-Hop.
+
+## 59. Vor-Code D-R1 Ausgabekorrektur: vorhandenes Game.DebugText-Array (24.11.2026)
+
+- **Entwicklerhinweis:** `Print` ist für diese Diagnose ungeeignet; vorhandenes Debug-Array aus dem Hauptspiel verwenden, damit Messwerte dauerhaft sichtbar und aufnehmbar sind.
+- **Codebefund:** `source/sonec/main.agc` besitzt kein eigenständiges Debug-Array; das Hauptspiel hält `Game.DebugText as integer[-1]` in `def_game.agc`, initialisiert und zeichnet bisher Slots 0/1 in `game.agc`. Slot 0 ist Schilddiagnose, Slot 1 Zwei-Kreis-Diagnose. Diese Slots nicht überschreiben.
+- **Korrektur:** `Game.DebugText` um Slot 2 erweitern; Diagnose mit `SetTextString(Game.DebugText[2],...)` und `DrawText` in `GameDraw` sichtbar machen, solange `Game.Sonec.DebugEdgeFrames > 0`. Keine `Print`-Ausgabe in `SonecMove`; dort nur Messwerte und Ereignisfenster beibehalten. Bei ruhenden Bildern bleibt der letzte Messstand sichtbar, solange das Fenster aktiv ist. Keine Kollisions-/Bewegungsänderung.
+- **Test:** AGK-Kompilierung, sichtbarer mehrzeiliger Diagnose-Text, 60 Frames nach Randlandung und Mini-Hop, bestehende Debug-Slots unverändert.
