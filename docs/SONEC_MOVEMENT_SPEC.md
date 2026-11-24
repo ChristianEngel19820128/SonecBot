@@ -213,3 +213,11 @@ Die Reihenfolge ist vorläufig; tatsächliche technische Abhängigkeiten können
 - **Offen:** Keine. **Beobachtungen:** Keine Angaben.
 - **Einordnung:** Phase A1–A4 (Zuständigkeiten und kleine Extraktionen ohne beabsichtigte Gameplay-Änderung) ist damit vom Entwickler erfolgreich geprüft und als vorbereitende Phase abgeschlossen. Die neue Bewegungs- und Kollisionsphysik der Phasen B–G ist noch nicht umgesetzt oder abgenommen.
 - **Nächster Schritt:** Vor dem ersten fachlichen Eingriff in Phase B den konkreten Geltungsbereich und alle dafür nötigen Details anhand dieser Spezifikation prüfen; jede zusätzliche Entscheidung zuerst hier festhalten.
+
+## 23. Phase B – Quellbefund und erster Eingriff (24.11.2026)
+
+- **Korrektur der Phasenbezeichnung:** Phase B ist gemäß Abschnitt 12 die zeitlich korrekte Kontaktfindung entlang des Bewegungswegs (Swept Collision). Die vollständige Tiefenebenen-/Durchfluglogik folgt in Phase E; die vorherige mündliche Bezeichnung von B als Tiefenebenenphase war ungenau.
+- **Ist-Befund:** `SonecMove` speichert `CollisionMoveStart` und `CollisionMoveEnd`. In `SonecCollidePlate` prüft die bestehende Plattformlandung jedoch primär die aktuelle Fußhöhe und eine geschwindigkeitsbasierte Nachbedingung. Die Kistenkontakte werden separat verarbeitet. Damit ist die übergreifende Auswahl des frühesten gültigen Kontakts noch nicht implementiert.
+- **B1-Ziel:** Als erster isolierter Schritt die Abwärtskreuzung einer Plattformoberfläche anhand der gespeicherten Fußpositionen vor und nach der Bewegung prüfen, ohne dabei bereits Kistenkontakte, Tiefenebenen, Jetpack oder seitliche Kollisionen umzubauen. Die Landung erfolgt nur bei Abwärtsbewegung und einem von oben gekreuzten Boden; der erste Kontakt entlang des Wegs muss bei mehreren Kandidaten Vorrang erhalten.
+- **Technische Abhängigkeit:** Die Bewegungen von Plattformen/Kisten erfolgen nach `SonecMove`; für die später vollständige relative Swept Collision sind Anfangs- und Endpositionen der Hindernisse bzw. eine entsprechende Bewegungsdifferenz erforderlich. B1 allein erfüllt daher noch nicht alle Abnahmefälle aus Abschnitt 14.
+- **Prüfung:** Vor einem B1-Code-Commit sind der genaue Ablauf der Kollisionsfunktionen und die bisherige Boden-Kontaktbehandlung zu kontrollieren. Nach der kleinsten Codeänderung folgt ein lokaler AGK-Test.
