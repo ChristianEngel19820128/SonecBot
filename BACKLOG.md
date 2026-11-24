@@ -23,6 +23,9 @@ Bomber, Flarak, hilfreicher Jumppod, Gefahren-/Erfahrungsgrundsystem, kleine Zie
 
 ## Fortschritt, Wertung und Bedienung
 
+- **Doppeldruck auf Kreuz nach oben für Jetpack:** Optionale spätere Steuerungserweiterung: erster Druck löst am Boden den bisherigen Weitsprung mit festem horizontalem Absprungimpuls aus; ein zweiter Druck während des Sprungs könnte bei ausreichender Energie das Jetpack aktivieren. Zeitfenster, Eingabepriorität und Übergang der vertikalen Geschwindigkeit erst beim Gameplay-Design festlegen. Keine Änderung an der aktuellen Sprung-/Flugsteuerung.
+
+
 - **Hauptmenü-Minispiel: unsichtbarer Countdown und Punkte:** Nur während der Spieler aktiv im Hauptmenü spielt, intern Zeit und Punkte erfassen; genaue Spielregeln, Anzeige und Start-/Endbedingungen noch offen. Menüarbeiten als gelegentliche Abwechslung, nicht als aktueller Schwerpunkt.
 - **Menü-Highscore und optionaler Online-Score:** Punktestand im Menü anzeigen; Highscore-Eintrag ausschließlich, wenn der Spieler beim aktiven Menüspiel den bisherigen Rekord übertrifft. Online-Rangliste später separat hinsichtlich Speicherung und Datenschutz entscheiden.
 - **Initialien-Eingabe:** Virtuelle Tastatur oder vergleichbare Eingabe für neue Highscores; Initialien optional auch im Spiel oder Menü wiederverwenden. Eingabemethode und Gültigkeitsregeln später festlegen.
