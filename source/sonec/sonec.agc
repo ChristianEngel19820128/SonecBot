@@ -1274,6 +1274,15 @@ function SonecCollideChestSideContacts(Sonec ref as TSonec,ChestList ref as TChe
 	local RelativeStartY as float
 	local RelativeEndY as float
 	local TopTime as float
+	local FrontOffset as float
+	local StartFrontX as float
+	local EndFrontX as float
+	local ChestStartEdge as float
+	local ChestEndEdge as float
+	local RelativeStartX as float
+	local RelativeEndX as float
+	local ContactCenterY as float
+	local ContactChestTop as float
 
 	Radius = SonecHitCircleRadius(Sonec)
 	PlayerStepX = Sonec.CollisionMoveEnd.x - Sonec.CollisionMoveStart.x
@@ -1291,6 +1300,66 @@ function SonecCollideChestSideContacts(Sonec ref as TSonec,ChestList ref as TChe
 				RelativeStepX = PlayerStepX - (ChestList.Chest[i].ObjectData.Position.x - ChestList.Chest[i].CollisionMoveStart.x)
 				RelativeStepY = PlayerStepY - (ChestList.Chest[i].ObjectData.Position.y - ChestList.Chest[i].CollisionMoveStart.y)
 				StartX = Sonec.CollisionMoveStart.x - ChestList.Chest[i].CollisionMoveStart.x
+				// B-K3: grounded side contact uses a full-height front line,
+				// swept against the moving chest side, not the airborne circles.
+				if Sonec.State.Stand = TRUE
+					FrontOffset = Sonec.ObjectData.Size.Width*0.5
+					if PlayerStepX > 0 and RelativeStepX > 0
+						StartFrontX = Sonec.CollisionMoveStart.x + FrontOffset
+						EndFrontX = Sonec.CollisionMoveEnd.x + FrontOffset
+						ChestStartEdge = ChestList.Chest[i].CollisionMoveStart.x
+						ChestEndEdge = ChestList.Chest[i].ObjectData.Position.x
+						RelativeStartX = StartFrontX - ChestStartEdge
+						RelativeEndX = EndFrontX - ChestEndEdge
+						if RelativeStartX <= 0 and RelativeEndX >= 0 and RelativeEndX > RelativeStartX
+							HitTime = -RelativeStartX/(RelativeEndX-RelativeStartX)
+							ContactCenterY = Sonec.CollisionMoveStart.y + PlayerStepY*HitTime
+							ContactChestTop = ChestList.Chest[i].CollisionMoveStart.y + (ChestList.Chest[i].ObjectData.Position.y - ChestList.Chest[i].CollisionMoveStart.y)*HitTime
+							if ContactCenterY + Sonec.ObjectData.Size.Height*0.5 > ContactChestTop and ContactCenterY - Sonec.ObjectData.Size.Height*0.5 < ContactChestTop + ChestList.Chest[i].ObjectData.Size.Height
+							if HitTime < SideTime
+								CandidateX = ChestEndEdge - FrontOffset
+								if CandidateX >= FrontOffset
+									if CandidateX < Sonec.CollisionMoveStart.x then CandidateX = Sonec.CollisionMoveStart.x
+									if CandidateX <= Sonec.CollisionMoveEnd.x
+										SideTime = HitTime
+										HitIndex = i
+										HitPositionX = CandidateX
+										HitOffsetX = -FrontOffset
+										HitSide = 1
+									endif
+								endif
+							endif
+							endif
+						endif
+					endif
+					if PlayerStepX < 0 and RelativeStepX < 0
+						StartFrontX = Sonec.CollisionMoveStart.x - FrontOffset
+						EndFrontX = Sonec.CollisionMoveEnd.x - FrontOffset
+						ChestStartEdge = ChestList.Chest[i].CollisionMoveStart.x + ChestList.Chest[i].ObjectData.Size.Width
+						ChestEndEdge = ChestList.Chest[i].ObjectData.Position.x + ChestList.Chest[i].ObjectData.Size.Width
+						RelativeStartX = StartFrontX - ChestStartEdge
+						RelativeEndX = EndFrontX - ChestEndEdge
+						if RelativeStartX >= 0 and RelativeEndX <= 0 and RelativeEndX < RelativeStartX
+							HitTime = -RelativeStartX/(RelativeEndX-RelativeStartX)
+							ContactCenterY = Sonec.CollisionMoveStart.y + PlayerStepY*HitTime
+							ContactChestTop = ChestList.Chest[i].CollisionMoveStart.y + (ChestList.Chest[i].ObjectData.Position.y - ChestList.Chest[i].CollisionMoveStart.y)*HitTime
+							if ContactCenterY + Sonec.ObjectData.Size.Height*0.5 > ContactChestTop and ContactCenterY - Sonec.ObjectData.Size.Height*0.5 < ContactChestTop + ChestList.Chest[i].ObjectData.Size.Height
+							if HitTime < SideTime
+								CandidateX = ChestEndEdge + FrontOffset
+								if CandidateX > Sonec.CollisionMoveStart.x then CandidateX = Sonec.CollisionMoveStart.x
+								if CandidateX >= Sonec.CollisionMoveEnd.x
+									SideTime = HitTime
+									HitIndex = i
+									HitPositionX = CandidateX
+									HitOffsetX = FrontOffset
+									HitSide = -1
+								endif
+							endif
+							endif
+						endif
+					endif
+				endif
+				if Sonec.State.Stand = FALSE
 				for CircleIndex = 0 to 1
 					CircleYShift = SonecHitCircleY(Sonec,CircleIndex) - Sonec.ObjectData.Position.y
 					StartY = Sonec.CollisionMoveStart.y + CircleYShift - ChestList.Chest[i].CollisionMoveStart.y
@@ -1352,6 +1421,7 @@ function SonecCollideChestSideContacts(Sonec ref as TSonec,ChestList ref as TChe
 						endif
 					endif
 				next CircleIndex
+				endif
 			endif
 		endif
 	next i
