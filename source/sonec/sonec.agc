@@ -151,8 +151,6 @@ function SonecInit(Sonec ref as TSonec,ProtoSonec ref as TProtoSonec,World ref a
     Sonec.SpawnEntering = TRUE
 	Sonec.CollisionMoveStart = Sonec.ObjectData.Position
 	Sonec.CollisionMoveEnd = Sonec.ObjectData.Position
-	Sonec.DebugCsvPreCollisionVX = Sonec.ObjectData.MoveSpeed.x
-	Sonec.DebugCsvPreCollisionVY = Sonec.ObjectData.MoveSpeed.y
 	Sonec.PassThroughChestIndex = -1
 	Sonec.LinkedPlateIndex = -1
 	Sonec.BlockedChestIndex = -1
@@ -1941,6 +1939,8 @@ function SonecMove(Sonec ref as TSonec,ChestList ref as TChestList,World ref as 
 	endif
 		
 	Sonec.CollisionMoveEnd = Sonec.ObjectData.Position
+	Sonec.DebugCsvPreCollisionVX = Sonec.ObjectData.MoveSpeed.x
+	Sonec.DebugCsvPreCollisionVY = Sonec.ObjectData.MoveSpeed.y
 	// Rolling history of the last four movement updates, frozen at a contact event.
 	Sonec.DebugEdgeHistory[Sonec.DebugEdgeHistoryNext] = "x="+Str(Sonec.ObjectData.Position.x)+" vx="+Str(Sonec.ObjectData.MoveSpeed.x)+" balDX="+Str(Sonec.DebugEdgeAfterBalanceX-Sonec.DebugEdgeBeforeBalanceX)
 	Sonec.DebugEdgeHistoryNext = Sonec.DebugEdgeHistoryNext + 1
