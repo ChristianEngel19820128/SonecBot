@@ -371,3 +371,9 @@ Die Reihenfolge ist vorläufig; tatsächliche technische Abhängigkeiten können
 - **Architekturabsicht:** Entstehung und Fortsetzung eines Seitenkontakts verwenden bei Bodenkontakt dieselbe vertikale Ausdehnung, statt einen B-K3-Kontakt mit einer anderen Form zu verwerfen. Kein Sonderfall für Granatwerfer, keine neue Float-Rundung oder Epsilon-Regel.
 - **Nicht Teil:** Änderung der Seitensweep-Richtung bei Rückstoß, Plattformkontakt-Fortsetzung, globaler Kollisionsresolver, tatsächliche Waffenmündungsgeometrie. Der bekannte linksseitige Rückstoß-Tunnelfehler **kann** unverändert bleiben; aus dieser Änderung wird keine gesicherte Verbesserung abgeleitet.
 - **Test:** AGK-Compile; im Stand von links/rechts gegen Kisten drücken und Kontakt halten; Granatwerfer-Rückstoß von links/rechts; Kiste auf bewegter Plattform; Flug-/Jetpack-Seitenkontakt; Kantenabgang, Sprung, Landung und Durchflug. Der Entwickler führt Laufzeittests aus.
+
+## 44. Implementierung der persistierten Seitenkontaktgeometrie (24.11.2026)
+
+- **Code-Commit:** `ec7da9340a302dd2a9440fea6606fd05ad2cf14f`, ausschließlich `source/sonec/sonec.agc`, `SonecMoveLimitChestWall`.
+- **Code-reviewed:** Bei `GroundContactActive = TRUE` prüft die Kontaktfortsetzung die gesamte Körperhöhe gegen die Kistenhöhe, wie B-K3 beim Entstehen des Seitenkontakts. Bei `GroundContactActive = FALSE` bleibt die bisherige Zwei-Kreis-Prüfung. Die horizontale Blockierung und Bewegungsregeln sind unverändert; keine Koordinatenkonvertierung oder neue Rundung.
+- **AGK-Compile/Runtime:** Offen, ausschließlich durch Entwickler testbar. Die bekannten sporadischen Plattform-/Kistendurchfälle sowie das linksseitige Granatwerfer-Tunneln sind **nicht als behoben markiert**. Nächster Schritt nach Testergebnis: Rückstoß-Richtungskombination und Plattformstützung getrennt untersuchen.
