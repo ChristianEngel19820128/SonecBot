@@ -1269,6 +1269,11 @@ function SonecCollideChestSideContacts(Sonec ref as TSonec,ChestList ref as TChe
 	local HitIndex as integer
 	local HitSide as integer
 	local BottomIndex as integer
+	local StartFeetY as float
+	local EndFeetY as float
+	local RelativeStartY as float
+	local RelativeEndY as float
+	local TopTime as float
 
 	Radius = SonecHitCircleRadius(Sonec)
 	PlayerStepX = Sonec.CollisionMoveEnd.x - Sonec.CollisionMoveStart.x
@@ -1357,6 +1362,28 @@ function SonecCollideChestSideContacts(Sonec ref as TSonec,ChestList ref as TChe
 		Sonec.PassThroughChestIndex = BottomIndex
 		if HitIndex = BottomIndex
 			HitIndex = -1
+		endif
+	endif
+
+	// B-K2: A valid top crossing of this chest takes priority when it
+	// happens before (or at) the swept side-circle contact.
+	// Use B-K1's same end-X and relative foot-crossing eligibility.
+	if HitIndex >= 0 and Sonec.State.Stand = FALSE and Sonec.State.Fall = TRUE
+		if Sonec.PassThroughChestIndex <> HitIndex
+			if Sonec.CollisionMoveEnd.x > ChestList.Chest[HitIndex].ObjectData.Position.x
+				if Sonec.CollisionMoveEnd.x < ChestList.Chest[HitIndex].ObjectData.Position.x + ChestList.Chest[HitIndex].ObjectData.Size.Width
+					StartFeetY = Sonec.CollisionMoveStart.y + Sonec.ObjectData.Size.Height*0.5
+					EndFeetY = Sonec.CollisionMoveEnd.y + Sonec.ObjectData.Size.Height*0.5
+					RelativeStartY = StartFeetY - ChestList.Chest[HitIndex].CollisionMoveStart.y
+					RelativeEndY = EndFeetY - ChestList.Chest[HitIndex].ObjectData.Position.y
+					if RelativeEndY > RelativeStartY and RelativeStartY <= 0 and RelativeEndY >= 0
+						TopTime = -RelativeStartY/(RelativeEndY-RelativeStartY)
+						if TopTime <= SideTime
+							HitIndex = -1
+						endif
+					endif
+				endif
+			endif
 		endif
 	endif
 
