@@ -834,6 +834,17 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
+// Phase A3: A valid landing updates support and depth-plane association.
+// Eligibility and timing remain with the existing collision callers.
+function SonecSetGroundContact(Sonec ref as TSonec,SurfaceType as integer,SurfaceIndex as integer,PlateIndex as integer)
+	Sonec.State.Fall = FALSE
+	Sonec.State.Stand = TRUE
+	Sonec.CollisionData.ListType = SurfaceType
+	Sonec.CollisionData.Index = SurfaceIndex
+	Sonec.LinkedPlateIndex = PlateIndex
+	Sonec.ObjectData.MoveSpeed.y = 0
+endfunction
+
 // Phase A1: Legacy collision owner for platform support/landing and
 // chest-contact dispatch. This routine currently updates Stand/Fall,
 // CollisionData and LinkedPlateIndex; Phase E will unify those decisions.
@@ -937,12 +948,7 @@ function SonecCollidePlate(Sonec ref as TSonec,PlateList ref as TPlateList,Chest
 									Sonec.ObjectData.Position.y = PlateList.Plate[i].ObjectData.Position.y - Sonec.ObjectData.Size.Height*0.5
 									Sonec.CollisionData.Position.x = Sonec.ObjectData.Position.x - PlateList.Plate[i].ObjectData.Position.x
 									Sonec.CollisionData.Position.y = Sonec.ObjectData.Position.y + Sonec.ObjectData.Size.Height*0.5 - PlateList.Plate[i].ObjectData.Position.y
-									Sonec.State.Fall = FALSE
-									Sonec.State.Stand = TRUE
-									Sonec.CollisionData.ListType = TYPEPLATE
-									Sonec.CollisionData.Index = i
-									Sonec.LinkedPlateIndex = i
-									Sonec.ObjectData.MoveSpeed.y = 0
+									SonecSetGroundContact(Sonec,TYPEPLATE,i,i)
 									SpritePositionCalc(Sonec.SpriteData.Position,Sonec.ObjectData.Position,World.Position)
 								endif
 							endif
@@ -1417,12 +1423,7 @@ function SonecCollideChestHorizontal(Sonec ref as TSonec,ChestList ref as TChest
 							Sonec.ObjectData.Position.y = ChestList.Chest[i].ObjectData.Position.y - Sonec.ObjectData.Size.Height*0.5
 							Sonec.CollisionData.Position.x = Sonec.ObjectData.Position.x - ChestList.Chest[i].ObjectData.Position.x
 							Sonec.CollisionData.Position.y = Sonec.ObjectData.Position.y + Sonec.ObjectData.Size.Height*0.5 - ChestList.Chest[i].ObjectData.Position.y
-							Sonec.State.Fall = FALSE
-							Sonec.State.Stand = TRUE
-							Sonec.CollisionData.ListType = TYPECHEST
-							Sonec.CollisionData.Index = i
-							Sonec.LinkedPlateIndex = ChestList.Chest[i].CollisionData.Index
-							Sonec.ObjectData.MoveSpeed.y = 0
+							SonecSetGroundContact(Sonec,TYPECHEST,i,ChestList.Chest[i].CollisionData.Index)
 							// Only a slow landing close to an edge needs a short balancing step.
 							Sonec.BalanceActive = FALSE
 							if abs(Sonec.ObjectData.MoveSpeed.x) <= 0.75 and Sonec.State.Move = FALSE and Sonec.State.Duck = FALSE
