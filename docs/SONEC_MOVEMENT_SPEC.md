@@ -580,3 +580,9 @@ Die Reihenfolge ist vorläufig; tatsächliche technische Abhängigkeiten können
 
 - **Entwicklerbeobachtung:** Sonec ist bei 18.908 ms gestorben. Der dortige Wechsel von `stand=1`/`fall=0` auf `stand=0`/`fall=1` ist deshalb **nicht als eigenständiger Kollisionsfehler zu werten**. Ohne Todes-/Schadensereignis im CSV lässt sich der genaue Todesablauf daraus nicht rekonstruieren.
 - **Weiter gültig:** Die Messungen zu horizontaler Beschleunigung vor den beiden Mini-Hops und zur Randbalance nach den Landungen bleiben unverändert. Keine Codeänderung.
+
+## 75. Phase B3a – gemeinsamer Plattform-Oberseitenkandidat (vor Code, 24.11.2026)
+
+- **Ziel:** Den relativen Plattform-Fußkreuzungstest aus `SonecCollidePlate` in eine reine Kandidatenfunktion auslagern. Diese liefert eine Kontaktzeit 0..1 oder -1 und prüft die horizontale Position **zur Kontaktzeit** (statt ausschließlich am Frame-Ende). Der Test benutzt die gespeicherten Sonec- und Plattformbewegungswege.
+- **Umfang dieses Schritts:** Ausschließlich die Plattform-Oberseitenkandidaten-Ermittlung und ihren Aufruf ersetzen. Noch **keine** gemeinsame Auflösung von Plattform, Kistenoberseite und Kistenseite; bestehende Prioritäten bleiben vorerst bestehen. Die neue Kontaktzeit wird später in B3b für die globale Auswahl genutzt. Keine Anpassung von Sprung, Balance, Schaden oder Kistenbewegung.
+- **Test:** AGK-Kompilierung; stehende und bewegte Plattformen, langsame und schnelle Landung; Landung nahe Plattformrand; keine unberechtigte Landung, wenn die horizontale Kreuzung nur am Frame-Ende passt. Vollständige Phase B bleibt offen.
