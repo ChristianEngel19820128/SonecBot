@@ -221,3 +221,11 @@ Die Reihenfolge ist vorläufig; tatsächliche technische Abhängigkeiten können
 - **B1-Ziel:** Als erster isolierter Schritt die Abwärtskreuzung einer Plattformoberfläche anhand der gespeicherten Fußpositionen vor und nach der Bewegung prüfen, ohne dabei bereits Kistenkontakte, Tiefenebenen, Jetpack oder seitliche Kollisionen umzubauen. Die Landung erfolgt nur bei Abwärtsbewegung und einem von oben gekreuzten Boden; der erste Kontakt entlang des Wegs muss bei mehreren Kandidaten Vorrang erhalten.
 - **Technische Abhängigkeit:** Die Bewegungen von Plattformen/Kisten erfolgen nach `SonecMove`; für die später vollständige relative Swept Collision sind Anfangs- und Endpositionen der Hindernisse bzw. eine entsprechende Bewegungsdifferenz erforderlich. B1 allein erfüllt daher noch nicht alle Abnahmefälle aus Abschnitt 14.
 - **Prüfung:** Vor einem B1-Code-Commit sind der genaue Ablauf der Kollisionsfunktionen und die bisherige Boden-Kontaktbehandlung zu kontrollieren. Nach der kleinsten Codeänderung folgt ein lokaler AGK-Test.
+
+## 24. Phase B1 – Erste gesweepte Plattformlandung (24.11.2026)
+
+- **Code-Revision:** `6a6c85bfb3061d469db4494c6864aa6404330c23` (`ab0ba2d` mit nachfolgender Deklarationskorrektur) auf `develop`.
+- **Änderung:** Plattformlandung prüft die Fußposition in `CollisionMoveStart` und `CollisionMoveEnd`: nur bei Abwärtsbewegung und Kreuzung der Plattformoberkante von oben. Bei mehreren gekreuzten aktiven Plattformen gewinnt die oberste (= entlang des Abwärtswegs zuerst erreichte); bei exakter Gleichhöhe gewinnt die zuerst durchlaufene Plattform im Array. Die bestehende horizontale Bereichsprüfung bleibt zunächst erhalten.
+- **Unverändert:** Kistenkontakt- und Kistenlandelogik laufen vorher; Jetpack, Seitenkollision, Durchflug-Ausnahme und Geschwindigkeitsmodell wurden nicht umgestellt.
+- **Noch offen:** Plattform-/Kistenbewegung relativ zum Sweep, zeitgenauer horizontaler Kontakt und gemeinsame Priorisierung von Kisten- und Plattformkontakten; B1 ist kein vollständiger Swept-Resolver.
+- **Entwicklerprüfung ausstehend:** AGK-Kompilierung, normale Plattformlandung, Landung nach Sprung/Jetpack, schneller Fall auf Plattform und Plattformen auf unterschiedlichen Höhen. Keine Testergebnisse vorweggenommen.
