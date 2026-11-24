@@ -451,3 +451,10 @@ Die Reihenfolge ist vorläufig; tatsächliche technische Abhängigkeiten können
 - `def_game.agc` Commit `e7613223c767cc89bea8de6f5715fe25f67e7128`: `TSonec.ChestSideContactTime as float` ergänzt.
 - `sonec.agc` Commit `369a56facfad91b3416827c5d4fbcd668cdd70f0`: primitive `float ref`-Parameter und lokale Übergabe entfernt; `SonecCollideChestSideContacts` schreibt die früheste blockierende Seitenzeit in `Sonec.ChestSideContactTime` (sonst 2); `SonecCollideChestHorizontal` verwendet das Feld beim Vergleich. Die gemeldeten Fehlerstellen werden damit ohne geänderte Kollisionsentscheidung adressiert.
 - **Teststatus:** erneute AGK-Kompilierung und vollständiger K-T2-Test ausstehend; kein Test als bestanden angenommen.
+
+## 56. Entwicklertest K-T2 nach AGK-Signaturkorrektur (24.11.2026)
+
+- **Getesteter Stand:** K-T2 ursprünglich Code-Commit `19a23dc7fb4a08b644b9ceba9bf4b59a2351b4e8`, nach Compilerkorrektur `e7613223c767cc89bea8de6f5715fe25f67e7128` und `369a56facfad91b3416827c5d4fbcd668cdd70f0`. Entwickler meldet **AGK-Kompilierung erfolgreich und 10/10 Prüfpunkte bestanden**: beidseitige schräge Randlandung, zwei benachbarte Kisten mit unterschiedlichen Kontaktzeiten, beidseitige Seitenkollision, langsame linke Randlandung, Jetpack und linker Weltrand, bewegte Kiste, fremde Kiste, Durchflug von unten und anschließende Landung. Keine Testpunkte offen.
+- **Zusätzlicher positiver Test:** Beim Laufen von einer höheren auf eine niedrigere Kiste funktioniert die Landung.
+- **Weiterer Befund:** Rechtsdrall/Beschleunigung nach rechts bei Randlandung **sowohl an linker als auch rechter Kistenecke** beobachtet. Die Ursache ist nicht nachgewiesen; nicht pauschal als erwünschte Randbalance einstufen. Vor Änderung gezielt prüfen, ob `BalanceActive`/`BalanceTargetX`, Support-Restaurierung oder horizontale Bewegung den Effekt verursachen.
+- **Status:** K-T2 im getesteten Umfang bestätigt, aber **keine Gesamtabnahme** der Kisten-/Plattformkollision. Bekannte Jetpack- und Plattformfehler bleiben ohne ausdrücklichen Gegenbeleg offen. Nächster Architekturbaustein nur nach weiterer Freigabe.
