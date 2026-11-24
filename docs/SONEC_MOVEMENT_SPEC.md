@@ -671,3 +671,10 @@ Die Reihenfolge ist vorläufig; tatsächliche technische Abhängigkeiten können
 
 - **Code:** `1fedca7a6b2deff054c0d3a950b3c134e79c0653`. `SonecCollideChestSideContacts` bildet den bisher gewählten Seitentreffer in `BestChestSideCandidate` ab und liest Index/Zeit für den unveränderten Oberseitenvergleich daraus zurück. Der Seitenkandidat enthält noch keine separate Normalen-/Positionsinformation; diese bleibt vorerst in den bestehenden lokalen Variablen.
 - **Status:** AGK-Kompilierung ausstehend, Funktionstest gemäß Vereinbarung am Ende von Phase B. **Phase B offen**: echte globale Kandidatenauswahl, einheitlicher Resolver und zeitlich korrekte Restbewegung stehen noch aus.
+
+## 90. B3g-Kompilierung und B3h – gemeinsame früheste Kandidatenwahl (vor Code, 24.11.2026)
+
+- **Entwickler bestätigt:** B3g kompiliert erfolgreich; Funktionstests weiterhin zum Phase-B-Abschluss.
+- **B3h:** Die Seitenkontaktroutine führt die bereits vorliegenden drei Zeiten (früheste Kistenoberseite, früheste Plattformoberseite, früheste Kistenseite) in einem einzigen `TSonecContactCandidate` als frühesten Treffer zusammen. Für die Auswahl wird die Reihenfolge Kistenoberseite, Plattformoberseite, Kistenseite verwendet, damit die bereits festgelegte Oberseitenentscheidung bei Gleichstand unverändert bleibt. Da der Plattformindex hier noch nicht übergeben wird, ist der Plattformkandidat zunächst ein zeitlicher Platzhalter mit Index -1; keine Auflösung über diesen Platzhalter.
+- **Begrenzung:** Die neue Gewinnerwahl steuert in B3h nur die bisherige Entscheidung, ob ein Kistenseitenkontakt aufgelöst wird. Die eigentlichen getrennten Resolver und ihre Positionierung bleiben unverändert. Restbewegung und vollständige gemeinsame Auflösung folgen später. Keine gezielte Änderung bekannter Fehler erwartet.
+- **Prüfung:** AGK-Kompilierung; Funktionstest gesammelt.
