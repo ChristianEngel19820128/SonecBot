@@ -878,6 +878,18 @@ endfunction
 // chest-contact dispatch. This routine currently updates Stand/Fall,
 // CollisionData and LinkedPlateIndex; Phase E will unify those decisions.
 // B3a: pure swept platform-top candidate, including horizontal position at contact time.
+// B3e: pure shared contact-time comparison; earlier wins, ties stay stable.
+function SonecContactChooseEarlier(Best as TSonecContactCandidate,ContactTime as float,ListType as integer,Index as integer)
+	if ContactTime >= 0
+		if Best.Valid = FALSE or ContactTime < Best.ContactTime
+			Best.Valid = TRUE
+			Best.ContactTime = ContactTime
+			Best.ListType = ListType
+			Best.Index = Index
+		endif
+	endif
+endfunction Best
+
 function SonecPlateTopContactTime(Sonec ref as TSonec,PlateList ref as TPlateList,PlateIndex as integer)
 	local StartFeetY as float
 	local EndFeetY as float
@@ -914,6 +926,7 @@ function SonecCollidePlate(Sonec ref as TSonec,PlateList ref as TPlateList,Chest
 	local PassIndex as integer
 	local HalfWidth as float
 	local HalfHeight as float
+	local BestPlateCandidate as TSonecContactCandidate
 	local BestPlateIndex as integer
 	local BestPlateContactTime as float
 	local InitialPassPlateIndex as integer
@@ -1009,19 +1022,22 @@ function SonecCollidePlate(Sonec ref as TSonec,PlateList ref as TPlateList,Chest
 	InitialPassPlateIndex = PassPlateIndex
 	BestPlateIndex = -1
 	BestPlateY = 0
+	BestPlateCandidate.Valid = FALSE
 	// B3b: compare every eligible platform top against chest-top times.
 	BestPlateContactTime = 2
 	if Sonec.State.Stand = FALSE and Sonec.State.Fall = TRUE
 		for i = 0 to PlateList.Plate.Length
 			if i <> PassPlateIndex and PlateList.Plate[i].Enabled = TRUE
 				ContactTime = SonecPlateTopContactTime(Sonec,PlateList,i)
-				if ContactTime >= 0 and ContactTime < BestPlateContactTime
-					BestPlateContactTime = ContactTime
-					BestPlateIndex = i
-					BestPlateY = PlateList.Plate[i].ObjectData.Position.y
-				endif
+				BestPlateCandidate = SonecContactChooseEarlier(BestPlateCandidate,ContactTime,TYPEPLATE,i)
 			endif
 		next i
+	endif
+
+	if BestPlateCandidate.Valid = TRUE
+		BestPlateContactTime = BestPlateCandidate.ContactTime
+		BestPlateIndex = BestPlateCandidate.Index
+		BestPlateY = PlateList.Plate[BestPlateIndex].ObjectData.Position.y
 	endif
 
 	// Classify the first side/top/underside contact before chest landing.
@@ -1038,16 +1054,18 @@ function SonecCollidePlate(Sonec ref as TSonec,PlateList ref as TPlateList,Chest
 		if PassPlateIndex <> InitialPassPlateIndex
 			BestPlateIndex = -1
 			BestPlateContactTime = 2
+			BestPlateCandidate.Valid = FALSE
 			for i = 0 to PlateList.Plate.Length
 				if i <> PassPlateIndex and PlateList.Plate[i].Enabled = TRUE
 					ContactTime = SonecPlateTopContactTime(Sonec,PlateList,i)
-					if ContactTime >= 0 and ContactTime < BestPlateContactTime
-						BestPlateContactTime = ContactTime
-						BestPlateIndex = i
-						BestPlateY = PlateList.Plate[i].ObjectData.Position.y
-					endif
+					BestPlateCandidate = SonecContactChooseEarlier(BestPlateCandidate,ContactTime,TYPEPLATE,i)
 				endif
 			next i
+		endif
+		if BestPlateCandidate.Valid = TRUE
+			BestPlateContactTime = BestPlateCandidate.ContactTime
+			BestPlateIndex = BestPlateCandidate.Index
+			BestPlateY = PlateList.Plate[BestPlateIndex].ObjectData.Position.y
 		endif
 		if BestPlateIndex >= 0
 			Sonec.ObjectData.Position.y = BestPlateY - Sonec.ObjectData.Size.Height*0.5
