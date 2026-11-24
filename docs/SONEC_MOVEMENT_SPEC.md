@@ -445,3 +445,9 @@ Die Reihenfolge ist vorläufig; tatsächliche technische Abhängigkeiten können
 - **Entwickler-Compile:** `sonec.agc:1303` – primitive `float ref` in AGK unzulässig; `sonec.agc:1509` – `SideContactTime` nicht definiert (Folge-/Signaturfehler). K-T2 konnte deshalb nicht ausgeführt werden.
 - **Korrektur innerhalb K-T2:** Kontaktzeit statt als `float ref` als Float-Feld `ChestSideContactTime` im bereits per `ref` übergebenen `TSonec` übermitteln. Die Seitenprüfung setzt den Wert pro Aufruf auf 2 (kein blockierender Seitenkontakt) bzw. auf die früheste Seitenzeit. Die Landefunktion liest diesen Wert aus `Sonec`. Keine Änderung an der Kontaktgeometrie oder Zeitpriorität.
 - **Status:** AGK-Kompilierung erneut erforderlich, keine Laufzeitbehauptung.
+
+## 55. K-T2 AGK-Signaturkorrektur umgesetzt (24.11.2026)
+
+- `def_game.agc` Commit `e7613223c767cc89bea8de6f5715fe25f67e7128`: `TSonec.ChestSideContactTime as float` ergänzt.
+- `sonec.agc` Commit `369a56facfad91b3416827c5d4fbcd668cdd70f0`: primitive `float ref`-Parameter und lokale Übergabe entfernt; `SonecCollideChestSideContacts` schreibt die früheste blockierende Seitenzeit in `Sonec.ChestSideContactTime` (sonst 2); `SonecCollideChestHorizontal` verwendet das Feld beim Vergleich. Die gemeldeten Fehlerstellen werden damit ohne geänderte Kollisionsentscheidung adressiert.
+- **Teststatus:** erneute AGK-Kompilierung und vollständiger K-T2-Test ausstehend; kein Test als bestanden angenommen.
