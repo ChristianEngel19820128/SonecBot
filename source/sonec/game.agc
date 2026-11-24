@@ -273,7 +273,7 @@ function SonecEdgeCsvWrite(Game ref as TGame,Now as integer)
 	CsvRow = CsvRow+","+Str(ChestIndex)+","+Str(ChestX)+","+Str(ChestVx)+","+Str(Game.Sonec.State.Stand)+","+Str(Game.Sonec.State.Fall)+","+Str(Game.Sonec.State.Fly)+","+Str(Game.Sonec.State.Move)+","+Str(Game.Sonec.GroundContactActive)+","+Str(Game.Sonec.LinkedPlateIndex)
 	CsvRow = CsvRow+","+Str(Game.Sonec.CollisionData.ListType)+","+Str(Game.Sonec.CollisionData.Index)
 	if EventCode = 3 or EventCode = 4
-		CsvRow = CsvRow+",-SONEC_MINI_HOP_IMPULSE_Y"
+		CsvRow = CsvRow+","+Str(-SONEC_MINI_HOP_IMPULSE_Y)
 	else
 		CsvRow = CsvRow+",0"
 	endif
