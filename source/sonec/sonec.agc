@@ -1270,6 +1270,35 @@ endfunction HitTime
 
 // Resolve a chest's FIRST body-circle contact, not its last-frame overlap.
 // The resulting X is clamped to Sonec's intended step (never thrown backwards).
+// Shared swept chest-top candidate: evaluate X at the actual Y crossing.
+function SonecChestTopContactTime(Sonec ref as TSonec,ChestList ref as TChestList,ChestIndex as integer)
+	local StartFeetY as float
+	local EndFeetY as float
+	local RelativeStartY as float
+	local RelativeEndY as float
+	local ContactTime as float
+	local ContactX as float
+	local ChestContactX as float
+	local ChestWidth as float
+
+	ContactTime = -1
+	if Sonec.State.Stand = FALSE and Sonec.State.Fall = TRUE
+		StartFeetY = Sonec.CollisionMoveStart.y + Sonec.ObjectData.Size.Height*0.5
+		EndFeetY = Sonec.CollisionMoveEnd.y + Sonec.ObjectData.Size.Height*0.5
+		RelativeStartY = StartFeetY - ChestList.Chest[ChestIndex].CollisionMoveStart.y
+		RelativeEndY = EndFeetY - ChestList.Chest[ChestIndex].ObjectData.Position.y
+		if RelativeEndY > RelativeStartY and RelativeStartY <= 0 and RelativeEndY >= 0
+			ContactTime = -RelativeStartY/(RelativeEndY-RelativeStartY)
+			ContactX = Sonec.CollisionMoveStart.x + (Sonec.CollisionMoveEnd.x-Sonec.CollisionMoveStart.x)*ContactTime
+			ChestContactX = ChestList.Chest[ChestIndex].CollisionMoveStart.x + (ChestList.Chest[ChestIndex].ObjectData.Position.x-ChestList.Chest[ChestIndex].CollisionMoveStart.x)*ContactTime
+			ChestWidth = ChestList.Chest[ChestIndex].ObjectData.Size.Width
+			if ContactX <= ChestContactX or ContactX >= ChestContactX + ChestWidth
+				ContactTime = -1
+			endif
+		endif
+	endif
+endfunction ContactTime
+
 function SonecCollideChestSideContacts(Sonec ref as TSonec,ChestList ref as TChestList,PlateList ref as TPlateList,Index as integer,World ref as TWorld)
 	local i as integer
 	local CircleIndex as integer
@@ -1462,25 +1491,11 @@ function SonecCollideChestSideContacts(Sonec ref as TSonec,ChestList ref as TChe
 		endif
 	endif
 
-	// B-K2: A valid top crossing of this chest takes priority when it
-	// happens before (or at) the swept side-circle contact.
-	// Use B-K1's same end-X and relative foot-crossing eligibility.
-	if HitIndex >= 0 and Sonec.State.Stand = FALSE and Sonec.State.Fall = TRUE
-		if Sonec.PassThroughChestIndex <> HitIndex
-			if Sonec.CollisionMoveEnd.x > ChestList.Chest[HitIndex].ObjectData.Position.x
-				if Sonec.CollisionMoveEnd.x < ChestList.Chest[HitIndex].ObjectData.Position.x + ChestList.Chest[HitIndex].ObjectData.Size.Width
-					StartFeetY = Sonec.CollisionMoveStart.y + Sonec.ObjectData.Size.Height*0.5
-					EndFeetY = Sonec.CollisionMoveEnd.y + Sonec.ObjectData.Size.Height*0.5
-					RelativeStartY = StartFeetY - ChestList.Chest[HitIndex].CollisionMoveStart.y
-					RelativeEndY = EndFeetY - ChestList.Chest[HitIndex].ObjectData.Position.y
-					if RelativeEndY > RelativeStartY and RelativeStartY <= 0 and RelativeEndY >= 0
-						TopTime = -RelativeStartY/(RelativeEndY-RelativeStartY)
-						if TopTime <= SideTime
-							HitIndex = -1
-						endif
-					endif
-				endif
-			endif
+	// Compare the same swept top candidate used by chest landing.
+	if HitIndex >= 0 and Sonec.PassThroughChestIndex <> HitIndex
+		TopTime = SonecChestTopContactTime(Sonec,ChestList,HitIndex)
+		if TopTime >= 0 and TopTime <= SideTime
+			HitIndex = -1
 		endif
 	endif
 
@@ -1574,27 +1589,16 @@ function SonecCollideChestHorizontal(Sonec ref as TSonec,ChestList ref as TChest
 		endif
 	endif
 		
-	// B-K1: Relative swept crossing of moving chest tops.
-	// Legacy side-hit exclusion remains until unified contact ordering.
+	// Relative swept chest-top contact, including X at contact time.
 	if Sonec.State.Stand = FALSE and Sonec.State.Fall = TRUE
 		BestChestIndex = -1
 		BestContactTime = 2
-		StartFeetY = Sonec.CollisionMoveStart.y + Sonec.ObjectData.Size.Height*0.5
-		EndFeetY = Sonec.CollisionMoveEnd.y + Sonec.ObjectData.Size.Height*0.5
 		for i = 0 to ChestList.Chest.Length
 			if SonecChestRelevant(Sonec,ChestList,i) = TRUE and Sonec.PassThroughChestIndex <> i and SideHitIndex <> i
-				if Sonec.ObjectData.Position.x > ChestList.Chest[i].ObjectData.Position.x
-					if Sonec.ObjectData.Position.x < ChestList.Chest[i].ObjectData.Position.x + ChestList.Chest[i].ObjectData.Size.Width
-						RelativeStartY = StartFeetY - ChestList.Chest[i].CollisionMoveStart.y
-						RelativeEndY = EndFeetY - ChestList.Chest[i].ObjectData.Position.y
-						if RelativeEndY > RelativeStartY and RelativeStartY <= 0 and RelativeEndY >= 0
-							ContactTime = -RelativeStartY/(RelativeEndY-RelativeStartY)
-							if ContactTime < BestContactTime
-								BestContactTime = ContactTime
-								BestChestIndex = i
-							endif
-						endif
-					endif
+				ContactTime = SonecChestTopContactTime(Sonec,ChestList,i)
+				if ContactTime >= 0 and ContactTime < BestContactTime
+					BestContactTime = ContactTime
+					BestChestIndex = i
 				endif
 			endif
 		next i
