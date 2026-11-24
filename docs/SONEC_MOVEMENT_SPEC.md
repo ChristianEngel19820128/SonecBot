@@ -592,3 +592,10 @@ Die Reihenfolge ist vorläufig; tatsächliche technische Abhängigkeiten können
 - **Code:** `a2399a4e1e0bde7c128945c9b0c957ce827cac5d` auf `develop`. `SonecPlateTopContactTime` berechnet relative Fußkreuzung und prüft Sonecs horizontale Position sowie die Plattformposition zur **gleichen Kontaktzeit**. `SonecCollidePlate` verwendet die Funktion zur Auswahl des frühesten Plattformkandidaten; vorhandene Landungsauflösung bleibt unverändert.
 - **Verhaltensänderung im Folgetest erwartet:** Bei Bewegung entlang eines Plattformrands kann sich die Landungsentscheidung gegenüber dem bisherigen Endpositions-X-Test ändern. Kein Anspruch, dass globale Plattform-/Kistenpriorität bereits korrigiert ist.
 - **Status:** AGK-Kompilierung und Entwicklertest ausstehend. B3b (globale Kandidatenauswahl) erst nach Rückmeldung; Phase B insgesamt offen.
+
+## 77. Entwicklertest B3a und B3b-Festlegung (vor Code, 24.11.2026)
+
+- Entwickler meldet: **B3a-Verhalten gut**. Keine vollständige Phase-B-Abnahme daraus ableiten.
+- **B3b:** Plattform- und Kistenoberseiten über ihre relative Kontaktzeit gegeneinander auswählen. Die bestehende Seitenkollisionsprüfung und die vorhandene Kistenlandungsauflösung (inkl. Randbalance) bleiben vorerst erhalten; Seitenkontakte werden erst in B3c in die gemeinsame früheste Entscheidung aufgenommen. Bei gleicher Kontaktzeit gilt vorerst der bestehende Kistenvorrang als deterministische Übergangsregel; endgültige Gleichstandsregel später im gemeinsamen Resolver.
+- **Dateipfad:** Vor jeder CSV-Dateiöffnung den App-Local-Pfad über den vorhandenen Helfer `FilePathSetAndCheck` aus `source/sonec/file.agc` setzen. Der Helfer heißt im Repository **nicht** `FileCheckAndSet`; bei leerem Namen prüft er keine vorhandene Datei, setzt aber den Ordner. Die Datei muss beim ersten Schreiben neu angelegt werden können.
+- **Prüfung:** AGK-Compile; konkurrierende Kisten-/Plattformlandung mit verschiedener Kontaktzeit, Kistenrandlandung/Mini-Hop, bestehende Seitenkollision, CSV-Datei im App-Local-Verzeichnis. Keine Änderung an Bewegungseingaben oder Schadenslogik.
