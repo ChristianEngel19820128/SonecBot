@@ -525,6 +525,19 @@ type TFlameGun
 endtype
 
 type TSonec
+	DebugCsvMoveStartX as float
+	DebugCsvMoveStartY as float
+	DebugCsvPreCollisionVX as float
+	DebugCsvPreCollisionVY as float
+	DebugCsvPostCollisionVX as float
+	DebugCsvPostCollisionVY as float
+	DebugCsvHopPreVX as float
+	DebugCsvHopPreVY as float
+	DebugCsvHopPostVX as float
+	DebugCsvHopPostVY as float
+	DebugCsvHopChestLeft as float
+	DebugCsvHopChestRight as float
+	DebugCsvHopChestIndex as integer
 	DebugEdgeVisible as integer
 	DebugEdgePending as integer
 	DebugEdgeSnapshot as string
