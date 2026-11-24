@@ -654,3 +654,8 @@ Die Reihenfolge ist vorläufig; tatsächliche technische Abhängigkeiten können
 - **Umfang:** Die bereits bestehende globale Suche nach der frühesten gültigen Kistenoberseite in `SonecCollideChestSideContacts` verwendet künftig `TSonecContactCandidate` und `SonecContactChooseEarlier` anstelle eines eigenen Float-Minimums. Der vorhandene Vergleich gegen Plattformoberseitenzeit und Seitenzeit bleibt identisch; die getrennten Resolver bleiben in diesem Schritt bestehen.
 - **Architekturziel:** Plattform- und Kistenoberseiten verwenden denselben Zeitvergleich und speichern Typ/Index, sodass die spätere globale Auswahl auf derselben Repräsentation aufbauen kann. Die nächste Teilaufgabe ist, die Seitentreffer ebenfalls als Kandidaten zu erfassen und danach die Auflösung zu vereinheitlichen.
 - **Teststrategie:** AGK-Kompilierung einzeln, Funktionstest gesammelt zum Phase-B-Abschluss. Keine gezielte Verhaltensänderung in B3f.
+
+## 87. B3f – Umsetzung und Teststatus (24.11.2026)
+
+- **Code:** `9071a1d9713b8b1cb9a4a5dfd63671a11a5ecd77` auf `develop`. In `SonecCollideChestSideContacts` sammelt `BestChestTopCandidate` die gültigen Kistenoberseiten mittels `SonecContactChooseEarlier`; `BestTopTime` wird aus dem Kandidaten übernommen. Der bestehende Plattform-/Seitenvergleich und alle Kontaktreaktionen bleiben unverändert.
+- **Status:** AGK-Kompilierung ausstehend, Funktionstest gemäß Vereinbarung erst am Ende von Phase B. Phase B nicht abgeschlossen; nächster Schritt ist die Aufnahme der Kistenseitenkontakte in die gemeinsame Kandidatenrepräsentation.
