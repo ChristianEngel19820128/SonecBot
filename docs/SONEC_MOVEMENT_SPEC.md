@@ -666,3 +666,8 @@ Die Reihenfolge ist vorläufig; tatsächliche technische Abhängigkeiten können
 - **B3g:** Die bereits ermittelte früheste gültige Kistenseite wird nach Abschluss der bestehenden Sweep-Schleife als `TSonecContactCandidate` mit `ListType=TYPECHEST`, `Index=HitIndex`, `ContactTime=SideTime` abgebildet. Der vorhandene Vergleich mit Oberseiten und die Reaktion bleiben unverändert; Kandidatenrepräsentation allein darf keine neue Blockade auslösen.
 - **Begrenzung:** Die vorhandenen Trefferattribute `HitSide`, `HitOffsetX`, `HitPositionX` verbleiben bis zum späteren gemeinsamen Resolver in lokalen Variablen. Keine Änderung an Durchflug, Weltgrenze, Restbewegung oder Kollisionspriorität.
 - **Prüfung:** AGK-Kompilierung; Funktionstests gebündelt. Keine Änderung der bekannten Fehler erwartet.
+
+## 89. B3g – Implementiert, Compile ausstehend (24.11.2026)
+
+- **Code:** `1fedca7a6b2deff054c0d3a950b3c134e79c0653`. `SonecCollideChestSideContacts` bildet den bisher gewählten Seitentreffer in `BestChestSideCandidate` ab und liest Index/Zeit für den unveränderten Oberseitenvergleich daraus zurück. Der Seitenkandidat enthält noch keine separate Normalen-/Positionsinformation; diese bleibt vorerst in den bestehenden lokalen Variablen.
+- **Status:** AGK-Kompilierung ausstehend, Funktionstest gemäß Vereinbarung am Ende von Phase B. **Phase B offen**: echte globale Kandidatenauswahl, einheitlicher Resolver und zeitlich korrekte Restbewegung stehen noch aus.
