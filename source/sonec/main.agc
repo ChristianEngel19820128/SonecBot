@@ -74,6 +74,8 @@ UseNewDefaultFonts(1)
 // Master switch for in-game debug controls and diagnostic overlays.
 // 0 = disabled for normal play; 1 = enable debug keys 1-9 and diagnostics.
 #constant GAME_DEBUG_ENABLED 1
+// Temporary D-R3 CSV capture: one file per application run.
+global SonecEdgeCsvStarted as integer
 
 #constant FALSE 0
 #constant TRUE 1
