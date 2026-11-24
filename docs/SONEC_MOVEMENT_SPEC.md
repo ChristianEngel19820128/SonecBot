@@ -617,3 +617,10 @@ Die Reihenfolge ist vorläufig; tatsächliche technische Abhängigkeiten können
 
 - **Code:** `cf451389efc1335ae5163f3d13859cc2cca74290`. `SonecCollidePlate` übergibt `BestPlateContactTime` an `SonecCollideChestSideContacts`; die Funktion vergleicht nun früheste Kisten-/Plattformoberseite mit dem frühesten Kistenseitenkontakt. Bei gleichzeitiger Kollision wird die Oberseite bevorzugt. Kistenlandungs- und Plattformlandungsauflösung selbst bleiben unverändert.
 - **Teststatus:** AGK-Kompilierung und Funktionstest ausstehend. Phase B **nicht abgeschlossen**: zeitlich korrekte Restbewegung nach Kontakt, gemeinsame Auflösung und Ablösung getrennter Altpfade fehlen. Kein Nachweis einer B3b-Abnahme aus dem knappen „ok weiter“ ableiten.
+
+## 81. B3d – Plattform-Kandidat nur einmal ermitteln (vor Code, 24.11.2026)
+
+- Entwickler erlaubt Fortsetzung nach B3c; keine explizite B3c-Abnahme gemeldet.
+- **Befund:** `SonecCollidePlate` durchsucht Plattformoberseiten zweimal: zuerst für die Zeit, dann nach der Kistenbehandlung nochmals für den Index. Die zweite Suche kann eine andere Durchflug-Ausnahme sehen und ist kein gemeinsamer Kandidatenzustand.
+- **Kleiner Architekturbaustein:** Den besten Plattform-Index, die Kontaktzeit und die Zielhöhe in der ersten Suche gemeinsam speichern und bei der späteren Landungsauflösung wiederverwenden. Wird während der Kistenprüfung `PassThroughChestIndex` aktiv und betrifft dessen Plattform den zuvor gewählten Kandidaten, den Kandidaten vor der Landung verwerfen. Bestehende Kisten-/Seitenauflösung, Restbewegung und Zustände unverändert lassen. Dies bereitet den einzigen Kontaktresolver vor; ersetzt ihn noch nicht.
+- **Test:** AGK-Compile, Plattform-/Kistenlandungen, Durchflug von unten, Mini-Hop, Seitenkontakt. Eine Änderung der bekannten Fehler wird nicht erwartet.
