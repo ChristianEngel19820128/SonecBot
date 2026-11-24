@@ -458,3 +458,9 @@ Die Reihenfolge ist vorläufig; tatsächliche technische Abhängigkeiten können
 - **Zusätzlicher positiver Test:** Beim Laufen von einer höheren auf eine niedrigere Kiste funktioniert die Landung.
 - **Weiterer Befund:** Rechtsdrall/Beschleunigung nach rechts bei Randlandung **sowohl an linker als auch rechter Kistenecke** beobachtet. Die Ursache ist nicht nachgewiesen; nicht pauschal als erwünschte Randbalance einstufen. Vor Änderung gezielt prüfen, ob `BalanceActive`/`BalanceTargetX`, Support-Restaurierung oder horizontale Bewegung den Effekt verursachen.
 - **Status:** K-T2 im getesteten Umfang bestätigt, aber **keine Gesamtabnahme** der Kisten-/Plattformkollision. Bekannte Jetpack- und Plattformfehler bleiben ohne ausdrücklichen Gegenbeleg offen. Nächster Architekturbaustein nur nach weiterer Freigabe.
+
+## 57. Vor-Code Diagnose D-R1: Randdrall inklusive Mini-Hop (24.11.2026)
+
+- **Freigabe:** Nur Diagnoseinstrumentierung für Randlandung, horizontale Restbewegung, Kistentransport, Balance und ausdrücklich **Mini-Hop**. Keine Änderung an Bewegung, Kollisionspriorität, Randbalance oder Hop-Impulsen.
+- **Ereignisse:** Bei Landung nahe linker/rechter Kistenkante Diagnosefenster aktivieren; bei Mini-Hop nach links/rechts Ereignis markieren und Fenster neu starten. Sichtbare AGK-`Print`-Ausgabe über begrenzte Folgeframes: Ereignis, `Position.x`, `MoveSpeed.x/y`, `AutoSpeed.x`, `BalanceActive`/`BalanceTargetX`, X-Verschiebung vor/nach Balance-Schritt, Kisten-X und Kisten-MoveSpeed.x, `State.Move`/`Stand`/`Fall`, Kollisionsindex. Ziel ist die Unterscheidung von eigenem Momentum, automatischer Balance, Kistenbewegung und ungewolltem Mini-Hop.
+- **Eingrenzung:** Randlandung links und rechts, auch ohne Richtungseingabe; langsames Laufen an die Kante und Mini-Hop beider Richtungen; ruhende/bewegte Kisten. Ereignisfenster begrenzt, damit normale Spielszenen nicht dauerhaft mit Diagnoseausgaben überlagert werden. AGK-Kompilierung und Laufzeit offen.
