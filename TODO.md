@@ -4,7 +4,7 @@
 
 ## Jetzt
 
-- [ ] Phase D: Testmodell für Plattformmitnahme und relative Geschwindigkeit implementiert; AGK-Compile und Funktionstest offen. Rückversatz, Luft-Gewehrüberdeckung, Absprung und B/C-Regression prüfen. Danach E–G gemäß [Spezifikation](docs/SONEC_MOVEMENT_SPEC.md).
+- [ ] Jetpack-Landung bei noch abwärts gerichteter Bewegung: `36a7f23` Phase D 9/9 bestanden, neues Plattformtunneln bei aktivem Schub im Fall. Oberseitenprüfung ist an Fall-Flag gebunden; gezielte Korrektur und AGK-Nachtest vor E abstimmen. Danach E–G gemäß [Spezifikation](docs/SONEC_MOVEMENT_SPEC.md).
 
 ## Danach / separat
 

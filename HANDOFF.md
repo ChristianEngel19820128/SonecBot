@@ -16,9 +16,9 @@ Verbindliche Grundlage: [SONEC_MOVEMENT_SPEC.md](docs/SONEC_MOVEMENT_SPEC.md).
 - Phase A abgeschlossen und lokal geprüft.
 - Phase B: gemeinsamer Kontaktresolver und Restwegschleife implementiert, Compile und Plattformtests bestätigt. Die damaligen Kistentunnelbefunde sind im B/C-Nachtest nicht mehr aufgetreten; gezielte Kontaktreihenfolge/Restwegfälle bleiben Integrationsprüfung.
 - Entwickler meldet am 24.11.2026: Spiel verhält sich nachvollziehbar für den aktuellen Stand. B3h im kompilierten Paket enthalten. Anschließender Test: schnelle Plattformlandung und Randverhalten erwartungsgemäß; Kistenseiten beim Laufen und Springen/Fallen links nach rechts durchlässig, rechts nach links blockierend. Direkt vor der Kiste Bewegung und Sprung beidseitig blockierend.
-- Phase C: Frontlinie ±25 Welteinheiten am Boden, zwei Luftkreise, relative Seitenblockade. B/C-Test `0d0d7a0` 8/9, Nachtest `b1a21dd` 5/5 einschließlich AGK-Compile, Fallen und Springen beidseitig, Landungen/Unterseitendurchflug bestanden. Entwickler akzeptiert Grundverhalten. Luft-Gewehrüberdeckung links unterschiedlich weit, rechts nicht beobachtet; Bodenabstand korrekt. Kreisgeometrie beabsichtigt, Ursache der Richtungsdifferenz nicht bewiesen. Kleiner optischer Rückversatz beim Lauf rechts nach links aus vorherigem Test bleibt Phase D.
+- Phase C: Frontlinie ±25 Welteinheiten am Boden, zwei Luftkreise, relative Seitenblockade. B/C-Test `0d0d7a0` 8/9, Nachtest `b1a21dd` 5/5 einschließlich AGK-Compile, Fallen und Springen beidseitig, Landungen/Unterseitendurchflug bestanden. Entwickler akzeptiert Grundverhalten. Luft-Gewehrüberdeckung links unterschiedlich weit, rechts nicht beobachtet; Bodenabstand korrekt. Kreisgeometrie beabsichtigt, Ursache der Richtungsdifferenz nicht bewiesen. Kleiner optischer Rückversatz beim Lauf rechts nach links aus vorherigem Test in Phase D nicht mehr aufgetreten; Luft-Gewehrüberdeckung nicht gesondert rückgemeldet.
 - Seitliches Tunneln, Zurückwerfen und unbegrenzte Luftbeschleunigung sind bekannte Ausgangsprobleme; keine vorzeitige Abnahme.
-- Phase D implementiert: additiver tatsächlicher Trägerweg, Eigen-/Weltgeschwindigkeit bei Bodenkontaktwechsel umgerechnet, relative Wandgeschwindigkeit und kombinierte Weltgrenze. Vorläufiger Umrechnungsmaßstab: letzter Sonec-Timerschritt; Compile und Spielgefühl offen. E–G folgen.
+- Phase D implementiert: additiver tatsächlicher Trägerweg, Eigen-/Weltgeschwindigkeit bei Bodenkontaktwechsel umgerechnet, relative Wandgeschwindigkeit und kombinierte Weltgrenze. Umrechnungsmaßstab: letzter Sonec-Timerschritt. Entwickler bestätigt `36a7f23` 9/9, Gesamtergebnis bestanden, einschließlich Mitnahme, Gegenlaufen, Absprung ohne Geschwindigkeitssprung, Kistenkontakt ohne Zurückwerfen, Luftkontakt, Weltrand und Landungen. Neues Sonderproblem: bei schnellem Fallen mit aktiviertem Jetpack vor Umkehr der Fallgeschwindigkeit kann Sonec durch Plattformen fallen. E–G folgen.
 
 ## Vereinbarter Arbeitsmodus für die Bewegungsumstellung
 
@@ -43,7 +43,7 @@ Verbindliche Grundlage: [SONEC_MOVEMENT_SPEC.md](docs/SONEC_MOVEMENT_SPEC.md).
 
 ## Genau ein nächster vereinbarter Schritt
 
-Phase-D-Testmodell in AGK Studio kompilieren und prüfen: passive Mitnahme, Gegenlaufen bis zum Stillstand/Überholen, Absprung/Abgang mit Weltgeschwindigkeit, bewegte Kisten beidseitig, Weltgrenze, B/C-Regression. Rückversatz und Luft-Gewehrüberdeckung beobachten; Modell erst nach Spielgefühl bewerten.
+Jetpack-Landungsbefund vor Phase E gezielt korrigieren: Oberseitenkandidaten von tatsächlicher relativer Fußkreuzung statt Fall-Flag abhängig machen; konsistenten Fly-/Bodenkontakt bei Landung und erneutem Schub prüfen, bestehenden Durchflugfilter erhalten. Änderung abstimmen, danach AGK-Nachtest. Phase-D-Grundmodell bestätigt.
 
 ## Referenzen
 
