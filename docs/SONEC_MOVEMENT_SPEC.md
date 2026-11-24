@@ -164,3 +164,11 @@ Die Reihenfolge ist vorläufig; tatsächliche technische Abhängigkeiten können
 - **Änderung:** Sechs Funktionskommentare in `source/sonec/sonec.agc` klären Verantwortlichkeiten; keine Ausführungslogik geändert.
 - **Entwicklertest:** AGK-Studio-Kompilierung vom Entwickler ausdrücklich als **bestanden** gemeldet; keine weiteren Beobachtungen. Ein Gameplay-Test wurde für diesen reinen Kommentarschritt nicht verlangt oder behauptet.
 - **Nächster Schritt A2:** Zustandsübergänge kleinräumig entflechten, ohne beabsichtigte Änderung des bestehenden Verhaltens. Änderungen an Spielregeln bleiben dokumentationspflichtig.
+
+## 17. Phase A2 – Vertikale Eingabezustände entflechten (24.11.2026)
+
+- **Revision:** `7471d83d8929e078c54ec2773966472b31e88767` auf `develop`.
+- **Änderung:** Die vorhandenen Entscheidungen zu gehaltenem Kreuz nach oben, Jetpack-Aktivierung, Sprunganforderung und Übergang zu `Fall` wurden aus `SonecInput` unverändert in `SonecInputVerticalState` ausgelagert. `SonecInput` ermittelt den bisherigen Up-Tastenstatus und übergibt ihn an den Helfer.
+- **Bewusst unverändert:** Reihenfolge der Bedingungen, Energiekosten/-schwellen, Zustandszuweisungen, Animation und Jetfire-Auslösung; noch keine neue Physik oder neue Tiefenebenenregel.
+- **Prüfung:** Quellseitige Überprüfung der Extraktion; **AGK-Kompilierung und Laufzeitwirkung noch nicht vom Entwickler geprüft**. Nächster Kontrollpunkt: AGK-Compile, danach erst weitere Entflechtung.
+- **Regel 1:** Keine neue fachliche Entscheidung getroffen; bei späteren Abweichungen wird die Spezifikation vor dem betreffenden Code angepasst.
