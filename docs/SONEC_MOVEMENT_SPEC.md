@@ -157,3 +157,10 @@ Die Reihenfolge ist vorläufig; tatsächliche technische Abhängigkeiten können
 - `SonecInput` setzt Zustandsflags, `SonecMoveVerticalSpeed` konsumiert `Jump` und verändert die Vertikalgeschwindigkeit, `SonecMoveHorizontalSpeed` verändert die Horizontalgeschwindigkeit, `SonecCollidePlate` und `SonecCollideChestHorizontal` setzen Bodenkontakt und Plattformzuordnung. Die bisherige Kollisionsauflösung ist noch auf mehrere Routinen verteilt.
 - **A1-Ziel:** Zunächst diese Zuständigkeiten und ihre Übergänge im Code eindeutig kennzeichnen bzw. kleinräumig entflechten, **ohne** die bestehende Bewegungs- oder Kollisionswirkung zu verändern. Erst nach lokalem AGK-Compile folgt der nächste Eingriff. Keine vorzeitige Einführung der Phasen B–F.
 
+
+## 16. Implementierungsnachweis Phase A1 (24.11.2026)
+
+- **Revision:** `de0115a34b6c3cf623ef15bd6e4d75cb40c02948` auf `develop`.
+- **Änderung:** Sechs Funktionskommentare in `source/sonec/sonec.agc` klären Verantwortlichkeiten; keine Ausführungslogik geändert.
+- **Entwicklertest:** AGK-Studio-Kompilierung vom Entwickler ausdrücklich als **bestanden** gemeldet; keine weiteren Beobachtungen. Ein Gameplay-Test wurde für diesen reinen Kommentarschritt nicht verlangt oder behauptet.
+- **Nächster Schritt A2:** Zustandsübergänge kleinräumig entflechten, ohne beabsichtigte Änderung des bestehenden Verhaltens. Änderungen an Spielregeln bleiben dokumentationspflichtig.
