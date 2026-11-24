@@ -4,7 +4,7 @@
 
 ## Jetzt
 
-- [ ] Phase F: einmaliger Mini-Hop bei tatsächlichem Kistenkantenabgang implementiert; AGK-Compile und Funktionstest offen. Danach G: Gesamtspieltest, E-Beobachtungen (unfaire Übernahme/vertikal bewegte Fremdplattformberechtigung) gezielt eingrenzen und Regeländerung gemeinsam entscheiden, Integration/Balancing gemäß [Spezifikation](docs/SONEC_MOVEMENT_SPEC.md).
+- [ ] Phase G: Gesamtintegration und Spielgefühl gemäß [Spezifikation](docs/SONEC_MOVEMENT_SPEC.md). F `f4424a1` 9/9 bestanden; gezielt Kistenrand-Fall mit teilweiser Durchdringung/fehlendem Hop prüfen (Mittelpunkt bei Fußkreuzung, eigene/fremde Ebene, Kontaktstatus); E-Beobachtungen unfaire Übernahme/vertikale Fremdplattformberechtigung eingrenzen und Regeländerung gemeinsam entscheiden. Danach Balancing.
 
 ## Danach / separat
 
