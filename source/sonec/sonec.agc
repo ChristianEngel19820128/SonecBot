@@ -873,6 +873,7 @@ function SonecCollidePlate(Sonec ref as TSonec,PlateList ref as TPlateList,Chest
 	local i as integer
 	local PlateIndex as integer
 	local SideHitIndex as integer
+	local SideContactTime as float
 	local PassPlateIndex as integer
 	local PassIndex as integer
 	local HalfWidth as float
@@ -959,8 +960,8 @@ function SonecCollidePlate(Sonec ref as TSonec,PlateList ref as TPlateList,Chest
 	endif
 	
 	// Classify the first side/top/underside contact before chest landing.
-	SideHitIndex = SonecCollideChestSideContacts(Sonec,ChestList,PlateList,PlateIndex,World)
-	SonecCollideChestHorizontal(Sonec,ChestList,World,SideHitIndex)
+	SideHitIndex = SonecCollideChestSideContacts(Sonec,ChestList,PlateList,PlateIndex,World,SideContactTime)
+	SonecCollideChestHorizontal(Sonec,ChestList,World,SideHitIndex,SideContactTime)
 	if Sonec.PassThroughChestIndex >= 0
 		PassPlateIndex = ChestList.Chest[Sonec.PassThroughChestIndex].CollisionData.Index
 	endif
@@ -1299,7 +1300,7 @@ function SonecChestTopContactTime(Sonec ref as TSonec,ChestList ref as TChestLis
 	endif
 endfunction ContactTime
 
-function SonecCollideChestSideContacts(Sonec ref as TSonec,ChestList ref as TChestList,PlateList ref as TPlateList,Index as integer,World ref as TWorld)
+function SonecCollideChestSideContacts(Sonec ref as TSonec,ChestList ref as TChestList,PlateList ref as TPlateList,Index as integer,World ref as TWorld,SideContactTime ref as float)
 	local i as integer
 	local CircleIndex as integer
 	local Radius as float
@@ -1330,6 +1331,7 @@ function SonecCollideChestSideContacts(Sonec ref as TSonec,ChestList ref as TChe
 	local RelativeStartY as float
 	local RelativeEndY as float
 	local TopTime as float
+	local BestTopTime as float
 	local FrontOffset as float
 	local StartFrontX as float
 	local EndFrontX as float
@@ -1491,11 +1493,25 @@ function SonecCollideChestSideContacts(Sonec ref as TSonec,ChestList ref as TChe
 		endif
 	endif
 
-	// Compare the same swept top candidate used by chest landing.
-	if HitIndex >= 0 and Sonec.PassThroughChestIndex <> HitIndex
-		TopTime = SonecChestTopContactTime(Sonec,ChestList,HitIndex)
-		if TopTime >= 0 and TopTime <= SideTime
+	// Compare the earliest eligible top across ALL chests with the
+	// earliest side, rather than prioritizing only the side-hit chest.
+	BestTopTime = 2
+	if Sonec.State.Stand = FALSE and Sonec.State.Fall = TRUE
+		for i = 0 to ChestList.Chest.Length
+			if SonecChestRelevant(Sonec,ChestList,i) = TRUE and Sonec.PassThroughChestIndex <> i
+				TopTime = SonecChestTopContactTime(Sonec,ChestList,i)
+				if TopTime >= 0 and TopTime < BestTopTime
+					BestTopTime = TopTime
+				endif
+			endif
+		next i
+	endif
+	SideContactTime = 2
+	if HitIndex >= 0
+		if BestTopTime <= SideTime
 			HitIndex = -1
+		else
+			SideContactTime = SideTime
 		endif
 	endif
 
@@ -1528,7 +1544,7 @@ endfunction HitIndex HitIndex
 // 
 //----------------------------------------------------------------------
 
-function SonecCollideChestHorizontal(Sonec ref as TSonec,ChestList ref as TChestList,World ref as TWorld,SideHitIndex as integer)
+function SonecCollideChestHorizontal(Sonec ref as TSonec,ChestList ref as TChestList,World ref as TWorld,SideHitIndex as integer,SideContactTime as float)
 	
 	local i as integer
 	local BestChestIndex as integer
@@ -1596,7 +1612,7 @@ function SonecCollideChestHorizontal(Sonec ref as TSonec,ChestList ref as TChest
 		for i = 0 to ChestList.Chest.Length
 			if SonecChestRelevant(Sonec,ChestList,i) = TRUE and Sonec.PassThroughChestIndex <> i and SideHitIndex <> i
 				ContactTime = SonecChestTopContactTime(Sonec,ChestList,i)
-				if ContactTime >= 0 and ContactTime < BestContactTime
+				if ContactTime >= 0 and ContactTime <= SideContactTime and ContactTime < BestContactTime
 					BestContactTime = ContactTime
 					BestChestIndex = i
 				endif
