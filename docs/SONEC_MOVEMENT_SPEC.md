@@ -636,3 +636,9 @@ Die Reihenfolge ist vorläufig; tatsächliche technische Abhängigkeiten können
 - **Architektur:** Ein eigener Typ `TSonecContactCandidate` hält `Valid`, `ContactTime`, `ListType` und `Index`. Eine reine Funktion `SonecContactChooseEarlier` vergleicht Kandidaten nach Zeit; bei Gleichstand behält sie den zuerst angebotenen Kandidaten. Die Aufrufer bestimmen die Reihenfolge bewusst (Kistenoberseite vor Plattformoberseite, wie in B3b vereinbart).
 - **B3e-Umfang:** Den gemeinsamen Typ und Vergleichshelfer anlegen und die bisherige Plattformkandidatensuche damit betreiben; vorhandene Kisten- und Seitenauflösung noch nicht ersetzen. Keine neue Kontaktreaktion, keine Änderung der Restbewegung. Der gemeinsame Typ wird im nächsten Schritt für Kistenoberseiten und Seitenkontakte verwendet.
 - **Test:** AGK-Kompilierung und bisherige Plattform-/Kisten-/Durchflug-Regression; keine Änderung der bekannten Fehler erwartet.
+
+## 84. B3e – Umsetzung und Teststatus (24.11.2026)
+
+- **Typ:** `3c6d934802e32cbf50fb55d86a991504053795be` ergänzt `TSonecContactCandidate` mit `Valid`, `ContactTime`, `ListType`, `Index` in `def_game.agc`.
+- **Funktion und Nutzung:** `1ce5a6b30869fad4b6108b2d4ec3eddf01260c5b` ergänzt `SonecContactChooseEarlier` und nutzt den Typ bei beiden Plattform-Kandidatensuchen in `SonecCollidePlate` (initial und bei geänderter Durchflugausnahme). Vergleichssemantik: kleinere Zeit gewinnt, Gleichstand behält früheren Kandidaten. Noch kein gemeinsamer Resolver und keine Restbewegungsfortsetzung.
+- **Status:** AGK-Compile/Entwicklertest ausstehend. Phase B offen. Folgeschritt: Kistenoberseiten und Seitenkontakte in dieselbe Kandidatenrepräsentation überführen, bevor getrennte Auflösung ersetzt wird.
