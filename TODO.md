@@ -4,7 +4,7 @@
 
 ## Jetzt
 
-- [ ] Jetpack-Landung bei noch abwärts gerichteter Bewegung: `36a7f23` Phase D 9/9 bestanden, neues Plattformtunneln bei aktivem Schub im Fall. Oberseitenprüfung ist an Fall-Flag gebunden; gezielte Korrektur und AGK-Nachtest vor E abstimmen. Danach E–G gemäß [Spezifikation](docs/SONEC_MOVEMENT_SPEC.md).
+- [ ] Jetpack-Landung bei noch abwärts gerichteter Bewegung: Fall-Flag aus Oberseitenfreigabe entfernt, Landungszustand Fly=FALSE. AGK-Compile und gezielter Nachtest offen. Phase D 9/9 bestätigt; danach E–G gemäß [Spezifikation](docs/SONEC_MOVEMENT_SPEC.md).
 
 ## Danach / separat
 

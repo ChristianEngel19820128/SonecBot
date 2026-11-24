@@ -868,6 +868,9 @@ function SonecSetGroundContact(Sonec ref as TSonec,SurfaceType as integer,Surfac
 	endif
 	Sonec.ObjectData.AutoSpeed = Carry
 	Sonec.GroundContactActive = TRUE
+	// A real landing ends the current flight. Held Up is evaluated again
+	// by the existing input path, with its normal activation energy rule.
+	Sonec.State.Fly = FALSE
 	Sonec.State.Fall = FALSE
 	Sonec.State.Stand = TRUE
 	Sonec.CollisionData.ListType = SurfaceType
@@ -1066,7 +1069,9 @@ function SonecFindContact(Sonec ref as TSonec,PlateList ref as TPlateList,ChestL
 		PassPlateIndex = ChestList.Chest[Sonec.PassThroughChestIndex].CollisionData.Index
 	endif
 	// Deterministic tie order: chest top, plate top, side/underside, support exit.
-	if Sonec.State.Stand = FALSE and Sonec.State.Fall = TRUE
+	// Thrust intent is not the direction of travel: the relative feet sweep
+	// decides whether an unsupported Sonec crosses a surface from above.
+	if Sonec.GroundContactActive = FALSE
 		for i = 0 to ChestList.Chest.Length
 			if SonecChestRelevant(Sonec,ChestList,i) = TRUE and Sonec.PassThroughChestIndex <> i
 				ContactTime = SonecChestTopContactTime(Sonec,ChestList,i)
@@ -1498,7 +1503,7 @@ function SonecChestTopContactTime(Sonec ref as TSonec,ChestList ref as TChestLis
 	local ChestWidth as float
 
 	ContactTime = -1
-	if Sonec.State.Stand = FALSE and Sonec.State.Fall = TRUE
+	if Sonec.GroundContactActive = FALSE
 		StartFeetY = Sonec.CollisionMoveStart.y + Sonec.ObjectData.Size.Height*0.5
 		EndFeetY = Sonec.CollisionMoveEnd.y + Sonec.ObjectData.Size.Height*0.5
 		RelativeStartY = StartFeetY - SonecCollisionAxisAt(ChestList.Chest[ChestIndex].CollisionMoveStart.y,ChestList.Chest[ChestIndex].ObjectData.Position.y,Sonec.CollisionSegmentStartTime)
