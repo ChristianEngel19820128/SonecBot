@@ -206,6 +206,66 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
+// D-R3 temporary diagnostic: append one simulation frame to the AGK app-local CSV.
+function SonecEdgeCsvWrite(Game ref as TGame,Now as integer)
+	local FileID as integer
+	local EventCode as integer
+	local ChestIndex as integer
+	local ChestX as float
+	local ChestVx as float
+	local CsvRow as string
+
+	if GAME_DEBUG_ENABLED = 0
+		exitfunction
+	endif
+
+	if SonecEdgeCsvStarted = FALSE
+		FileID = OpenToWrite("sonec_edge_diagnostics.csv",0)
+		if FileID = 0
+			exitfunction
+		endif
+		WriteLine(FileID,"time_ms,event,x,y,vx,vy,carry_x,balance_active,balance_target_x,balance_dx,collision_start_x,collision_end_x,chest_index,chest_x,chest_vx,stand,fall,fly,move,ground_contact,linked_plate,support_type,support_index,hop_impulse_y")
+		CloseFile(FileID)
+		SonecEdgeCsvStarted = TRUE
+	endif
+
+	EventCode = 0
+	if Game.Sonec.DebugEdgePending = TRUE
+		EventCode = Game.Sonec.DebugEdgeEvent
+	endif
+
+	ChestIndex = -1
+	ChestX = 0
+	ChestVx = 0
+	if Game.Sonec.CollisionData.ListType = TYPECHEST
+		ChestIndex = Game.Sonec.CollisionData.Index
+	endif
+	if ChestIndex >= 0 and ChestIndex <= Game.ChestList.Chest.Length
+		if Game.ChestList.Chest[ChestIndex].Enabled = TRUE
+			ChestX = Game.ChestList.Chest[ChestIndex].ObjectData.Position.x
+			ChestVx = Game.ChestList.Chest[ChestIndex].ObjectData.MoveSpeed.x
+		endif
+	else
+		ChestIndex = -1
+	endif
+
+	CsvRow = Str(Now)+","+Str(EventCode)+","+Str(Game.Sonec.ObjectData.Position.x)+","+Str(Game.Sonec.ObjectData.Position.y)+","+Str(Game.Sonec.ObjectData.MoveSpeed.x)+","+Str(Game.Sonec.ObjectData.MoveSpeed.y)+","+Str(Game.Sonec.ObjectData.AutoSpeed.x)
+	CsvRow = CsvRow+","+Str(Game.Sonec.BalanceActive)+","+Str(Game.Sonec.BalanceTargetX)+","+Str(Game.Sonec.DebugEdgeAfterBalanceX-Game.Sonec.DebugEdgeBeforeBalanceX)+","+Str(Game.Sonec.DebugEdgeCollisionStartX)+","+Str(Game.Sonec.DebugEdgeCollisionEndX)
+	CsvRow = CsvRow+","+Str(ChestIndex)+","+Str(ChestX)+","+Str(ChestVx)+","+Str(Game.Sonec.State.Stand)+","+Str(Game.Sonec.State.Fall)+","+Str(Game.Sonec.State.Fly)+","+Str(Game.Sonec.State.Move)+","+Str(Game.Sonec.GroundContactActive)+","+Str(Game.Sonec.LinkedPlateIndex)
+	CsvRow = CsvRow+","+Str(Game.Sonec.CollisionData.ListType)+","+Str(Game.Sonec.CollisionData.Index)
+	if EventCode = 3 or EventCode = 4
+		CsvRow = CsvRow+",-1.5"
+	else
+		CsvRow = CsvRow+",0"
+	endif
+
+	FileID = OpenToWrite("sonec_edge_diagnostics.csv",1)
+	if FileID > 0
+		WriteLine(FileID,CsvRow)
+		CloseFile(FileID)
+	endif
+endfunction
+
 function GameDo(Game ref as TGame,Now as integer)
 
 	local FlarakChance as integer
@@ -352,6 +412,7 @@ function GameDo(Game ref as TGame,Now as integer)
 	PlateCheckAll(Game.PlateList,Game.ProtoPlate)
 	ChestHealthRegenerate(Game.ChestList,Game,Now)
 	SonecCollidePlate(Game.Sonec,Game.PlateList,Game.ChestList,Game.World)
+	SonecEdgeCsvWrite(Game,Now)
 	
 	FlashLifeCycle(Game.FlashList,Now)
 	
