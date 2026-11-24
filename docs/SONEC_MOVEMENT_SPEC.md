@@ -586,3 +586,9 @@ Die Reihenfolge ist vorläufig; tatsächliche technische Abhängigkeiten können
 - **Ziel:** Den relativen Plattform-Fußkreuzungstest aus `SonecCollidePlate` in eine reine Kandidatenfunktion auslagern. Diese liefert eine Kontaktzeit 0..1 oder -1 und prüft die horizontale Position **zur Kontaktzeit** (statt ausschließlich am Frame-Ende). Der Test benutzt die gespeicherten Sonec- und Plattformbewegungswege.
 - **Umfang dieses Schritts:** Ausschließlich die Plattform-Oberseitenkandidaten-Ermittlung und ihren Aufruf ersetzen. Noch **keine** gemeinsame Auflösung von Plattform, Kistenoberseite und Kistenseite; bestehende Prioritäten bleiben vorerst bestehen. Die neue Kontaktzeit wird später in B3b für die globale Auswahl genutzt. Keine Anpassung von Sprung, Balance, Schaden oder Kistenbewegung.
 - **Test:** AGK-Kompilierung; stehende und bewegte Plattformen, langsame und schnelle Landung; Landung nahe Plattformrand; keine unberechtigte Landung, wenn die horizontale Kreuzung nur am Frame-Ende passt. Vollständige Phase B bleibt offen.
+
+## 76. Phase B3a – Implementierung und Teststatus (24.11.2026)
+
+- **Code:** `a2399a4e1e0bde7c128945c9b0c957ce827cac5d` auf `develop`. `SonecPlateTopContactTime` berechnet relative Fußkreuzung und prüft Sonecs horizontale Position sowie die Plattformposition zur **gleichen Kontaktzeit**. `SonecCollidePlate` verwendet die Funktion zur Auswahl des frühesten Plattformkandidaten; vorhandene Landungsauflösung bleibt unverändert.
+- **Verhaltensänderung im Folgetest erwartet:** Bei Bewegung entlang eines Plattformrands kann sich die Landungsentscheidung gegenüber dem bisherigen Endpositions-X-Test ändern. Kein Anspruch, dass globale Plattform-/Kistenpriorität bereits korrigiert ist.
+- **Status:** AGK-Kompilierung und Entwicklertest ausstehend. B3b (globale Kandidatenauswahl) erst nach Rückmeldung; Phase B insgesamt offen.
