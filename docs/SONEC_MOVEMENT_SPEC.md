@@ -318,3 +318,10 @@ Die Reihenfolge ist vorläufig; tatsächliche technische Abhängigkeiten können
 - **Kontaktprüfung:** Relativer X-Weg des Sonec-Mittelpunkts zur Kiste, Kreuzung der passenden Seitenebene von außen nach innen, und vertikale Überlappung **zum Kontaktzeitpunkt**. Ein gültiger Kontakt setzt X auf die aktuelle Kistenkante minus/plus halbe Körperbreite, stoppt die horizontale Eigenbewegung und speichert die Blockierung wie bisher. Bei mehreren Kisten gewinnt die früheste Kontaktzeit, Gleichstand Array-Reihenfolge. Die vorhandene Weltrand-Ausnahme bleibt bestehen.
 - **Unverändert:** Luftkollision mit zwei Kreisen, Unterseiten-Durchflug, B-K2-Landungspriorität, Tiefenebenenfilter, Plattformlandung und Kisten-Balanceschritt. Die später geplante globale Kontaktauflösung ist damit noch nicht abgeschlossen.
 - **Test:** AGK-Compile, Anlaufen von beiden Seiten im Stand, schnell/langsam, Gewehrposition als Beobachtung (nicht als bereits gelöst markieren), Kisten auf bewegten Plattformen, Jetpack-Seitenkontakt, Sprunglandung, Durchflug von unten. Durchfallen/Tunneln bleibt bis zum Test offen.
+
+## 37. Phase B-K3 – Code umgesetzt, Entwicklertest offen (24.11.2026)
+
+- **Code-Commit:** `f7c1061649fea92a162b37dd28ce59ede2cc9333` auf `develop`.
+- **Umsetzung:** `SonecCollideChestSideContacts` prüft im Stand relative horizontale Kreuzungen der Kisten-Seitenflächen mit einer vertikalen Frontlinie in ± halber physischer Sonec-Breite und prüft die volle Körperhöhe zum Kontaktzeitpunkt. Frühester gültiger Seitenkontakt gewinnt; die bisherige X-Blockierung und Weltrand-Ausnahme werden weiterverwendet. Im Nicht-Stand bleiben die beiden gesweepten Körperkreise unverändert.
+- **Einschränkung:** Die endgültige Gewehrlauf-Frontgeometrie ist noch nicht umgesetzt; die Linie liegt vorläufig am physischen Körperrand. B-K2-Oberseitenpriorität, Durchflug und Tiefenebenenfilter unverändert. Seitliches Tunneln, gelegentliches Durchfallen und Gewehrüberlappung bleiben bis zum Entwicklertest bzw. Folgeschritt offen.
+- **AGK-Compile/Laufzeit:** Nicht durch den Assistenten durchgeführt. Nächster Schritt: gezielter Entwicklertest, erst danach weitere Kollisionsänderungen.
