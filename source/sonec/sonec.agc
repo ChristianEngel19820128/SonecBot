@@ -684,6 +684,36 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
+// Phase A2: Keep all Up-button flight/jump/fall transitions in one place.
+// This extraction preserves the old branch priority and energy thresholds.
+// It does not yet redefine the physical grounded/contact model.
+function SonecInputVerticalState(Sonec ref as TSonec,JetfireList ref as TJetfireList,ProtoJetfire ref as TProtoJetfire,World ref as TWorld,Position as TPosition,UpHeld as integer,Now as integer)
+	if UpHeld and ((Sonec.State.Fly = FALSE and Sonec.Energy.State > COSTJETFIRE*10) or (Sonec.State.Fly = TRUE and Sonec.Energy.State >= COSTJETFIRE))
+		if Sonec.State.Fly = FALSE
+			Sonec.Energy.State = Sonec.Energy.State - COSTJETFIRE*10
+		endif
+		Sonec.State.Fly = TRUE
+		Sonec.State.Fall = FALSE
+		Sonec.State.Stand = FALSE
+		Sonec.AnimationData.Frame = 0
+		SonecJetfireAdd(Sonec,JetfireList,ProtoJetfire,World,Position,Now)
+	else
+		if UpHeld and Sonec.State.Stand = TRUE
+			Sonec.State.Jump = TRUE
+			Sonec.State.Stand = FALSE
+			Sonec.State.Fly = FALSE
+			Sonec.State.Fall = FALSE
+			Sonec.AnimationData.Frame = 0
+		else
+			Sonec.State.Fly = FALSE
+			if Sonec.State.Stand = FALSE
+				Sonec.State.Fall = TRUE
+			endif
+		endif
+	endif
+	
+endfunction
+
 // Phase A1: Input owns control intent and the existing Fly/Fall/Stand/Jump
 // transitions. Do not treat these flags as a collision result without checking
 // the actual support recorded in CollisionData. Keep ButtonDown energy behavior.
@@ -714,30 +744,8 @@ function SonecInput(Sonec ref as TSonec,JetfireList ref as TJetfireList,ProtoJet
 			Position.x = Sonec.ObjectData.Position.x -12
 		endif
 		
-		if (InputActionState(Keys,JoystickIndex,ACTION_MOVE_UP) = 1 or GetJoyY(JoystickIndex) < -0.5) and ((Sonec.State.Fly = FALSE and Sonec.Energy.State > COSTJETFIRE*10) or (Sonec.State.Fly = TRUE and Sonec.Energy.State >= COSTJETFIRE))
-			if Sonec.State.Fly = FALSE
-				Sonec.Energy.State = Sonec.Energy.State - COSTJETFIRE*10
-			endif
-			Sonec.State.Fly = TRUE
-			Sonec.State.Fall = FALSE
-			Sonec.State.Stand = FALSE
-			Sonec.AnimationData.Frame = 0
-			SonecJetfireAdd(Sonec,JetfireList,ProtoJetfire,World,Position,Now)
-		else
-			if (InputActionState(Keys,JoystickIndex,ACTION_MOVE_UP) = 1 or GetJoyY(JoystickIndex) < -0.5) and Sonec.State.Stand = TRUE
-				Sonec.State.Jump = TRUE
-				Sonec.State.Stand = FALSE
-				Sonec.State.Fly = FALSE
-				Sonec.State.Fall = FALSE
-				Sonec.AnimationData.Frame = 0
-			else
-				Sonec.State.Fly = FALSE
-				if Sonec.State.Stand = FALSE
-					Sonec.State.Fall = TRUE
-				endif
-			endif
-		endif
-		
+		SonecInputVerticalState(Sonec,JetfireList,ProtoJetfire,World,Position,(InputActionState(Keys,JoystickIndex,ACTION_MOVE_UP) = 1 or GetJoyY(JoystickIndex) < -0.5),Now)
+
 		if InputActionState(Keys,JoystickIndex,ACTION_MOVE_DOWN) = 1 or GetJoyY(JoystickIndex) > 0.5
 			Sonec.State.Duck = TRUE
 			Sonec.AnimationData.Frame = 0
