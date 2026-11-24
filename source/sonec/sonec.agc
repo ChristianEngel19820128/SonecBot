@@ -125,6 +125,7 @@ function SonecInit(Sonec ref as TSonec,ProtoSonec ref as TProtoSonec,World ref a
 	Sonec.AnimationData.Finished = FALSE
 		
 	Sonec.CollisionData.Index = -1
+	Sonec.GroundContactActive = FALSE
 
 	Sonec.State.Fall  = TRUE
 	Sonec.State.Fly   = FALSE
@@ -695,11 +696,13 @@ function SonecInputVerticalState(Sonec ref as TSonec,JetfireList ref as TJetfire
 		Sonec.State.Fly = TRUE
 		Sonec.State.Fall = FALSE
 		Sonec.State.Stand = FALSE
+		Sonec.GroundContactActive = FALSE
 		Sonec.AnimationData.Frame = 0
 		SonecJetfireAdd(Sonec,JetfireList,ProtoJetfire,World,Position,Now)
 	else
 		if UpHeld and Sonec.State.Stand = TRUE
 			Sonec.State.Jump = TRUE
+			Sonec.GroundContactActive = FALSE
 			Sonec.State.Stand = FALSE
 			Sonec.State.Fly = FALSE
 			Sonec.State.Fall = FALSE
@@ -820,6 +823,7 @@ function SonecCollideReset(Sonec ref as TSonec)
 	
 	Sonec.CollisionData.ListType = 0
 	Sonec.CollisionData.Index = -1
+	Sonec.GroundContactActive = FALSE
 	Sonec.State.Fall = TRUE
 	Sonec.State.Stand = FALSE
 	Sonec.ObjectData.AutoSpeed.x = 0
@@ -837,6 +841,7 @@ endfunction
 // Phase A3: A valid landing updates support and depth-plane association.
 // Eligibility and timing remain with the existing collision callers.
 function SonecSetGroundContact(Sonec ref as TSonec,SurfaceType as integer,SurfaceIndex as integer,PlateIndex as integer)
+	Sonec.GroundContactActive = TRUE
 	Sonec.State.Fall = FALSE
 	Sonec.State.Stand = TRUE
 	Sonec.CollisionData.ListType = SurfaceType
@@ -884,6 +889,12 @@ function SonecCollidePlate(Sonec ref as TSonec,PlateList ref as TPlateList,Chest
 	local BestContactTime as float
 	
 	
+	// Preserve an established physical support across non-liftoff state
+	// changes (e.g. grenade recoil); input jump/jetpack explicitly clears it.
+	if Sonec.GroundContactActive = TRUE and Sonec.State.Fly = FALSE and Sonec.State.Jump = FALSE
+		Sonec.State.Stand = TRUE
+		Sonec.State.Fall = FALSE
+	endif
 	PlateIndex = -1
 	// The association survives a jump and normal falling; only actual
 	// jetpack flight ignores it when finding solid chests.
@@ -1302,7 +1313,7 @@ function SonecCollideChestSideContacts(Sonec ref as TSonec,ChestList ref as TChe
 				StartX = Sonec.CollisionMoveStart.x - ChestList.Chest[i].CollisionMoveStart.x
 				// B-K3: grounded side contact uses a full-height front line,
 				// swept against the moving chest side, not the airborne circles.
-				if Sonec.State.Stand = TRUE
+				if Sonec.GroundContactActive = TRUE
 					FrontOffset = Sonec.ObjectData.Size.Width*0.5
 					if PlayerStepX > 0 and RelativeStepX > 0
 						StartFrontX = Sonec.CollisionMoveStart.x + FrontOffset
@@ -1359,7 +1370,7 @@ function SonecCollideChestSideContacts(Sonec ref as TSonec,ChestList ref as TChe
 						endif
 					endif
 				endif
-				if Sonec.State.Stand = FALSE
+				if Sonec.GroundContactActive = FALSE
 				for CircleIndex = 0 to 1
 					CircleYShift = SonecHitCircleY(Sonec,CircleIndex) - Sonec.ObjectData.Position.y
 					StartY = Sonec.CollisionMoveStart.y + CircleYShift - ChestList.Chest[i].CollisionMoveStart.y
