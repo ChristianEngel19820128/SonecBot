@@ -120,6 +120,10 @@ function SonecInit(Sonec ref as TSonec,ProtoSonec ref as TProtoSonec,World ref a
 	Sonec.BalanceActive = FALSE
 	Sonec.BalanceTargetX = 0
 	Sonec.DebugEdgeFrames = 0
+	Sonec.DebugEdgeVisible = FALSE
+	Sonec.DebugEdgePending = FALSE
+	Sonec.DebugEdgeSnapshot = ""
+	Sonec.DebugEdgeHistoryNext = 0
 	Sonec.DebugEdgeEvent = 0
 	Sonec.DebugEdgeChestX = 0
 	Sonec.DebugEdgeChestSpeedX = 0
@@ -880,6 +884,8 @@ function SonecCollidePlate(Sonec ref as TSonec,PlateList ref as TPlateList,Chest
 	local PlateIndex as integer
 	local SideHitIndex as integer
 	local PassPlateIndex as integer
+	local DebugHistoryIndex as integer
+	local DebugHistoryText as string
 	local PassIndex as integer
 	local HalfWidth as float
 	local HalfHeight as float
@@ -895,6 +901,8 @@ function SonecCollidePlate(Sonec ref as TSonec,PlateList ref as TPlateList,Chest
 	local BestContactTime as float
 	
 	
+	Sonec.DebugEdgePending = FALSE
+	Sonec.DebugEdgeCollisionStartX = Sonec.ObjectData.Position.x
 	// Preserve an established physical support across non-liftoff state
 	// changes (e.g. grenade recoil); input jump/jetpack explicitly clears it.
 	if Sonec.GroundContactActive = TRUE and Sonec.State.Fly = FALSE and Sonec.State.Jump = FALSE
@@ -1024,6 +1032,16 @@ function SonecCollidePlate(Sonec ref as TSonec,PlateList ref as TPlateList,Chest
 				endif
 			endif
 		endif
+	endif
+
+	Sonec.DebugEdgeCollisionEndX = Sonec.ObjectData.Position.x
+	if Sonec.DebugEdgePending = TRUE
+		Sonec.DebugEdgeVisible = TRUE
+		DebugHistoryText = ""
+		for DebugHistoryIndex = 0 to 3
+			DebugHistoryText = DebugHistoryText + Chr(10) + Sonec.DebugEdgeHistory[(Sonec.DebugEdgeHistoryNext+DebugHistoryIndex)%4]
+		next DebugHistoryIndex
+		Sonec.DebugEdgeSnapshot = "EDGE 1=landL 2=landR 3=hopL 4=hopR: "+Str(Sonec.DebugEdgeEvent)+Chr(10)+"eventX="+Str(Sonec.ObjectData.Position.x)+" vx="+Str(Sonec.ObjectData.MoveSpeed.x)+" vy="+Str(Sonec.ObjectData.MoveSpeed.y)+Chr(10)+"collisionX "+Str(Sonec.DebugEdgeCollisionStartX)+" -> "+Str(Sonec.DebugEdgeCollisionEndX)+Chr(10)+"balance="+Str(Sonec.BalanceActive)+" target="+Str(Sonec.BalanceTargetX)+" dxBalance="+Str(Sonec.DebugEdgeAfterBalanceX-Sonec.DebugEdgeBeforeBalanceX)+Chr(10)+"chestX="+Str(Sonec.DebugEdgeChestX)+" chestVx="+Str(Sonec.DebugEdgeChestSpeedX)+" carryX="+Str(Sonec.ObjectData.AutoSpeed.x)+Chr(10)+"move="+Str(Sonec.State.Move)+" stand="+Str(Sonec.State.Stand)+" fall="+Str(Sonec.State.Fall)+" (snapshot)"+Chr(10)+"last 4 movement steps:"+DebugHistoryText
 	endif
 
 endfunction
@@ -1593,6 +1611,7 @@ function SonecCollideChestHorizontal(Sonec ref as TSonec,ChestList ref as TChest
 						if Sonec.State.Move = TRUE and Sonec.State.Alignment = MOVELEFT and Sonec.ObjectData.MoveSpeed.x < 0 and Sonec.State.Duck = FALSE and Sonec.ObjectData.Position.x <= ChestList.Chest[Sonec.CollisionData.Index].ObjectData.Position.x + Sonec.ObjectData.Size.Width*0.5 + abs(Sonec.ObjectData.MoveSpeed.x)
 														Sonec.DebugEdgeFrames = 60
 							Sonec.DebugEdgeEvent = 3
+							Sonec.DebugEdgePending = TRUE
 							Sonec.DebugEdgeChestX = ChestList.Chest[Sonec.CollisionData.Index].ObjectData.Position.x
 							Sonec.DebugEdgeChestSpeedX = ChestList.Chest[Sonec.CollisionData.Index].ObjectData.MoveSpeed.x
 							SonecCollideReset(Sonec)
@@ -1601,6 +1620,7 @@ function SonecCollideChestHorizontal(Sonec ref as TSonec,ChestList ref as TChest
 							if Sonec.State.Move = TRUE and Sonec.State.Alignment = MOVERIGHT and Sonec.ObjectData.MoveSpeed.x > 0 and Sonec.State.Duck = FALSE and Sonec.ObjectData.Position.x >= ChestList.Chest[Sonec.CollisionData.Index].ObjectData.Position.x + ChestList.Chest[Sonec.CollisionData.Index].ObjectData.Size.Width - Sonec.ObjectData.Size.Width*0.5 - abs(Sonec.ObjectData.MoveSpeed.x)
 																Sonec.DebugEdgeFrames = 60
 								Sonec.DebugEdgeEvent = 4
+							Sonec.DebugEdgePending = TRUE
 								Sonec.DebugEdgeChestX = ChestList.Chest[Sonec.CollisionData.Index].ObjectData.Position.x
 								Sonec.DebugEdgeChestSpeedX = ChestList.Chest[Sonec.CollisionData.Index].ObjectData.MoveSpeed.x
 								SonecCollideReset(Sonec)
@@ -1638,14 +1658,15 @@ function SonecCollideChestHorizontal(Sonec ref as TSonec,ChestList ref as TChest
 							Sonec.CollisionData.Position.y = Sonec.ObjectData.Position.y + Sonec.ObjectData.Size.Height*0.5 - ChestList.Chest[i].ObjectData.Position.y
 							SonecSetGroundContact(Sonec,TYPECHEST,i,ChestList.Chest[i].CollisionData.Index)
 							// Diagnostic only: record either edge landing, even when no balance is activated.
-							Sonec.DebugEdgeEvent = 0
 							if Sonec.ObjectData.Position.x <= ChestList.Chest[i].ObjectData.Position.x + Sonec.ObjectData.Size.Width*0.5
 								Sonec.DebugEdgeFrames = 60
 								Sonec.DebugEdgeEvent = 1
+								Sonec.DebugEdgePending = TRUE
 							else
 								if Sonec.ObjectData.Position.x >= ChestList.Chest[i].ObjectData.Position.x + ChestList.Chest[i].ObjectData.Size.Width - Sonec.ObjectData.Size.Width*0.5
 									Sonec.DebugEdgeFrames = 60
 									Sonec.DebugEdgeEvent = 2
+								Sonec.DebugEdgePending = TRUE
 								endif
 							endif
 							if Sonec.DebugEdgeEvent = 1 or Sonec.DebugEdgeEvent = 2
@@ -1890,6 +1911,9 @@ function SonecMove(Sonec ref as TSonec,ChestList ref as TChestList,World ref as 
 	endif
 		
 	Sonec.CollisionMoveEnd = Sonec.ObjectData.Position
+	// Rolling history of the last four movement updates, frozen at a contact event.
+	Sonec.DebugEdgeHistory[Sonec.DebugEdgeHistoryNext] = "x="+Str(Sonec.ObjectData.Position.x)+" vx="+Str(Sonec.ObjectData.MoveSpeed.x)+" balDX="+Str(Sonec.DebugEdgeAfterBalanceX-Sonec.DebugEdgeBeforeBalanceX)
+	Sonec.DebugEdgeHistoryNext = (Sonec.DebugEdgeHistoryNext+1)%4
 
 endfunction
 	
