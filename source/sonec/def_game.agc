@@ -525,6 +525,13 @@ type TFlameGun
 endtype
 
 type TSonec
+	DebugEdgeVisible as integer
+	DebugEdgePending as integer
+	DebugEdgeSnapshot as string
+	DebugEdgeHistory as string[3]
+	DebugEdgeHistoryNext as integer
+	DebugEdgeCollisionStartX as float
+	DebugEdgeCollisionEndX as float
 	DebugEdgeFrames as integer
 	DebugEdgeEvent as integer
 	DebugEdgeChestX as float
