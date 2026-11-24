@@ -525,6 +525,7 @@ type TFlameGun
 endtype
 
 type TSonec
+	ChestSideContactTime as float
 	GroundContactActive as integer
 	PassThroughChestIndex as integer
 	LinkedPlateIndex as integer
