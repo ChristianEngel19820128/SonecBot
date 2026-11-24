@@ -4,12 +4,12 @@
 
 ## Jetzt
 
-- [ ] Phase G1: Sprung-/Schubregeln und Kontaktdiagnose implementiert; AGK-Compile und Gesamtspieltest offen. G2: Kistenrand-Fall und E-Übernahmebeobachtungen anhand `sonec_edge_diagnostics.csv` eingrenzen, gewünschte Regel gemeinsam entscheiden, danach abschließendes Balancing gemäß [Spezifikation](docs/SONEC_MOVEMENT_SPEC.md).
+- [ ] G2: G1 `093c173` technisch 9/9 bestätigt, normaler Sprung laut Freitext nicht gezielt prüfbar. Priorisierte Nacharbeit gemäß [Spezifikation §13](docs/SONEC_MOVEMENT_SPEC.md#13-offene-detailfragen-für-technische-durchsicht-und-tests) gemeinsam freigeben: Start/Jetpack und Hop-Anzeige zuerst, danach Steuerung/Kanten/Tiefenebenen/Geometrie/Rückstoß, Gesamtbalancing.
 
 ## Danach / separat
 
 - [ ] Sporadisches Sprite nach Neustart reproduzieren und Ursache prüfen.
 - [ ] Gelegentlich fehlende Granatwerfer/Flarak/Flak-Direkttreffer untersuchen; Explosionstreffer getrennt betrachten.
-- [ ] Flammenwerfer/Kisten: Deckungswirkung als Designentscheidung klären.
+- [ ] Flammenwerfer: Kistendeckung, Löschen bei Kollision und beobachtete Flammenkollision bei Flak/Flarak-Silomodus gemeinsam prüfen; Siloschutz erhalten.
 
 Schnelles Fallen durch Plattformen, Seitenkontakt und Mini-Hop werden im Rahmen der Bewegungsumstellung behandelt. Weitere Aufgaben und Balancing: [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROADMAP.md), [BACKLOG.md](BACKLOG.md). Historische Abnahmen bleiben in Git. Aktuelle Übergabe: [HANDOFF.md](HANDOFF.md).
