@@ -77,6 +77,7 @@ Alle derzeitigen Plattformen bewegen sich **nach links**.
 - Ist die horizontale Geschwindigkeit für ein korrektes Verlassen der Kante zu gering, kommt ein **zusätzlicher horizontaler Impuls in Bewegungsrichtung** hinzu.
 - Wiederholte Impulse für denselben Kantenübergang sind ausgeschlossen.
 - Die exakten Werte und die sichere Erkennung des Kantenübergangs sind per lokalem Spieltest abzustimmen. Die bisherige Versuchsimplementierung war bei sehr geringer Geschwindigkeit unzuverlässig.
+- **Phase-F-Implementierung:** `SonecSupportExitTime` liefert tatsächlichen relativen Kantenabgang (Mittelpunktgrenze unverändert). Nur gewähltes Support-Exit-Ereignis Kind 4 auf Kiste ruft `SonecFinishChestEdge` auf; keine Vorab-/Frame-End-Auslösung, unabhängig von Eingabe, Blickrichtung, Ducken oder Anfangsgeschwindigkeit, auch nach Landung im selben Frame. Richtung aus tatsächlicher Kante. `SONEC_MINI_HOP_IMPULSE_Y=1.5` (bisheriger Wert), `SONEC_MINI_HOP_MIN_RELATIVE_X=1.0` (vorläufiger Testwert). Nur fehlenden relativen X-Anteil ergänzen, schnellere Bewegung erhalten. `SonecCollideReset` überträgt Trägergeschwindigkeit einmalig und löst Support, vertikaler Impuls wird addiert. Nur Impulsänderung auf Restweg anwenden, Weltgrenzen beachten, Restweg im Resolver prüfen. Normale Plattformkante ohne Hop; Sprung/Jetpack löst Support vorher. 22 übersetzte Richtungs-/Impuls-/Restwegfälle und statischer Funktionsvergleich bestanden; AGK-Test offen.
 
 ## 9. Jetpack, Energie und Eingaben
 
@@ -134,7 +135,7 @@ Die Reihenfolge ist vorläufig; tatsächliche technische Abhängigkeiten können
 - Gleichzeitige Kontakte und bestehende Überlappungen ohne Positionssprünge.
 - Exakte Mini-Hop-Impulse und Erkennung der Kantenereignisse.
 - Feinabstimmung der Geschwindigkeitsübernahme beim Abspringen/Landen.
-- Eventuelle spätere elementweise Durchflugprüfung statt pauschaler Höhenregel.
+- Eventuelle spätere elementweise Durchflugprüfung statt pauschaler Höhenregel. Gemeinsam beschlossen: E-Regel bis vollständiger Bewegungsimplementierung unverändert lassen; beide E-Beobachtungen im G-Gesamtspieltest gezielt untersuchen (Fuß-/Plattform-/Kistenhöhe, Passagezustand, relative Fußkreuzung), danach Regeländerung entscheiden.
 
 ## 14. Abnahmefälle
 

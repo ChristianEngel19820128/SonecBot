@@ -14,6 +14,8 @@
 #constant SONEC_AIR_COAST_FACTOR 0.1
 #constant SONEC_COAST_ZERO_SPEED 0.25
 #constant SONEC_BALANCE_X_STEP 0.5
+#constant SONEC_MINI_HOP_IMPULSE_Y 1.5
+#constant SONEC_MINI_HOP_MIN_RELATIVE_X 1.0
 #constant SONEC_HOVER_AIR_DAMPING 0.20
 #constant SONEC_MAX_GROUND_SPEED 5
 #constant SONEC_MAX_VERTICAL_SPEED 8
@@ -1175,7 +1177,7 @@ endfunction Best
 // Exactly one selected contact modifies the path and its affected component.
 // X stays free after a top; Y stays free after a side. The next sweep uses
 // this modified segment and the remaining fraction of obstacle motion.
-function SonecResolveContact(Sonec ref as TSonec,PlateList ref as TPlateList,ChestList ref as TChestList,Best as TSonecContactCandidate,InitialSupportType as integer,InitialSupportIndex as integer)
+function SonecResolveContact(Sonec ref as TSonec,PlateList ref as TPlateList,ChestList ref as TChestList,Best as TSonecContactCandidate,Screen as TSize)
 	local i as integer
 	local SurfaceY as float
 	local SurfaceEndY as float
@@ -1231,10 +1233,11 @@ function SonecResolveContact(Sonec ref as TSonec,PlateList ref as TPlateList,Che
 	endif
 	if Best.Kind = 4
 		Sonec.ObjectData.Position = Sonec.CollisionMoveStart
-		if Best.ListType = InitialSupportType and i = InitialSupportIndex and Best.ListType = TYPECHEST
-			SonecFinishChestEdge(Sonec,ChestList,Sonec.CollisionSegmentStartTime)
+		if Best.ListType = TYPECHEST
+			SonecFinishChestEdge(Sonec,ChestList,Screen)
+		else
+			SonecCollideReset(Sonec)
 		endif
-		if Sonec.GroundContactActive = TRUE then SonecCollideReset(Sonec)
 	endif
 endfunction
 
@@ -1305,7 +1308,7 @@ function SonecCollidePlate(Sonec ref as TSonec,PlateList ref as TPlateList,Chest
 				Sonec.CollisionSegmentStartTime = 1
 				Done = TRUE
 			else
-				SonecResolveContact(Sonec,PlateList,ChestList,Best,InitialSupportType,InitialSupportIndex)
+				SonecResolveContact(Sonec,PlateList,ChestList,Best,Screen)
 				if Best.Kind <> 5 then MechanicalCount = MechanicalCount + 1
 				if Sonec.CollisionSegmentStartTime >= 1
 					Done = TRUE
@@ -1325,9 +1328,7 @@ function SonecCollidePlate(Sonec ref as TSonec,PlateList ref as TPlateList,Chest
 		endif
 		Sonec.CollisionData.Position.y = 0
 		if Sonec.CollisionData.ListType = TYPECHEST
-			if InitialSupportType = TYPECHEST and InitialSupportIndex = i
-				SonecFinishChestEdge(Sonec,ChestList,1.0)
-			else
+			if InitialSupportType <> TYPECHEST or InitialSupportIndex <> i
 				SonecChestLandingEffects(Sonec,ChestList,i)
 			endif
 		endif
@@ -1757,37 +1758,68 @@ endfunction Best
 //----------------------------------------------------------------------
 
 // Legacy edge animation and impulse are retained; Phase F owns redesign.
-function SonecFinishChestEdge(Sonec ref as TSonec,ChestList ref as TChestList,FrameTime as float)
+function SonecFinishChestEdge(Sonec ref as TSonec,ChestList ref as TChestList,Screen as TSize)
 	local i as integer
 	local HopEvent as integer
+	local Direction as integer
 	local ChestX as float
+	local ChestEndX as float
+	local RelativeX as float
+	local RelativeEndX as float
+	local Remaining as float
+	local RelativeVX as float
+	local ExtraVX as float
+	local HalfHeight as float
+
+	// Only the selected support-exit event can trigger a mini-hop.
 	if Sonec.GroundContactActive = FALSE or Sonec.CollisionData.ListType <> TYPECHEST then exitfunction
 	i = Sonec.CollisionData.Index
-	ChestX = SonecCollisionAxisAt(ChestList.Chest[i].CollisionMoveStart.x,ChestList.Chest[i].ObjectData.Position.x,FrameTime)
-	HopEvent = 0
-	if Sonec.State.Move = TRUE and Sonec.State.Duck = FALSE
-		if Sonec.State.Alignment = MOVELEFT and Sonec.ObjectData.MoveSpeed.x < 0 and Sonec.ObjectData.Position.x <= ChestX + Sonec.ObjectData.Size.Width*0.5 + abs(Sonec.ObjectData.MoveSpeed.x)
-			HopEvent = 3
-		endif
-		if Sonec.State.Alignment = MOVERIGHT and Sonec.ObjectData.MoveSpeed.x > 0 and Sonec.ObjectData.Position.x >= ChestX + ChestList.Chest[i].ObjectData.Size.Width - Sonec.ObjectData.Size.Width*0.5 - abs(Sonec.ObjectData.MoveSpeed.x)
-			HopEvent = 4
-		endif
+	ChestEndX = ChestList.Chest[i].ObjectData.Position.x
+	ChestX = SonecCollisionAxisAt(ChestList.Chest[i].CollisionMoveStart.x,ChestEndX,Sonec.CollisionSegmentStartTime)
+	RelativeX = Sonec.CollisionMoveStart.x - ChestX
+	RelativeEndX = Sonec.CollisionMoveEnd.x - ChestEndX
+	// Actual departure side, independent of input, facing or world VX.
+	Direction = 1
+	HopEvent = 4
+	if RelativeX < 0 or (RelativeX <= ChestList.Chest[i].ObjectData.Size.Width and RelativeEndX < 0)
+		Direction = -1
+		HopEvent = 3
 	endif
-	if HopEvent <> 0
-		Sonec.DebugEdgeEvent = HopEvent
-		Sonec.DebugEdgePending = TRUE
-		Sonec.DebugEdgeChestX = ChestX
-		Sonec.DebugEdgeChestSpeedX = ChestList.Chest[i].ObjectData.MoveSpeed.x
-		Sonec.DebugCsvHopChestIndex = i
-		Sonec.DebugCsvHopChestLeft = ChestX
-		Sonec.DebugCsvHopChestRight = ChestX + ChestList.Chest[i].ObjectData.Size.Width
-		Sonec.DebugCsvHopPreVX = Sonec.ObjectData.MoveSpeed.x
-		Sonec.DebugCsvHopPreVY = Sonec.ObjectData.MoveSpeed.y
-		SonecCollideReset(Sonec)
-		Sonec.ObjectData.MoveSpeed.y = Sonec.ObjectData.MoveSpeed.y - 1.5
-		Sonec.DebugCsvHopPostVX = Sonec.ObjectData.MoveSpeed.x
-		Sonec.DebugCsvHopPostVY = Sonec.ObjectData.MoveSpeed.y
+
+	Sonec.DebugEdgeEvent = HopEvent
+	Sonec.DebugEdgePending = TRUE
+	Sonec.DebugEdgeChestX = ChestX
+	Sonec.DebugEdgeChestSpeedX = ChestList.Chest[i].ObjectData.MoveSpeed.x
+	Sonec.DebugCsvHopChestIndex = i
+	Sonec.DebugCsvHopChestLeft = ChestX
+	Sonec.DebugCsvHopChestRight = ChestX + ChestList.Chest[i].ObjectData.Size.Width
+	Sonec.DebugCsvHopPreVX = Sonec.ObjectData.MoveSpeed.x
+	Sonec.DebugCsvHopPreVY = Sonec.ObjectData.MoveSpeed.y
+
+	// Grounded MoveSpeed.x is carrier-relative. Keep faster exits.
+	RelativeVX = Sonec.ObjectData.MoveSpeed.x
+	ExtraVX = 0
+	if RelativeVX*Direction < SONEC_MINI_HOP_MIN_RELATIVE_X
+		ExtraVX = Direction*SONEC_MINI_HOP_MIN_RELATIVE_X - RelativeVX
 	endif
+	Sonec.ObjectData.MoveSpeed.x = RelativeVX + ExtraVX
+	// Clears support and transfers carrier momentum exactly once.
+	SonecCollideReset(Sonec)
+	Sonec.ObjectData.MoveSpeed.y = Sonec.ObjectData.MoveSpeed.y - SONEC_MINI_HOP_IMPULSE_Y
+
+	// Residual world path already includes carry. Apply only new impulse
+	// over the unconsumed part of this frame, not a second full step.
+	Remaining = 1.0 - Sonec.CollisionSegmentStartTime
+	Sonec.CollisionMoveEnd.x = Sonec.CollisionMoveEnd.x + ExtraVX*Remaining
+	Sonec.CollisionMoveEnd.y = Sonec.CollisionMoveEnd.y - SONEC_MINI_HOP_IMPULSE_Y*Remaining
+	SonecClampCombinedPath(Sonec,Screen)
+	HalfHeight = Sonec.ObjectData.Size.Height*0.5
+	if Sonec.SpawnEntering = FALSE and Sonec.CollisionMoveEnd.y < HalfHeight
+		Sonec.CollisionMoveEnd.y = HalfHeight
+		if Sonec.ObjectData.MoveSpeed.y < 0 then Sonec.ObjectData.MoveSpeed.y = 0
+	endif
+	Sonec.DebugCsvHopPostVX = Sonec.ObjectData.MoveSpeed.x
+	Sonec.DebugCsvHopPostVY = Sonec.ObjectData.MoveSpeed.y
 endfunction
 
 function SonecChestLandingEffects(Sonec ref as TSonec,ChestList ref as TChestList,i as integer)

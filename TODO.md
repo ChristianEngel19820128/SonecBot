@@ -4,7 +4,7 @@
 
 ## Jetzt
 
-- [ ] Phase E 9/9 bestanden (`f2acaae`); Übernahmeberechtigung vertikal bewegter Fremdplattformen diagnostizieren (Fuß-/Plattform-/Kistenhöhe, Passagezustand, relative Fußkreuzung). Unfaire Übernahme als offene Designbeobachtung; pauschale Höhenregel nicht ohne Entscheidung ändern. Danach F–G gemäß [Spezifikation](docs/SONEC_MOVEMENT_SPEC.md).
+- [ ] Phase F: einmaliger Mini-Hop bei tatsächlichem Kistenkantenabgang implementiert; AGK-Compile und Funktionstest offen. Danach G: Gesamtspieltest, E-Beobachtungen (unfaire Übernahme/vertikal bewegte Fremdplattformberechtigung) gezielt eingrenzen und Regeländerung gemeinsam entscheiden, Integration/Balancing gemäß [Spezifikation](docs/SONEC_MOVEMENT_SPEC.md).
 
 ## Danach / separat
 
