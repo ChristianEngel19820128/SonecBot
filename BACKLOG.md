@@ -73,6 +73,11 @@ Bomber, Flarak, hilfreicher Jumppod, Gefahren-/Erfahrungsgrundsystem, kleine Zie
 
 - **Silowrack als begehbare Stufe (Idee):** Sonec soll auf einem Silowrack landen können, ohne seitlich mit dem Wrack zu kollidieren. Zwei Landungshöhen sollen wie eine Treppe funktionieren; zunächst nur Landekontakte, keine horizontale Blockade. Später mit Tiefenebenen-/Swept-Collision-Regeln abstimmen, noch nicht implementieren.
 
+## Spätere Eingabe- und Waffensteuerung (24. November 2026)
+
+- **Granatwerfer aufladen:** Granatwerfer-Taste gedrückt halten soll einen regulären Granatenwurf auslösen; die Granate fliegt ballistisch, die Haltedauer beeinflusst die Wurfstärke/Flugbahn. Genaue Auslöse- und Stärkegrenzen sowie Verhältnis zum bisherigen Rückstoß vor Umsetzung festlegen. **Nur Idee, nicht implementiert.**
+- **Steuerkreuz hoch – Tippen/Halten:** Kurzes Tippen löst einen Sprung aus; Halten aktiviert das Jetpack nach kurzer Verzögerung. Zeitgrenzen, Energiebedingungen und Verhalten bei Sprung/Fall später spezifizieren. **Nur Idee, nicht implementiert.**
+
 ## Pflege
 
 - Kurze Einträge, vorhandenen Themen zuordnen; keine Chatprotokolle anhängen.
