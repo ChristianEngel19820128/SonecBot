@@ -297,3 +297,10 @@ Die Reihenfolge ist vorläufig; tatsächliche technische Abhängigkeiten können
 - **Kleiner isolierter Schritt B-K2:** Die vorhandene Funktion `SonecCollideChestSideContacts` ermittelt zusätzlich den frühesten zulässigen Kisten-Oberseitenkontakt aus dem bereits in B-K1 verwendeten relativen Fuß-Sweep und dem bestehenden horizontalen Endpositions-/Kistenfilter. Ist dieser zeitlich vor oder gleich dem erkannten Seitenkontakt **derselben Kiste**, wird dieser Seitenkontakt nicht angewendet; die bestehende B-K1-Landungsprüfung kann danach landen. Eine früher berührte andere Seitenwand bleibt wirksam. Die bestehende Unterseiten-Pass-through-Regel bleibt unberührt.
 - **Bewusst nicht Bestandteil:** Vollständiger gemeinsamer Resolver über Kisten und Plattformen, horizontale Kontaktposition entlang des Sweeps, Restbewegungsauflösung und Tiefenebenen-Redesign. Diese sind weitere geplante Schritte; die Intermittenz kann auch andere Ursachen haben.
 - **Testziel:** AGK-Compile, kleine/große Kisten mit langsamem/schnellem Sprung, diagonale Landung nahe Kistenkante, echte Seitenkollision, Durchflug von unten, Plattformlandung. B2 bleibt bis zur Gesamtabnahme offen.
+
+## 34. Phase B-K2 – Code umgesetzt, AGK-Test offen (24.11.2026)
+
+- **Code-Commit:** `b6849d6a10f3c3f248f4493e7bc431c6fa9200d6` auf `develop`.
+- **Umsetzung:** Bevor `SonecCollideChestSideContacts` den ausgewählten Seitenkontakt anwendet, prüft es für dieselbe Kiste eine gültige relative Fußkreuzung von oben. Wenn die Oberseite zuerst oder zeitgleich getroffen wird, entfällt nur dieser Seitenblock; die anschließende B-K1-Landungsroutine entscheidet weiterhin über tatsächlichen Bodenkontakt. Ein früherer Seitenkontakt bleibt erhalten.
+- **Grenze:** Keine vollständige globale Priorisierung von Kisten und Plattformen und noch kein horizontaler Sweep für die Kistenlandung. Der sporadische Durchfallfehler bleibt offen, bis der Entwickler nachgetestet hat.
+- **AGK-Kompilierung und Laufzeittests:** durch den Assistenten nicht ausführbar, ausdrücklich ausstehend.
