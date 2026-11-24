@@ -57,6 +57,7 @@ function PlateNew(Plate ref as TPlate,ProtoPlate ref as TProtoPlate,World ref as
 	
 	Plate.ObjectData.Position.x = World.Size.Width
 	Plate.ObjectData.Position.y = y
+	Plate.CollisionMoveStart = Plate.ObjectData.Position
 	Plate.ObjectData.Size.Width = GetImageWidth(ProtoPlate.AnimPlate[Plate.ProtoIndex].Image.ID)
 	Plate.ObjectData.Size.Height = GetImageHeight(ProtoPlate.AnimPlate[Plate.ProtoIndex].Image.ID)
 	
@@ -219,6 +220,7 @@ function PlateMove(Plate ref as TPlate,World ref as TWorld,Now as integer)
 	local ElapsedMs as integer
 	
 	if Plate.Enabled = TRUE
+		Plate.CollisionMoveStart = Plate.ObjectData.Position
 		// GameDo-frame duration and timer advances are measured separately.
 		Plate.DebugFrameMs = Now - Plate.DebugLastNow
 		if Plate.DebugFrameMs < 0 then Plate.DebugFrameMs = 0
