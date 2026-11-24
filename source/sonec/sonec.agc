@@ -1638,6 +1638,7 @@ function SonecCollideChestHorizontal(Sonec ref as TSonec,ChestList ref as TChest
 							Sonec.CollisionData.Position.y = Sonec.ObjectData.Position.y + Sonec.ObjectData.Size.Height*0.5 - ChestList.Chest[i].ObjectData.Position.y
 							SonecSetGroundContact(Sonec,TYPECHEST,i,ChestList.Chest[i].CollisionData.Index)
 							// Diagnostic only: record either edge landing, even when no balance is activated.
+							Sonec.DebugEdgeEvent = 0
 							if Sonec.ObjectData.Position.x <= ChestList.Chest[i].ObjectData.Position.x + Sonec.ObjectData.Size.Width*0.5
 								Sonec.DebugEdgeFrames = 60
 								Sonec.DebugEdgeEvent = 1
