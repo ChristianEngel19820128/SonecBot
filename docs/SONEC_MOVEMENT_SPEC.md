@@ -246,3 +246,10 @@ Die Reihenfolge ist vorläufig; tatsächliche technische Abhängigkeiten können
 - **Kandidatenauswahl:** Bei mehreren gekreuzten Plattformen wird die kleinste relative Kontaktzeit innerhalb des Updates gewählt, statt allein die Höhe am Ende zu vergleichen. Exakte Gleichstände bleiben stabil in Plattform-Array-Reihenfolge.
 - **Grenzen B2:** Horizontale Kontaktprüfung bleibt zunächst die bestehende Endpositionsprüfung; Kisten-/Plattformkontakte werden noch nicht gemeinsam priorisiert. Pass-through-Ausnahme und Zustandslogik bleiben unverändert.
 - **Entwicklertest:** AGK-Kompilierung; ruhende und bewegte Plattformlandungen; Sprung/Jetpack; schneller Fall; Plattformen unterschiedlicher Höhen. Noch keine Testbestätigung.
+
+## 27. Phase B2 – Implementierungsstand (24.11.2026)
+
+- **Code-Commits auf `develop`:** `2a168c4` (Plattformtyp), `b8a633d` (Startposition vor Bewegung), `cfa5e35` (relative Kreuzungsprüfung).
+- **Umsetzung:** `TPlate.CollisionMoveStart` speichert die Position vor `PlateMove` (auch bei ausgelassenem Timer-Schritt); die Plattformlandung in `SonecCollidePlate` vergleicht Anfangs- und Endabstand der Füße zur bewegten Oberkante und wählt die kleinste gültige Kontaktzeit. Exakte Zeitgleichheit bleibt durch strikten `<`-Vergleich beim ersten Array-Eintrag.
+- **Bewusst nicht umgesetzt:** horizontale Swept-Prüfung, gemeinsame Kisten-/Plattform-Priorisierung, vollständige Durchfluglogik und restliche Bewegungsphysik.
+- **Status:** AGK-Kompilierung und Funktionstests durch den Entwickler stehen aus. Kein lokaler AGK-Compiler verfügbar.
