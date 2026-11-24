@@ -4,7 +4,7 @@
 
 ## Jetzt
 
-- [ ] Phase E 9/9 bestanden (`f2acaae`); vertikale Plattformbeobachtung konkretisieren und prüfen. Situationsabhängig unfaire Übernahme als offene Spielgefühl-/Designbeobachtung (pauschale Freigabehöhe als Hypothese). Danach F–G gemäß [Spezifikation](docs/SONEC_MOVEMENT_SPEC.md).
+- [ ] Phase E 9/9 bestanden (`f2acaae`); Übernahmeberechtigung vertikal bewegter Fremdplattformen diagnostizieren (Fuß-/Plattform-/Kistenhöhe, Passagezustand, relative Fußkreuzung). Unfaire Übernahme als offene Designbeobachtung; pauschale Höhenregel nicht ohne Entscheidung ändern. Danach F–G gemäß [Spezifikation](docs/SONEC_MOVEMENT_SPEC.md).
 
 ## Danach / separat
 

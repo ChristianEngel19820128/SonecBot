@@ -156,6 +156,6 @@ Gefahrenzulassung, Erholungsrhythmus, tatsächlicher Ressourcengewinn und Muniti
 Bekannte Qualitätsfragen erhalten eine ausdrückliche Entscheidung bzw. dokumentierte Grenze; der integrierte Alpha-Build wird auf der Zielplattform geprüft.
 Diese Kriterien sind Prüfaufträge für die Umsetzung, keine bereits bestandene Alpha-Abnahme. itch.io bleibt Draft/Secret URL bis zu einer gesonderten Entscheidung.
 
-**Nächster Schritt:** Vertikale Plattformbeobachtung gemäß TODO konkretisieren und prüfen; danach Phase F gemeinsam beginnen. Weitere Arbeitsblöcke nach Abstimmung auswählen; keine automatische Codefreigabe aus dieser Roadmap ableiten.
+**Nächster Schritt:** Übernahmeberechtigung vertikal bewegter Fremdplattformen gemäß TODO eingrenzen; danach Phase F gemeinsam beginnen. Weitere Arbeitsblöcke nach Abstimmung auswählen; keine automatische Codefreigabe aus dieser Roadmap ableiten.
 
 Spätere Varianten und Ideen stehen in [BACKLOG.md](BACKLOG.md). Frühere Langfassungen liegen im [Archiv](docs/archive/README.md); sie werden nur für konkrete historische Fragen gelesen.
