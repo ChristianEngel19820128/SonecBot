@@ -1424,6 +1424,7 @@ function SonecCollideChestSideContacts(Sonec ref as TSonec,ChestList ref as TChe
 	local TopTime as float
 	local BestTopTime as float
 	local BestChestTopCandidate as TSonecContactCandidate
+	local BestChestSideCandidate as TSonecContactCandidate
 	local FrontOffset as float
 	local StartFrontX as float
 	local EndFrontX as float
@@ -1604,12 +1605,18 @@ function SonecCollideChestSideContacts(Sonec ref as TSonec,ChestList ref as TChe
 	if BestPlateContactTime < BestTopTime
 		BestTopTime = BestPlateContactTime
 	endif
-	Sonec.ChestSideContactTime = 2
+	// B3g: keep the selected side contact in the shared candidate form.
+	BestChestSideCandidate.Valid = FALSE
 	if HitIndex >= 0
-		if BestTopTime <= SideTime
+		BestChestSideCandidate = SonecContactChooseEarlier(BestChestSideCandidate,SideTime,TYPECHEST,HitIndex)
+	endif
+	Sonec.ChestSideContactTime = 2
+	if BestChestSideCandidate.Valid = TRUE
+		if BestTopTime <= BestChestSideCandidate.ContactTime
 			HitIndex = -1
 		else
-			Sonec.ChestSideContactTime = SideTime
+			Sonec.ChestSideContactTime = BestChestSideCandidate.ContactTime
+			HitIndex = BestChestSideCandidate.Index
 		endif
 	endif
 
