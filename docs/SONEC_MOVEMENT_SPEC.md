@@ -282,3 +282,11 @@ Die Reihenfolge ist vorläufig; tatsächliche technische Abhängigkeiten können
 - **Umsetzung:** Die Landungsentscheidung auf Kistenoberseiten verwendet die relative Fußkreuzung von `Sonec.CollisionMoveStart/End` gegen `Chest.CollisionMoveStart` und die aktuelle Kistenoberkante. Bei mehreren Kandidaten gewinnt die früheste relative Kontaktzeit. Bestehende Landungsfolgen inklusive Balanceschritt bleiben erhalten.
 - **Nicht behoben/noch offen:** Der vorherige `SideHitIndex`-Ausschluss kann weiterhin Kistenlandungen verhindern; eine gemeinsame zeitliche Kontaktpriorisierung ist der nächste Architekturbaustein, kein Legacy-Sonderfix. B2 bleibt nicht abgenommen.
 - **Entwicklertest ausstehend:** AGK-Kompilierung; Landung auf großen/kleinen Kisten mit langsamer/schneller Horizontalbewegung; echte Seitenkollision; Plattformlandung; Jetpack/Durchflug. Keine Testergebnisse vorweggenommen.
+
+## 32. Entwicklertest B-K1 und weiterhin offener Kisten-Durchfall (24.11.2026)
+
+- **Getesteter Code-Commit:** `9b8834cfd2be75c003755b242df042230981edaf`.
+- **Formularergebnis des Entwicklers:** „Bestanden“, **7/7 Prüfpunkte bestätigt**, keine offenen Formularpunkte: AGK-Kompilierung, Landung auf kleinen Kisten, auf großen Kisten bei geringer und hoher horizontaler Geschwindigkeit, echte Seitenkollision, Plattformlandung, Jetpack und Durchflug von unten.
+- **Wichtige Einschränkung aus den Freitext-Beobachtungen:** „teilweise kann man scheinbar doch durch alle kistengrößen fallen. eher unklar warum. geringer und langsamer sprung und landen auf kiste funktioniert zumindest regulär. seitliche kollision funktioniert wie in der vorgängeränderung.“ Damit ist der Fehler **nicht behoben** und die Gesamtkollision nicht abgenommen; die sieben bestätigten Einzelprüfungen gelten nur für die jeweils erfolgreich ausgeführten Fälle.
+- **Folgerung:** Keine Sonderreparatur der alten Landelogik. Als nächster Architekturbaustein zeitliche Priorisierung von Kisten-Seiten- und Oberseitenkontakten entlang der relativen Bewegung; anschließend gezielt auch intermittierendes Durchfallen auf allen Kistengrößen prüfen. Ursache derzeit nicht bewiesen.
+- **Backlog-Idee separat:** Landen auf einem Silowrack ohne horizontale Seitenkollision; zwei Höhen wie eine Treppe, zunächst nur bei Landekontakten. Keine aktuelle Verhaltensänderung beschlossen.
