@@ -151,6 +151,8 @@ function SonecInit(Sonec ref as TSonec,ProtoSonec ref as TProtoSonec,World ref a
     Sonec.SpawnEntering = TRUE
 	Sonec.CollisionMoveStart = Sonec.ObjectData.Position
 	Sonec.CollisionMoveEnd = Sonec.ObjectData.Position
+	Sonec.DebugCsvPreCollisionVX = Sonec.ObjectData.MoveSpeed.x
+	Sonec.DebugCsvPreCollisionVY = Sonec.ObjectData.MoveSpeed.y
 	Sonec.PassThroughChestIndex = -1
 	Sonec.LinkedPlateIndex = -1
 	Sonec.BlockedChestIndex = -1
@@ -902,6 +904,13 @@ function SonecCollidePlate(Sonec ref as TSonec,PlateList ref as TPlateList,Chest
 	
 	
 	Sonec.DebugEdgePending = FALSE
+	Sonec.DebugCsvHopPreVX = 0
+	Sonec.DebugCsvHopPreVY = 0
+	Sonec.DebugCsvHopPostVX = 0
+	Sonec.DebugCsvHopPostVY = 0
+	Sonec.DebugCsvHopChestLeft = 0
+	Sonec.DebugCsvHopChestRight = 0
+	Sonec.DebugCsvHopChestIndex = -1
 	Sonec.DebugEdgeCollisionStartX = Sonec.ObjectData.Position.x
 	// Preserve an established physical support across non-liftoff state
 	// changes (e.g. grenade recoil); input jump/jetpack explicitly clears it.
@@ -1047,6 +1056,9 @@ function SonecCollidePlate(Sonec ref as TSonec,PlateList ref as TPlateList,Chest
 		next DebugHistoryIndex
 		Sonec.DebugEdgeSnapshot = "EDGE 1=landL 2=landR 3=hopL 4=hopR: "+Str(Sonec.DebugEdgeEvent)+Chr(10)+"eventX="+Str(Sonec.ObjectData.Position.x)+" vx="+Str(Sonec.ObjectData.MoveSpeed.x)+" vy="+Str(Sonec.ObjectData.MoveSpeed.y)+Chr(10)+"collisionX "+Str(Sonec.DebugEdgeCollisionStartX)+" -> "+Str(Sonec.DebugEdgeCollisionEndX)+Chr(10)+"balance="+Str(Sonec.BalanceActive)+" target="+Str(Sonec.BalanceTargetX)+" dxBalance="+Str(Sonec.DebugEdgeAfterBalanceX-Sonec.DebugEdgeBeforeBalanceX)+Chr(10)+"chestX="+Str(Sonec.DebugEdgeChestX)+" chestVx="+Str(Sonec.DebugEdgeChestSpeedX)+" carryX="+Str(Sonec.ObjectData.AutoSpeed.x)+Chr(10)+"move="+Str(Sonec.State.Move)+" stand="+Str(Sonec.State.Stand)+" fall="+Str(Sonec.State.Fall)+" (snapshot)"+Chr(10)+"last 4 movement steps:"+DebugHistoryText
 	endif
+
+	Sonec.DebugCsvPostCollisionVX = Sonec.ObjectData.MoveSpeed.x
+	Sonec.DebugCsvPostCollisionVY = Sonec.ObjectData.MoveSpeed.y
 
 endfunction
 
@@ -1617,16 +1629,30 @@ function SonecCollideChestHorizontal(Sonec ref as TSonec,ChestList ref as TChest
 							Sonec.DebugEdgePending = TRUE
 							Sonec.DebugEdgeChestX = ChestList.Chest[Sonec.CollisionData.Index].ObjectData.Position.x
 							Sonec.DebugEdgeChestSpeedX = ChestList.Chest[Sonec.CollisionData.Index].ObjectData.MoveSpeed.x
+							Sonec.DebugCsvHopChestIndex = Sonec.CollisionData.Index
+							Sonec.DebugCsvHopChestLeft = ChestList.Chest[Sonec.CollisionData.Index].ObjectData.Position.x
+							Sonec.DebugCsvHopChestRight = ChestList.Chest[Sonec.CollisionData.Index].ObjectData.Position.x + ChestList.Chest[Sonec.CollisionData.Index].ObjectData.Size.Width
+							Sonec.DebugCsvHopPreVX = Sonec.ObjectData.MoveSpeed.x
+							Sonec.DebugCsvHopPreVY = Sonec.ObjectData.MoveSpeed.y
 							SonecCollideReset(Sonec)
 							Sonec.ObjectData.MoveSpeed.y = -1.5
+							Sonec.DebugCsvHopPostVX = Sonec.ObjectData.MoveSpeed.x
+							Sonec.DebugCsvHopPostVY = Sonec.ObjectData.MoveSpeed.y
 						else
 							if Sonec.State.Move = TRUE and Sonec.State.Alignment = MOVERIGHT and Sonec.ObjectData.MoveSpeed.x > 0 and Sonec.State.Duck = FALSE and Sonec.ObjectData.Position.x >= ChestList.Chest[Sonec.CollisionData.Index].ObjectData.Position.x + ChestList.Chest[Sonec.CollisionData.Index].ObjectData.Size.Width - Sonec.ObjectData.Size.Width*0.5 - abs(Sonec.ObjectData.MoveSpeed.x)
 								Sonec.DebugEdgeEvent = 4
 							Sonec.DebugEdgePending = TRUE
 								Sonec.DebugEdgeChestX = ChestList.Chest[Sonec.CollisionData.Index].ObjectData.Position.x
 								Sonec.DebugEdgeChestSpeedX = ChestList.Chest[Sonec.CollisionData.Index].ObjectData.MoveSpeed.x
+								Sonec.DebugCsvHopChestIndex = Sonec.CollisionData.Index
+								Sonec.DebugCsvHopChestLeft = ChestList.Chest[Sonec.CollisionData.Index].ObjectData.Position.x
+								Sonec.DebugCsvHopChestRight = ChestList.Chest[Sonec.CollisionData.Index].ObjectData.Position.x + ChestList.Chest[Sonec.CollisionData.Index].ObjectData.Size.Width
+								Sonec.DebugCsvHopPreVX = Sonec.ObjectData.MoveSpeed.x
+								Sonec.DebugCsvHopPreVY = Sonec.ObjectData.MoveSpeed.y
 								SonecCollideReset(Sonec)
 								Sonec.ObjectData.MoveSpeed.y = -1.5
+								Sonec.DebugCsvHopPostVX = Sonec.ObjectData.MoveSpeed.x
+								Sonec.DebugCsvHopPostVY = Sonec.ObjectData.MoveSpeed.y
 							else
 								if Sonec.ObjectData.Position.x < ChestList.Chest[Sonec.CollisionData.Index].ObjectData.Position.x or Sonec.ObjectData.Position.x > ChestList.Chest[Sonec.CollisionData.Index].ObjectData.Position.x + ChestList.Chest[Sonec.CollisionData.Index].ObjectData.Size.Width
 									SonecCollideReset(Sonec)
@@ -1892,6 +1918,8 @@ endfunction
 function SonecMove(Sonec ref as TSonec,ChestList ref as TChestList,World ref as TWorld,Screen as TSize,Now as integer)
 	
 	Sonec.CollisionMoveStart = Sonec.ObjectData.Position
+	Sonec.DebugCsvMoveStartX = Sonec.ObjectData.Position.x
+	Sonec.DebugCsvMoveStartY = Sonec.ObjectData.Position.y
 
 	if TimeGet(Sonec.ObjectData.MoveTimer,Now) > 0
 		
