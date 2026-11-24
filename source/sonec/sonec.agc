@@ -885,6 +885,7 @@ function SonecCollidePlate(Sonec ref as TSonec,PlateList ref as TPlateList,Chest
 	local SideHitIndex as integer
 	local PassPlateIndex as integer
 	local DebugHistoryIndex as integer
+	local DebugHistorySlot as integer
 	local DebugHistoryText as string
 	local PassIndex as integer
 	local HalfWidth as float
@@ -1039,7 +1040,11 @@ function SonecCollidePlate(Sonec ref as TSonec,PlateList ref as TPlateList,Chest
 		Sonec.DebugEdgeVisible = TRUE
 		DebugHistoryText = ""
 		for DebugHistoryIndex = 0 to 3
-			DebugHistoryText = DebugHistoryText + Chr(10) + Sonec.DebugEdgeHistory[(Sonec.DebugEdgeHistoryNext+DebugHistoryIndex)%4]
+			DebugHistorySlot = Sonec.DebugEdgeHistoryNext + DebugHistoryIndex
+			if DebugHistorySlot > 3
+				DebugHistorySlot = DebugHistorySlot - 4
+			endif
+			DebugHistoryText = DebugHistoryText + Chr(10) + Sonec.DebugEdgeHistory[DebugHistorySlot]
 		next DebugHistoryIndex
 		Sonec.DebugEdgeSnapshot = "EDGE 1=landL 2=landR 3=hopL 4=hopR: "+Str(Sonec.DebugEdgeEvent)+Chr(10)+"eventX="+Str(Sonec.ObjectData.Position.x)+" vx="+Str(Sonec.ObjectData.MoveSpeed.x)+" vy="+Str(Sonec.ObjectData.MoveSpeed.y)+Chr(10)+"collisionX "+Str(Sonec.DebugEdgeCollisionStartX)+" -> "+Str(Sonec.DebugEdgeCollisionEndX)+Chr(10)+"balance="+Str(Sonec.BalanceActive)+" target="+Str(Sonec.BalanceTargetX)+" dxBalance="+Str(Sonec.DebugEdgeAfterBalanceX-Sonec.DebugEdgeBeforeBalanceX)+Chr(10)+"chestX="+Str(Sonec.DebugEdgeChestX)+" chestVx="+Str(Sonec.DebugEdgeChestSpeedX)+" carryX="+Str(Sonec.ObjectData.AutoSpeed.x)+Chr(10)+"move="+Str(Sonec.State.Move)+" stand="+Str(Sonec.State.Stand)+" fall="+Str(Sonec.State.Fall)+" (snapshot)"+Chr(10)+"last 4 movement steps:"+DebugHistoryText
 	endif
@@ -1913,7 +1918,10 @@ function SonecMove(Sonec ref as TSonec,ChestList ref as TChestList,World ref as 
 	Sonec.CollisionMoveEnd = Sonec.ObjectData.Position
 	// Rolling history of the last four movement updates, frozen at a contact event.
 	Sonec.DebugEdgeHistory[Sonec.DebugEdgeHistoryNext] = "x="+Str(Sonec.ObjectData.Position.x)+" vx="+Str(Sonec.ObjectData.MoveSpeed.x)+" balDX="+Str(Sonec.DebugEdgeAfterBalanceX-Sonec.DebugEdgeBeforeBalanceX)
-	Sonec.DebugEdgeHistoryNext = (Sonec.DebugEdgeHistoryNext+1)%4
+	Sonec.DebugEdgeHistoryNext = Sonec.DebugEdgeHistoryNext + 1
+	if Sonec.DebugEdgeHistoryNext > 3
+		Sonec.DebugEdgeHistoryNext = 0
+	endif
 
 endfunction
 	
