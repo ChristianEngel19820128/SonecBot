@@ -14,6 +14,10 @@
 #constant SONEC_MAX_VERTICAL_SPEED 8
 #constant SONEC_GROUND_ACCELERATION 0.005
 #constant SONEC_VERTICAL_ACCELERATION 0.01
+#constant SONEC_NORMAL_ACCELERATION_FACTOR 1.0
+#constant SONEC_CAMERA_EDGE_MARGIN 10
+#constant SONEC_CAMERA_UPPER_FRACTION 0.33
+#constant SONEC_CAMERA_LOWER_FRACTION 0.66
 
 function SonecHitCircleRadius(Sonec ref as TSonec)
     local Radius as float
@@ -1469,7 +1473,7 @@ function SonecMoveHorizontalSpeed(Sonec ref as TSonec)
 	if Sonec.State.Move = TRUE
 		// Countersteering on a chest brakes harder than releasing the direction.
 		// Keep airborne movement and normal acceleration unchanged.
-		acc = 1.0
+		acc = SONEC_NORMAL_ACCELERATION_FACTOR
 		if Sonec.State.Stand = TRUE and Sonec.CollisionData.ListType = TYPECHEST
 			if Sonec.State.Alignment = MOVELEFT and Sonec.ObjectData.MoveSpeed.x > 0
 				acc = SONEC_COUNTERSTEER_FACTOR
@@ -1597,15 +1601,15 @@ endfunction
 
 // Movement phase extracted without changing its original order or conditions.
 function SonecMoveCamera(Sonec ref as TSonec,World ref as TWorld,Screen as TSize)
-	if World.Position.y > 10
-		if Sonec.SpriteData.Position.y < Screen.Height * 0.33
-			World.Position.y = World.Position.y + (Sonec.SpriteData.Position.y - Screen.Height * 0.33)
+	if World.Position.y > SONEC_CAMERA_EDGE_MARGIN
+		if Sonec.SpriteData.Position.y < Screen.Height * SONEC_CAMERA_UPPER_FRACTION
+			World.Position.y = World.Position.y + (Sonec.SpriteData.Position.y - Screen.Height * SONEC_CAMERA_UPPER_FRACTION)
 		endif
 	endif
 	
-	if World.Position.y < World.Size.Height - Screen.Height - 10
-		if Sonec.SpriteData.Position.y > Screen.Height * 0.66
-			World.Position.y = World.Position.y + (Sonec.SpriteData.Position.y - Screen.Height * 0.66)
+	if World.Position.y < World.Size.Height - Screen.Height - SONEC_CAMERA_EDGE_MARGIN
+		if Sonec.SpriteData.Position.y > Screen.Height * SONEC_CAMERA_LOWER_FRACTION
+			World.Position.y = World.Position.y + (Sonec.SpriteData.Position.y - Screen.Height * SONEC_CAMERA_LOWER_FRACTION)
 		endif
 	endif
 	
