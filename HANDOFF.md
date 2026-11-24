@@ -14,9 +14,9 @@
 Verbindliche Grundlage: [SONEC_MOVEMENT_SPEC.md](docs/SONEC_MOVEMENT_SPEC.md).
 
 - Phase A abgeschlossen und lokal geprüft.
-- Phase B in Bearbeitung: B3h implementiert (Code-Commit 0db1191), AGK-Compile noch offen.
-- B3g kompiliert; B3h vergleicht Plattformoberseite, Kistenoberseite und Kistenseite über gemeinsamen Kandidaten. Bestehende Auflösung noch nicht vollständig ersetzt.
-- Gemeinsame Kontaktauflösung und verbleibende Framebewegung fehlen.
+- Phase B: gemeinsamer Kontaktresolver und Restwegschleife implementiert; gemeinsamer AGK-Compile und funktionale Prüfung offen.
+- B3g war der letzte lokal kompilierte Zwischenstand; B3h ist im neuen Paket enthalten.
+- Kontaktwahl: Kisten-/Plattformoberseite, Kistenseite, Durchflugeintritt und Stützverlust; zeitlich interpolierte Restwegprüfung, alte getrennte Resolver entfernt. Phasen C–F bleiben fachlich offen.
 - Seitliches Tunneln, Zurückwerfen und unbegrenzte Luftbeschleunigung sind bekannte Ausgangsprobleme; keine vorzeitige Abnahme.
 - Phasen C–G gemäß Spezifikation: mechanische Geometrie, Plattformmitnahme, Tiefenebenen, Mini-Hop, Integration/Balancing.
 
@@ -43,7 +43,7 @@ Verbindliche Grundlage: [SONEC_MOVEMENT_SPEC.md](docs/SONEC_MOVEMENT_SPEC.md).
 
 ## Genau ein nächster vereinbarter Schritt
 
-Phase B abschließen: gemeinsamen vollständigen Kontaktkandidaten und Resolver integrieren, verbleibende Bewegung korrekt behandeln, konkurrierende alte Auflösungspfade bereinigen und statisch prüfen. Anschließend gemeinsamen AGK-Compile und aussagekräftige Funktionstests bestimmen; falls kein eigenständiger Funktionstest sinnvoll ist, Übergang zu Phase C gemeinsam bewerten.
+Phase-B-Paket gemeinsam in AGK Studio kompilieren. Danach aussagekräftige Funktionstests zur zeitlichen Kontaktwahl und Restbewegung festlegen bzw. gemeinsam den Übergang zu Phase C bewerten. Keine funktionale Abnahme aus dem Compile ableiten.
 
 ## Referenzen
 

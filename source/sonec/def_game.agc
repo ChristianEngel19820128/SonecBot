@@ -524,8 +524,12 @@ type TFlameGun
 	FireTimer as TTime
 endtype
 
-// Phase B3e: shared collision candidate; 0 = no candidate.
+// Phase B: shared candidate, Kind: 1 top, 2 side, 3 pass entry, 4 support exit.
 type TSonecContactCandidate
+	Kind as integer
+	HitSide as integer
+	HitOffsetX as float
+	HitPositionX as float
 	Valid as integer
 	ContactTime as float
 	ListType as integer
@@ -561,7 +565,7 @@ type TSonec
 	DebugEdgeChestSpeedX as float
 	DebugEdgeBeforeBalanceX as float
 	DebugEdgeAfterBalanceX as float
-	ChestSideContactTime as float
+	CollisionSegmentStartTime as float
 	GroundContactActive as integer
 	PassThroughChestIndex as integer
 	LinkedPlateIndex as integer
