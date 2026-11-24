@@ -4,7 +4,7 @@
 
 ## Jetzt
 
-- [ ] Jetpack-Landung bei noch abwärts gerichteter Bewegung: Fall-Flag aus Oberseitenfreigabe entfernt, Landungszustand Fly=FALSE. AGK-Compile und gezielter Nachtest offen. Phase D 9/9 bestätigt; danach E–G gemäß [Spezifikation](docs/SONEC_MOVEMENT_SPEC.md).
+- [ ] Phase E: Tiefenebenen und Durchflug fremder Plattformen samt zugehörigen Kisten gemäß [Spezifikation](docs/SONEC_MOVEMENT_SPEC.md) umsetzen. Phase D 9/9 und Jetpack-Nachtest `be7dc31` 6/6 bestanden. Danach F–G.
 
 ## Danach / separat
 
