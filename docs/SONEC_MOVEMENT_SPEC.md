@@ -253,3 +253,11 @@ Die Reihenfolge ist vorläufig; tatsächliche technische Abhängigkeiten können
 - **Umsetzung:** `TPlate.CollisionMoveStart` speichert die Position vor `PlateMove` (auch bei ausgelassenem Timer-Schritt); die Plattformlandung in `SonecCollidePlate` vergleicht Anfangs- und Endabstand der Füße zur bewegten Oberkante und wählt die kleinste gültige Kontaktzeit. Exakte Zeitgleichheit bleibt durch strikten `<`-Vergleich beim ersten Array-Eintrag.
 - **Bewusst nicht umgesetzt:** horizontale Swept-Prüfung, gemeinsame Kisten-/Plattform-Priorisierung, vollständige Durchfluglogik und restliche Bewegungsphysik.
 - **Status:** AGK-Kompilierung und Funktionstests durch den Entwickler stehen aus. Kein lokaler AGK-Compiler verfügbar.
+
+## 28. Entwicklertest B2 – Regression bei Kistenlandung (24.11.2026)
+
+- **Getesteter Code-Commit:** `cfa5e35dcf8a6efe5b8ad9ef79fcc014ac6aed56` auf `develop`.
+- **Gesamtergebnis:** **Auffälligkeiten / Fehler; B2 nicht abgenommen.** AGK-Kompilierung erfolgreich; Landung auf normaler und vertikal bewegter Plattform, Sprung mit erneuter Landung, Jetpack mit anschließender Landung sowie schneller Fall und unterschiedliche Plattformhöhen unauffällig (6/7 Prüfpunkte). **Offen/fehlgeschlagen:** Kistenlandungen nicht durchgehend zuverlässig.
+- **Entwicklerbeobachtung (wörtlich):** „teilweise fallen durch kisten möglich. scheinbar in der mitte der kistenoberfläche.“ Keine weitergehenden reproduzierbaren Randbedingungen gemeldet.
+- **Quellbefund:** `SonecCollideChestHorizontal` verwendet für Kistenlandungen noch aktuelle Fußhöhe plus `MoveSpeed.y` als engen Nachbereich, nicht die relative Start-/Endbewegung. Die Kisten-Seitenkontaktklassifikation läuft vorher und kann einen Kandidaten ausschließen. B2 änderte dagegen ausschließlich die Plattformlandung und ergänzte Plattform-Startpositionen. Ein ursächlicher Zusammenhang ist damit noch **nicht bewiesen**; die Kistenlandelogik war bereits vor B2 potenziell empfindlich gegen schnelle Schritte.
+- **Entscheidung zum Vorgehen:** B3 aussetzen. Erst Reproduktion und Diagnose der Kistenlandung, insbesondere Fälle mitten auf der Kistenoberfläche; keinen unbestätigten Kausalzusammenhang behaupten. Eine konkrete Regel-/Codekorrektur zuerst in der Spezifikation beschließen, danach klein ändern und lokal erneut testen.
