@@ -916,6 +916,7 @@ function SonecCollidePlate(Sonec ref as TSonec,PlateList ref as TPlateList,Chest
 	local HalfHeight as float
 	local BestPlateIndex as integer
 	local BestPlateContactTime as float
+	local InitialPassPlateIndex as integer
 	local BestPlateY as float
 	local StartFeetY as float
 	local EndFeetY as float
@@ -1005,6 +1006,9 @@ function SonecCollidePlate(Sonec ref as TSonec,PlateList ref as TPlateList,Chest
 		endif
 	endif
 	
+	InitialPassPlateIndex = PassPlateIndex
+	BestPlateIndex = -1
+	BestPlateY = 0
 	// B3b: compare every eligible platform top against chest-top times.
 	BestPlateContactTime = 2
 	if Sonec.State.Stand = FALSE and Sonec.State.Fall = TRUE
@@ -1013,6 +1017,8 @@ function SonecCollidePlate(Sonec ref as TSonec,PlateList ref as TPlateList,Chest
 				ContactTime = SonecPlateTopContactTime(Sonec,PlateList,i)
 				if ContactTime >= 0 and ContactTime < BestPlateContactTime
 					BestPlateContactTime = ContactTime
+					BestPlateIndex = i
+					BestPlateY = PlateList.Plate[i].ObjectData.Position.y
 				endif
 			endif
 		next i
@@ -1025,20 +1031,24 @@ function SonecCollidePlate(Sonec ref as TSonec,PlateList ref as TPlateList,Chest
 		PassPlateIndex = ChestList.Chest[Sonec.PassThroughChestIndex].CollisionData.Index
 	endif
 		
-	// B3a: choose the earliest relative platform-top candidate at contact X.
+	// B3d: reuse the same platform candidate for classification and landing.
+	// If the chest sweep introduced a new pass-through plate, recompute only
+	// for that changed eligibility set rather than accepting a stale candidate.
 	if Sonec.State.Stand = FALSE and Sonec.State.Fall = TRUE
-		BestPlateIndex = -1
-		BestContactTime = 2
-		for i = 0 to PlateList.Plate.Length
-			if i <> PassPlateIndex and PlateList.Plate[i].Enabled = TRUE
-				ContactTime = SonecPlateTopContactTime(Sonec,PlateList,i)
-				if ContactTime >= 0 and ContactTime < BestContactTime
-					BestPlateIndex = i
-					BestContactTime = ContactTime
-					BestPlateY = PlateList.Plate[i].ObjectData.Position.y
+		if PassPlateIndex <> InitialPassPlateIndex
+			BestPlateIndex = -1
+			BestPlateContactTime = 2
+			for i = 0 to PlateList.Plate.Length
+				if i <> PassPlateIndex and PlateList.Plate[i].Enabled = TRUE
+					ContactTime = SonecPlateTopContactTime(Sonec,PlateList,i)
+					if ContactTime >= 0 and ContactTime < BestPlateContactTime
+						BestPlateContactTime = ContactTime
+						BestPlateIndex = i
+						BestPlateY = PlateList.Plate[i].ObjectData.Position.y
+					endif
 				endif
-			endif
-		next i
+			next i
+		endif
 		if BestPlateIndex >= 0
 			Sonec.ObjectData.Position.y = BestPlateY - Sonec.ObjectData.Size.Height*0.5
 			Sonec.CollisionData.Position.x = Sonec.ObjectData.Position.x - PlateList.Plate[BestPlateIndex].ObjectData.Position.x
