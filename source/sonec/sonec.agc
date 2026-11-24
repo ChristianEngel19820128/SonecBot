@@ -2,6 +2,18 @@
 // Keep these values aligned with the locally tested K1d enemy-bullet geometry.
 #constant SONEC_DUCK_SECOND_CIRCLE_Y 10
 #constant SONEC_CHEST_CONTACT_EPSILON 0.5
+#constant SONEC_CHEST_SWEEP_EPSILON 0.01
+#constant SONEC_CHEST_SWEEP_ITERATIONS 18
+#constant SONEC_COUNTERSTEER_FACTOR 1.5
+#constant SONEC_GROUND_COAST_FACTOR 0.75
+#constant SONEC_AIR_COAST_FACTOR 0.1
+#constant SONEC_COAST_ZERO_SPEED 0.25
+#constant SONEC_BALANCE_X_STEP 0.5
+#constant SONEC_HOVER_AIR_DAMPING 0.20
+#constant SONEC_MAX_GROUND_SPEED 5
+#constant SONEC_MAX_VERTICAL_SPEED 8
+#constant SONEC_GROUND_ACCELERATION 0.005
+#constant SONEC_VERTICAL_ACCELERATION 0.01
 
 function SonecHitCircleRadius(Sonec ref as TSonec)
     local Radius as float
@@ -126,13 +138,17 @@ function SonecInit(Sonec ref as TSonec,ProtoSonec ref as TProtoSonec,World ref a
 	Sonec.CollisionMoveStart = Sonec.ObjectData.Position
 	Sonec.CollisionMoveEnd = Sonec.ObjectData.Position
 	Sonec.PassThroughChestIndex = -1
+	Sonec.LinkedPlateIndex = -1
+	Sonec.BlockedChestIndex = -1
+	Sonec.BlockedChestSide = 0
+	Sonec.BlockedChestOffsetX = 0
 	
-	Sonec.ObjectData.MoveSpeedMax.x = 5
-	Sonec.ObjectData.MoveSpeedMax.y = 8
+	Sonec.ObjectData.MoveSpeedMax.x = SONEC_MAX_GROUND_SPEED
+	Sonec.ObjectData.MoveSpeedMax.y = SONEC_MAX_VERTICAL_SPEED
 	Sonec.ObjectData.MoveSpeed.x = 0
 	Sonec.ObjectData.MoveSpeed.y = 0
-	Sonec.ObjectData.MoveAcceleration.x = 0.005
-	Sonec.ObjectData.MoveAcceleration.y = 0.01
+	Sonec.ObjectData.MoveAcceleration.x = SONEC_GROUND_ACCELERATION
+	Sonec.ObjectData.MoveAcceleration.y = SONEC_VERTICAL_ACCELERATION
 	
 	Sonec.ObjectData.AutoSpeed.x = 0
 	Sonec.ObjectData.AutoSpeed.y = 0
@@ -812,6 +828,17 @@ function SonecCollidePlate(Sonec ref as TSonec,PlateList ref as TPlateList,Chest
 	
 	
 	PlateIndex = -1
+	// The association survives a jump and normal falling; only actual
+	// jetpack flight ignores it when finding solid chests.
+	if Sonec.LinkedPlateIndex >= 0
+		if Sonec.LinkedPlateIndex > PlateList.Plate.Length
+			Sonec.LinkedPlateIndex = -1
+		else
+			if PlateList.Plate[Sonec.LinkedPlateIndex].Enabled = FALSE
+				Sonec.LinkedPlateIndex = -1
+			endif
+		endif
+	endif
 	PassPlateIndex = -1
 	PassIndex = Sonec.PassThroughChestIndex
 	if PassIndex >= 0
@@ -872,7 +899,7 @@ function SonecCollidePlate(Sonec ref as TSonec,PlateList ref as TPlateList,Chest
 	endif
 	
 	// Classify the first side/top/underside contact before chest landing.
-	SideHitIndex = SonecCollideChestVertical(Sonec,ChestList,PlateList,PlateIndex,World)
+	SideHitIndex = SonecCollideChestSideContacts(Sonec,ChestList,PlateList,PlateIndex,World)
 	SonecCollideChestHorizontal(Sonec,ChestList,World,SideHitIndex)
 	if Sonec.PassThroughChestIndex >= 0
 		PassPlateIndex = ChestList.Chest[Sonec.PassThroughChestIndex].CollisionData.Index
@@ -893,6 +920,7 @@ function SonecCollidePlate(Sonec ref as TSonec,PlateList ref as TPlateList,Chest
 									Sonec.State.Stand = TRUE
 									Sonec.CollisionData.ListType = TYPEPLATE
 									Sonec.CollisionData.Index = i
+									Sonec.LinkedPlateIndex = i
 									Sonec.ObjectData.MoveSpeed.y = 0
 									SpritePositionCalc(Sonec.SpriteData.Position,Sonec.ObjectData.Position,World.Position)
 								endif
@@ -967,178 +995,326 @@ endfunction Value
 // 
 //----------------------------------------------------------------------
 
-function SonecCollideChestVertical(Sonec ref as TSonec,ChestList ref as TChestList,PlateList ref as TPlateList,Index as integer,World ref as TWorld)
-	local i as integer
-	local HalfWidth as float
-	local HalfHeight as float
-	local PlayerStepX as float
-	local PlayerStepY as float
-	local RelativeStepX as float
-	local RelativeStepY as float
-	local StartLeft as float
-	local StartRight as float
-	local StartTop as float
-	local StartBottom as float
+// Keep the platform association after jumping or leaving an edge.
+// Jetpack flight intentionally sees every active chest.
+function SonecChestRelevant(Sonec ref as TSonec,ChestList ref as TChestList,ChestIndex as integer)
+	local Relevant as integer
+	Relevant = FALSE
+	if ChestIndex >= 0 and ChestIndex <= ChestList.Chest.Length
+		if ChestList.Chest[ChestIndex].Enabled = TRUE
+			if Sonec.State.Fly = TRUE
+				Relevant = TRUE
+			else
+				if Sonec.LinkedPlateIndex >= 0 and ChestList.Chest[ChestIndex].CollisionData.Index = Sonec.LinkedPlateIndex
+					Relevant = TRUE
+				endif
+			endif
+		endif
+	endif
+endfunction Relevant
+
+// The wall remembered on the previous frame limits horizontal thrust before
+// SonecMove integrates it. Reverse direction and vertical clearance remain free.
+function SonecMoveLimitChestWall(Sonec ref as TSonec,ChestList ref as TChestList)
+	local WallIndex as integer
+	local Radius as float
+	local CircleIndex as integer
+	local CircleY as float
+	local ChestTop as float
+	local ChestBottom as float
+	local HeightOverlap as integer
+	local ContactValid as integer
+	local WallX as float
+
+	WallIndex = Sonec.BlockedChestIndex
+	ContactValid = FALSE
+	if WallIndex >= 0
+		if SonecChestRelevant(Sonec,ChestList,WallIndex) = TRUE and Sonec.PassThroughChestIndex <> WallIndex
+			Radius = SonecHitCircleRadius(Sonec)
+			ChestTop = ChestList.Chest[WallIndex].ObjectData.Position.y
+			ChestBottom = ChestTop + ChestList.Chest[WallIndex].ObjectData.Size.Height
+			HeightOverlap = FALSE
+			for CircleIndex = 0 to 1
+				CircleY = SonecHitCircleY(Sonec,CircleIndex)
+				if CircleY + Radius > ChestTop and CircleY - Radius < ChestBottom
+					HeightOverlap = TRUE
+				endif
+			next CircleIndex
+
+			if HeightOverlap = TRUE
+				if Sonec.BlockedChestSide = 1
+					WallX = ChestList.Chest[WallIndex].ObjectData.Position.x + Sonec.BlockedChestOffsetX
+					if Sonec.ObjectData.Position.x <= WallX + SONEC_CHEST_CONTACT_EPSILON and Sonec.ObjectData.Position.x >= WallX - SONEC_CHEST_CONTACT_EPSILON
+						ContactValid = TRUE
+						if Sonec.ObjectData.MoveSpeed.x > 0
+							Sonec.ObjectData.MoveSpeed.x = 0
+						endif
+					endif
+				endif
+				if Sonec.BlockedChestSide = -1
+					WallX = ChestList.Chest[WallIndex].ObjectData.Position.x + ChestList.Chest[WallIndex].ObjectData.Size.Width + Sonec.BlockedChestOffsetX
+					if Sonec.ObjectData.Position.x <= WallX + SONEC_CHEST_CONTACT_EPSILON and Sonec.ObjectData.Position.x >= WallX - SONEC_CHEST_CONTACT_EPSILON
+						ContactValid = TRUE
+						if Sonec.ObjectData.MoveSpeed.x < 0
+							Sonec.ObjectData.MoveSpeed.x = 0
+						endif
+					endif
+				endif
+			endif
+		endif
+	endif
+	if ContactValid = FALSE
+		Sonec.BlockedChestIndex = -1
+		Sonec.BlockedChestSide = 0
+		Sonec.BlockedChestOffsetX = 0
+	endif
+endfunction
+
+// Squared distance from a moving body-circle center to a chest rectangle.
+// No square root: used for both rounded corners and straight side faces.
+function SonecChestCircleDistanceSq(CircleX as float,CircleY as float,Width as float,Height as float)
+	local DistX as float
+	local DistY as float
+	local DistanceSq as float
+	DistX = 0
+	DistY = 0
+	if CircleX < 0 then DistX = CircleX
+	if CircleX > Width then DistX = CircleX - Width
+	if CircleY < 0 then DistY = CircleY
+	if CircleY > Height then DistY = CircleY - Height
+	DistanceSq = DistX*DistX + DistY*DistY
+endfunction DistanceSq
+
+// Continuous sweep of a circle against a moving chest (in chest coordinates).
+// Expanded AABB is only a broad phase; rounded corners use the actual circle.
+// Returns the FIRST hit time in [0,1], or -1 for no contact.
+function SonecChestCircleHitTime(StartX as float,StartY as float,DeltaX as float,DeltaY as float,Width as float,Height as float,Radius as float)
 	local EnterX as float
 	local ExitX as float
 	local EnterY as float
 	local ExitY as float
 	local EnterTime as float
 	local ExitTime as float
+	local SearchLow as float
+	local SearchHigh as float
+	local Third as float
+	local Mid as float
+	local NearestTime as float
+	local RadiusSq as float
+	local DistanceLeft as float
+	local DistanceRight as float
+	local HitTime as float
+	local i as integer
+
+	HitTime = -1
+	EnterX = -2
+	ExitX = 2
+	EnterY = -2
+	ExitY = 2
+
+	if DeltaX > 0
+		EnterX = (-Radius - StartX) / DeltaX
+		ExitX = (Width + Radius - StartX) / DeltaX
+	else
+		if DeltaX < 0
+			EnterX = (Width + Radius - StartX) / DeltaX
+			ExitX = (-Radius - StartX) / DeltaX
+		else
+			if StartX < -Radius or StartX > Width + Radius
+				ExitX = -3
+			endif
+		endif
+	endif
+
+	if DeltaY > 0
+		EnterY = (-Radius - StartY) / DeltaY
+		ExitY = (Height + Radius - StartY) / DeltaY
+	else
+		if DeltaY < 0
+			EnterY = (Height + Radius - StartY) / DeltaY
+			ExitY = (-Radius - StartY) / DeltaY
+		else
+			if StartY < -Radius or StartY > Height + Radius
+				ExitY = -3
+			endif
+		endif
+	endif
+
+	EnterTime = EnterX
+	if EnterY > EnterTime then EnterTime = EnterY
+	ExitTime = ExitX
+	if ExitY < ExitTime then ExitTime = ExitY
+	if EnterTime < 0 then EnterTime = 0
+	if ExitTime > 1 then ExitTime = 1
+
+	if EnterTime <= ExitTime
+		RadiusSq = Radius*Radius + SONEC_CHEST_SWEEP_EPSILON
+		SearchLow = EnterTime
+		SearchHigh = ExitTime
+		// Distance to a convex rectangle along a straight segment is convex.
+		for i = 1 to SONEC_CHEST_SWEEP_ITERATIONS
+			Third = (SearchHigh - SearchLow) / 3
+			DistanceLeft = SonecChestCircleDistanceSq(StartX + DeltaX*(SearchLow + Third),StartY + DeltaY*(SearchLow + Third),Width,Height)
+			DistanceRight = SonecChestCircleDistanceSq(StartX + DeltaX*(SearchHigh - Third),StartY + DeltaY*(SearchHigh - Third),Width,Height)
+			if DistanceLeft <= DistanceRight
+				SearchHigh = SearchHigh - Third
+			else
+				SearchLow = SearchLow + Third
+			endif
+		next i
+		NearestTime = (SearchLow + SearchHigh)*0.5
+		if SonecChestCircleDistanceSq(StartX + DeltaX*NearestTime,StartY + DeltaY*NearestTime,Width,Height) <= RadiusSq
+			if SonecChestCircleDistanceSq(StartX + DeltaX*EnterTime,StartY + DeltaY*EnterTime,Width,Height) <= RadiusSq
+				HitTime = EnterTime
+			else
+				SearchLow = EnterTime
+				SearchHigh = NearestTime
+				for i = 1 to SONEC_CHEST_SWEEP_ITERATIONS
+					Mid = (SearchLow + SearchHigh)*0.5
+					if SonecChestCircleDistanceSq(StartX + DeltaX*Mid,StartY + DeltaY*Mid,Width,Height) <= RadiusSq
+						SearchHigh = Mid
+					else
+						SearchLow = Mid
+					endif
+				next i
+				HitTime = SearchHigh
+			endif
+		endif
+	endif
+endfunction HitTime
+
+// Resolve a chest's FIRST body-circle contact, not its last-frame overlap.
+// The resulting X is clamped to Sonec's intended step (never thrown backwards).
+function SonecCollideChestSideContacts(Sonec ref as TSonec,ChestList ref as TChestList,PlateList ref as TPlateList,Index as integer,World ref as TWorld)
+	local i as integer
+	local CircleIndex as integer
+	local Radius as float
+	local PlayerStepX as float
+	local PlayerStepY as float
+	local RelativeStepX as float
+	local RelativeStepY as float
+	local StartX as float
+	local StartY as float
+	local CircleYShift as float
+	local HitTime as float
+	local ContactX as float
+	local ContactY as float
+	local ClosestX as float
+	local ClosestY as float
+	local NormalX as float
+	local NormalY as float
+	local CandidateX as float
 	local SideTime as float
 	local BottomTime as float
-	local CandidateX as float
 	local HitPositionX as float
-	local ContactSide as integer
-	local ContactFace as integer
+	local HitOffsetX as float
 	local HitIndex as integer
+	local HitSide as integer
 	local BottomIndex as integer
-	local HitCandidate as integer
 
-	HalfWidth = Sonec.ObjectData.Size.Width*0.5
-	HalfHeight = Sonec.ObjectData.Size.Height*0.5
+	Radius = SonecHitCircleRadius(Sonec)
 	PlayerStepX = Sonec.CollisionMoveEnd.x - Sonec.CollisionMoveStart.x
 	PlayerStepY = Sonec.CollisionMoveEnd.y - Sonec.CollisionMoveStart.y
-	SideTime = 2.0
-	BottomTime = 2.0
+	SideTime = 2
+	BottomTime = 2
 	HitIndex = -1
+	HitSide = 0
 	BottomIndex = -1
 
 	for i = 0 to ChestList.Chest.Length
-		if ChestList.Chest[i].Enabled = TRUE
-			// The supporting chest and an active passage from underneath
-			// never act as new side obstacles.
-			if (Sonec.State.Stand = FALSE or Sonec.CollisionData.ListType <> TYPECHEST or Sonec.CollisionData.Index <> i) and Sonec.PassThroughChestIndex <> i
+		if SonecChestRelevant(Sonec,ChestList,i) = TRUE and Sonec.PassThroughChestIndex <> i
+			// Do not sweep against the chest Sonec is already standing on.
+			if Sonec.State.Stand = FALSE or Sonec.CollisionData.ListType <> TYPECHEST or Sonec.CollisionData.Index <> i
 				RelativeStepX = PlayerStepX - (ChestList.Chest[i].ObjectData.Position.x - ChestList.Chest[i].CollisionMoveStart.x)
 				RelativeStepY = PlayerStepY - (ChestList.Chest[i].ObjectData.Position.y - ChestList.Chest[i].CollisionMoveStart.y)
-				StartLeft = Sonec.CollisionMoveStart.x - HalfWidth - ChestList.Chest[i].CollisionMoveStart.x
-				StartRight = Sonec.CollisionMoveStart.x + HalfWidth - ChestList.Chest[i].CollisionMoveStart.x
-				StartTop = Sonec.CollisionMoveStart.y - HalfHeight - ChestList.Chest[i].CollisionMoveStart.y
-				StartBottom = Sonec.CollisionMoveStart.y + HalfHeight - ChestList.Chest[i].CollisionMoveStart.y
+				StartX = Sonec.CollisionMoveStart.x - ChestList.Chest[i].CollisionMoveStart.x
+				for CircleIndex = 0 to 1
+					CircleYShift = SonecHitCircleY(Sonec,CircleIndex) - Sonec.ObjectData.Position.y
+					StartY = Sonec.CollisionMoveStart.y + CircleYShift - ChestList.Chest[i].CollisionMoveStart.y
+					HitTime = SonecChestCircleHitTime(StartX,StartY,RelativeStepX,RelativeStepY,ChestList.Chest[i].ObjectData.Size.Width,ChestList.Chest[i].ObjectData.Size.Height,Radius)
+					if HitTime >= 0
+						ContactX = StartX + RelativeStepX*HitTime
+						ContactY = StartY + RelativeStepY*HitTime
+						ClosestX = ContactX
+						ClosestY = ContactY
+						if ClosestX < 0 then ClosestX = 0
+						if ClosestX > ChestList.Chest[i].ObjectData.Size.Width then ClosestX = ChestList.Chest[i].ObjectData.Size.Width
+						if ClosestY < 0 then ClosestY = 0
+						if ClosestY > ChestList.Chest[i].ObjectData.Size.Height then ClosestY = ChestList.Chest[i].ObjectData.Size.Height
+						NormalX = ContactX - ClosestX
+						NormalY = ContactY - ClosestY
 
-				// Swept AABBs. Later entry axis identifies whether the first
-				// contact was a side, the top, or the passable underside.
-				EnterX = -2.0
-				ExitX = 2.0
-				ContactSide = 0
-				if RelativeStepX > 0
-					EnterX = -StartRight / RelativeStepX
-					ExitX = (ChestList.Chest[i].ObjectData.Size.Width - StartLeft) / RelativeStepX
-					ContactSide = 1
-				else
-					if RelativeStepX < 0
-						EnterX = (ChestList.Chest[i].ObjectData.Size.Width - StartLeft) / RelativeStepX
-						ExitX = -StartRight / RelativeStepX
-						ContactSide = -1
-					else
-						if StartRight <= 0 or StartLeft >= ChestList.Chest[i].ObjectData.Size.Width
-							ExitX = -3.0
+						// The permitted underside entry wins over a later side
+						// contact against the SAME chest during this frame.
+						if NormalY > 0 and abs(NormalY) > abs(NormalX) and PlayerStepY < 0 and RelativeStepY < 0
+							if HitTime < BottomTime
+								BottomTime = HitTime
+								BottomIndex = i
+							endif
 						endif
-					endif
-				endif
 
-				EnterY = -2.0
-				ExitY = 2.0
-				ContactFace = 0
-				if RelativeStepY > 0
-					EnterY = -StartBottom / RelativeStepY
-					ExitY = (ChestList.Chest[i].ObjectData.Size.Height - StartTop) / RelativeStepY
-					ContactFace = 1
-				else
-					if RelativeStepY < 0
-						EnterY = (ChestList.Chest[i].ObjectData.Size.Height - StartTop) / RelativeStepY
-						ExitY = -StartBottom / RelativeStepY
-						ContactFace = -1
-					else
-						if StartBottom <= 0 or StartTop >= ChestList.Chest[i].ObjectData.Size.Height
-							ExitY = -3.0
-						endif
-					endif
-				endif
-
-				EnterTime = EnterX
-				if EnterY > EnterTime
-					EnterTime = EnterY
-				endif
-				ExitTime = ExitX
-				if ExitY < ExitTime
-					ExitTime = ExitY
-				endif
-
-				if EnterTime <= ExitTime and ExitTime >= 0 and EnterTime <= 1
-					// A tiny existing wall overlap can be corrected, but never
-					// eject Sonec from a deeply overlapping moving chest.
-					if EnterTime < 0 and EnterY < 0 and ContactSide <> 0
-						if ContactSide = 1 and StartRight > 0 and StartRight <= SONEC_CHEST_CONTACT_EPSILON
-							EnterTime = 0
-							EnterX = 0
-						endif
-						if ContactSide = -1 and StartLeft < ChestList.Chest[i].ObjectData.Size.Width and StartLeft >= ChestList.Chest[i].ObjectData.Size.Width - SONEC_CHEST_CONTACT_EPSILON
-							EnterTime = 0
-							EnterX = 0
-						endif
-					endif
-
-					// Only Sonec's upward movement initiates an underside pass.
-					if ContactFace = -1 and EnterY > EnterX and EnterY >= 0 and EnterY <= 1 and PlayerStepY < 0
-						if EnterY < BottomTime
-							BottomTime = EnterY
-							BottomIndex = i
-						endif
-					endif
-
-					HitCandidate = FALSE
-					if EnterTime >= 0 and EnterX >= EnterY and EnterX <= 1
-						if ContactSide = 1 and PlayerStepX > 0 and RelativeStepX > 0
-							CandidateX = ChestList.Chest[i].ObjectData.Position.x - HalfWidth
-							// Preserve the left world boundary and do not force
-							// Sonec backwards merely because a chest moves.
-							if CandidateX >= HalfWidth
-								if CandidateX < Sonec.CollisionMoveStart.x
+						// A horizontal collision requires Sonec to be moving
+						// towards the wall himself, not merely a drifting chest.
+						if abs(NormalX) >= abs(NormalY) and NormalX <> 0 and HitTime < SideTime
+							if NormalX < 0 and PlayerStepX > 0 and RelativeStepX > 0
+								CandidateX = ChestList.Chest[i].ObjectData.Position.x + NormalX
+								// Existing world-left exception: a chest may drift
+								// through Sonec there instead of shoving him outside.
+								if CandidateX >= Sonec.ObjectData.Size.Width*0.5
+									if CandidateX < Sonec.CollisionMoveStart.x
+										CandidateX = Sonec.CollisionMoveStart.x
+									endif
+									if CandidateX <= Sonec.CollisionMoveEnd.x
+										SideTime = HitTime
+										HitIndex = i
+										HitPositionX = CandidateX
+										HitOffsetX = NormalX
+										HitSide = 1
+									endif
+								endif
+							endif
+							if NormalX > 0 and PlayerStepX < 0 and RelativeStepX < 0
+								CandidateX = ChestList.Chest[i].ObjectData.Position.x + ChestList.Chest[i].ObjectData.Size.Width + NormalX
+								if CandidateX > Sonec.CollisionMoveStart.x
 									CandidateX = Sonec.CollisionMoveStart.x
 								endif
-								if CandidateX <= Sonec.CollisionMoveEnd.x
-									HitCandidate = TRUE
+								if CandidateX >= Sonec.CollisionMoveEnd.x
+									SideTime = HitTime
+									HitIndex = i
+									HitPositionX = CandidateX
+									HitOffsetX = NormalX
+									HitSide = -1
 								endif
 							endif
 						endif
-						if ContactSide = -1 and PlayerStepX < 0 and RelativeStepX < 0
-							CandidateX = ChestList.Chest[i].ObjectData.Position.x + ChestList.Chest[i].ObjectData.Size.Width + HalfWidth
-							if CandidateX > Sonec.CollisionMoveStart.x
-								CandidateX = Sonec.CollisionMoveStart.x
-							endif
-							if CandidateX >= Sonec.CollisionMoveEnd.x
-								HitCandidate = TRUE
-							endif
-						endif
 					endif
-
-					if HitCandidate = TRUE and EnterTime < SideTime
-						SideTime = EnterTime
-						HitIndex = i
-						HitPositionX = CandidateX
-					endif
-				endif
+				next CircleIndex
 			endif
 		endif
 	next i
 
-	// Retain the permission while Sonec rises and falls within the chest;
-	// its supporting plate must not catch him on the way back down.
+	// A bottom-first traversal must keep this particular chest and its
+	// supporting plate nonsolid until Sonec has completely exited.
 	if BottomIndex >= 0 and Sonec.PassThroughChestIndex < 0 and BottomTime <= SideTime
 		Sonec.PassThroughChestIndex = BottomIndex
+		if HitIndex = BottomIndex
+			HitIndex = -1
+		endif
 	endif
 
 	if HitIndex >= 0
 		Sonec.ObjectData.Position.x = HitPositionX
 		Sonec.ObjectData.MoveSpeed.x = 0
-		Sonec.State.Move = FALSE
+		Sonec.BlockedChestIndex = HitIndex
+		Sonec.BlockedChestSide = HitSide
+		Sonec.BlockedChestOffsetX = HitOffsetX
 		if Sonec.BalanceActive = TRUE
 			Sonec.BalanceActive = FALSE
 			Sonec.AnimationData.RepeatAnimation = TRUE
 			Sonec.AnimationData.Finished = FALSE
 		endif
-		// Keep standing offsets in sync with the corrected X.
+		// The support offset is part of the position; without updating it,
+		// a standing Sonec can be snapped back next frame.
 		if Sonec.State.Stand = TRUE
 			if Sonec.CollisionData.ListType = TYPEPLATE and Index >= 0
 				Sonec.CollisionData.Position.x = Sonec.ObjectData.Position.x - PlateList.Plate[Index].ObjectData.Position.x
@@ -1149,7 +1325,7 @@ function SonecCollideChestVertical(Sonec ref as TSonec,ChestList ref as TChestLi
 		endif
 		SpritePositionCalc(Sonec.SpriteData.Position,Sonec.ObjectData.Position,World.Position)
 	endif
-endfunction HitIndex
+endfunction HitIndex HitIndex
 
 //----------------------------------------------------------------------
 // 
@@ -1212,7 +1388,7 @@ function SonecCollideChestHorizontal(Sonec ref as TSonec,ChestList ref as TChest
 	// Only the chest hit from the side is excluded from landing.
 	if Sonec.State.Stand = FALSE and Sonec.State.Fall = TRUE
 		for i = 0 to ChestList.Chest.Length
-            if ChestList.Chest[i].Enabled = TRUE and Sonec.PassThroughChestIndex <> i and SideHitIndex <> i
+            if SonecChestRelevant(Sonec,ChestList,i) = TRUE and Sonec.PassThroughChestIndex <> i and SideHitIndex <> i
 			if Sonec.ObjectData.Position.x > ChestList.Chest[i].ObjectData.Position.x
 				if Sonec.ObjectData.Position.x < ChestList.Chest[i].ObjectData.Position.x + ChestList.Chest[i].ObjectData.Size.Width
 					if Sonec.ObjectData.Position.y + Sonec.ObjectData.Size.Height*0.5 > ChestList.Chest[i].ObjectData.Position.y
@@ -1224,6 +1400,7 @@ function SonecCollideChestHorizontal(Sonec ref as TSonec,ChestList ref as TChest
 							Sonec.State.Stand = TRUE
 							Sonec.CollisionData.ListType = TYPECHEST
 							Sonec.CollisionData.Index = i
+							Sonec.LinkedPlateIndex = ChestList.Chest[i].CollisionData.Index
 							Sonec.ObjectData.MoveSpeed.y = 0
 							// Only a slow landing close to an edge needs a short balancing step.
 							Sonec.BalanceActive = FALSE
@@ -1261,85 +1438,95 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function SonecMove(Sonec ref as TSonec,World ref as TWorld,Screen as TSize,Now as integer)
-	
+// Keep movement forces independent from collision resolution and input binding.
+function SonecMoveVerticalSpeed(Sonec ref as TSonec)
 	local a as float
+	if Sonec.State.Jump = TRUE
+		
+		Sonec.State.Jump = FALSE
+		Sonec.ObjectData.MoveSpeed.y = -Sonec.ObjectData.MoveSpeedMax.y
+		
+	endif
+	
+	if Sonec.State.Fly = TRUE
+		Sonec.ObjectData.MoveSpeed.y = Sonec.ObjectData.MoveSpeed.y - Sonec.ObjectData.MoveAcceleration.y * Sonec.ObjectData.MoveTimer.CalcRange
+		if Sonec.ObjectData.MoveSpeed.y <> 0
+			a = Sonec.ObjectData.MoveSpeed.y/abs(Sonec.ObjectData.MoveSpeed.y)	
+			if abs(Sonec.ObjectData.MoveSpeed.y) > Sonec.ObjectData.MoveSpeedMax.y
+				Sonec.ObjectData.MoveSpeed.y = Sonec.ObjectData.MoveSpeedMax.y * a
+			endif
+		endif
+	else
+		if Sonec.State.Fall = TRUE
+			Sonec.ObjectData.MoveSpeed.y = Sonec.ObjectData.MoveSpeed.y + FALLACCELERATION * Sonec.ObjectData.MoveTimer.CalcRange
+		endif
+	endif
+	
+endfunction
+
+function SonecMoveHorizontalSpeed(Sonec ref as TSonec)
 	local acc as float
+	if Sonec.State.Move = TRUE
+		// Countersteering on a chest brakes harder than releasing the direction.
+		// Keep airborne movement and normal acceleration unchanged.
+		acc = 1.0
+		if Sonec.State.Stand = TRUE and Sonec.CollisionData.ListType = TYPECHEST
+			if Sonec.State.Alignment = MOVELEFT and Sonec.ObjectData.MoveSpeed.x > 0
+				acc = SONEC_COUNTERSTEER_FACTOR
+			endif
+			if Sonec.State.Alignment = MOVERIGHT and Sonec.ObjectData.MoveSpeed.x < 0
+				acc = SONEC_COUNTERSTEER_FACTOR
+			endif
+		endif
+		if Sonec.State.Alignment = MOVELEFT
+			Sonec.ObjectData.MoveSpeed.x = Sonec.ObjectData.MoveSpeed.x - acc * Sonec.ObjectData.MoveAcceleration.x * Sonec.ObjectData.MoveTimer.CalcRange
+		else
+			Sonec.ObjectData.MoveSpeed.x = Sonec.ObjectData.MoveSpeed.x + acc * Sonec.ObjectData.MoveAcceleration.x * Sonec.ObjectData.MoveTimer.CalcRange
+		endif
+		// Limit powered ground running only; leave airborne thrust and recoil untouched.
+		if Sonec.State.Stand = TRUE
+			if Sonec.ObjectData.MoveSpeed.x > Sonec.ObjectData.MoveSpeedMax.x
+				Sonec.ObjectData.MoveSpeed.x = Sonec.ObjectData.MoveSpeedMax.x
+			endif
+			if Sonec.ObjectData.MoveSpeed.x < -Sonec.ObjectData.MoveSpeedMax.x
+				Sonec.ObjectData.MoveSpeed.x = -Sonec.ObjectData.MoveSpeedMax.x
+			endif
+		endif
+	else
+		if Sonec.State.Stand = TRUE
+			acc = SONEC_GROUND_COAST_FACTOR
+		else
+			acc = SONEC_AIR_COAST_FACTOR
+		endif
+		if abs(Sonec.ObjectData.MoveSpeed.x) > SONEC_COAST_ZERO_SPEED
+			if Sonec.ObjectData.MoveSpeed.x < 0
+				Sonec.ObjectData.MoveSpeed.x = Sonec.ObjectData.MoveSpeed.x + acc * Sonec.ObjectData.MoveAcceleration.x * Sonec.ObjectData.MoveTimer.CalcRange
+				if Sonec.State.Stand = TRUE and Sonec.ObjectData.MoveSpeed.x > 0
+					Sonec.ObjectData.MoveSpeed.x = 0
+				endif
+			else
+				Sonec.ObjectData.MoveSpeed.x = Sonec.ObjectData.MoveSpeed.x - acc * Sonec.ObjectData.MoveAcceleration.x * Sonec.ObjectData.MoveTimer.CalcRange
+				if Sonec.State.Stand = TRUE and Sonec.ObjectData.MoveSpeed.x < 0
+					Sonec.ObjectData.MoveSpeed.x = 0
+				endif
+			endif
+		else
+			Sonec.ObjectData.MoveSpeed.x = 0
+		endif
+	endif
+		
+endfunction
+
+function SonecMove(Sonec ref as TSonec,ChestList ref as TChestList,World ref as TWorld,Screen as TSize,Now as integer)
 	
 	Sonec.CollisionMoveStart = Sonec.ObjectData.Position
 
 	if TimeGet(Sonec.ObjectData.MoveTimer,Now) > 0
 		
-		if Sonec.State.Jump = TRUE
-			
-			Sonec.State.Jump = FALSE
-			Sonec.ObjectData.MoveSpeed.y = -Sonec.ObjectData.MoveSpeedMax.y
-			
-		endif
-		
-		if Sonec.State.Fly = TRUE
-			Sonec.ObjectData.MoveSpeed.y = Sonec.ObjectData.MoveSpeed.y - Sonec.ObjectData.MoveAcceleration.y * Sonec.ObjectData.MoveTimer.CalcRange
-			if Sonec.ObjectData.MoveSpeed.y <> 0
-				a = Sonec.ObjectData.MoveSpeed.y/abs(Sonec.ObjectData.MoveSpeed.y)	
-				if abs(Sonec.ObjectData.MoveSpeed.y) > Sonec.ObjectData.MoveSpeedMax.y
-					Sonec.ObjectData.MoveSpeed.y = Sonec.ObjectData.MoveSpeedMax.y * a
-				endif
-			endif
-		else
-			if Sonec.State.Fall = TRUE
-				Sonec.ObjectData.MoveSpeed.y = Sonec.ObjectData.MoveSpeed.y + FALLACCELERATION * Sonec.ObjectData.MoveTimer.CalcRange
-			endif
-		endif
-		
-		if Sonec.State.Move = TRUE
-			// Countersteering on a chest brakes harder than releasing the direction.
-			// Keep airborne movement and normal acceleration unchanged.
-			acc = 1.0
-			if Sonec.State.Stand = TRUE and Sonec.CollisionData.ListType = TYPECHEST
-				if Sonec.State.Alignment = MOVELEFT and Sonec.ObjectData.MoveSpeed.x > 0
-					acc = 1.5
-				endif
-				if Sonec.State.Alignment = MOVERIGHT and Sonec.ObjectData.MoveSpeed.x < 0
-					acc = 1.5
-				endif
-			endif
-			if Sonec.State.Alignment = MOVELEFT
-				Sonec.ObjectData.MoveSpeed.x = Sonec.ObjectData.MoveSpeed.x - acc * Sonec.ObjectData.MoveAcceleration.x * Sonec.ObjectData.MoveTimer.CalcRange
-			else
-				Sonec.ObjectData.MoveSpeed.x = Sonec.ObjectData.MoveSpeed.x + acc * Sonec.ObjectData.MoveAcceleration.x * Sonec.ObjectData.MoveTimer.CalcRange
-			endif
-			// Limit powered ground running only; leave airborne thrust and recoil untouched.
-			if Sonec.State.Stand = TRUE
-				if Sonec.ObjectData.MoveSpeed.x > Sonec.ObjectData.MoveSpeedMax.x
-					Sonec.ObjectData.MoveSpeed.x = Sonec.ObjectData.MoveSpeedMax.x
-				endif
-				if Sonec.ObjectData.MoveSpeed.x < -Sonec.ObjectData.MoveSpeedMax.x
-					Sonec.ObjectData.MoveSpeed.x = -Sonec.ObjectData.MoveSpeedMax.x
-				endif
-			endif
-		else
-			if Sonec.State.Stand = TRUE
-				acc = 0.75
-			else
-				acc = 0.1
-			endif
-			if abs(Sonec.ObjectData.MoveSpeed.x) > 0.25
-				if Sonec.ObjectData.MoveSpeed.x < 0
-					Sonec.ObjectData.MoveSpeed.x = Sonec.ObjectData.MoveSpeed.x + acc * Sonec.ObjectData.MoveAcceleration.x * Sonec.ObjectData.MoveTimer.CalcRange
-					if Sonec.State.Stand = TRUE and Sonec.ObjectData.MoveSpeed.x > 0
-						Sonec.ObjectData.MoveSpeed.x = 0
-					endif
-				else
-					Sonec.ObjectData.MoveSpeed.x = Sonec.ObjectData.MoveSpeed.x - acc * Sonec.ObjectData.MoveAcceleration.x * Sonec.ObjectData.MoveTimer.CalcRange
-					if Sonec.State.Stand = TRUE and Sonec.ObjectData.MoveSpeed.x < 0
-						Sonec.ObjectData.MoveSpeed.x = 0
-					endif
-				endif
-			else
-				Sonec.ObjectData.MoveSpeed.x = 0
-			endif
-		endif
-			
+		SonecMoveVerticalSpeed(Sonec)
+		SonecMoveHorizontalSpeed(Sonec)
+		SonecMoveLimitChestWall(Sonec,ChestList)
+
 		Sonec.ObjectData.Position.x = Sonec.ObjectData.Position.x + Sonec.ObjectData.MoveSpeed.x
 		Sonec.ObjectData.Position.y = Sonec.ObjectData.Position.y + Sonec.ObjectData.MoveSpeed.y
 
@@ -1351,13 +1538,13 @@ function SonecMove(Sonec ref as TSonec,World ref as TWorld,Screen as TSize,Now a
 				Sonec.AnimationData.Finished = FALSE
 			else
 				if Sonec.ObjectData.Position.x < Sonec.BalanceTargetX
-					Sonec.ObjectData.Position.x = Sonec.ObjectData.Position.x + 0.5
+					Sonec.ObjectData.Position.x = Sonec.ObjectData.Position.x + SONEC_BALANCE_X_STEP
 					if Sonec.ObjectData.Position.x > Sonec.BalanceTargetX
 						Sonec.ObjectData.Position.x = Sonec.BalanceTargetX
 					endif
 				endif
 				if Sonec.ObjectData.Position.x > Sonec.BalanceTargetX
-					Sonec.ObjectData.Position.x = Sonec.ObjectData.Position.x - 0.5
+					Sonec.ObjectData.Position.x = Sonec.ObjectData.Position.x - SONEC_BALANCE_X_STEP
 					if Sonec.ObjectData.Position.x < Sonec.BalanceTargetX
 						Sonec.ObjectData.Position.x = Sonec.BalanceTargetX
 					endif
@@ -1372,7 +1559,7 @@ function SonecMove(Sonec ref as TSonec,World ref as TWorld,Screen as TSize,Now a
 		
 		// Active jetpack flight takes priority over the Hover air brake.
 		if Sonec.State.Hover = TRUE and Sonec.State.Fly = FALSE
-			Sonec.ObjectData.MoveSpeed.y = Sonec.ObjectData.MoveSpeed.y * 0.20
+			Sonec.ObjectData.MoveSpeed.y = Sonec.ObjectData.MoveSpeed.y * SONEC_HOVER_AIR_DAMPING
 		endif
 		
 		// Allow the first descent from off-screen; restore the top boundary afterwards.

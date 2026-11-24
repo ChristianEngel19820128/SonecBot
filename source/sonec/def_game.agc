@@ -526,6 +526,10 @@ endtype
 
 type TSonec
 	PassThroughChestIndex as integer
+	LinkedPlateIndex as integer
+	BlockedChestIndex as integer
+	BlockedChestSide as integer
+	BlockedChestOffsetX as float
 	CollisionMoveStart as TPosition
 	CollisionMoveEnd as TPosition
     SpawnEntering as integer

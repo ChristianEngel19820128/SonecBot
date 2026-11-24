@@ -230,7 +230,7 @@ function GameDo(Game ref as TGame,Now as integer)
 		endif
 	endif
 	CloudMoveAll(Game.CloudList,Game.World,Now)
-	SonecMove(Game.Sonec,Game.World,Game.Screen,Now)
+	SonecMove(Game.Sonec,Game.ChestList,Game.World,Game.Screen,Now)
 	
 	
 	if TowerCountAll(Game.TowerList) < 15
