@@ -1076,6 +1076,14 @@ function SonecChestRelevant(Sonec ref as TSonec,ChestList ref as TChestList,Ches
 			else
 				if Sonec.LinkedPlateIndex >= 0 and ChestList.Chest[ChestIndex].CollisionData.Index = Sonec.LinkedPlateIndex
 					Relevant = TRUE
+				else
+					// A foreign chest can be reached while falling from above.
+					// Keep it intangible when entering from underneath.
+					if Sonec.State.Fall = TRUE
+						if Sonec.CollisionMoveStart.y + Sonec.ObjectData.Size.Height*0.5 <= ChestList.Chest[ChestIndex].CollisionMoveStart.y
+							Relevant = TRUE
+						endif
+					endif
 				endif
 			endif
 		endif
