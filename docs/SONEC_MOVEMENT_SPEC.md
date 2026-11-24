@@ -1,7 +1,7 @@
 # SonecBot – Spezifikation der Bewegungs- und Kollisionsphysik
 
 **Stand:** 24. November 2026  
-**Status:** Fachlich freigegebenes Ziel für die erste Implementierung (Phasen A–G); Umsetzung schrittweise auf `develop`, mit lokalem Entwicklertest nach jedem Schritt  
+**Status:** Fachlich freigegebenes Ziel für die erste Implementierung (Phasen A–G); Umsetzung in zusammenhängenden Arbeitspaketen auf `develop`, mit statischer Prüfung und gebündelten lokalen Entwicklertests  
 **Zweig:** `develop`  
 **Geltungsbereich:** Sonec, Plattformen, Kisten, Weltgrenzen, Sprung und Jetpack
 
@@ -148,7 +148,17 @@ Die Reihenfolge ist vorläufig; tatsächliche technische Abhängigkeiten können
 - Jetpack nach Energieaufnahme bei gehaltenem Kreuz nach oben.
 - Unveränderte Schadens-Hitboxen, Waffenfunktionen und bestehende Steuerung.
 
-**AGK-Kompilierung und Laufzeittests erfolgen lokal durch den Entwickler. Die fachliche Freigabe für die schrittweise Erstimplementierung A–G liegt vor; jede spätere Regeländerung wird vor der betreffenden Umsetzung hier nachgeführt.**
+**AGK-Kompilierung und Laufzeittests erfolgen lokal durch den Entwickler. Die fachliche Freigabe für die Erstimplementierung A–G liegt vor; jede spätere fachliche Regeländerung wird vor der betreffenden Umsetzung hier nachgeführt.**
+
+### Aktuell verbindlicher Arbeitsmodus (24.11.2026)
+
+- Zusammenhängende technische Teilschritte innerhalb des vereinbarten Umfangs als sinnvolles Arbeitspaket umsetzen; Commits nach nachvollziehbaren technischen Grenzen, betroffene Dokumentation gemeinsam mit der Änderung aktualisieren.
+- Statische Quellprüfung während der Umsetzung; keine obligatorische lokale Kompilierung nach jedem vorbereitenden Teilschritt. AGK-Compile am sinnvollen Paketende bündeln, sofern kein früherer Test für die weitere Umsetzung erforderlich ist.
+- Funktionstests nur für aussagekräftige, tatsächlich prüfbare Verhaltensänderungen oder relevante Regressionen. Am Phasenende gemeinsam bewerten, ob ein eigenständiger Funktionstest sinnvoll ist; andernfalls den nächsten geeigneten Prüfpunkt festlegen.
+- Innerhalb des freigegebenen Pakets ohne weitere Zwischenfreigaben fortfahren. Neue Designentscheidungen oder wesentliche Umfangserweiterungen vorher abstimmen.
+- Implementierung, statische Prüfung, tatsächliche AGK-Kompilierung und funktionale Abnahme getrennt dokumentieren. Ausstehende Prüfungen nicht als bestanden behandeln.
+- Für Phase B gilt: B3h und die noch fehlende gemeinsame Kontaktauflösung, Restbewegung und Ablösung der konkurrierenden Altpfade bilden das nächste Paket. Keine isolierte B3h-Kompilierung erforderlich.
+- Die folgenden historischen Abschnitte dokumentieren damalige Entscheidungen, Implementierungen und Testergebnisse. Frühere Anweisungen zu Einzel-Compiles, Zwischenfreigaben oder Teststopps sind keine aktuellen Arbeitsaufträge; bei Widersprüchen gilt dieser Arbeitsmodus. Fachliche Regeln und historische Testevidenz bleiben unverändert. Allgemeine Repository-Regeln in AGENTS.md bleiben unverändert.
 
 ## 15. Start Phase A – Quellbefund und Abgrenzung (24.11.2026)
 
