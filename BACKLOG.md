@@ -70,6 +70,9 @@ Bomber, Flarak, hilfreicher Jumppod, Gefahren-/Erfahrungsgrundsystem, kleine Zie
 - **Soundloops:** Entwicklererfahrung zu MIDI-Ereignissen am Loop-Anfang und einer Pause am Ende; Werkzeuge, Export und Reproduzierbarkeit vor einer allgemeinen Empfehlung prüfen.
 - Knowledge-Base-Beiträge separat vereinbaren; Quellen/Revision, Bedingungen und Evidenzgrad erhalten.
 
+
+- **Silowrack als begehbare Stufe (Idee):** Sonec soll auf einem Silowrack landen können, ohne seitlich mit dem Wrack zu kollidieren. Zwei Landungshöhen sollen wie eine Treppe funktionieren; zunächst nur Landekontakte, keine horizontale Blockade. Später mit Tiefenebenen-/Swept-Collision-Regeln abstimmen, noch nicht implementieren.
+
 ## Pflege
 
 - Kurze Einträge, vorhandenen Themen zuordnen; keine Chatprotokolle anhängen.
