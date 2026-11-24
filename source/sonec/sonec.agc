@@ -877,6 +877,31 @@ endfunction
 // Phase A1: Legacy collision owner for platform support/landing and
 // chest-contact dispatch. This routine currently updates Stand/Fall,
 // CollisionData and LinkedPlateIndex; Phase E will unify those decisions.
+// B3a: pure swept platform-top candidate, including horizontal position at contact time.
+function SonecPlateTopContactTime(Sonec ref as TSonec,PlateList ref as TPlateList,PlateIndex as integer)
+	local StartFeetY as float
+	local EndFeetY as float
+	local RelativeStartY as float
+	local RelativeEndY as float
+	local ContactTime as float
+	local ContactX as float
+	local PlateContactX as float
+
+	ContactTime = -1
+	StartFeetY = Sonec.CollisionMoveStart.y + Sonec.ObjectData.Size.Height*0.5
+	EndFeetY = Sonec.CollisionMoveEnd.y + Sonec.ObjectData.Size.Height*0.5
+	RelativeStartY = StartFeetY - PlateList.Plate[PlateIndex].CollisionMoveStart.y
+	RelativeEndY = EndFeetY - PlateList.Plate[PlateIndex].ObjectData.Position.y
+	if RelativeEndY > RelativeStartY and RelativeStartY <= 0 and RelativeEndY >= 0
+		ContactTime = -RelativeStartY/(RelativeEndY-RelativeStartY)
+		ContactX = Sonec.CollisionMoveStart.x + (Sonec.CollisionMoveEnd.x-Sonec.CollisionMoveStart.x)*ContactTime
+		PlateContactX = PlateList.Plate[PlateIndex].CollisionMoveStart.x + (PlateList.Plate[PlateIndex].ObjectData.Position.x-PlateList.Plate[PlateIndex].CollisionMoveStart.x)*ContactTime
+		if ContactX <= PlateContactX or ContactX >= PlateContactX + PlateList.Plate[PlateIndex].ObjectData.Size.Width
+			ContactTime = -1
+		endif
+	endif
+endfunction ContactTime
+
 function SonecCollidePlate(Sonec ref as TSonec,PlateList ref as TPlateList,ChestList ref as TChestList,World ref as TWorld)
 	
 	local i as integer
@@ -986,30 +1011,17 @@ function SonecCollidePlate(Sonec ref as TSonec,PlateList ref as TPlateList,Chest
 		PassPlateIndex = ChestList.Chest[Sonec.PassThroughChestIndex].CollisionData.Index
 	endif
 		
-	// B2: Sweep Sonec's feet against each platform's moving top edge.
-	// Keep the legacy horizontal end-position test until a later step.
+	// B3a: choose the earliest relative platform-top candidate at contact X.
 	if Sonec.State.Stand = FALSE and Sonec.State.Fall = TRUE
 		BestPlateIndex = -1
 		BestContactTime = 2
-		StartFeetY = Sonec.CollisionMoveStart.y + Sonec.ObjectData.Size.Height*0.5
-		EndFeetY = Sonec.CollisionMoveEnd.y + Sonec.ObjectData.Size.Height*0.5
 		for i = 0 to PlateList.Plate.Length
 			if i <> PassPlateIndex and PlateList.Plate[i].Enabled = TRUE
-				if Sonec.ObjectData.Position.x > PlateList.Plate[i].ObjectData.Position.x
-					if Sonec.ObjectData.Position.x < PlateList.Plate[i].ObjectData.Position.x + PlateList.Plate[i].ObjectData.Size.Width
-						PlateStartY = PlateList.Plate[i].CollisionMoveStart.y
-						PlateEndY = PlateList.Plate[i].ObjectData.Position.y
-						RelativeStartY = StartFeetY - PlateStartY
-						RelativeEndY = EndFeetY - PlateEndY
-						if RelativeEndY > RelativeStartY and RelativeStartY <= 0 and RelativeEndY >= 0
-							ContactTime = -RelativeStartY/(RelativeEndY-RelativeStartY)
-							if ContactTime < BestContactTime
-								BestPlateIndex = i
-								BestContactTime = ContactTime
-								BestPlateY = PlateEndY
-							endif
-						endif
-					endif
+				ContactTime = SonecPlateTopContactTime(Sonec,PlateList,i)
+				if ContactTime >= 0 and ContactTime < BestContactTime
+					BestPlateIndex = i
+					BestContactTime = ContactTime
+					BestPlateY = PlateList.Plate[i].ObjectData.Position.y
 				endif
 			endif
 		next i
