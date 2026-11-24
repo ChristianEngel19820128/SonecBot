@@ -172,3 +172,12 @@ Die Reihenfolge ist vorläufig; tatsächliche technische Abhängigkeiten können
 - **Bewusst unverändert:** Reihenfolge der Bedingungen, Energiekosten/-schwellen, Zustandszuweisungen, Animation und Jetfire-Auslösung; noch keine neue Physik oder neue Tiefenebenenregel.
 - **Prüfung:** Quellseitige Überprüfung der Extraktion; **AGK-Kompilierung und Laufzeitwirkung noch nicht vom Entwickler geprüft**. Nächster Kontrollpunkt: AGK-Compile, danach erst weitere Entflechtung.
 - **Regel 1:** Keine neue fachliche Entscheidung getroffen; bei späteren Abweichungen wird die Spezifikation vor dem betreffenden Code angepasst.
+
+## 18. Entwicklertest Phase A2 (24.11.2026)
+
+- **Getesteter Code-Commit:** `7471d83d8929e078c54ec2773966472b31e88767` auf `develop`.
+- **Gesamtergebnis:** **Bestanden, 5/5 bestätigt**, vom Entwickler lokal in AGK Studio gemeldet.
+- **Bestätigt:** AGK-Kompilierung erfolgreich; normaler Sprung funktioniert; Fallen funktioniert; Jetpack funktioniert; Energieaufnahme bei gehaltenem Kreuz nach oben funktioniert.
+- **Offen:** Keine. **Beobachtungen:** Keine Angaben.
+- **Einordnung:** Die Extraktion der vertikalen Eingabezustände hat in diesen Prüfungen keine erkennbare Regression verursacht. Das ist keine Abnahme der späteren neuen Kollisionsphysik.
+- **Nächster Schritt:** Phase A3 – weitere Zuständigkeiten von Bewegung und Bodenkontakt kleinräumig trennen, ohne fachliche Regeln stillschweigend zu ändern.
