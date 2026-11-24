@@ -204,3 +204,12 @@ Die Reihenfolge ist vorläufig; tatsächliche technische Abhängigkeiten können
 - **Änderung:** Die bisherige Prüfung des `LinkedPlateIndex` auf ungültigen Index bzw. deaktivierte Plattform wurde aus `SonecCollidePlate` unverändert in `SonecValidateLinkedPlate` ausgelagert. Die Prüfung wird an derselben Stelle aufgerufen.
 - **Bewusst unverändert:** Alle bisherigen Bedingungen und Zuweisungen, Landung, Durchflug, Kistenkontakt, Sprung und Jetpack. Es wurde keine neue Tiefenebenenregel umgesetzt. Insbesondere ist die spätere fachliche Vorgabe zur persistenten Bindung noch gesondert umzusetzen; die alte Validierung löscht weiterhin ungültige/deaktivierte Verweise.
 - **Prüfung:** AGK-Kompilierung und Laufzeittest durch den Entwickler stehen noch aus.
+
+## 22. Entwicklertest Phase A4 und Abschluss Phase A (24.11.2026)
+
+- **Getesteter Code-Commit:** `8895d100f5d212b63cce2b32fefcfed00614c3a5` auf `develop`.
+- **Gesamtergebnis:** **Bestanden, 5/5 bestätigt**, vom Entwickler lokal in AGK Studio gemeldet.
+- **Bestätigt:** Jetpack und Plattformwechsel unauffällig; Kistenlandungen funktionieren; Plattformlandungen funktionieren; AGK-Kompilierung erfolgreich; Springen und Fallen funktionieren.
+- **Offen:** Keine. **Beobachtungen:** Keine Angaben.
+- **Einordnung:** Phase A1–A4 (Zuständigkeiten und kleine Extraktionen ohne beabsichtigte Gameplay-Änderung) ist damit vom Entwickler erfolgreich geprüft und als vorbereitende Phase abgeschlossen. Die neue Bewegungs- und Kollisionsphysik der Phasen B–G ist noch nicht umgesetzt oder abgenommen.
+- **Nächster Schritt:** Vor dem ersten fachlichen Eingriff in Phase B den konkreten Geltungsbereich und alle dafür nötigen Details anhand dieser Spezifikation prüfen; jede zusätzliche Entscheidung zuerst hier festhalten.
