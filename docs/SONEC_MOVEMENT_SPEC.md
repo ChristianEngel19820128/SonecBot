@@ -659,3 +659,10 @@ Die Reihenfolge ist vorläufig; tatsächliche technische Abhängigkeiten können
 
 - **Code:** `9071a1d9713b8b1cb9a4a5dfd63671a11a5ecd77` auf `develop`. In `SonecCollideChestSideContacts` sammelt `BestChestTopCandidate` die gültigen Kistenoberseiten mittels `SonecContactChooseEarlier`; `BestTopTime` wird aus dem Kandidaten übernommen. Der bestehende Plattform-/Seitenvergleich und alle Kontaktreaktionen bleiben unverändert.
 - **Status:** AGK-Kompilierung ausstehend, Funktionstest gemäß Vereinbarung erst am Ende von Phase B. Phase B nicht abgeschlossen; nächster Schritt ist die Aufnahme der Kistenseitenkontakte in die gemeinsame Kandidatenrepräsentation.
+
+## 88. B3f-Kompilierung und B3g-Seitenkandidat (vor Code, 24.11.2026)
+
+- **Entwickler bestätigt:** B3f kompiliert erfolgreich in AGK Studio. Kein Funktionstest; gesammelt am Phase-B-Ende.
+- **B3g:** Die bereits ermittelte früheste gültige Kistenseite wird nach Abschluss der bestehenden Sweep-Schleife als `TSonecContactCandidate` mit `ListType=TYPECHEST`, `Index=HitIndex`, `ContactTime=SideTime` abgebildet. Der vorhandene Vergleich mit Oberseiten und die Reaktion bleiben unverändert; Kandidatenrepräsentation allein darf keine neue Blockade auslösen.
+- **Begrenzung:** Die vorhandenen Trefferattribute `HitSide`, `HitOffsetX`, `HitPositionX` verbleiben bis zum späteren gemeinsamen Resolver in lokalen Variablen. Keine Änderung an Durchflug, Weltgrenze, Restbewegung oder Kollisionspriorität.
+- **Prüfung:** AGK-Kompilierung; Funktionstests gebündelt. Keine Änderung der bekannten Fehler erwartet.
