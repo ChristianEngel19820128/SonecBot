@@ -11,14 +11,14 @@
 
 ## Aktueller Projektstand
 
-- Real Alpha, Arbeitsblock A weiterhin aktiv; A5 fachlich abgestimmt: J1 (Jumppod und gemeinsame Sockelmechanik) implementiert, lokaler Compile/Funktionstest offen; J2–J4 noch nicht implementiert. [A5-Spezifikation](docs/JUMPPOD_SPEC.md).
+- Real Alpha, Arbeitsblock A weiterhin aktiv; A5 fachlich abgestimmt: J1 (Jumppod und gemeinsame Sockelmechanik) lokal abgenommen, 10/10 am 25.11.2026 auf bb16236; J2–J4 noch nicht implementiert. [A5-Spezifikation](docs/JUMPPOD_SPEC.md).
 - Minen, Walker, Drohne, Bomber, Flarak/Flak, Warnungen und zentrale Rewards im bisherigen Umfang umgesetzt und lokal geprüft.
 - Bewegungsumstellung A–G2d einschließlich Jetstream am 25.11.2026 abgeschlossen und vom Entwickler akzeptiert.
 - Gemeinsamer Kontaktresolver, Restweg, Trägerbewegung, Tiefenebenen, Fuß-/Kistenkanten, Mini-Hop, Sprung/Jetpack und Rückstoß implementiert.
 - Fachliche Endfassung und Abnahme: [Bewegungsspezifikation](docs/SONEC_MOVEMENT_SPEC.md).
 - Langzeitbeobachtung und weitere Parameterfeinjustierung möglich; keine separate HTML5-/Langzeitabnahme oder vollständige Randfallmatrix behauptet.
 - Schadensgeometrie mit zwei Körperkreisen bleibt von mechanischer Bewegung getrennt.
-- Offene Fehler und Verdachtsfälle stehen in [KNOWNBUGS.md](KNOWNBUGS.md), nicht als parallele TODO-Liste.
+- Offene Fehler und Verdachtsfälle stehen in [KNOWNBUGS.md](KNOWNBUGS.md), nicht als parallele TODO-Liste. J1-Test identifizierte den bekannten Neustart-Spritefehler als Flarak-Rakete; fehlender Flarak-Reset in GameInit quellenbelegt, Korrektur noch offen.
 - Energieüberschuss, Overload und Gegnergefährlichkeit im nachgelagerten Gameplay-Balancing behandeln.
 - Debug-Masterschalter und Diagnosemöglichkeiten erhalten; keine beiläufigen Änderungen.
 - Keine Deadline; HTML5, Deployment, Balancing und Fehleranalyse getrennt behandeln.
@@ -33,7 +33,7 @@
 
 ## Genau ein nächster Schritt
 
-J1 lokal in AGK kompilieren und gemäß A5-Abnahme prüfen. J2–J4 sind fachlich abgestimmt, Umsetzung nach J1-Abnahme. Technische Voranalyse und Abnahmekriterien stehen in [docs/JUMPPOD_SPEC.md](docs/JUMPPOD_SPEC.md).
+J2 (Landmine als Attrappe) gemäß [docs/JUMPPOD_SPEC.md](docs/JUMPPOD_SPEC.md) umsetzen. Separater Vorschlag vor J2: den bestätigten Flarak-Resetfehler nach Freigabe korrigieren; keine automatische Erweiterung der Codefreigabe.
 
 ## Referenzen
 

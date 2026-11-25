@@ -1,7 +1,7 @@
 # SonecBot – Jumppod, Landmine, Sockel und Rauch (A5)
 
 **Stand:** 25. November 2026 · **Branch:** develop
-**Status:** J1 implementiert, AGK-Compile und Laufzeitabnahme offen; J2–J4 fachlich abgestimmt, Umsetzung offen.
+**Status:** J1 implementiert und lokal abgenommen (10/10, bb16236, 25.11.2026); J2–J4 fachlich abgestimmt, Umsetzung offen.
 **Codebasis der Voranalyse:** [37682ba9](https://github.com/ChristianEngel19820128/SonecBot/commit/37682ba92c148a637b657beb9fb5e9fc1d98ec1c).
 Bewegungsgrundlage: [SONEC_MOVEMENT_SPEC.md](SONEC_MOVEMENT_SPEC.md). Parameter sind zunächst plausible zentral einstellbare Testwerte, keine endgültige Balance.
 
@@ -65,11 +65,11 @@ Quellbasis 37682ba9; folgende Integrationspunkte sind geprüft, der Entwurf ist 
 - Testparameter: 150 ms Auslöseframe, 80 HP, 2,500 ms Mindestabstand erfolgreicher Spawns auf frisch erzeugten Plattformen mit freiem Platz; Blast Typ 3, Skalierung 0.85, Schaden 12 pro gültigem Schadensintervall; Faktor 2.0. J1 erzeugt nur Pods. Werte sind provisorisch.
 - Resolver-eigene Rechteckliste aus Kisten und zwei Sockelrechtecken je Pod, stabile Zuordnung 3*i / 3*i+1 / 3*i+2. Bestehende ChestList bleibt für Walker, Waffen, Rewards etc. unverändert. Diagnose-Supportindizes beziehen sich jetzt auf diese mechanische Liste. Pod-Auslösung nur am akzeptierten oberen Landekontakt, sofortiger einmaliger Impuls plus verbleibender Weg; danach normale Resolverprüfung.
 - MG im gemeinsamen frühesten Spielertreffersweep, Flamme wird am Sockel beendet, Granate explodiert beim Treffer, Plasma verwendet bestehende flächige Timer-Trefferlogik (keine neue Strahlabschneidung). Allgemeine Explosionen treffen beide Rechtecke mit einem gemeinsamen Ziel-Cooldown. Wracks bleiben geometrisch erhalten; Gegnergeschosse erhalten keinen Pod-Kollisionspfad.
-- Keine Landmine, keine Flak/Flarak-Mechanik und kein Rauch in J1. Keine Änderungen an Waffenwerten anderer Objekte oder Walker-Logik. Statische Struktur-/Aufrufprüfung durch Assistent; kein lokaler AGK-Compile oder Spieltest.
+- Keine Landmine, keine Flak/Flarak-Mechanik und kein Rauch in J1. Keine Änderungen an Waffenwerten anderer Objekte oder Walker-Logik. Statische Struktur-/Aufrufprüfung durch Assistent; lokaler AGK-Compile und Entwicklertest anschließend bestanden.
 
 ## 8. Abnahme
 
-- J1: Grafik/Position, beide Rechtecke von beiden Seiten, Landung und korrekter einmaliger doppelter Absprung; Energie unverändert durch Pod; Framewechsel, erneute Nutzung, Plattformmitnahme, Tiefenregeln, Waffen/Explosionen, zerstörter begehbarer und durch Spielerwaffen treffbarer Sockel; Neustart.
+- J1 **bestanden**, Entwickler, lokaler AGK-Compile und Test am 25.11.2026, bb16236, 10/10 bestätigt: Grafik/Farbe/Plattformposition, regelmäßige überschneidungsfreie Spawns, Seitenkontakt ohne Auslösung, automatischer doppelter Sprung, Framewechsel/Wiederverwendung/kein Energieverbrauch, alle vier Spielerwaffen, Schadensexplosion/Umfärbung/verbleibende Kollision, Walker/Gegnergeschosse ignorieren Pods, bestehende Bewegung und Neustart. Separater bestätigter Flarak-Raketen-Resetfehler in [KNOWNBUGS.md](../KNOWNBUGS.md); keine Aussage über dessen Behebung. Pod wirkt möglicherweise zu stark (normalen Sprung getrennt beurteilen); Treppenfunktion als spätere Idee, noch keine Änderung. Vermutete unterschiedliche Sockelgröße vom Entwickler als optische Täuschung korrigiert. Keine HTML5-/Langzeitabnahme behauptet.
 - J2: 25-%-Auswahlregel, Blinkmerkmal in Nähe, keine seitliche Auslösung, sofortige stärkere schadensverursachende Explosion auch bei Fernbeschuss; Kettenreaktion, Walker läuft vorbei, gegnerische Geschosse durchdringen auch Wracks, keine Überschneidung stationärer Objekte.
 - J3: Sockel vor/nach Zerstörung mechanisch nutzbar, Plattformbindung, Flak/Flarak-Gegnerfunktionen/Siloschutz unverändert.
 - J4: alle fünf Grafiken, Rotation, kontinuierlicher Aufstieg und Rechtsdrift, Ausfaden/minimal kleiner, ansteigende und verschiedene Dichte über Partikelanzahl, Emitter folgt Wrack und endet bei dessen Entfernung, keine Reste nach Neustart.
