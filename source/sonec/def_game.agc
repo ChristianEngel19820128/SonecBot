@@ -892,6 +892,7 @@ type TProtoBomber
 endtype
 
 type TBomberBomb
+    SweepStartMs as integer
     Enabled as integer
     Position as TPosition
     PreviousPosition as TPosition

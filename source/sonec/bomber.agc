@@ -61,6 +61,7 @@ function BomberInit(Bomber ref as TBomber,Now as integer)
     for i = 0 to BOMBER_BOMB_COUNT-1
         Bomber.Bomb[i].Enabled = FALSE
         Bomber.Bomb[i].LastMoveMs = Now
+        Bomber.Bomb[i].SweepStartMs = Now
         Bomber.Bomb[i].Position.x = 0
         Bomber.Bomb[i].Position.y = 0
         Bomber.Bomb[i].PreviousPosition = Bomber.Bomb[i].Position
@@ -247,9 +248,11 @@ function BomberBombDo(Bomber ref as TBomber,ProtoBomber ref as TProtoBomber,Worl
 
     for i = 0 to BOMBER_BOMB_COUNT-1
         if Bomber.Bomb[i].Enabled = TRUE
+            // A closed/zero-duration update must not replay the prior sweep.
+            Bomber.Bomb[i].SweepStartMs = Bomber.Bomb[i].LastMoveMs
+            Bomber.Bomb[i].PreviousPosition = Bomber.Bomb[i].Position
             DeltaMs = Now-Bomber.Bomb[i].LastMoveMs
             if DeltaMs > 0
-                Bomber.Bomb[i].PreviousPosition = Bomber.Bomb[i].Position
                 DragFactor = 1.0/(1.0+BOMBER_BOMB_DRAG_PER_MS*DeltaMs)
                 Bomber.Bomb[i].Velocity.x = Bomber.Bomb[i].Velocity.x*DragFactor
                 Bomber.Bomb[i].Velocity.y = Bomber.Bomb[i].Velocity.y+BOMBER_BOMB_GRAVITY_PX_PER_MS2*DeltaMs
@@ -394,183 +397,160 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function BomberBombCollideSonec(Bomber ref as TBomber,Game ref as TGame,Now as integer)
-    local i as integer
-    local CircleIndex as integer
-    local DeltaX as float
-    local DeltaY as float
+// Convert the start of this bomb's flight step to the current frame's
+// platform/chest interpolation fraction (newly released bombs start at 1).
+function BomberBombFrameStart(Bomb ref as TBomberBomb)
     local Fraction as float
-    local LengthSquared as float
-    local NearestX as float
-    local NearestY as float
-    local CircleY as float
-    local Radius as float
-    local Hit as integer
-    local HealthBeforeHit as integer
-    local HitPosition as TPosition
+    local FrameMs as integer
+    FrameMs = SonecDamageFrameEndMs-SonecDamageFrameStartMs
+    if FrameMs <= 0 then exitfunction 1.0
+    Fraction = (Bomb.SweepStartMs-SonecDamageFrameStartMs)*1.0/FrameMs
+    if Fraction < 0 then Fraction = 0
+    if Fraction > 1 then Fraction = 1
+endfunction Fraction
 
-    if Game.Sonec.IsLost = TRUE then exitfunction
-    // S2: swept bomb center against both shared Sonec body circles.
-    // Preserve the existing bomb radius, shield damage and explosion behavior.
-    Radius = SonecHitCircleRadius(Game.Sonec)+BOMBER_BOMB_HIT_RADIUS
-    for i = 0 to BOMBER_BOMB_COUNT-1
-        if Bomber.Bomb[i].Enabled = TRUE
-            DeltaX = Bomber.Bomb[i].Position.x-Bomber.Bomb[i].PreviousPosition.x
-            DeltaY = Bomber.Bomb[i].Position.y-Bomber.Bomb[i].PreviousPosition.y
-            LengthSquared = DeltaX*DeltaX+DeltaY*DeltaY
-            Hit = FALSE
-            for CircleIndex = 0 to 1
-                CircleY = SonecHitCircleY(Game.Sonec,CircleIndex)
-                Fraction = 0
-                if LengthSquared > 0
-                    Fraction = ((Game.Sonec.ObjectData.Position.x-Bomber.Bomb[i].PreviousPosition.x)*DeltaX+(CircleY-Bomber.Bomb[i].PreviousPosition.y)*DeltaY)/LengthSquared
-                    if Fraction < 0 then Fraction = 0
-                    if Fraction > 1 then Fraction = 1
-                endif
-                NearestX = Bomber.Bomb[i].PreviousPosition.x+Fraction*DeltaX
-                NearestY = Bomber.Bomb[i].PreviousPosition.y+Fraction*DeltaY
-                if (NearestX-Game.Sonec.ObjectData.Position.x)*(NearestX-Game.Sonec.ObjectData.Position.x)+(NearestY-CircleY)*(NearestY-CircleY) <= Radius*Radius
-                    if Hit = FALSE
-                        HitPosition.x = NearestX
-                        HitPosition.y = NearestY
-                    endif
-                    Hit = TRUE
-                endif
-            next CircleIndex
-            if Hit = TRUE
-                Bomber.Bomb[i].Enabled = FALSE
-                HealthBeforeHit = Game.Sonec.Health.State
-                Game.Sonec.Health.State = Game.Sonec.Health.State-(BOMBER_BOMB_DIRECT_DAMAGE-ShieldAbsorbDamage(Game.Shield,Game.Sonec,BOMBER_BOMB_DIRECT_DAMAGE,Now))
-                if Game.Sonec.Health.State < HealthBeforeHit then SonecHitFlashUntil = Now+SONEC_HIT_FLASH_MS
-                ExplosionAdd(Game.ExplosionList,Game.ProtoExplosion,Game,1,HitPosition,Now)
-            endif
-        endif
-    next i
-endfunction
+// A chest is a translating AABB. Transform the bomb's start point into
+// the final chest reference frame, retaining the existing radius expansion.
+function BomberBombChestEntry(Bomb ref as TBomberBomb,Chest ref as TChest,FrameStart as float,NewCarrier as integer)
+    local StartPos as TPosition
+    local Entry as float
+    if NewCarrier = TRUE
+        // A chest created in this update cannot be hit before its creation.
+        Entry = CollisionBoxSweepEntry(Bomb.Position,Bomb.Position,Chest.CollisionData.Position1,Chest.CollisionData.Position2,BOMBER_BOMB_HIT_RADIUS,BOMBER_BOMB_HIT_RADIUS)
+        if Entry >= 0 then exitfunction 1.0
+        exitfunction -1.0
+    endif
+    StartPos.x = Bomb.PreviousPosition.x+(Chest.ObjectData.Position.x-Chest.CollisionMoveStart.x)*(1.0-FrameStart)
+    StartPos.y = Bomb.PreviousPosition.y+(Chest.ObjectData.Position.y-Chest.CollisionMoveStart.y)*(1.0-FrameStart)
+    Entry = CollisionBoxSweepEntry(StartPos,Bomb.Position,Chest.CollisionData.Position1,Chest.CollisionData.Position2,BOMBER_BOMB_HIT_RADIUS,BOMBER_BOMB_HIT_RADIUS)
+endfunction Entry
 
-//----------------------------------------------------------------------
-// 
-//----------------------------------------------------------------------
-
-function BomberBombCollidePlate(Bomber ref as TBomber,PlateList ref as TPlateList,Game ref as TGame,Now as integer)
-    local i as integer
-    local k as integer
-    local TopY as float
-    local OldTipY as float
-    local NewTipY as float
+// One-way top-surface test in the moving plate's frame, retaining the
+// original +5px vertical bomb tip and inclusive horizontal edge rule.
+function BomberBombPlateEntry(Bomb ref as TBomberBomb,Plate ref as TPlate,FrameStart as float)
+    local RelativeOldY as float
+    local RelativeNewY as float
+    local RelativeOldX as float
+    local RelativeNewX as float
     local HitX as float
     local Fraction as float
-    local HitPosition as TPosition
+    if Bomb.Velocity.y <= 0 or FrameStart >= 1 then exitfunction -1.0
+    // New plates have not existed through the frame's earlier interval.
+    if Plate.DebugFrameMs <= 0 then exitfunction -1.0
+    RelativeOldY = Bomb.PreviousPosition.y+5-Plate.CollisionData.Position1.y+(Plate.ObjectData.Position.y-Plate.CollisionMoveStart.y)*(1.0-FrameStart)
+    RelativeNewY = Bomb.Position.y+5-Plate.CollisionData.Position1.y
+    if RelativeOldY > 0 or RelativeNewY < 0 or RelativeNewY <= RelativeOldY then exitfunction -1.0
+    Fraction = -RelativeOldY/(RelativeNewY-RelativeOldY)
+    RelativeOldX = Bomb.PreviousPosition.x-Plate.CollisionData.Position1.x+(Plate.ObjectData.Position.x-Plate.CollisionMoveStart.x)*(1.0-FrameStart)
+    RelativeNewX = Bomb.Position.x-Plate.CollisionData.Position1.x
+    HitX = RelativeOldX+(RelativeNewX-RelativeOldX)*Fraction
+    if HitX >= 0 and HitX <= Plate.CollisionData.Position2.x-Plate.CollisionData.Position1.x then exitfunction Fraction
+endfunction -1.0
 
-    for i = 0 to BOMBER_BOMB_COUNT-1
-        if Bomber.Bomb[i].Enabled = TRUE and Bomber.Bomb[i].Velocity.y > 0
-            OldTipY = Bomber.Bomb[i].PreviousPosition.y+5
-            NewTipY = Bomber.Bomb[i].Position.y+5
-            for k = 0 to PlateList.Plate.Length
-                if Bomber.Bomb[i].Enabled = TRUE and PlateList.Plate[k].Enabled = TRUE
-                    TopY = PlateList.Plate[k].CollisionData.Position1.y
-                    if OldTipY <= TopY and NewTipY >= TopY and NewTipY > OldTipY
-                        Fraction = (TopY-OldTipY)/(NewTipY-OldTipY)
-                        HitX = Bomber.Bomb[i].PreviousPosition.x+(Bomber.Bomb[i].Position.x-Bomber.Bomb[i].PreviousPosition.x)*Fraction
-                        if HitX >= PlateList.Plate[k].CollisionData.Position1.x and HitX <= PlateList.Plate[k].CollisionData.Position2.x
-                            HitPosition.x = HitX
-                            HitPosition.y = TopY
-                            Bomber.Bomb[i].Enabled = FALSE
-                            ExplosionAddAboveY(Game.ExplosionList,Game.ProtoExplosion,Game,1,HitPosition,TopY,PlateList.Plate[k].CollisionData.Position1.x,PlateList.Plate[k].CollisionData.Position2.x,k,Now)
-                        endif
-                    endif
-                endif
-            next k
-        endif
-    next i
+// Keep the explosion at its contact offset on the carrier. The remaining
+// movement of the carrier has already been simulated for this frame.
+function BomberBombAddPlateExplosion(Game ref as TGame,PlateIndex as integer,Impact as TPosition,FrameContact as float,Now as integer)
+    Impact.x = Impact.x+(Game.PlateList.Plate[PlateIndex].ObjectData.Position.x-Game.PlateList.Plate[PlateIndex].CollisionMoveStart.x)*(1.0-FrameContact)
+    Impact.y = Impact.y+(Game.PlateList.Plate[PlateIndex].ObjectData.Position.y-Game.PlateList.Plate[PlateIndex].CollisionMoveStart.y)*(1.0-FrameContact)
+    ExplosionAddAboveY(Game.ExplosionList,Game.ProtoExplosion,Game,1,Impact,Game.PlateList.Plate[PlateIndex].CollisionData.Position1.y,Game.PlateList.Plate[PlateIndex].CollisionData.Position1.x,Game.PlateList.Plate[PlateIndex].CollisionData.Position2.x,PlateIndex,Now)
 endfunction
 
-// B5: swept bomb contact destroys exactly the first touched chest.
-// Remove the chest before spawning the existing platform-clipped blast.
-function BomberBombCollideChest(Bomber ref as TBomber,Game ref as TGame,Now as integer)
+// Earliest contact across the three existing target families, once per bomb.
+// Exact ties preserve the previous order (Sonec, chest, plate; lowest slot).
+function BomberBombCollideAll(Bomber ref as TBomber,Game ref as TGame,Now as integer)
     local i as integer
     local k as integer
-    local BestChest as integer
+    local CircleIndex as integer
+    local BestType as integer
+    local BestIndex as integer
     local BestFraction as float
-    local EnterFraction as float
-    local ExitFraction as float
-    local T1 as float
-    local T2 as float
-    local Temp as float
-    local Dx as float
-    local Dy as float
-    local MinX as float
-    local MaxX as float
-    local MinY as float
-    local MaxY as float
+    local Entry as float
+    local FrameStart as float
+    local FrameContact as float
     local HitPosition as TPosition
     local PlateIndex as integer
+    local NewCarrier as integer
+    local HealthBeforeHit as integer
+    local MechanicalSlot as integer
 
     for i = 0 to BOMBER_BOMB_COUNT-1
         if Bomber.Bomb[i].Enabled = TRUE
-            Dx = Bomber.Bomb[i].Position.x-Bomber.Bomb[i].PreviousPosition.x
-            Dy = Bomber.Bomb[i].Position.y-Bomber.Bomb[i].PreviousPosition.y
-            BestChest = -1
-            BestFraction = 2
+            BestType = 0
+            BestIndex = -1
+            BestFraction = 2.0
+            FrameStart = BomberBombFrameStart(Bomber.Bomb[i])
+            if Game.Sonec.IsLost = FALSE
+                for CircleIndex = 0 to 1
+                    Entry = SonecDamageSweepEntry(Game.Sonec,Bomber.Bomb[i].PreviousPosition,Bomber.Bomb[i].Position,Bomber.Bomb[i].SweepStartMs,Bomber.Bomb[i].LastMoveMs,CircleIndex,BOMBER_BOMB_HIT_RADIUS,0,FALSE)
+                    if Entry >= 0 and Entry < BestFraction
+                        BestFraction = Entry
+                        BestType = 1
+                    endif
+                next CircleIndex
+            endif
             for k = 0 to Game.ChestList.Chest.Length
                 if Game.ChestList.Chest[k].Enabled = TRUE
-                    MinX = Game.ChestList.Chest[k].CollisionData.Position1.x-BOMBER_BOMB_HIT_RADIUS
-                    MaxX = Game.ChestList.Chest[k].CollisionData.Position2.x+BOMBER_BOMB_HIT_RADIUS
-                    MinY = Game.ChestList.Chest[k].CollisionData.Position1.y-BOMBER_BOMB_HIT_RADIUS
-                    MaxY = Game.ChestList.Chest[k].CollisionData.Position2.y+BOMBER_BOMB_HIT_RADIUS
-                    EnterFraction = 0
-                    ExitFraction = 1
-                    if Dx = 0
-                        if Bomber.Bomb[i].PreviousPosition.x < MinX or Bomber.Bomb[i].PreviousPosition.x > MaxX
-                            EnterFraction = 2
-                        endif
-                    else
-                        T1 = (MinX-Bomber.Bomb[i].PreviousPosition.x)/Dx
-                        T2 = (MaxX-Bomber.Bomb[i].PreviousPosition.x)/Dx
-                        if T1 > T2
-                            Temp = T1
-                            T1 = T2
-                            T2 = Temp
-                        endif
-                        if T1 > EnterFraction then EnterFraction = T1
-                        if T2 < ExitFraction then ExitFraction = T2
+                    NewCarrier = FALSE
+                    PlateIndex = Game.ChestList.Chest[k].CollisionData.Index
+                    if PlateIndex >= 0 and PlateIndex <= Game.PlateList.Plate.Length
+                        if Game.PlateList.Plate[PlateIndex].Enabled = TRUE and Game.PlateList.Plate[PlateIndex].DebugFrameMs <= 0 then NewCarrier = TRUE
                     endif
-                    if Dy = 0
-                        if Bomber.Bomb[i].PreviousPosition.y < MinY or Bomber.Bomb[i].PreviousPosition.y > MaxY
-                            EnterFraction = 2
-                        endif
-                    else
-                        T1 = (MinY-Bomber.Bomb[i].PreviousPosition.y)/Dy
-                        T2 = (MaxY-Bomber.Bomb[i].PreviousPosition.y)/Dy
-                        if T1 > T2
-                            Temp = T1
-                            T1 = T2
-                            T2 = Temp
-                        endif
-                        if T1 > EnterFraction then EnterFraction = T1
-                        if T2 < ExitFraction then ExitFraction = T2
-                    endif
-                    if EnterFraction <= ExitFraction and EnterFraction < BestFraction
-                        BestFraction = EnterFraction
-                        BestChest = k
+                    Entry = BomberBombChestEntry(Bomber.Bomb[i],Game.ChestList.Chest[k],FrameStart,NewCarrier)
+                    if Entry >= 0 and Entry < BestFraction
+                        BestFraction = Entry
+                        BestType = 2
+                        BestIndex = k
                     endif
                 endif
             next k
-            if BestChest >= 0
-                HitPosition.x = Bomber.Bomb[i].PreviousPosition.x+Dx*BestFraction
-                HitPosition.y = Bomber.Bomb[i].PreviousPosition.y+Dy*BestFraction
-                PlateIndex = Game.ChestList.Chest[BestChest].CollisionData.Index
+            for k = 0 to Game.PlateList.Plate.Length
+                if Game.PlateList.Plate[k].Enabled = TRUE
+                    Entry = BomberBombPlateEntry(Bomber.Bomb[i],Game.PlateList.Plate[k],FrameStart)
+                    if Entry >= 0 and Entry < BestFraction
+                        BestFraction = Entry
+                        BestType = 3
+                        BestIndex = k
+                    endif
+                endif
+            next k
+            if BestType > 0
+                HitPosition.x = Bomber.Bomb[i].PreviousPosition.x+(Bomber.Bomb[i].Position.x-Bomber.Bomb[i].PreviousPosition.x)*BestFraction
+                HitPosition.y = Bomber.Bomb[i].PreviousPosition.y+(Bomber.Bomb[i].Position.y-Bomber.Bomb[i].PreviousPosition.y)*BestFraction
+                FrameContact = FrameStart+(1.0-FrameStart)*BestFraction
                 Bomber.Bomb[i].Enabled = FALSE
-                RewardDrop(Game,REWARD_OBJECT_CHEST,Game.ChestList.Chest[BestChest].ObjectData.Position,Now)
-                ChestDelete(Game.ChestList,BestChest)
-                if PlateIndex >= 0 and PlateIndex <= Game.PlateList.Plate.Length
-                    if Game.PlateList.Plate[PlateIndex].Enabled = TRUE
-                        ExplosionAddAboveY(Game.ExplosionList,Game.ProtoExplosion,Game,1,HitPosition,Game.PlateList.Plate[PlateIndex].CollisionData.Position1.y,Game.PlateList.Plate[PlateIndex].CollisionData.Position1.x,Game.PlateList.Plate[PlateIndex].CollisionData.Position2.x,PlateIndex,Now)
+                if BestType = 1
+                    HealthBeforeHit = Game.Sonec.Health.State
+                    Game.Sonec.Health.State = Game.Sonec.Health.State-(BOMBER_BOMB_DIRECT_DAMAGE-ShieldAbsorbDamage(Game.Shield,Game.Sonec,BOMBER_BOMB_DIRECT_DAMAGE,Now))
+                    if Game.Sonec.Health.State < HealthBeforeHit then SonecHitFlashUntil = Now+SONEC_HIT_FLASH_MS
+                    ExplosionAdd(Game.ExplosionList,Game.ProtoExplosion,Game,1,HitPosition,Now)
+                endif
+                if BestType = 2
+                    PlateIndex = Game.ChestList.Chest[BestIndex].CollisionData.Index
+                    RewardDrop(Game,REWARD_OBJECT_CHEST,Game.ChestList.Chest[BestIndex].ObjectData.Position,Now)
+                    ChestDelete(Game.ChestList,BestIndex)
+                    // The mechanical pass has finished. Release a destroyed
+                    // foreground support through the established reset path.
+                    MechanicalSlot = BestIndex*SONEC_MECHANICAL_SLOT_STRIDE+SONEC_MECHANICAL_CHEST_SLOT
+                    if Game.ChestList.Chest[BestIndex].IsBackground = FALSE
+                        if MechanicalSlot >= 0 and MechanicalSlot <= SonecMechanicalList.Chest.Length
+                            SonecMechanicalList.Chest[MechanicalSlot].Enabled = FALSE
+                        endif
+                        if Game.Sonec.GroundContactActive = TRUE and Game.Sonec.CollisionData.ListType = TYPECHEST and Game.Sonec.CollisionData.Index = MechanicalSlot then SonecCollideReset(Game.Sonec)
+                    endif
+                    if PlateIndex >= 0 and PlateIndex <= Game.PlateList.Plate.Length
+                        if Game.PlateList.Plate[PlateIndex].Enabled = TRUE
+                            BomberBombAddPlateExplosion(Game,PlateIndex,HitPosition,FrameContact,Now)
+                        else
+                            ExplosionAdd(Game.ExplosionList,Game.ProtoExplosion,Game,1,HitPosition,Now)
+                        endif
                     else
                         ExplosionAdd(Game.ExplosionList,Game.ProtoExplosion,Game,1,HitPosition,Now)
                     endif
-                else
-                    ExplosionAdd(Game.ExplosionList,Game.ProtoExplosion,Game,1,HitPosition,Now)
+                endif
+                if BestType = 3
+                    // The tip, not the center, contacts the top surface.
+                    HitPosition.y = HitPosition.y+5
+                    BomberBombAddPlateExplosion(Game,BestIndex,HitPosition,FrameContact,Now)
                 endif
             endif
         endif
