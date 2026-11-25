@@ -1,7 +1,7 @@
 # SonecBot – Real Alpha Roadmap
 
 **Stand:** 25. November 2026 · **Arbeitsbranch:** `develop`
-**Status:** Arbeitsblock A aktiv; Bewegungsumstellung abgeschlossen; Jumppod und Grundsysteme offen.
+**Status:** Arbeitsblock A und Bewegungsumstellung abgeschlossen; separater Flammenwerfer-Bug-Chat vereinbart, Arbeitsblock B offen.
 **Quellenbasis:** Entwicklerentscheidungen im Gespräch; Dokumentstand [`87927e5`](https://github.com/ChristianEngel19820128/SonecBot/commit/87927e564d5ce1539878b84773c8f8ea40c258d5), letzte Code-Referenz [`c2a2d4e`](https://github.com/ChristianEngel19820128/SonecBot/commit/c2a2d4ed1dd7b27de6aa13f1058a5431509b2d45).
 Nächste Aufgaben: [TODO.md](TODO.md) · Chatübergabe: [HANDOFF.md](HANDOFF.md) · Spätere Ideen: [BACKLOG.md](BACKLOG.md).
 Die Roadmap legt den Entwicklungsrahmen fest. Einzelne Codeänderungen, `main`-Merge und Veröffentlichung werden separat vereinbart.
@@ -59,13 +59,13 @@ Der Draft-Test vom 18.11. belegt keine Auslieferung späterer Alpha-Änderungen.
 - Plattformdeckung und Explosionsschaden wurden implementiert und lokal geprüft; abschließendes Balancing bleibt offen.
 - Bomber-Abschüsse sollen selten bleiben; kein Vernichtungszwang. Charakteristischer Ankündigungssound und weitere Politur bei Bedarf prüfen.
 
-### A5 – Jumppod, Landmine, Sockel und Rauch (J1–J4 funktional abgenommen, J4-Sichtnachjustierung offen)
+### A5 – Jumppod, Landmine, Sockel und Rauch (abgeschlossen, 25.11.2026)
 
-- J1: hilfreicher Jumppod mit doppeltem normalen Sprungimpuls ohne Energiekosten; zwei Frames, auslösbar durch Kontakt von oben.
+- J1: hilfreicher Jumppod mit verstärktem normalen Sprungimpuls ohne Energiekosten; zwei Frames, auslösbar durch Kontakt von oben. Ursprünglich Faktor 2,0; Entwickler-Balancing a2db24a Faktor 1,6 bei normalem Impuls 6.
 - J1a: automatischer Aufstieg über beide Sockelstufen mit oberem Trigger, Mini-Hop beim Abstieg; lokal AGK-bestanden (9/9, ddc24e8, 25.11.2026).
 - J2: Landmine als erkennbare Attrappe (blinkendes Quadrat in der Nähe), sofortige stärkere Schadensexplosion, 25 % der regelmäßigen Testspawns; lokal AGK-bestanden (12/12, 517763f, 25.11.2026).
 - J3: gemeinsame Zweirechteck-Sockelmechanik auch für Flak/Flarak; Sockel bleiben nach Zerstörung bestehen; bestehende Luftabwehrfunktion erhalten; lokal AGK-bestanden (10/10 am 25.11.2026 nach Compile-Korrektur ec23637 (Testformular c2858e9; lokale SHA nicht separat bestätigt)).
-- J4: wiederverwendbare Rauch-Unit; kontinuierliche Emission an zerstörten Objekten bis zum Weltende; lokal funktional bestanden (15/15), Entwickler-Feinjustierung ba4be02 und vertikale Trägergeschwindigkeitsübernahme implementiert; gezielter Compile/Sichttest offen.
+- J4: wiederverwendbare Rauch-Unit; kontinuierliche Emission an zerstörten Objekten bis zum Weltende; lokal funktional bestanden (15/15), Entwickler-Feinjustierung ba4be02/a2db24a und vertikale Trägergeschwindigkeitsübernahme f591fc7 abschließend zusammenfassend akzeptiert; keine weitere Rauchänderung.
 - Details, Interaktionen, Parameterrahmen und Abnahme in [docs/JUMPPOD_SPEC.md](docs/JUMPPOD_SPEC.md). Fachlich abgestimmt am 25.11.2026; J1 lokal AGK-bestanden (10/10, bb16236, 25.11.2026), J2 lokal AGK-bestanden (12/12, 517763f, 25.11.2026), J3 lokal AGK-bestanden (10/10), J4 lokal funktional bestanden (15/15, nach Compile-Korrektur e17440a; lokale SHA nicht separat bestätigt). Separater bestätigter Flarak-Neustartfehler in KNOWNBUGS; keine HTML5-/Langzeitabnahme.
 
 Legacy-Grafiken (`rakstellung.png`, `spacejet.png`, `falle.bmp`) sind Vorlagen, kein Beweis fertig implementierter Altmechaniken.
@@ -160,6 +160,6 @@ Gefahrenzulassung, Erholungsrhythmus, tatsächlicher Ressourcengewinn und Muniti
 Bekannte Qualitätsfragen erhalten eine ausdrückliche Entscheidung bzw. dokumentierte Grenze; der integrierte Alpha-Build wird auf der Zielplattform geprüft.
 Diese Kriterien sind Prüfaufträge für die Umsetzung, keine bereits bestandene Alpha-Abnahme. itch.io bleibt Draft/Secret URL bis zu einer gesonderten Entscheidung.
 
-**Nächster Schritt:** J4-Rauch auf ruhenden/auf-/abfahrenden Plattformen gemäß [Jumppod-Spezifikation](docs/JUMPPOD_SPEC.md) lokal kompilieren und prüfen, dann A5 abschließen; Flammenwerfer in separatem Bug-Chat; sonstige Fremdbugs zurückgestellt.
+**Nächster Schritt:** vereinbarter separater Flammenwerfer-Bug-Chat gemäß [KNOWNBUGS.md](KNOWNBUGS.md); anschließend Arbeitsblock B fachlich abstimmen. Sonstige Fremdbugs zurückgestellt; keine weiteren Rauchänderungen.
 
 Spätere Varianten und Ideen stehen in [BACKLOG.md](BACKLOG.md). Frühere Langfassungen liegen im [Archiv](docs/archive/README.md); sie werden nur für konkrete historische Fragen gelesen.
