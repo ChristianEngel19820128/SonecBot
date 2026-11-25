@@ -33,7 +33,7 @@
 
 ## Genau ein nächster Schritt
 
-B2.1 Flammenpartikel-Bewegungsübernahme und zeitabhängige Luftbremsung implementiert; lokale AGK-Abnahme ausstehend. Danach B2.2 Kollision und B2.3 Deckung gemäß KNOWNBUGS.md getrennt analysieren und abstimmen. Danach B3 Direkttreffer, zusätzliche belegte Befunde (einschließlich Index-Recycling-Verdachtsfälle) und B4 Abschluss des Bug-Chats. Anschließend Arbeitsblock B fachlich abstimmen. Keine weiteren Änderungen am akzeptierten Rauchsystem.
+B2.1 Flammenpartikel-Bewegungsübernahme und zeitabhängige Luftbremsung lokal AGK-bestanden (12/12, 1bed93b, 25.11.2026). Entwickler bewertet Bewegung als berechenbar und fair; keine weiteren Bewegungsänderungen. Nächster Schritt: B2.2 Kollision und B2.3 Deckung gemäß KNOWNBUGS.md getrennt analysieren und abstimmen. Danach B3 Direkttreffer, zusätzliche belegte Befunde (einschließlich Index-Recycling-Verdachtsfälle) und B4 Abschluss des Bug-Chats. Anschließend Arbeitsblock B fachlich abstimmen. Keine weiteren Änderungen am akzeptierten Rauchsystem.
 
 ## Referenzen
 

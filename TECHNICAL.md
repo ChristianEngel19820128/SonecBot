@@ -75,6 +75,13 @@ Objektverwaltung und Kollisionen bestehen weitgehend aus eigenen Strukturen/Pool
 - **Lokaler AGK-Compile und Entwicklertest bestanden (8/8, 7b9bb48, 25.11.2026):** MG einschließlich aufgewerteter Mehrfachsalve, keine ausstehende Salve nach Neustart, Plasmablitz lädt/feuert korrekt, keine Übernahme einer Teilaufladung, Drohnenverhalten, Explosion und Belohnung bei Zerstörung, keine alten Drohneneffekte/Belohnungen nach Neustart. Keine offenen Einzelpunkte, keine Auffälligkeiten gemeldet. Die präventive Drohnen-Reset-Lücke war zuvor nicht als Laufzeitfehler nachgewiesen; kein gezielt erzwungenes Pending-Ereignis behauptet.
 - B1 insgesamt im geprüften Umfang abgeschlossen (19/19 gemeldete Testpunkte über beide Pakete). Entwickler wünscht Langzeitbeobachtung beider Pakete in regulären Spieltests. Keine gesonderte Langzeit-/HTML5-Abnahme oder vollständige Randfallabdeckung behauptet. Offene unabhängige Verdachtsfälle siehe KNOWNBUGS.md.
 
+## Flammenwerfer – Partikelbewegung B2.1 (25.11.2026)
+
+- Beim Abschuss normiert SonecFlameGunInput die Eigenbewegung und nur bei Bodenkontakt die zusätzliche Trägerbewegung auf die gemeinsame Timer-Zeitbasis (10 ms / Range 10); letzter Sonec-MoveTimer.CalcRange, Fallback Range. FlameNew übernimmt die resultierende Weltgeschwindigkeit einmalig zusätzlich zur unveränderten Schussgeschwindigkeit 1. Bereits erzeugte Partikel bleiben unabhängig.
+- FlameMove bremst beide Achsen zeitabhängig mit bisheriger Bremsstärke 0.01 je 60-Hz-Referenzschritt, integriert den Weg bis zum Stillstand ohne Richtungsumkehr. Keine zusätzliche Schwerkraft. Feuerrate, Lebensdauer, Partikelgröße, Grafik, Energieverbrauch, Schaden, Kollision und Sonec-Bewegungsresolver unverändert.
+- **Lokaler AGK-Compile und Entwicklertest bestanden (12/12, 1bed93b, 25.11.2026):** horizontal links/rechts im Stand, Vorwärts-/Rückwärtslaufen, horizontal/vertikal bewegte Plattformen, zusammenhängender leicht gekrümmter Strahl bei Aufstieg/Fall, horizontaler Flug, unabhängige ältere Partikel bei Richtungswechsel, keine auffälligen Lücken oder ungewollt starken diagonalen Bahnen. Keine offenen Einzelpunkte. Entwickler bewertet die Bewegung als berechenbar und fair und wünscht keine weiteren Bewegungsänderungen. Screenshot optional angekündigt, noch nicht vorgelegt.
+- Bewegungsfehler damit im geprüften Umfang behoben. Keine separate Framerate-/HTML5-/Langzeitmessung behauptet. Kollision und Deckung bleiben eigenständige offene Themen (KNOWNBUGS.md).
+
 ## 3. Alpha-Walker: unveränderter Referenzstand
 
 ### Pivots und IK
