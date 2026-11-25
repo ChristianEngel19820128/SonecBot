@@ -12,7 +12,7 @@
 // === Sonec movement balancing (current movement-step units) ===
 // Horizontal: speed limits, acceleration and passive braking.
 #constant SONEC_MAX_GROUND_SPEED 5
-#constant SONEC_MAX_AIR_THRUST_SPEED 5
+#constant SONEC_MAX_AIR_THRUST_SPEED 8
 #constant SONEC_GROUND_ACCELERATION 0.005
 #constant SONEC_AIR_THRUST_ACCELERATION 0.005
 // Unpowered jump steering: no energy cost, no passive braking.
@@ -27,9 +27,9 @@
 // Vertical: positive Y is down; accelerations use MoveTimer.CalcRange.
 // Gross jet thrust minus gravity = net upward acceleration (0.03 initially).
 #constant SONEC_FALL_ACCELERATION 0.01
-#constant SONEC_JETPACK_THRUST_ACCELERATION 0.04
-#constant SONEC_MAX_JETPACK_UP_SPEED 8
-#constant SONEC_MAX_FALL_SPEED 0
+#constant SONEC_JETPACK_THRUST_ACCELERATION 0.025
+#constant SONEC_MAX_JETPACK_UP_SPEED 10
+#constant SONEC_MAX_FALL_SPEED 16
 // A zero fall-speed limit disables it. Positive limits cap downward acceleration.
 #constant SONEC_JUMP_IMPULSE_Y 8
 // Optional minimum launch speed in the requested direction, relative to support.
@@ -145,7 +145,7 @@ function SonecInit(Sonec ref as TSonec,ProtoSonec ref as TProtoSonec,World ref a
 	TimeReset(Sonec.AnimationData.AnimTimer,Now)
 	TimeSet(Sonec.ObjectData.MoveTimer,10,10)
 	TimeReset(Sonec.ObjectData.MoveTimer,Now)
-	TimeSet(Sonec.InputTimer,15,1)
+	TimeSet(Sonec.InputTimer,10,1)
 	TimeReset(Sonec.InputTimer,Now)
 	TimeSet(Sonec.InputActionTimer,15,1)
 	TimeReset(Sonec.InputActionTimer,Now)
