@@ -33,7 +33,7 @@
 
 ## Genau ein nächster Schritt
 
-J2 (Landmine als Attrappe) gemäß [docs/JUMPPOD_SPEC.md](docs/JUMPPOD_SPEC.md) umsetzen. Separater Vorschlag vor J2: den bestätigten Flarak-Resetfehler nach Freigabe korrigieren; keine automatische Erweiterung der Codefreigabe.
+Treppenfunktion für gemeinsame Sockel vorrangig fachlich entscheiden (J1a-Vorschlag vor J2); siehe [docs/JUMPPOD_SPEC.md](docs/JUMPPOD_SPEC.md). Bestehender Flarak-Neustartfehler ausdrücklich zurückgestellt; keine Korrektur im A5-Paket.
 
 ## Referenzen
 

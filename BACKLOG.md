@@ -75,7 +75,6 @@ Bomber, Flarak, Jumppod einschließlich Landminen-Attrappe, Gefahren-/Erfahrungs
 - Knowledge-Base-Beiträge separat vereinbaren; Quellen/Revision, Bedingungen und Evidenzgrad erhalten.
 
 
-- **Sockel als Treppe (Idee):** J1-Entwicklertest (bb16236) bestätigt die blockierende Zweirechteckgeometrie, eine Treppenfunktion könnte sich aber als sinnvoll erweisen. Automatisches Hinaufsteigen für Jumppod, Landmine und Flak/Flarak später gemeinsam spezifizieren (insbesondere Auslösung von oben, Seitenblockade, Tiefenebenen und Restweg). Ersetzt die ältere Silowrack-Idee; keine automatische Bewegungsänderung.
 - **Jumppod-Sprungstärke (Balancing):** J1-Entwickler empfindet den Pod möglicherweise als zu stark; Ursache kann auch der normale Sprung sein. Beide getrennt im Spieltest bewerten. Aktuell Faktor 2.0; keine bestätigte Änderung.
 
 ## Spätere Eingabe- und Waffensteuerung (24. November 2026)

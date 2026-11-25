@@ -2,6 +2,7 @@
 
 **Stand:** 25. November 2026 · **Arbeitszweig:** develop
 
+- [ ] J1a-Vorschlag: priorisierte Treppenfunktion für gemeinsame Sockel fachlich entscheiden, dann gezielt umsetzen und prüfen, sofern freigegeben.
 - [ ] J2: Landmine als Attrappe inklusive gemeinsamer Schadens-/Spawnregeln.
 - [ ] J3: mechanische Flak/Flarak-Sockel ohne Änderung des Gegnerverhaltens.
 - [ ] J4: wiederverwendbare Rauch-Unit integrieren und A5 gebündelt prüfen.

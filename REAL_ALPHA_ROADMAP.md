@@ -159,6 +159,6 @@ Gefahrenzulassung, Erholungsrhythmus, tatsächlicher Ressourcengewinn und Muniti
 Bekannte Qualitätsfragen erhalten eine ausdrückliche Entscheidung bzw. dokumentierte Grenze; der integrierte Alpha-Build wird auf der Zielplattform geprüft.
 Diese Kriterien sind Prüfaufträge für die Umsetzung, keine bereits bestandene Alpha-Abnahme. itch.io bleibt Draft/Secret URL bis zu einer gesonderten Entscheidung.
 
-**Nächster Schritt:** A5, Paket J2 gemäß abgestimmter [Jumppod-Spezifikation](docs/JUMPPOD_SPEC.md) umsetzen.
+**Nächster Schritt:** priorisierte Treppenfunktion der gemeinsamen Sockel (J1a-Vorschlag) fachlich entscheiden, siehe [Jumppod-Spezifikation](docs/JUMPPOD_SPEC.md); Fremdbugs separat zurückgestellt.
 
 Spätere Varianten und Ideen stehen in [BACKLOG.md](BACKLOG.md). Frühere Langfassungen liegen im [Archiv](docs/archive/README.md); sie werden nur für konkrete historische Fragen gelesen.
