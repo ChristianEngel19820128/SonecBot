@@ -24,6 +24,7 @@ Verbindliche Grundlage: [SONEC_MOVEMENT_SPEC.md](docs/SONEC_MOVEMENT_SPEC.md).
 - Phase G1 implementiert: normaler Sprung erhält X-Schwung bis Landung/Jetpack, expliziter horizontaler Schubzustand statt Recoil-/Move-Flag, aktiver Luftschub bis ±5 (vorläufiger Testwert; vorhandenes stärkeres Momentum nicht gekappt), Jetpack bremst Fall kontinuierlich statt Abwärtskappung. CSV-Diagnose für relative Fußkreuzung und E/F-Auffälligkeiten ergänzt. E-Höhenregel und F-Randgeometrie unverändert. Entwicklertest `093c173` technisch bestanden, 9/9 angekreuzt; normale Sprünge laut Freitext wegen Energieüberschuss noch nicht gezielt prüfbar. Keine Gesamtspielgefühl-Abnahme. Elf Nacharbeitsbeobachtungen mit Aufwand/Priorität in Bewegungsspezifikation Abschnitt 13; keine neue Codefreigabe. Start außerhalb + Jetpack, schwacher vertikaler Schub, Tiefenebenen und Luft-/Bodengeometrie zuerst; Kanten, Rückstoß und Tippen/Halten gemeinsam abstimmen; alte Hop-Anzeige entfernen; Flammenwerfer separat.
 - G2a implementiert nach Abstimmung: alle Sonec-Eingaben bis vollständigem Welteintritt gesperrt, getrennte Schwerkraft/Bruttoschub/Sprungimpuls/Grenzen, optionales Fallmaximum zunächst aus. Zentrale Konstanten in sonec.agc; alte Hop-Anzeige entfernt, CSV erhalten. Entwicklertest `a41162c` 8/8 bestanden inkl. AGK-Compile. Beobachtung: Sonec weniger träge und relativ flott in der Luft; Feinjustierung vereinbarungsgemäß G2d, vorläufige Werte unverändert.
 - G2b implementiert: sofortiger Sprung bei neuer Hoch-Eingabe am Boden, Jetpack nach 180 ms Halten, Energiezufluss weiter wirksam; kein Dauersprung. Horizontaler Mindestimpuls optional (0 deaktiviert), vorhandenen Gegenschwung erhalten. Granatwerferrückstoß additiv (1,0), keine Eingabeflag-Änderung; Richtung umkehrbar. Entwicklertest `6c53fac` 11/11 bestanden inkl. AGK-Compile, Tippen/Halten, Fall, Loslassen, kein Dauersprung, Schwung, Rückstoß und bisherige Kontakte. Keine zusätzlichen Beobachtungen. Optionaler Mindestimpuls bleibt 0; Nichtnullwerte im G2d-Balancing prüfen.
+- G2c nach Abstimmung implementiert: Fußgrenze, richtungsabhängige Kistenrandlandung, Plattformfall ohne Hop, kombinierte Seitenlinie/Kreise und begrenzte Abstandskorrektur; horizontale Ebenenlösung und lokale dynamische Freigabehöhe (100). AGK-Compile/Funktionstest offen; CSV erhalten.
 
 ## Vereinbarter Arbeitsmodus für die Bewegungsumstellung
 
@@ -48,7 +49,7 @@ Verbindliche Grundlage: [SONEC_MOVEMENT_SPEC.md](docs/SONEC_MOVEMENT_SPEC.md).
 
 ## Genau ein nächster vereinbarter Schritt
 
-G2c fachlich abstimmen: Fuß-/Bein-Kantenabgang und Randlandung, Mini-Hop nur bei Kisten, Übergang Luft-/Bodenseitengeometrie ohne Teleport, faire Tiefenebenenübernahme bei horizontaler Annäherung und vertikaler Plattformbewegung. Erst nach abgestimmtem Soll implementieren; G2d lokales Balancing folgt.
+G2c lokal kompilieren und gebündelt testen: Fußkanten, Randlandungen nach innen/außen/Stillstand, Seitenlinie/Ecken, Abstand nach Landung, horizontale Ebenenlösung, lokale Höhenfreigabe und bewegte Plattformen, Regression A–G2b. Danach G2d lokales Balancing und Gesamtabnahme.
 
 ## Referenzen
 
