@@ -111,11 +111,11 @@ endfunction
 
 // Same fixed closed-frame base for all A5 objects. The sprite pivot
 // and deployable launcher parts are not mechanical geometry.
-function SockelUpdateRects(Lower ref as TChest,Upper ref as TChest,Plate ref as TPlate,PlateIndex as integer,CenterOffsetX as float)
-    JumppodRectUpdate(Lower,Plate,PlateIndex,CenterOffsetX-JUMPPOD_BASE_W*0.5,-JUMPPOD_BASE_H,JUMPPOD_BASE_W,JUMPPOD_BASE_H)
-    JumppodRectUpdate(Upper,Plate,PlateIndex,CenterOffsetX-JUMPPOD_TOP_W*0.5,-JUMPPOD_BASE_H-JUMPPOD_TOP_H,JUMPPOD_TOP_W,JUMPPOD_TOP_H)
-    Lower.MechanicalStepLevel = 1
-    Upper.MechanicalStepLevel = 2
+function SockelUpdateRects(LowerRect ref as TChest,UpperRect ref as TChest,Plate ref as TPlate,PlateIndex as integer,CenterOffsetX as float)
+    JumppodRectUpdate(LowerRect,Plate,PlateIndex,CenterOffsetX-JUMPPOD_BASE_W*0.5,-JUMPPOD_BASE_H,JUMPPOD_BASE_W,JUMPPOD_BASE_H)
+    JumppodRectUpdate(UpperRect,Plate,PlateIndex,CenterOffsetX-JUMPPOD_TOP_W*0.5,-JUMPPOD_BASE_H-JUMPPOD_TOP_H,JUMPPOD_TOP_W,JUMPPOD_TOP_H)
+    LowerRect.MechanicalStepLevel = 1
+    UpperRect.MechanicalStepLevel = 2
 endfunction
 
 function JumppodFollow(Pod ref as TJumppod,Plate ref as TPlate)
@@ -240,8 +240,8 @@ function JumppodBuildMechanicalList(ChestList ref as TChestList,PlateList ref as
     local Slot as integer
     local Last as integer
     local Empty as TChest
-    local Lower as TChest
-    local Upper as TChest
+    local LowerRect as TChest
+    local UpperRect as TChest
     Last = ChestList.Chest.Length
     if JumppodList.Length > Last then Last = JumppodList.Length
     if FlarakList.Length > Last then Last = FlarakList.Length
@@ -273,11 +273,11 @@ function JumppodBuildMechanicalList(ChestList ref as TChestList,PlateList ref as
             if PlateIndex >= 0 and PlateIndex <= PlateList.Plate.Length
                 if PlateList.Plate[PlateIndex].Enabled = TRUE
                     Slot = i*SONEC_MECHANICAL_SLOT_STRIDE
-                    Lower = Empty
-                    Upper = Empty
-                    SockelUpdateRects(Lower,Upper,PlateList.Plate[PlateIndex],PlateIndex,FlarakList[i].PlateOffsetX)
-                    SonecMechanicalList.Chest[Slot+SONEC_MECHANICAL_FLARAK_LOWER_SLOT] = Lower
-                    SonecMechanicalList.Chest[Slot+SONEC_MECHANICAL_FLARAK_UPPER_SLOT] = Upper
+                    LowerRect = Empty
+                    UpperRect = Empty
+                    SockelUpdateRects(LowerRect,UpperRect,PlateList.Plate[PlateIndex],PlateIndex,FlarakList[i].PlateOffsetX)
+                    SonecMechanicalList.Chest[Slot+SONEC_MECHANICAL_FLARAK_LOWER_SLOT] = LowerRect
+                    SonecMechanicalList.Chest[Slot+SONEC_MECHANICAL_FLARAK_UPPER_SLOT] = UpperRect
                 endif
             endif
         endif
