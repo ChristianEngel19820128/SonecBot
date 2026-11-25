@@ -4,7 +4,7 @@
 
 ## Jetzt
 
-- [ ] G2d-2 / Jetstream: Entwickler-Balancing `ffe2e39` eingecheckt, Langzeitbeobachtung offen. Optische Zwischenpartikel implementiert; AGK-Compile, Sichttest und Performance prüfen, danach Gesamtspielgefühl/Parameterstand dokumentieren. [Spezifikation §13](docs/SONEC_MOVEMENT_SPEC.md#13-offene-detailfragen-für-technische-durchsicht-und-tests).
+- [ ] G2d-2: Entwickler-Balancing `ffe2e39` eingecheckt; Jetstream `4cba3e3` 7/7 bestanden, Abstand in `43f4a35` auf 4.0 feinjustiert. Langzeitbeobachtung/Gesamtspielgefühl offen; weitere Parameter bei Bedarf direkt einchecken und Gesamtabnahme dokumentieren. [Spezifikation §13](docs/SONEC_MOVEMENT_SPEC.md#13-offene-detailfragen-für-technische-durchsicht-und-tests).
 
 ## Danach / separat
 
