@@ -3,19 +3,21 @@
 Stand: 25.11.2026 · develop. Regeln: [AGENTS.md](AGENTS.md).
 Vor automatisierten Prüfungen auf Dubletten prüfen. Keine automatische Codefreigabe. Behobene oder widerlegte Einträge nach Nachweis entfernen; Historie in Git. IDs erst nach geprüfter Zuordnung vergeben.
 
-## Flarak-Rakete bleibt nach Neustart erhalten
+## Spielobjekte/Effekte bleiben nach Neustart erhalten (Flarak-Rakete, kleine Explosionen)
 - ID: Noch nicht vergeben · Priorität: Offen · Status: Bestätigt.
 - Entwicklerbefund: J1-Test am 25.11.2026, Revision bb16236: bisher mysteriöses Sprite als Flarak-Rakete identifiziert; möglicherweise bleiben auch Launcher erhalten. Soll: alle Spielobjektinstanzen beim Neustart entfernen, Prototypressourcen behalten.
 - Quellbefund bb16236: `GameCreate` ruft `FlarakVisualTestCreate` auf, `GameInit` leert die FlarakList nicht. `FlarakDoAll` und `FlarakDrawAll` verarbeiten auch Raketen deaktivierter Launcher. Die fehlende Reset-Anbindung erklärt den Befund; sichtbare weitere Altobjekte sind noch nicht bestätigt.
+- Ergänzung A5c-Test f77a8c3, 25.11.2026: kleine Explosionen werden nach Neustart gezeichnet; Entwickler vermutet Flak. Quellbeleg: GameInit ruft ExplosionInit und BulletInit auf, beide leeren ihre Listen; FlarakList fehlt weiterhin. FlarakRocketDo kann bei Treffer/Ablauf neue kleine Explosionen vom Typ 3 erzeugen, Flak nutzt explosive Bullets. Ein fortlebendes Altobjekt könnte also nach dem Reset neue Explosionen erzeugen; konkrete Quelle nicht isoliert, kein Nachweis einer ungeleerten Explosionsliste.
+- Entwicklerauftrag für separaten Bug-Chat: sämtliche Spielobjekt-/Effekt-Initialisierungen auf vollständige Löschung/Deaktivierung prüfen, einschließlich globaler Einzelinstanzen, Listen, per Instanz erzeugter Sprites, Projektile, Timer, Folgespawns und Referenzen; Prototypen erhalten. Erst Befunde sichern, dann Korrekturpakete abstimmen.
 - Vorschlag: separate Flarak-Resetfunktion, sämtliche instanzbezogenen Sprites (Basis, Launcher, Flak, beide Raketen, Warnung) löschen, Liste leeren, bei GameInit aufrufen; übrige Objekt-Resetpfade gezielt auf Vollständigkeit prüfen.
 - Reproduktion/Abnahme: bei aktiver Rakete bzw. vorhandenen intakten/zerstörten Flak/Flarak neu starten, keine alten Sprites, Raketen, KI oder Treffer; mehrfach wiederholen. Korrektur noch nicht implementiert.
 - Dublette: ersetzt „Sporadisches Sprite nach Neustart“, ursprünglich aus TODO, Revision 0ba2ee8c665325f25a9e7da38a86c9ca49cb7e5a.
 
 ## Plattformobjekte: falsche Zeichnungsreihenfolge (A5c)
-- ID: Noch nicht vergeben · Priorität: Offen · Status: In Bearbeitung (Korrektur implementiert, lokale Abnahme offen).
+- ID: Noch nicht vergeben · Priorität: Offen · Status: In Bearbeitung (Korrektur implementiert, Teiltest 2/6, Langzeitbeobachtung offen).
 - A6a-Test 1a3f642, 25.11.2026: Flak, Flarak, Landmine und Jumppod werden bei überlappenden Plattformen unzutreffend überdeckt bzw. überdecken Vordergrundplattformen. Soll: Darstellung der plattformgebundenen Objekte im Draw-Lauf ihrer Trägerplatte in korrekter Tiefenreihenfolge.
 - Quellbefund: `PlateAndChestDrawAll` ruft `JumppodDrawPlate` bereits pro Platte auf; `GameAnimate` ruft `FlarakDrawAll` nach allen Platten auf. Die genaue Ursache der Pod-/Minenbeobachtung ist damit noch nicht vollständig geklärt. `FlarakDraw` zeichnet auch Raketen; frei fliegende Raketen nicht an die Platte binden.
-- A5c implementiert: Stationen und angedockte Raketen je Trägerplatte; freie Raketen separat mit Fallback bei fehlendem Träger. Pod/Mine bereits im Plattenlauf und unverändert. Bestehende Plattenreihenfolge unverändert, kein Eingriff in Mechanik, Treffer oder Rauch. Lokale Abnahme offen: überlappende Plattformen, intakte/zerstörte Sockel, ausgefahrene Waffen und Raketen; Pod/Mine ausdrücklich mitprüfen. Keine Dublette im bisherigen Register.
+- A5c implementiert: Stationen und angedockte Raketen je Trägerplatte; freie Raketen separat mit Fallback bei fehlendem Träger. Pod/Mine bereits im Plattenlauf und unverändert. Bestehende Plattenreihenfolge unverändert, kein Eingriff in Mechanik, Treffer oder Rauch. Teiltest f77a8c3 am 25.11.2026: AGK-Compile und bisherige Spielfunktionen bestätigt (2/6). Vier Sichtpunkte zu Flak/Flarak, Pod/Mine, Wracks, ausgefahrenen Waffen/Raketen mangels häufiger Plattformüberlappungen nicht geprüft; Langzeitbeobachtung. Ursprünglich sichtbarer Sockel könnte Flak gewesen sein, Pod-/Minenbefund nicht separat bestätigt. Eintrag bleibt bis geeigneter Sichtabnahme offen. Keine Dublette.
 
 ## Gelegentlich fehlende Direkttreffer
 - ID: Noch nicht vergeben · Priorität: Offen · Status: Vermutet.
