@@ -2,7 +2,7 @@
 
 **Stand:** 25. November 2026 · **Arbeitszweig:** develop
 
-- [ ] J1: Jumppod und gemeinsame Sockelmechanik implementieren und lokal prüfen; [A5-Spezifikation](docs/JUMPPOD_SPEC.md) ist abgestimmt, technische Voranalyse liegt vor.
+- [ ] J1: Jumppod und gemeinsame Sockelmechanik implementiert; AGK-Compile und lokaler Funktionstest gemäß [A5-Spezifikation](docs/JUMPPOD_SPEC.md) offen.
 - [ ] J2: Landmine als Attrappe inklusive gemeinsamer Schadens-/Spawnregeln.
 - [ ] J3: mechanische Flak/Flarak-Sockel ohne Änderung des Gegnerverhaltens.
 - [ ] J4: wiederverwendbare Rauch-Unit integrieren und A5 gebündelt prüfen.

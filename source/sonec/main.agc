@@ -110,6 +110,7 @@ global SonecEdgeCsvStarted as integer
 #include "tower.agc"
 #include "plate.agc"
 #include "chest.agc"
+#include "jumppod.agc"
 #include "orb.agc"
 #include "mine.agc"
 #include "simplemine.agc"

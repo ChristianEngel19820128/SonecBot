@@ -12,6 +12,7 @@ function GameCreate(Game ref as TGame,vx as integer,vy as integer)
 	
 	GameProtoLoad(Game)
 	FlarakVisualTestCreate()
+	ProtoJumppodLoad()
 	WarningCreate(Game.Warning,Game.Screen)
 	
 	SetJoystickIndex(Game)
@@ -129,6 +130,7 @@ function GameInit(Game ref as TGame,Now as integer)
 	CloudInit(Game.CloudList,Game.ProtoCloud,Game.World,Now)
 	PlateInit(Game.PlateList)
 	ChestInit(Game.ChestList)
+	JumppodInit(Now)
 	JetfireInit(Game.JetfireList)
 	EnergieInit(Game.EnergieList)
 	SonecInit(Game.Sonec,Game.ProtoSonec,Game.World,Game.Screen,Now)
@@ -247,10 +249,10 @@ function SonecEdgeCsvWrite(Game ref as TGame,Now as integer)
 	if Game.Sonec.CollisionData.ListType = TYPECHEST
 		ChestIndex = Game.Sonec.CollisionData.Index
 	endif
-	if ChestIndex >= 0 and ChestIndex <= Game.ChestList.Chest.Length
-		if Game.ChestList.Chest[ChestIndex].Enabled = TRUE
-			ChestX = Game.ChestList.Chest[ChestIndex].ObjectData.Position.x
-			ChestVx = Game.ChestList.Chest[ChestIndex].ObjectData.MoveSpeed.x
+	if ChestIndex >= 0 and ChestIndex <= SonecMechanicalList.Chest.Length
+		if SonecMechanicalList.Chest[ChestIndex].Enabled = TRUE
+			ChestX = SonecMechanicalList.Chest[ChestIndex].ObjectData.Position.x
+			ChestVx = SonecMechanicalList.Chest[ChestIndex].ObjectData.MoveSpeed.x
 		endif
 	else
 		ChestIndex = -1
@@ -338,6 +340,7 @@ function GameDo(Game ref as TGame,Now as integer)
                 FlarakChance = 700000 / (Game.PlateList.Plate[Index].ObjectData.Size.Width * 0.25)
                 if FlarakChance > 7000 then FlarakChance = 7000
                 if random(0,10000) < FlarakChance then FlarakSpawn(Game.PlateList,Game.ChestList,Index,Now)
+                JumppodSpawnOnPlate(Game,Index,Now)
 				if WalkerCountAll(Game.WalkerList) < 5
 					// Longer platforms provide more room for walkers (35% at 200 px).
 					WalkerChance = 3500 * Game.PlateList.Plate[Index].ObjectData.Size.Width / 200
@@ -433,7 +436,10 @@ function GameDo(Game ref as TGame,Now as integer)
 	ChestCheckAll(Game.ChestList,Game.ProtoChest)
 	PlateCheckAll(Game.PlateList,Game.ProtoPlate)
 	ChestHealthRegenerate(Game.ChestList,Game,Now)
-	SonecCollidePlate(Game.Sonec,Game.PlateList,Game.ChestList,Game.World,Game.Screen)
+	JumppodMoveAll(Game.PlateList,Now)
+	JumppodBuildMechanicalList(Game.ChestList)
+	SonecCollidePlate(Game.Sonec,Game.PlateList,SonecMechanicalList,Game.World,Game.Screen)
+	JumppodCollideExplosions(Game,Now)
 	SonecEdgeCsvWrite(Game,Now)
 	
 	FlashLifeCycle(Game.FlashList,Now)
@@ -445,6 +451,7 @@ function GameDo(Game ref as TGame,Now as integer)
 	FlameCollideOrbs(Game.FlameList,Game.OrbList)
 	FlameCollideMine(Game.FlameList,Game.MineList)
 	FlameCollideMine(Game.FlameList,Game.SimpleMineList)
+	JumppodCollideFlames(Game,Now)
 	FlameCollideChest(Game.FlameList,Game.ChestList)
 	FlameCollideWalkers(Game.FlameList,Game.WalkerList,Now)
 	FlameCollideDrone(Game.FlameList,Game.Drone)
@@ -473,6 +480,7 @@ function GameDo(Game ref as TGame,Now as integer)
 	GrenadeCollideWalkers(Game.GrenadeList,Game.WalkerList,Game,Now)
 	GrenadeCollideDrone(Game.GrenadeList,Game.Drone,Game,Now)
     GrenadeCollideFlaraks(Game.GrenadeList,Game,Now)
+	JumppodCollideGrenades(Game,Now)
 	GrenadeCollidePlate(Game.GrenadeList,Game.PlateList,Game,Now)
 	
 	PlasmaBlitzLifeCycle(Game.PlasmaBlitzList,Now)
@@ -487,6 +495,7 @@ function GameDo(Game ref as TGame,Now as integer)
 	PlasmaBlitzCollideWalkers(Game.PlasmaBlitzList,Game.WalkerList,Now)
 	PlasmaBlitzCollideDrone(Game.PlasmaBlitzList,Game.Drone,Now)
     PlasmaBlitzCollideFlaraks(Game.PlasmaBlitzList,Game,Now)
+	JumppodCollidePlasma(Game,Now)
 	PlasmaBlitzCollisionTimerReset(Game.PlasmaBlitzList,Now)
 	// D5c: consume one destruction event after all weapon collisions.
 	if DroneDeathEffectPending = TRUE
@@ -585,7 +594,7 @@ function GameDraw(Game ref as TGame)
 	
 	//PlateDrawAll(Game.PlateList,Game.ProtoPlate)
 	//ChestDrawAll(Game.ChestList,Game.ProtoChest)
-	PlateAndChestDrawAll(Game.PlateList,Game.ProtoPlate,Game.ChestList,Game.ProtoChest)
+	PlateAndChestDrawAll(Game.PlateList,Game.ProtoPlate,Game.ChestList,Game.ProtoChest,Game.World)
 	
 	EnergieDrawAll(Game.EnergieList,Game.ProtoEnergie)
 	

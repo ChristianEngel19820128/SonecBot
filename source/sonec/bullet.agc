@@ -629,6 +629,21 @@ function BulletCollidePlayerTargets(BulletList ref as TBulletList,OrbList ref as
                 endif
             next k
 
+            // Both rectangles participate in the same nearest-hit sweep, including wrecks.
+            for k = 0 to JumppodList.Length
+                if JumppodList[k].Enabled = TRUE
+                    Entry = JumppodBulletEntry(BulletList.Bullet[i],JumppodList[k])
+                    if Entry >= 0 and Entry < BestEntry
+                        BestEntry = Entry
+                        BestType = 8
+                        BestIndex = k
+                    endif
+                endif
+            next k
+            if BestType = 8
+                JumppodApplyDamage(BestIndex,Game,BulletList.Bullet[i].BulletData.Damage,Now)
+                BulletDelete(BulletList,i)
+            endif
             if BestType = 7
                 FlarakApplyDamage(FlarakList[BestIndex],Game,BulletList.Bullet[i].BulletData.Damage,Now)
                 BulletDelete(BulletList,i)

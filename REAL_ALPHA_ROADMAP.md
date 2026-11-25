@@ -59,13 +59,13 @@ Der Draft-Test vom 18.11. belegt keine Auslieferung späterer Alpha-Änderungen.
 - Plattformdeckung und Explosionsschaden wurden implementiert und lokal geprüft; abschließendes Balancing bleibt offen.
 - Bomber-Abschüsse sollen selten bleiben; kein Vernichtungszwang. Charakteristischer Ankündigungssound und weitere Politur bei Bedarf prüfen.
 
-### A5 – Jumppod, Landmine, Sockel und Rauch (abgestimmt, Umsetzung offen)
+### A5 – Jumppod, Landmine, Sockel und Rauch (J1 implementiert, Test offen)
 
 - J1: hilfreicher Jumppod mit doppeltem normalen Sprungimpuls ohne Energiekosten; zwei Frames, auslösbar durch Kontakt von oben.
 - J2: Landmine als erkennbare Attrappe (blinkendes Quadrat in der Nähe), sofortige stärkere Schadensexplosion, 25 % der regelmäßigen Testspawns.
 - J3: gemeinsame Zweirechteck-Sockelmechanik auch für Flak/Flarak; Sockel bleiben nach Zerstörung bestehen; bestehende Luftabwehrfunktion erhalten.
 - J4: wiederverwendbare Rauch-Unit; kontinuierliche Emission an zerstörten Objekten bis zum Weltende.
-- Details, Interaktionen, Parameterrahmen und Abnahme in [docs/JUMPPOD_SPEC.md](docs/JUMPPOD_SPEC.md). Fachlich abgestimmt am 25.11.2026; noch keine Implementierung oder Laufzeitabnahme.
+- Details, Interaktionen, Parameterrahmen und Abnahme in [docs/JUMPPOD_SPEC.md](docs/JUMPPOD_SPEC.md). Fachlich abgestimmt am 25.11.2026; J1 implementiert, lokaler Compile/Test offen, J2–J4 noch nicht umgesetzt.
 
 Legacy-Grafiken (`rakstellung.png`, `spacejet.png`, `falle.bmp`) sind Vorlagen, kein Beweis fertig implementierter Altmechaniken.
 `falle.bmp` bezeichnet den Jumppod. Neue Grafikfassungen können separat entstehen; alte Konzepte müssen nicht unverändert übernommen werden.
@@ -159,6 +159,6 @@ Gefahrenzulassung, Erholungsrhythmus, tatsächlicher Ressourcengewinn und Muniti
 Bekannte Qualitätsfragen erhalten eine ausdrückliche Entscheidung bzw. dokumentierte Grenze; der integrierte Alpha-Build wird auf der Zielplattform geprüft.
 Diese Kriterien sind Prüfaufträge für die Umsetzung, keine bereits bestandene Alpha-Abnahme. itch.io bleibt Draft/Secret URL bis zu einer gesonderten Entscheidung.
 
-**Nächster Schritt:** A5, Paket J1 gemäß abgestimmter [Jumppod-Spezifikation](docs/JUMPPOD_SPEC.md) umsetzen und lokal prüfen.
+**Nächster Schritt:** A5, Paket J1 gemäß abgestimmter [Jumppod-Spezifikation](docs/JUMPPOD_SPEC.md) lokal kompilieren und prüfen.
 
 Spätere Varianten und Ideen stehen in [BACKLOG.md](BACKLOG.md). Frühere Langfassungen liegen im [Archiv](docs/archive/README.md); sie werden nur für konkrete historische Fragen gelesen.

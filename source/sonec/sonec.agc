@@ -1537,7 +1537,26 @@ function SonecResolveContact(Sonec ref as TSonec,PlateList ref as TPlateList,Che
 		endif
 		Sonec.CollisionMoveStart.y = SurfaceY - Sonec.ObjectData.Size.Height*0.5
 		Sonec.CollisionMoveEnd.y = SurfaceEndY - Sonec.ObjectData.Size.Height*0.5
-		if Best.ListType = TYPECHEST then SonecChestLandingEffects(Sonec,ChestList,i,Screen)
+		if Best.ListType = TYPECHEST
+			if JumppodTryLaunch(i) = TRUE
+				// Land first, then release carrier momentum once, as for a normal jump.
+				// Apply the pod impulse to the remaining swept path, not a second full tick.
+				SonecStartNormalJump(Sonec,0)
+				Sonec.State.Jump = FALSE
+				Sonec.State.Duck = FALSE
+				Sonec.State.Fall = TRUE
+				Sonec.CollisionData.ListType = 0
+				Sonec.CollisionData.Index = -1
+				Sonec.ObjectData.MoveSpeed.y = Sonec.ObjectData.MoveSpeed.y-SONEC_JUMP_IMPULSE_Y*JUMPPOD_JUMP_FACTOR
+				Sonec.CollisionMoveEnd.y = Sonec.CollisionMoveEnd.y-SONEC_JUMP_IMPULSE_Y*JUMPPOD_JUMP_FACTOR*(1.0-Sonec.CollisionSegmentStartTime)
+				if Sonec.SpawnEntering = FALSE and Sonec.CollisionMoveEnd.y < Sonec.ObjectData.Size.Height*0.5
+					Sonec.CollisionMoveEnd.y = Sonec.ObjectData.Size.Height*0.5
+					if Sonec.ObjectData.MoveSpeed.y < 0 then Sonec.ObjectData.MoveSpeed.y = 0
+				endif
+			else
+				SonecChestLandingEffects(Sonec,ChestList,i,Screen)
+			endif
+		endif
 	endif
 	if Best.Kind = 2
 		// ContactX includes only the wall's remaining displacement, so

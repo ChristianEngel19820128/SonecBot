@@ -134,6 +134,7 @@ function ExplosionNew(Explosion ref as TExplosion,ProtoExplosion ref as TProtoEx
 	Explosion.LastSimpleMineHitMs.Length = -1
 	Explosion.LastWalkerHitMs.Length = -1
     Explosion.LastFlarakHitMs.Length = -1
+    Explosion.LastJumppodHitMs.Length = -1
 	Explosion.MeasureChecks = 0
 	Explosion.MeasureHits = 0
 	Explosion.MeasureDamage = 0

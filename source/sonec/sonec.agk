@@ -85,6 +85,7 @@ FILE_32=timer.agc;-1
 FILE_33=tower.agc;-1
 FILE_34=walker.agc;-1
 FILE_35=world.agc;-1
+FILE_36=jumppod.agc;-1
 
 [files]
 
