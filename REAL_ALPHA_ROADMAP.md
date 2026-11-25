@@ -1,7 +1,7 @@
 # SonecBot – Real Alpha Roadmap
 
 **Stand:** 25. November 2026 · **Arbeitsbranch:** `develop`
-**Status:** Arbeitsblock A und Bewegungsumstellung abgeschlossen; separater Flammenwerfer-Bug-Chat vereinbart, Arbeitsblock B offen.
+**Status:** A5 und Bewegungsumstellung abgeschlossen; A6 als letzte Ergänzung von Arbeitsblock A aufgenommen, separater Flammenwerfer-Bug-Chat vereinbart, Arbeitsblock B offen.
 **Quellenbasis:** Entwicklerentscheidungen im Gespräch; Dokumentstand [`87927e5`](https://github.com/ChristianEngel19820128/SonecBot/commit/87927e564d5ce1539878b84773c8f8ea40c258d5), letzte Code-Referenz [`c2a2d4e`](https://github.com/ChristianEngel19820128/SonecBot/commit/c2a2d4ed1dd7b27de6aa13f1058a5431509b2d45).
 Nächste Aufgaben: [TODO.md](TODO.md) · Chatübergabe: [HANDOFF.md](HANDOFF.md) · Spätere Ideen: [BACKLOG.md](BACKLOG.md).
 Die Roadmap legt den Entwicklungsrahmen fest. Einzelne Codeänderungen, `main`-Merge und Veröffentlichung werden separat vereinbart.
@@ -70,6 +70,12 @@ Der Draft-Test vom 18.11. belegt keine Auslieferung späterer Alpha-Änderungen.
 
 Legacy-Grafiken (`rakstellung.png`, `spacejet.png`, `falle.bmp`) sind Vorlagen, kein Beweis fertig implementierter Altmechaniken.
 `falle.bmp` bezeichnet den Jumppod. Neue Grafikfassungen können separat entstehen; alte Konzepte müssen nicht unverändert übernommen werden.
+
+### A6 – Letzte Weltobjekt-Ergänzungen (25.11.2026 aufgenommen, Detailabstimmung offen)
+
+- A6a: dunkle Hintergrundkisten als Mod der vorhandenen Kisten. Optisch dunkler und im Hintergrund; Sonec kann durchlaufen und hindurchspringen, keine mechanische Sonec-Kollision. Übrige Eigenschaften wie normale Kisten. Vorschlag nach Quellprüfung ad063bf: Variante in TChest markieren, dieselbe ChestList für Schäden, Rewards und Plattformbindung, nur Sonec-Resolveradapter lässt Hintergrundkisten aus; normale Kisten unverändert. Darstellung, Spawnanteil, Platzierungsregeln und Verhalten gegenüber Walker/Gegnerprojektilen im Detail bestätigen; noch keine Umsetzung.
+- A6b: größere und variablere Rudelformation einfacher Minen. A3-Grundversion bleibt abgenommen, aber ursprünglicher Backlog-Wunsch nach individuell variierenden Zeilenhöhen und Spaltenabständen ist nicht vollständig umgesetzt. Quellbefund ad063bf: SimpleMinePackAdd verwendet 2×3 Slots, 3–6 Minen, ein gemeinsames X-Intervall 32–48 px und Y-Intervall 48–72 px (auch für Diagonale und Keil) sowie ±8 px je Mine. Entwickler fordert größere Abstände und Zeilen-/Spaltengrößen. Vorschlag: eigene Rudelparameter, großzügigeres Raster mit individuell variierten Zeilen-/Spaltenabständen und kontrolliertem Versatz. Rasterdimensionen und Testwerte noch abstimmen; Diagonale, Keil, Minenzahl, Spawnzeit, Drift und Weltgrenzen nicht beiläufig verändern.
+- Keine weiteren Weltobjekte aus dem Backlog für Arbeitsblock A ausgewählt. Rauchsystem bleibt abgeschlossen. Beide Ergänzungen sind Real-Alpha-Umfang; konkrete Implementierung nach Detailabstimmung, keine automatische Freigabe weiterer Varianten.
 
 ### Sonec-Bewegungsumstellung – abgeschlossen (25.11.2026)
 
@@ -160,6 +166,6 @@ Gefahrenzulassung, Erholungsrhythmus, tatsächlicher Ressourcengewinn und Muniti
 Bekannte Qualitätsfragen erhalten eine ausdrückliche Entscheidung bzw. dokumentierte Grenze; der integrierte Alpha-Build wird auf der Zielplattform geprüft.
 Diese Kriterien sind Prüfaufträge für die Umsetzung, keine bereits bestandene Alpha-Abnahme. itch.io bleibt Draft/Secret URL bis zu einer gesonderten Entscheidung.
 
-**Nächster Schritt:** vereinbarter separater Flammenwerfer-Bug-Chat gemäß [KNOWNBUGS.md](KNOWNBUGS.md); anschließend Arbeitsblock B fachlich abstimmen. Sonstige Fremdbugs zurückgestellt; keine weiteren Rauchänderungen.
+**Nächster Schritt:** A6 fachlich konkretisieren und paketweise umsetzen; danach vereinbarter separater Flammenwerfer-Bug-Chat gemäß [KNOWNBUGS.md](KNOWNBUGS.md), anschließend Arbeitsblock B fachlich abstimmen. Sonstige Fremdbugs zurückgestellt; keine weiteren Rauchänderungen.
 
 Spätere Varianten und Ideen stehen in [BACKLOG.md](BACKLOG.md). Frühere Langfassungen liegen im [Archiv](docs/archive/README.md); sie werden nur für konkrete historische Fragen gelesen.

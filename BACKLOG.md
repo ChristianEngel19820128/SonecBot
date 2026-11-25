@@ -1,17 +1,15 @@
 # SonecBot – Ideen für vielleicht später
 
-**Stand:** 23. November 2026  
+**Stand:** 25. November 2026  
 **Status:** Unverbindliche Sammlung; ohne feste Reihenfolge, Termin oder Implementierungsfreigabe.
 
 Die beschlossenen Real-Alpha-Grundversionen stehen in [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROADMAP.md), nächste Schritte in [TODO.md](TODO.md).
-Bomber, Flarak, Jumppod einschließlich Landminen-Attrappe, Gefahren-/Erfahrungsgrundsystem, kleine Ziele und die Munitions-/Panzerungsbasis sind dorthin übernommen.
+Bomber, Flarak, Jumppod einschließlich Landminen-Attrappe, Gefahren-/Erfahrungsgrundsystem, kleine Ziele und die Munitions-/Panzerungsbasis sind dorthin übernommen. Am 25.11.2026 zusätzlich dunkle Hintergrundkisten und Nacharbeit an der Minen-Rudelformation in A6 aufgenommen; konkrete Ausführung dort abstimmen.
 
 ## Varianten und Unterstützung
 
-- **Minen-Mod „Rudelformation“ (Idee, 24.11.2026):** Die bislang sehr statische Anordnung der Minen durch kontrollierten Zufallscharakter in X-/Y-Positionen sowie variierenden Zeilenhöhen und Spaltenabständen auflockern. Verteilung, Mindestabstände, Kollisionsfreiheit und Spielbalance vor Umsetzung festlegen. Keine Implementierungsfreigabe.
 
 
-- **Dunkle Hintergrundkisten:** Als Variante/Mod der normalen Kisten vorgesehen: optisch dunkler und im Hintergrund; Sonec kann hindurchlaufen und hindurchspringen (keine blockierende Sonec-Kollision). Alle übrigen Eigenschaften und Funktionen sollen wie bei normalen Kisten bleiben. Spätere Umsetzung separat vereinbaren; aktuell nur vorgemerkt.
 
 - **Quadrokopter:** eigenständiges, noch offenes Konzept. Möglich sind zeitweilige verbündete Unterstützung, etwa als Belohnung nach zerstörten Flaraks, ein auf Abstand angreifender Verfolger oder Aufklärung. Keine Rolle endgültig gewählt; keine weitere Kamikaze-Kopie der intelligenten Mine als Vorgabe.
 - **Flarak-Massenwerfer:** ungenaue Raketensalve ohne Zielsuchraketen als spätere Modifikation.
