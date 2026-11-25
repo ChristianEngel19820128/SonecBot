@@ -8,7 +8,7 @@ Der Entwickler entscheidet über Spielrichtung, Prioritäten und Veröffentlichu
 
 1. `AGENTS.md` und den aktuellen `HANDOFF.md` lesen; den tatsächlichen `develop`-HEAD abfragen.
 2. Die konkrete Aufgabe und vorhandene Freigaben aus dem Gespräch berücksichtigen.
-3. Danach nur relevante Stellen in TODO, Release-Roadmap, Fachdokumenten und Quellcode lesen.
+3. Bei Fehleranalyse und automatisierten Codeprüfungen zuerst `KNOWNBUGS.md` auf bekannte Befunde und Dubletten prüfen; danach nur relevante Stellen in TODO, Release-Roadmap, Fachdokumenten und Quellcode lesen.
 4. Archive nur bei einer konkreten historischen Frage öffnen. Keine automatische Chat-/Dateiübertragung voraussetzen.
 
 Eine Bitte um Untersuchung, Review oder Buganalyse erlaubt zunächst nur lesende Arbeit.
@@ -18,7 +18,7 @@ Ein Dokumenteintrag oder eine Idee ist für sich noch kein Implementierungsauftr
 
 ## 2. Entwicklung und Schutz bestehender Funktionen
 
-- Kleine, verständliche Änderungen auf `develop`; die betroffenen Ausführungspfade vorher nachvollziehen.
+- Fachlich zusammenhängende Arbeitspakete eigenständig umsetzen; kleine, verständliche Änderungen und nachvollziehbare Commit-Grenzen auf `develop`; die betroffenen Ausführungspfade vorher nachvollziehen.
 - Bewegung, Energie, Waffen, Schild, Kollisionen, Gegner, Animation, Eingabe und Sound vor unbeabsichtigten Nebenwirkungen schützen.
 - Unfertige, deaktivierte oder experimentelle Funktionen können beabsichtigt sein; unbekanntes Sollverhalten klären.
 - Keine beiläufigen Refaktorierungen, Grafikänderungen oder Balancekorrekturen. Technisch eleganter bedeutet nicht automatisch spielerisch besser.
@@ -27,11 +27,16 @@ Ein Dokumenteintrag oder eine Idee ist für sich noch kein Implementierungsauftr
 - `.gitignore` beachten; keine kompilierten Programme, temporären Builds oder Testartefakte einchecken.
 - Commit-Nachrichten beschreiben die tatsächliche Änderung. Kein automatischer Wechsel auf ein anderes Repository.
 
+- Funktion mit geeigneten vorläufigen Parametern herstellen und abnehmen; endgültiges Balancing getrennt. Entwickler kann reine Parameteränderungen selbst testen und einchecken.
+- Routineberichte kompakt halten; ausführliche Erklärungen bei Designentscheidungen und schwierigen Analysen.
+
 ## 3. Befunde und Bugberichte
 
 Fakten, Entwicklerbeobachtungen und Hypothesen trennen. Relevante Dateien/Funktionen und möglichst die Quellrevision nennen.
 Reproduktion oder geeignete Prüfung beschreiben; vorhandene Aufgaben auf Dubletten prüfen und die kleinste sinnvolle Korrektur vorschlagen.
 Keine spekulativen Buglisten und keine erfundenen Tests, Messungen oder aktualisierten Register.
+
+`KNOWNBUGS.md` ist das zentrale Register offener Fehler und konkreter Verdachtsfälle, auch für automatisierte Agentworker. Keine spekulativen Einträge; bestätigte Behebung oder Widerlegung führt zur Entfernung, Nachweis bleibt in Git. Registerpflege und Codekorrektur sind getrennte Freigaben; reine Untersuchung bleibt read-only.
 
 Bugberichte auf Deutsch mit:
 
@@ -49,6 +54,7 @@ Eine ausdrücklich zusammenfassende Testbestätigung des Entwicklers zählt als 
 | --- | --- |
 | `AGENTS.md` | Dauerhafte Arbeitsregeln; keine wechselnden Meilensteine oder Testchronik. |
 | `HANDOFF.md` | Kurzer Chatübergang: Basis, Teststand, offene Entscheidungen, genau ein nächster Schritt; etwa 60–120 kurze Zeilen. |
+| `KNOWNBUGS.md` | Offene Fehler und konkrete Verdachtsfälle; keine erledigten Einträge. |
 | `TODO.md` | Nur die nächsten konkreten, priorisierten Arbeitsschritte; höchstens fünf Einträge, möglichst unter 60 kurzen Zeilen. |
 | `REAL_ALPHA_ROADMAP.md` | Ziel, Umfang, Stand und Abschlusskriterien dieses Releases; grob 100–180 kurze Zeilen, keine Sitzungshistorie. |
 | Weitere Release-Roadmaps | Erst bei tatsächlicher Planung anlegen, etwa `PRE_BETA_ROADMAP.md`; denselben überschaubaren Aufbau verwenden. |
@@ -81,7 +87,7 @@ Abgeschlossene oder bewusst vertagte Aufgaben nicht durch einen alten Archiveint
 
 Der Entwickler führt lokale AGK-Compiles/-Exporte sowie Windows-, Browser-/Gamepad- und itch.io-Tests aus.
 Assistenten-Quellprüfung, übersetzte Simulationen und tatsächliche AGK-/Browserläufe bleiben getrennte Evidenz.
-Testumfang nach Änderung und Risiko wählen: keine Pflicht, jedes Detail zusätzlich in HTML5 zu testen.
+Compile und Funktionstests an sinnvollen Paketgrenzen bündeln; frühere Tests nur bei konkreter Abhängigkeit oder Risiko. Testumfang nach Änderung und Risiko wählen: keine Pflicht, jedes Detail zusätzlich in HTML5 zu testen.
 Browserrelevante Änderungen gezielt dort prüfen; übergreifende HTML5-Prüfungen an Meilensteinen oder im eigenen Themenchat bündeln.
 Optionale, nicht durchführbare oder gemeinsam vertagte Punkte sind keine automatischen Blocker. Bestätigte Fehler und notwendige Freigabekriterien gezielt klären.
 Bei Performanceberichten Sitzungslänge, Umgebung und Neustartzustand unterscheiden; ein flüssiger Neustart widerlegt kein Problem nach längerer Laufzeit.
@@ -98,7 +104,7 @@ Das ist eine Chatkonvention, keine Aufgabe zum Einbau eines Testformulars ins Sp
 
 ## 7. Veröffentlichung und wiederverwendbare Erkenntnisse
 
-- Balancing, Deployment und HTML5-Themen können eigene Chats erhalten; dabei denselben aktuellen Dokumentstand verwenden. Es gibt keinen pauschalen Zeitdruck.
+- Fehleranalyse, Balancing, Deployment und HTML5-Themen können eigene Chats erhalten; dabei denselben aktuellen Dokumentstand verwenden. Es gibt keinen pauschalen Zeitdruck.
 - itch.io-Uploads und Seitenänderungen führt der Entwickler manuell aus. Sichtbarkeit und Veröffentlichung benötigen einen eigenen ausdrücklichen Auftrag; Git-Merge und Deployment sind getrennte Vorgänge.
 - Öffentliche Release-/itch.io-Texte in englischem Markdown vorbereiten; 💚 bleibt die vereinbarte Kennzeichnung. Secret-URL-Tokens nicht in öffentliche Dokumentation schreiben.
 - AGK-Besonderheiten mit Quelle, Bedingungen und Evidenzgrad im passenden Fachabschnitt knapp festhalten. Erst den laufenden Arbeitsschritt abschließen.
