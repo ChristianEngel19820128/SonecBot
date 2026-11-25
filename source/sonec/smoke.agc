@@ -40,7 +40,7 @@ type TSmokeParticle
 endtype
 
 global SmokeParticles as TSmokeParticle[-1]
-global SmokeSprites as integer[SMOKE_IMAGE_COUNT-1]
+global SmokeSprites as integer[-1]
 global SmokeLoadedCount as integer
 global SmokeSessionID as integer
 global SmokeVisualSeed as integer
@@ -51,13 +51,15 @@ function SmokeRandomInt(MinValue as integer,MaxValue as integer)
     local Sample as integer
     Sample = SmokeVisualSeed*253+13849
     SmokeVisualSeed = Sample-65536*Floor(Sample/65536.0)
-endfunction MinValue+Floor(SmokeVisualSeed*(1.0/65536.0)*(MaxValue-MinValue+1))
+    Sample = MinValue+Floor(SmokeVisualSeed*(1.0/65536.0)*(MaxValue-MinValue+1))
+endfunction Sample
 
 function ProtoSmokeLoad()
     local Image as TImage
     local i as integer
     local SpriteID as integer
     SmokeLoadedCount = 0
+    SmokeSprites.Length = SMOKE_IMAGE_COUNT-1
     for i = 1 to SMOKE_IMAGE_COUNT
         Image.ID = 0
         Image.File.Path = "/media/gfx/effects/smoke"
