@@ -1,9 +1,10 @@
 # SonecBot – Nächste Aufgaben
 
-**Stand:** 25. November 2026 · **Arbeitszweig:** develop
+**Stand:** 26. November 2026 · **Arbeitszweig:** develop
 
 
-- [ ] B3.3–B3.4 Direkttreffer: bewegte Ziele/Update-Reihenfolge und ballistische Flugphysik abstimmen und prüfen. B3.1 Granaten-Sweep und B3.2 Flak-/Flarak-Explosionsposition abgenommen; Explosionsgröße im späteren Balancing.
+- [ ] B3.3b früheste Bombenkollision mit Sonec, Kisten und Plattformen; Plattformabschirmung erhalten. B3.1, B3.2 und B3.3a lokal abgenommen.
+- [ ] B3.3c relative Abfangkollisionen und Weltgrenzen; B3.4 ballistische Flugphysik separat abstimmen und prüfen. Explosionsgröße im späteren Balancing.
 - [ ] Zusätzliche belegte Befunde (Index-Recycling) und B4 Abschluss des Bug-Chats gemäß KNOWNBUGS.md.
 - [ ] Anschließend Arbeitsblock B fachlich abstimmen (Erfahrung, Ressourcen/Munition, Panzerung, Gefahrenbudget).
 

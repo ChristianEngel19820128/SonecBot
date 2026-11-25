@@ -103,6 +103,14 @@ Objektverwaltung und Kollisionen bestehen weitgehend aus eigenen Strukturen/Pool
 - **Lokaler AGK-Compile und Entwicklertest bestanden (11/11, 4a954f8):** Flak feuert in beide Richtungen, Zeit- und Kontaktzündung plausibel, Flarak-Start/Homing unverändert, Einschlag an der Raketenspitze, Stehen/Ducken, Schild und Lebenspunkte plausibel, keine auffälligen Mehrfachexplosionen, Raketen abfangbar, normale MG-Geschosse unverändert. Keine offenen Einzelpunkte. Entwickler berichtet, dass Flak gefährlicher wirkt und Treffer meist an den Beinen beim Überfliegen entstehen. Explosionsgröße und endgültiges Balancing ausdrücklich nachgelagert.
 - Separate Rechenmodellprüfung 11/11, keine instrumentierte Laufzeitmessung oder Langzeit-/HTML5-Abnahme behauptet. B3.2 im geprüften Umfang abgeschlossen.
 
+## Relative Projektil-Sweeps gegen Sonec B3.3a
+
+- `CollisionRelativeSweepEntry` in collision.agc: relative Kreis- bzw. horizontale Kapsel-Sweeps; strikte Tangentenregel für Gegnerbullets, inklusive Randtreffer für Laser/Raketen. Keine Vergrößerung der bestehenden Treffergeometrie.
+- sonec.agc: passive, begrenzte Historie der mechanisch aufgelösten Teilstrecken mit Zeitintervallen und Körperkreis-Offsets/-Radien; `SonecDamageSweepEntry` prüft nur überlappende Zeitabschnitte und liefert den Eintrittsanteil des ursprünglichen Projektilsegments. Neue Schüsse prüfen frühestens ab ihrer Erzeugung; offene Bewegungsgates werden beim folgenden simulierten Schritt berücksichtigt. Mechanische Resolver-Entscheidungen unverändert.
+- `BulletSonecCircleEntry` ersetzt die bisherigen statischen Gegnerbullet-Tests einschließlich Debug-Vergleich und Kontaktanteil; Flak-Zündfrist bleibt begrenzend. Laser und Flarak-Raketen lösen ihre Treffer nach SonecCollidePlate und vor Spielerwaffen aus. Laser weiterhin 30px horizontal; Raketenspitzen-Sweep einschließlich Trägertranslation. Schadenswerte, Schild, Flugsteuerung und Explosionsschadensregeln unverändert. Bomberbomben bewusst gemeinsam in B3.3b behandeln; B3.3c Abfangziele und Weltgrenzen separat.
+- **Lokaler AGK-Compile und Entwicklertest bestanden (14/14, 0c0a111, 26.11.2026):** Lauf/Sprung/Flug, Landungen/Kistenkontakte/Mini-Hop, bewegte Plattformen, Gegnerbullets, Flak-Treffer/Explosionsposition, Raketen-Homing/Treffer, Raketenstart/Jetstream/Abfangen, Laser in beide Richtungen, Laser-Ausweichen, Stehen/Ducken, Schild/HP, Neustart und keine spürbaren Performance-Einbußen. Keine offenen Einzelpunkte, keine zusätzlichen Beobachtungen.
+- Separate Rechenmodellprüfung 17/17; keine instrumentierte Performance-Messung, Langzeit- oder HTML5-Abnahme behauptet. B3.3a im geprüften Umfang abgeschlossen.
+
 ## 3. Alpha-Walker: unveränderter Referenzstand
 
 ### Pivots und IK
