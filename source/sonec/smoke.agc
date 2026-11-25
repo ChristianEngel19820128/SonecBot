@@ -13,8 +13,8 @@
 #constant SMOKE_RISE_MAX_PX_S 42
 #constant SMOKE_ROTATE_MIN_DEG_S -30
 #constant SMOKE_ROTATE_MAX_DEG_S 30
-#constant SMOKE_ALPHA_MIN 110
-#constant SMOKE_ALPHA_MAX 160
+#constant SMOKE_ALPHA_MIN 70
+#constant SMOKE_ALPHA_MAX 110
 #constant SMOKE_SIZE_MIN_PX 24
 #constant SMOKE_SIZE_MAX_PX 36
 #constant SMOKE_END_SIZE_FACTOR 0.90
@@ -41,6 +41,8 @@ endtype
 
 global SmokeParticles as TSmokeParticle[-1]
 global SmokeSprites as integer[-1]
+// Unscaled maximum image dimension; retain the source aspect ratio.
+global SmokeSpriteNativeSize as float[-1]
 global SmokeLoadedCount as integer
 global SmokeSessionID as integer
 global SmokeVisualSeed as integer
@@ -58,8 +60,10 @@ function ProtoSmokeLoad()
     local Image as TImage
     local i as integer
     local SpriteID as integer
+    local NativeSize as float
     SmokeLoadedCount = 0
     SmokeSprites.Length = SMOKE_IMAGE_COUNT-1
+    SmokeSpriteNativeSize.Length = SMOKE_IMAGE_COUNT-1
     for i = 1 to SMOKE_IMAGE_COUNT
         Image.ID = 0
         Image.File.Path = "/media/gfx/effects/smoke"
@@ -67,8 +71,16 @@ function ProtoSmokeLoad()
         if ImageLoad(Image) = TRUE
             SpriteID = CreateSprite(Image.ID)
             if SpriteID > 0
-                SmokeSprites[SmokeLoadedCount] = SpriteID
-                SmokeLoadedCount = SmokeLoadedCount+1
+                NativeSize = GetImageWidth(Image.ID)
+                if GetImageHeight(Image.ID) > NativeSize then NativeSize = GetImageHeight(Image.ID)
+                if NativeSize > 0
+                    SmokeSprites[SmokeLoadedCount] = SpriteID
+                    SmokeSpriteNativeSize[SmokeLoadedCount] = NativeSize
+                    SetSpriteOffset(SpriteID,GetImageWidth(Image.ID)*0.5,GetImageHeight(Image.ID)*0.5)
+                    SmokeLoadedCount = SmokeLoadedCount+1
+                else
+                    DeleteSprite(SpriteID)
+                endif
             endif
         endif
     next i
@@ -170,14 +182,17 @@ function SmokeDrawAll(World ref as TWorld)
     local i as integer
     local SpriteID as integer
     local DrawSize as float
+    local DrawScale as float
     local DrawAlpha as integer
     for i = 0 to SmokeParticles.Length
         if SmokeParticles[i].Enabled = TRUE
             SpriteID = SmokeSprites[SmokeParticles[i].ImageIndex]
             DrawSize = SmokeParticles[i].InitialSize*(1.0-(1.0-SMOKE_END_SIZE_FACTOR)*SmokeParticles[i].AgeFraction)
             DrawAlpha = Floor(SmokeParticles[i].InitialAlpha*(1.0-SmokeParticles[i].AgeFraction))
-            SetSpriteSize(SpriteID,DrawSize,DrawSize)
-            SetSpriteOffset(SpriteID,DrawSize*0.5,DrawSize*0.5)
+            DrawScale = DrawSize/SmokeSpriteNativeSize[SmokeParticles[i].ImageIndex]
+            SetSpriteScaleByOffset(SpriteID,DrawScale,DrawScale)
+            // Same centered scaled pivot convention as SpriteDraw.
+            SetSpriteOffset(SpriteID,GetSpriteWidth(SpriteID)*0.5,GetSpriteHeight(SpriteID)*0.5)
             SetSpriteAngle(SpriteID,SmokeParticles[i].Angle)
             SetSpriteColor(SpriteID,255,255,255,DrawAlpha)
             SetSpritePositionByOffset(SpriteID,SmokeParticles[i].Position.x-World.Position.x,SmokeParticles[i].Position.y-World.Position.y)

@@ -11,7 +11,7 @@
 
 ## Aktueller Projektstand
 
-- Real Alpha, Arbeitsblock A weiterhin aktiv; A5 fachlich abgestimmt: J1 (Jumppod und gemeinsame Sockelmechanik) lokal abgenommen, 10/10 am 25.11.2026 auf bb16236; J1a (automatischer Aufwärts-Stufenwechsel, oberer Trigger, Mini-Hop abwärts) lokal abgenommen, 9/9 am 25.11.2026 auf ddc24e8; J2 (Landmine als Attrappe) lokal abgenommen, 12/12 am 25.11.2026 auf 517763f; J3 (mechanische Flak/Flarak-Sockel) lokal abgenommen, 10/10 am 25.11.2026 nach Compile-Korrektur ec23637 (Testformular c2858e9; lokale SHA nicht separat bestätigt); J4 (universelle Rauch-Unit) implementiert, lokaler Compile/Sichttest und A5-Abnahme offen. [A5-Spezifikation](docs/JUMPPOD_SPEC.md).
+- Real Alpha, Arbeitsblock A weiterhin aktiv; A5 fachlich abgestimmt: J1 (Jumppod und gemeinsame Sockelmechanik) lokal abgenommen, 10/10 am 25.11.2026 auf bb16236; J1a (automatischer Aufwärts-Stufenwechsel, oberer Trigger, Mini-Hop abwärts) lokal abgenommen, 9/9 am 25.11.2026 auf ddc24e8; J2 (Landmine als Attrappe) lokal abgenommen, 12/12 am 25.11.2026 auf 517763f; J3 (mechanische Flak/Flarak-Sockel) lokal abgenommen, 10/10 am 25.11.2026 nach Compile-Korrektur ec23637 (Testformular c2858e9; lokale SHA nicht separat bestätigt); J4 (universelle Rauch-Unit) funktional lokal abgenommen, 15/15 am 25.11.2026 nach Compile-Korrektur e17440a (Testformular d35a6e8; lokale SHA nicht separat bestätigt); gezielte visuelle Nachjustierung (Skalierung/Alpha) implementiert, Compile/Sichttest offen. [A5-Spezifikation](docs/JUMPPOD_SPEC.md).
 - Minen, Walker, Drohne, Bomber, Flarak/Flak, Warnungen und zentrale Rewards im bisherigen Umfang umgesetzt und lokal geprüft.
 - Bewegungsumstellung A–G2d einschließlich Jetstream am 25.11.2026 abgeschlossen und vom Entwickler akzeptiert.
 - Gemeinsamer Kontaktresolver, Restweg, Trägerbewegung, Tiefenebenen, Fuß-/Kistenkanten, Mini-Hop, Sprung/Jetpack und Rückstoß implementiert.
@@ -33,7 +33,7 @@
 
 ## Genau ein nächster Schritt
 
-J4 lokal in AGK kompilieren und Rauchsystem samt A5-Regression gemäß [docs/JUMPPOD_SPEC.md](docs/JUMPPOD_SPEC.md) prüfen; gemeinsame Sockel- und Treppenmechanik aller vier Objekttypen lokal abgenommen. Bestehender Flarak-Neustartfehler ausdrücklich zurückgestellt; keine Korrektur im A5-Paket.
+J4-Sichtnachjustierung mit überarbeiteten Entwicklergrafiken lokal kompilieren und gezielt prüfen, danach A5 abschließen. Flammenwerfer-Bewegungsfehler separat in KNOWNBUGS dokumentiert, keine ungeprüfte Codekorrektur. Bestehender Flarak-Neustartfehler ausdrücklich zurückgestellt; keine Korrektur im A5-Paket.
 
 ## Referenzen
 
