@@ -126,7 +126,8 @@ function JumppodFollow(Pod ref as TJumppod,Plate ref as TPlate)
 endfunction
 
 // Only fresh, off-screen platforms are offered to the periodic test spawner.
-// Existing station footprints (including wrecks) and chests reserve space.
+// Reserve full sprite cell widths for placement, including wrecks.
+// Mechanical and damage rectangles remain independent of this reserve.
 function JumppodFreeCenter(Plate ref as TPlate,PlateIndex as integer,ChestList ref as TChestList)
     local Candidate as integer
     local k as integer
@@ -140,9 +141,9 @@ function JumppodFreeCenter(Plate ref as TPlate,PlateIndex as integer,ChestList r
     local BestDist as float
     Best = -1
     BestDist = Plate.ObjectData.Size.Width+1
-    for Candidate = Ceil(JUMPPOD_BASE_W*0.5) to Floor(Plate.ObjectData.Size.Width-JUMPPOD_BASE_W*0.5)
-        LeftX = Candidate-JUMPPOD_BASE_W*0.5
-        RightX = Candidate+JUMPPOD_BASE_W*0.5
+    for Candidate = Ceil(JUMPPOD_CELL_W*0.5) to Floor(Plate.ObjectData.Size.Width-JUMPPOD_CELL_W*0.5)
+        LeftX = Candidate-JUMPPOD_CELL_W*0.5
+        RightX = Candidate+JUMPPOD_CELL_W*0.5
         Blocked = FALSE
         for k = 0 to ChestList.Chest.Length
             if ChestList.Chest[k].Enabled = TRUE and ChestList.Chest[k].CollisionData.Index = PlateIndex
@@ -160,8 +161,8 @@ function JumppodFreeCenter(Plate ref as TPlate,PlateIndex as integer,ChestList r
         next k
         for k = 0 to JumppodList.Length
             if JumppodList[k].Enabled = TRUE and JumppodList[k].PlateIndex = PlateIndex
-                OtherLeft = JumppodList[k].OffsetX-JUMPPOD_BASE_W*0.5
-                OtherRight = OtherLeft+JUMPPOD_BASE_W
+                OtherLeft = JumppodList[k].OffsetX-JUMPPOD_CELL_W*0.5
+                OtherRight = OtherLeft+JUMPPOD_CELL_W
                 if LeftX < OtherRight and RightX > OtherLeft then Blocked = TRUE
             endif
         next k
@@ -181,7 +182,7 @@ function JumppodSpawnOnPlate(Game ref as TGame,PlateIndex as integer,Now as inte
     local Slot as integer
     local i as integer
     if JumppodSprite = 0 or Now < JumppodNextSpawnMs then exitfunction
-    if Game.PlateList.Plate[PlateIndex].ObjectData.Size.Width < JUMPPOD_BASE_W then exitfunction
+    if Game.PlateList.Plate[PlateIndex].ObjectData.Size.Width < JUMPPOD_CELL_W then exitfunction
     CenterX = JumppodFreeCenter(Game.PlateList.Plate[PlateIndex],PlateIndex,Game.ChestList)
     if CenterX < 0 then exitfunction
     // Draw the variant only after a free position has been found.

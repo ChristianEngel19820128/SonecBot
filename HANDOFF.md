@@ -33,7 +33,7 @@
 
 ## Genau ein nächster Schritt
 
-Entscheidung zur Pod-/Minen-Spawnreserve (Vorschlag 80 px Spritebreite statt 58 px Sockelbreite; Kollisionsgeometrie unverändert) abstimmen, dann A6b (größere und variablere Rudelformation) umsetzen. A5c-Sichtprüfung zur Langzeitbeobachtung zurückgestellt. Danach vereinbarter separater Flammenwerfer-Bug-Chat gemäß [KNOWNBUGS.md](KNOWNBUGS.md), anschließend Arbeitsblock B. Flarak-Neustartfehler bleibt separat offen. Keine weiteren Änderungen am akzeptierten Rauchsystem.
+Pod-/Minen-Spawnreserve auf 80 px Spritebreite korrigiert; gezielten AGK-Compile/Sichttest durchführen, dann A6b (größere und variablere Rudelformation) umsetzen. A5c-Sichtprüfung zur Langzeitbeobachtung zurückgestellt. Danach vereinbarter separater Flammenwerfer-Bug-Chat gemäß [KNOWNBUGS.md](KNOWNBUGS.md), anschließend Arbeitsblock B. Flarak-Neustartfehler bleibt separat offen. Keine weiteren Änderungen am akzeptierten Rauchsystem.
 
 ## Referenzen
 
