@@ -152,10 +152,14 @@ endfunction
 
 // Preserve the existing horizontal grenade AABB (image height on X).
 function GrenadeBoxEntry(Grenade ref as TGrenade,MinPos as TPosition,MaxPos as TPosition)
-endfunction CollisionBoxSweepEntry(Grenade.PreviousPosition,Grenade.ObjectData.Position,MinPos,MaxPos,Grenade.ObjectData.Size.Height*0.5,Grenade.ObjectData.Size.Width*0.5)
+    local Entry as float
+    Entry = CollisionBoxSweepEntry(Grenade.PreviousPosition,Grenade.ObjectData.Position,MinPos,MaxPos,Grenade.ObjectData.Size.Height*0.5,Grenade.ObjectData.Size.Width*0.5)
+endfunction Entry
 
 function GrenadeCircleEntry(Grenade ref as TGrenade,Center as TPosition,Radius as float)
-endfunction CollisionCircleSweepEntry(Grenade.PreviousPosition,Grenade.ObjectData.Position,Center,Radius+Grenade.ObjectData.Radius)
+    local Entry as float
+    Entry = CollisionCircleSweepEntry(Grenade.PreviousPosition,Grenade.ObjectData.Position,Center,Radius+Grenade.ObjectData.Radius)
+endfunction Entry
 
 // Sweep against the same 2px sampled target footprint used by FlarakAreaHits.
 // A swept rectangle against each sampled point avoids skipping a target
