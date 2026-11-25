@@ -9,21 +9,35 @@
 #constant SONEC_DEPTH_EPSILON 0.0001
 #constant SONEC_CHEST_SWEEP_EPSILON 0.01
 #constant SONEC_CHEST_SWEEP_ITERATIONS 18
+// === Sonec movement balancing (current movement-step units) ===
+// Horizontal: speed limits, acceleration and passive braking.
+#constant SONEC_MAX_GROUND_SPEED 5
+#constant SONEC_MAX_AIR_THRUST_SPEED 5
+#constant SONEC_GROUND_ACCELERATION 0.005
+#constant SONEC_AIR_THRUST_ACCELERATION 0.005
+#constant SONEC_NORMAL_ACCELERATION_FACTOR 1.0
 #constant SONEC_COUNTERSTEER_FACTOR 1.5
 #constant SONEC_GROUND_COAST_FACTOR 0.75
 #constant SONEC_AIR_COAST_FACTOR 0.1
 #constant SONEC_COAST_ZERO_SPEED 0.25
+
+// Vertical: positive Y is down; accelerations use MoveTimer.CalcRange.
+// Gross jet thrust minus gravity = net upward acceleration (0.03 initially).
+#constant SONEC_FALL_ACCELERATION 0.01
+#constant SONEC_JETPACK_THRUST_ACCELERATION 0.04
+#constant SONEC_MAX_JETPACK_UP_SPEED 8
+#constant SONEC_MAX_FALL_SPEED 0
+// A zero fall-speed limit disables it. Positive limits cap downward acceleration.
+#constant SONEC_JUMP_IMPULSE_Y 8
+#constant SONEC_HOVER_AIR_DAMPING 0.20
+
+// Kistenkante / balance: unchanged provisional values.
 #constant SONEC_BALANCE_X_STEP 0.5
 #constant SONEC_MINI_HOP_IMPULSE_Y 1.5
 #constant SONEC_MINI_HOP_MIN_RELATIVE_X 1.0
-#constant SONEC_HOVER_AIR_DAMPING 0.20
-#constant SONEC_MAX_GROUND_SPEED 5
-#constant SONEC_MAX_AIR_THRUST_SPEED 5
+
+// Diagnostics and camera (not movement balancing).
 #constant SONEC_INTEGRATION_TRACE 1
-#constant SONEC_MAX_VERTICAL_SPEED 8
-#constant SONEC_GROUND_ACCELERATION 0.005
-#constant SONEC_VERTICAL_ACCELERATION 0.01
-#constant SONEC_NORMAL_ACCELERATION_FACTOR 1.0
 #constant SONEC_CAMERA_EDGE_MARGIN 10
 #constant SONEC_CAMERA_UPPER_FRACTION 0.33
 #constant SONEC_CAMERA_LOWER_FRACTION 0.66
@@ -128,10 +142,7 @@ function SonecInit(Sonec ref as TSonec,ProtoSonec ref as TProtoSonec,World ref a
 	Sonec.IsLost = False
 	Sonec.BalanceActive = FALSE
 	Sonec.BalanceTargetX = 0
-	Sonec.DebugEdgeVisible = FALSE
 	Sonec.DebugEdgePending = FALSE
-	Sonec.DebugEdgeSnapshot = ""
-	Sonec.DebugEdgeHistoryNext = 0
 	Sonec.DebugEdgeEvent = 0
 	Sonec.DebugEdgeChestX = 0
 	Sonec.DebugEdgeChestSpeedX = 0
@@ -170,11 +181,11 @@ function SonecInit(Sonec ref as TSonec,ProtoSonec ref as TProtoSonec,World ref a
 	Sonec.BlockedChestOffsetX = 0
 	
 	Sonec.ObjectData.MoveSpeedMax.x = SONEC_MAX_GROUND_SPEED
-	Sonec.ObjectData.MoveSpeedMax.y = SONEC_MAX_VERTICAL_SPEED
+	Sonec.ObjectData.MoveSpeedMax.y = SONEC_MAX_JETPACK_UP_SPEED
 	Sonec.ObjectData.MoveSpeed.x = 0
 	Sonec.ObjectData.MoveSpeed.y = 0
 	Sonec.ObjectData.MoveAcceleration.x = SONEC_GROUND_ACCELERATION
-	Sonec.ObjectData.MoveAcceleration.y = SONEC_VERTICAL_ACCELERATION
+	Sonec.ObjectData.MoveAcceleration.y = SONEC_JETPACK_THRUST_ACCELERATION
 	
 	Sonec.ObjectData.AutoSpeed.x = 0
 	Sonec.ObjectData.AutoSpeed.y = 0
@@ -1330,9 +1341,6 @@ function SonecCollidePlate(Sonec ref as TSonec,PlateList ref as TPlateList,Chest
 	local PassIndex as integer
 	local HalfWidth as float
 	local HalfHeight as float
-	local DebugHistoryIndex as integer
-	local DebugHistorySlot as integer
-	local DebugHistoryText as string
 
 	Sonec.DebugEdgePending = FALSE
 	Sonec.DebugTopTrace = ""
@@ -1413,6 +1421,10 @@ function SonecCollidePlate(Sonec ref as TSonec,PlateList ref as TPlateList,Chest
 			endif
 		endif
 	endif
+	// Release input only at the resolved position, not the pre-collision proposal.
+	if Sonec.SpawnEntering = TRUE and Sonec.ObjectData.Position.y >= Sonec.ObjectData.Size.Height*0.5
+		Sonec.SpawnEntering = FALSE
+	endif
 	// Persist group state at the reached time, before restoring debug snapshots.
 	SonecDepthRefresh(Sonec,PlateList,ChestList,Sonec.ObjectData.Position.y + Sonec.ObjectData.Size.Height*0.5,Sonec.CollisionSegmentStartTime)
 	Sonec.CollisionMoveStart = OriginalStart
@@ -1440,18 +1452,6 @@ function SonecCollidePlate(Sonec ref as TSonec,PlateList ref as TPlateList,Chest
 	endif
 
 	Sonec.DebugEdgeCollisionEndX = Sonec.ObjectData.Position.x
-	if Sonec.DebugEdgePending = TRUE
-		Sonec.DebugEdgeVisible = TRUE
-		DebugHistoryText = ""
-		for DebugHistoryIndex = 0 to 3
-			DebugHistorySlot = Sonec.DebugEdgeHistoryNext + DebugHistoryIndex
-			if DebugHistorySlot > 3
-				DebugHistorySlot = DebugHistorySlot - 4
-			endif
-			DebugHistoryText = DebugHistoryText + Chr(10) + Sonec.DebugEdgeHistory[DebugHistorySlot]
-		next DebugHistoryIndex
-		Sonec.DebugEdgeSnapshot = "EDGE 1=landL 2=landR 3=hopL 4=hopR: "+Str(Sonec.DebugEdgeEvent)+Chr(10)+"eventX="+Str(Sonec.ObjectData.Position.x)+" vx="+Str(Sonec.ObjectData.MoveSpeed.x)+" vy="+Str(Sonec.ObjectData.MoveSpeed.y)+Chr(10)+"collisionX "+Str(Sonec.DebugEdgeCollisionStartX)+" -> "+Str(Sonec.DebugEdgeCollisionEndX)+Chr(10)+"balance="+Str(Sonec.BalanceActive)+" target="+Str(Sonec.BalanceTargetX)+" dxBalance="+Str(Sonec.DebugEdgeAfterBalanceX-Sonec.DebugEdgeBeforeBalanceX)+Chr(10)+"chestX="+Str(Sonec.DebugEdgeChestX)+" chestVx="+Str(Sonec.DebugEdgeChestSpeedX)+" carryX="+Str(Sonec.ObjectData.AutoSpeed.x)+Chr(10)+"move="+Str(Sonec.State.Move)+" stand="+Str(Sonec.State.Stand)+" fall="+Str(Sonec.State.Fall)+" (snapshot)"+Chr(10)+"last 4 movement steps:"+DebugHistoryText
-	endif
 
 	Sonec.DebugCsvPostCollisionVX = Sonec.ObjectData.MoveSpeed.x
 	Sonec.DebugCsvPostCollisionVY = Sonec.ObjectData.MoveSpeed.y
@@ -1949,23 +1949,45 @@ endfunction
 // select the current vertical acceleration. This function does not establish
 // ground contact or change the depth-plane association.
 function SonecMoveVerticalSpeed(Sonec ref as TSonec)
+	local PreviousY as float
+	local NetAcceleration as float
+	local FallLimit as float
 	if Sonec.State.Jump = TRUE
-		// One impulse, with carrier Y already transferred on release.
+		// Independent one-shot jump impulse; retain transferred carrier Y.
 		Sonec.State.Jump = FALSE
-		Sonec.ObjectData.MoveSpeed.y = Sonec.ObjectData.MoveSpeed.y - Sonec.ObjectData.MoveSpeedMax.y
+		Sonec.ObjectData.MoveSpeed.y = Sonec.ObjectData.MoveSpeed.y - SONEC_JUMP_IMPULSE_Y
 		Sonec.State.Fall = TRUE
 		exitfunction
 	endif
+	if Sonec.GroundContactActive = TRUE then exitfunction
+	if Sonec.State.Fly = FALSE and Sonec.State.Fall = FALSE then exitfunction
+	PreviousY = Sonec.ObjectData.MoveSpeed.y
+	// Gravity acts during both free fall and powered flight.
+	NetAcceleration = SONEC_FALL_ACCELERATION
 	if Sonec.State.Fly = TRUE
-		// Existing net thrust acceleration; only cap upward powered speed.
-		// Downward momentum must be reduced by thrust, never by a sudden cap.
-		Sonec.ObjectData.MoveSpeed.y = Sonec.ObjectData.MoveSpeed.y - Sonec.ObjectData.MoveAcceleration.y * Sonec.ObjectData.MoveTimer.CalcRange
+		NetAcceleration = NetAcceleration - Sonec.ObjectData.MoveAcceleration.y
+	endif
+	Sonec.ObjectData.MoveSpeed.y = PreviousY + NetAcceleration*Sonec.ObjectData.MoveTimer.CalcRange
+	// Limit the powered acceleration, never cut existing inherited momentum.
+	if Sonec.State.Fly = TRUE and NetAcceleration < 0
 		if Sonec.ObjectData.MoveSpeed.y < -Sonec.ObjectData.MoveSpeedMax.y
-			Sonec.ObjectData.MoveSpeed.y = -Sonec.ObjectData.MoveSpeedMax.y
+			if PreviousY < -Sonec.ObjectData.MoveSpeedMax.y
+				Sonec.ObjectData.MoveSpeed.y = PreviousY
+			else
+				Sonec.ObjectData.MoveSpeed.y = -Sonec.ObjectData.MoveSpeedMax.y
+			endif
 		endif
-	else
-		if Sonec.State.Fall = TRUE
-			Sonec.ObjectData.MoveSpeed.y = Sonec.ObjectData.MoveSpeed.y + FALLACCELERATION * Sonec.ObjectData.MoveTimer.CalcRange
+	endif
+	// Optional terminal fall speed. Do not turn a downward overspeed into
+	// an artificial brake impulse when switching on the jetpack.
+	FallLimit = SONEC_MAX_FALL_SPEED
+	if FallLimit > 0 and NetAcceleration > 0
+		if Sonec.ObjectData.MoveSpeed.y > FallLimit
+			if PreviousY > FallLimit
+				Sonec.ObjectData.MoveSpeed.y = PreviousY
+			else
+				Sonec.ObjectData.MoveSpeed.y = FallLimit
+			endif
 		endif
 	endif
 endfunction
@@ -1983,6 +2005,7 @@ function SonecMoveHorizontalSpeed(Sonec ref as TSonec)
 		if Sonec.NormalJumpActive = TRUE then exitfunction
 		VX = Sonec.ObjectData.MoveSpeed.x
 		StepX = Sonec.ObjectData.MoveAcceleration.x * Sonec.ObjectData.MoveTimer.CalcRange
+		if Sonec.AirThrustDirection <> 0 then StepX = SONEC_AIR_THRUST_ACCELERATION * Sonec.ObjectData.MoveTimer.CalcRange
 		if Sonec.AirThrustDirection < 0
 			// Limit the added thrust, not inherited momentum above the limit.
 			if VX > -SONEC_MAX_AIR_THRUST_SPEED
@@ -2113,10 +2136,8 @@ endfunction
 
 // Movement phase extracted without changing its original order or conditions.
 function SonecMoveWorldBounds(Sonec ref as TSonec,World ref as TWorld,Screen as TSize)
-	// Allow the first descent from off-screen; restore the top boundary afterwards.
-        if Sonec.SpawnEntering = TRUE and Sonec.ObjectData.Position.y >= Sonec.ObjectData.Size.Height*0.5
-            Sonec.SpawnEntering = FALSE
-        endif
+	// Initial off-world descent is allowed; the resolved contact path
+	// releases SpawnEntering after the whole body has entered the world.
         if Sonec.SpawnEntering = FALSE and Sonec.ObjectData.Position.y < Sonec.ObjectData.Size.Height*0.5
             Sonec.ObjectData.Position.y = Sonec.ObjectData.Size.Height*0.5
             Sonec.ObjectData.MoveSpeed.y = 0
@@ -2194,12 +2215,6 @@ function SonecMove(Sonec ref as TSonec,ChestList ref as TChestList,World ref as 
 	if Sonec.GroundContactActive = TRUE then Sonec.CollisionMoveEnd.x = OwnProposalX
 	Sonec.DebugCsvPreCollisionVX = Sonec.ObjectData.MoveSpeed.x
 	Sonec.DebugCsvPreCollisionVY = Sonec.ObjectData.MoveSpeed.y
-	// Rolling history of the last four movement updates, frozen at a contact event.
-	Sonec.DebugEdgeHistory[Sonec.DebugEdgeHistoryNext] = "x="+Str(Sonec.ObjectData.Position.x)+" vx="+Str(Sonec.ObjectData.MoveSpeed.x)+" balDX="+Str(Sonec.DebugEdgeAfterBalanceX-Sonec.DebugEdgeBeforeBalanceX)
-	Sonec.DebugEdgeHistoryNext = Sonec.DebugEdgeHistoryNext + 1
-	if Sonec.DebugEdgeHistoryNext > 3
-		Sonec.DebugEdgeHistoryNext = 0
-	endif
 
 endfunction
 	

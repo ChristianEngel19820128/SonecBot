@@ -1,6 +1,6 @@
 # SonecBot – Aktuelle Übergabe
 
-**Stand:** 24. November 2026 · **Arbeitszweig:** `develop`
+**Stand:** 25. November 2026 · **Arbeitszweig:** `develop`
 
 ## Einstieg
 
@@ -22,11 +22,12 @@ Verbindliche Grundlage: [SONEC_MOVEMENT_SPEC.md](docs/SONEC_MOVEMENT_SPEC.md).
 - Phase E implementiert: Durchflugstatus pro aktiver Plattform (neutral, Passage, freigegeben), gemeinsame Höhenfreigabe für sämtliche zugehörigen Kisten; relative Höhenfreigabe als Ereignis im Resolver. Alte Einzelkisten-Ausnahme bleibt nur für die eigene Ebene. Ebenenwechsel nur bei Landung; ungültige gelöschte Ebene wird auf -1 gesetzt. Entwicklertest `f2acaae` 9/9 bestanden einschließlich Compile. Beobachtungen: Plattformübernahme situationsabhängig unfair, noch nicht genau reproduzierbar; bei vertikal bewegter potenzieller Plattform scheint die Übernahmeberechtigung trotz veränderter absoluter Höhe unverändert; Plattform unter Umständen nicht betretbar, obwohl aktuell weit oben. Ursache offen. Y-Snapshots werden aktualisiert; gespeicherter Passagezustand bleibt im Höhenband zwischen Plattform und höchster Kiste erhalten. E-Beobachtungen werden gemeinsam auf den Gesamtspieltest G verschoben; E bleibt in F unverändert.
 - Phase F implementiert: Mini-Hop ausschließlich beim tatsächlichen Verlust eines Kistensupports, unabhängig von Eingabe und Anfangsgeschwindigkeit. Vertikalimpuls 1,5 (bisheriger Wert), relative X-Mindestgeschwindigkeit 1,0 (vorläufiger Testwert), Trägerimpuls einmalig, Restweg erneut geprüft. Entwicklertest `f4424a1` 9/9 bestanden inkl. Compile, langsame/schnelle beidseitige Hops, Ausrollen, einmalige Auslösung, bewegte Kisten, Sprünge/Plattformkanten, Landungen/Seitenkontakte/Weltrand. Zusätzliche Beobachtung: beim Fallen auf Kistenrand etwa halbe vertikale Durchdringung, offenbar keine Kollision und kein Hop. Mittelpunktlage zum tatsächlichen Fußkontakt und Tiefenebene noch nicht eindeutig; mögliche Ursache ist strikte Mittelpunktprüfung der Oberseite. G gezielt prüfen.
 - Phase G1 implementiert: normaler Sprung erhält X-Schwung bis Landung/Jetpack, expliziter horizontaler Schubzustand statt Recoil-/Move-Flag, aktiver Luftschub bis ±5 (vorläufiger Testwert; vorhandenes stärkeres Momentum nicht gekappt), Jetpack bremst Fall kontinuierlich statt Abwärtskappung. CSV-Diagnose für relative Fußkreuzung und E/F-Auffälligkeiten ergänzt. E-Höhenregel und F-Randgeometrie unverändert. Entwicklertest `093c173` technisch bestanden, 9/9 angekreuzt; normale Sprünge laut Freitext wegen Energieüberschuss noch nicht gezielt prüfbar. Keine Gesamtspielgefühl-Abnahme. Elf Nacharbeitsbeobachtungen mit Aufwand/Priorität in Bewegungsspezifikation Abschnitt 13; keine neue Codefreigabe. Start außerhalb + Jetpack, schwacher vertikaler Schub, Tiefenebenen und Luft-/Bodengeometrie zuerst; Kanten, Rückstoß und Tippen/Halten gemeinsam abstimmen; alte Hop-Anzeige entfernen; Flammenwerfer separat.
+- G2a implementiert nach Abstimmung: alle Sonec-Eingaben bis vollständigem Welteintritt gesperrt, getrennte Schwerkraft/Bruttoschub/Sprungimpuls/Grenzen, optionales Fallmaximum zunächst aus. Zentrale Konstanten in sonec.agc; alte Hop-Anzeige entfernt, CSV erhalten. AGK-Compile und Funktionstest offen.
 
 ## Vereinbarter Arbeitsmodus für die Bewegungsumstellung
 
 - Zusammenhängende Änderungen als Paket bearbeiten; nachvollziehbare Commits nach technischen Grenzen.
-- Keine isolierten Compiler-Tests für reine vorbereitende Strukturänderungen; gemeinsame Prüfung am sinnvollen Paketende.
+- Je G2-Paket fachliche Abstimmung, Implementierung, statische Prüfung, gebündelter lokaler Compile/Funktionstest. Vorläufige Parameter nur ändern, wenn der Funktionstest sonst nicht aussagekräftig ist; finale Feinjustierung lokal in G2d, gesammelt übernehmen. Prozess-/Dokumentationsauswertung separat am Ende.
 - Statische Quellprüfung von tatsächlichen lokalen AGK-Tests unterscheiden.
 - Keine zusätzlichen Freigaben für notwendige Teilschritte im vereinbarten Umfang.
 - Bei neuer Designentscheidung oder wesentlicher Umfangserweiterung Rücksprache.
@@ -46,7 +47,7 @@ Verbindliche Grundlage: [SONEC_MOVEMENT_SPEC.md](docs/SONEC_MOVEMENT_SPEC.md).
 
 ## Genau ein nächster vereinbarter Schritt
 
-G2-Nacharbeitsplan gemeinsam freigeben: zuerst Start-Eintritt/Jetpack-Physik und alte Hop-Anzeige (CSV erhalten); danach Sprungsteuerung, Kanten, Tiefenebenen, Luft-/Boden-Geometrie, Rückstoß und Balancing gemäß Abschnitt 13 der Bewegungsspezifikation. Flammenwerfer/Flak-Flarak-Silo separat gemeinsam bewerten.
+G2a lokal kompilieren und funktional prüfen: keine Sonec-Eingaben während Welteintritt, anschließend normale Bedienung, Fall/Jetpack-Bremsung/Auftrieb, unveränderte Kontakte und CSV ohne alte Hop-Anzeige. Danach G2b-Regeln gemeinsam abstimmen; abschließendes lokales Balancing G2d.
 
 ## Referenzen
 

@@ -1,10 +1,10 @@
 # SonecBot – Nächste Aufgaben
 
-**Stand:** 24. November 2026 · **Arbeitszweig:** `develop`
+**Stand:** 25. November 2026 · **Arbeitszweig:** `develop`
 
 ## Jetzt
 
-- [ ] G2: G1 `093c173` technisch 9/9 bestätigt, normaler Sprung laut Freitext nicht gezielt prüfbar. Priorisierte Nacharbeit gemäß [Spezifikation §13](docs/SONEC_MOVEMENT_SPEC.md#13-offene-detailfragen-für-technische-durchsicht-und-tests) gemeinsam freigeben: Start/Jetpack und Hop-Anzeige zuerst, danach Steuerung/Kanten/Tiefenebenen/Geometrie/Rückstoß, Gesamtbalancing.
+- [ ] G2a: Eingabesperre Welteintritt, getrennte vertikale Kräfte/Grenzen/Sprungimpuls, zentrale Bewegungskonstanten und entfernte Hop-Anzeige implementiert; AGK-Compile und Funktionstest offen. Danach G2b abstimmen (Tippen/Halten, horizontaler Sprungimpuls, Rückstoß), G2c Kollisions-/Tiefenebenenregeln, G2d lokales Balancing gesammelt übernehmen. [Spezifikation §13](docs/SONEC_MOVEMENT_SPEC.md#13-offene-detailfragen-für-technische-durchsicht-und-tests).
 
 ## Danach / separat
 

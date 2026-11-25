@@ -18,7 +18,7 @@ function GameCreate(Game ref as TGame,vx as integer,vy as integer)
 	
 	SoundLoad(Game.Sound)
 	
-	Game.DebugText.Length = 2
+	Game.DebugText.Length = 1
 	Game.DebugText[0] = CreateText("")
 	SetTextPosition(Game.DebugText[0],10,35)
 	SetTextSize(Game.DebugText[0],16)
@@ -27,10 +27,6 @@ function GameCreate(Game ref as TGame,vx as integer,vy as integer)
 	SetTextPosition(Game.DebugText[1],10,55)
 	SetTextSize(Game.DebugText[1],16)
 	SetTextColor(Game.DebugText[1],255,255,255,255)
-	Game.DebugText[2] = CreateText("")
-	SetTextPosition(Game.DebugText[2],10,80)
-	SetTextSize(Game.DebugText[2],16)
-	SetTextColor(Game.DebugText[2],255,255,255,255)
 	Game.IsLost = TRUE
 	Game.IsPause = FALSE
 	
@@ -180,6 +176,7 @@ function GameInput(Game ref as TGame,Keys ref as TKeys,Options ref as TGameOptio
 
 	if Now < Game.TouchdownUntilMs then exitfunction
     GameTouchdownStart(Game,Now)
+	if Game.Sonec.SpawnEntering = TRUE or Game.Sonec.IsLost = TRUE then exitfunction
 	SonecInput(Game.Sonec,Game.JetfireList,Game.ProtoJetfire,Game.World,Keys,Options,Game.JoystickIndex,Now)
 	// Back/Select is handled only while paused in main.agc.
 
@@ -193,6 +190,7 @@ function GameActionInput(Game ref as TGame,Keys ref as TKeys,Now as integer)
 
 	if Now < Game.TouchdownUntilMs then exitfunction
     GameTouchdownStart(Game,Now)
+	if Game.Sonec.SpawnEntering = TRUE or Game.Sonec.IsLost = TRUE then exitfunction
 	SonecFlameGunInput(Game.Sonec,Game.FlameList,Game.ProtoFlame,Game.World,Game.Sound,Keys,Game.JoystickIndex,Now)
 	SonecPlasmaBlitzGunInput(Game.Sonec,Game.FlashList,Game.ProtoFlash,Game.PlasmaBlitzList,Game.ProtoPlasmaBlitz,Game.World,Keys,Game.JoystickIndex,Now)
 	SonecMGunInput(Game.Sonec,Game.FlashList,Game.ProtoFlash,Game.BulletList,Game.ProtoBullet,Game.World,Game.Sound,Keys,Game.JoystickIndex,Now)
@@ -635,11 +633,6 @@ function GameDraw(Game ref as TGame)
 	if SONEC_TWO_CIRCLE_TEST = 1 and SonecCollisionDebugVisible = 1
 		SetTextString(Game.DebugText[1],"K1d checks "+Str(SonecTwoCircleChecks)+" both "+Str(SonecTwoCircleBoth)+" old-only "+Str(SonecTwoCircleOldOnly)+" new-only "+Str(SonecTwoCircleNewOnly))
 		DrawText(Game.DebugText[1])
-	endif
-	// D-R2: frozen diagnostic remains visible until another edge/hop event.
-	if Game.Sonec.DebugEdgeVisible = TRUE
-		SetTextString(Game.DebugText[2],Game.Sonec.DebugEdgeSnapshot)
-		DrawText(Game.DebugText[2])
 	endif
 	// Temporary developer HUD for Flak firing from either side.
     FlarakDebugDrawAll(Game.World)
