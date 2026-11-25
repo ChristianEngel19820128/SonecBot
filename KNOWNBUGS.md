@@ -11,6 +11,12 @@ Vor automatisierten Prüfungen auf Dubletten prüfen. Keine automatische Codefre
 - Reproduktion/Abnahme: bei aktiver Rakete bzw. vorhandenen intakten/zerstörten Flak/Flarak neu starten, keine alten Sprites, Raketen, KI oder Treffer; mehrfach wiederholen. Korrektur noch nicht implementiert.
 - Dublette: ersetzt „Sporadisches Sprite nach Neustart“, ursprünglich aus TODO, Revision 0ba2ee8c665325f25a9e7da38a86c9ca49cb7e5a.
 
+## Plattformobjekte: falsche Zeichnungsreihenfolge (A5c)
+- ID: Noch nicht vergeben · Priorität: Offen · Status: Bestätigt (Entwicklerbeobachtung).
+- A6a-Test 1a3f642, 25.11.2026: Flak, Flarak, Landmine und Jumppod werden bei überlappenden Plattformen unzutreffend überdeckt bzw. überdecken Vordergrundplattformen. Soll: Darstellung der plattformgebundenen Objekte im Draw-Lauf ihrer Trägerplatte in korrekter Tiefenreihenfolge.
+- Quellbefund: `PlateAndChestDrawAll` ruft `JumppodDrawPlate` bereits pro Platte auf; `GameAnimate` ruft `FlarakDrawAll` nach allen Platten auf. Die genaue Ursache der Pod-/Minenbeobachtung ist damit noch nicht vollständig geklärt. `FlarakDraw` zeichnet auch Raketen; frei fliegende Raketen nicht an die Platte binden.
+- Prüfung/Korrektur als separates Paket A5c; überlappende Plattformen, intakte/zerstörte Sockel, ausgefahrene Waffen, Raketen prüfen. Kein Eingriff in Mechanik, Treffer oder Rauch. Keine Dublette im bisherigen Register.
+
 ## Gelegentlich fehlende Direkttreffer
 - ID: Noch nicht vergeben · Priorität: Offen · Status: Vermutet.
 - Beobachtung: gelegentlich fehlende Granatwerfer/Flarak/Flak-Direkttreffer. Soll: gültige Direkttreffer zuverlässig erkennen; Explosionstreffer getrennt bewerten.
