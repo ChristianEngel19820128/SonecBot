@@ -1,14 +1,14 @@
 # SonecBot – Jumppod, Landmine, Sockel und Rauch (A5)
 
 **Stand:** 25. November 2026 · **Branch:** develop
-**Status:** J1 implementiert und lokal abgenommen (10/10, bb16236, 25.11.2026); J2–J4 fachlich abgestimmt, Umsetzung offen.
+**Status:** J1 lokal abgenommen (10/10, bb16236, 25.11.2026); J1a Treppenfunktion implementiert, lokaler Compile/Test offen; J2–J4 fachlich abgestimmt, Umsetzung offen.
 **Codebasis der Voranalyse:** [37682ba9](https://github.com/ChristianEngel19820128/SonecBot/commit/37682ba92c148a637b657beb9fb5e9fc1d98ec1c).
 Bewegungsgrundlage: [SONEC_MOVEMENT_SPEC.md](SONEC_MOVEMENT_SPEC.md). Parameter sind zunächst plausible zentral einstellbare Testwerte, keine endgültige Balance.
 
 ## 1. Gemeinsame Sockelregeln (J1–J3)
 
-- Identische plattformgebundene zweistufige Sockelgeometrie für Jumppod, Landmine und Flak/Flarak: exakt zwei Rechtecke, oberes Rechteck ist zugleich der aktive Bereich von Pod bzw. Mine. Keine dritte Triggerform, kein automatisches Treppensteigen.
-- Sonec kann auf beide Oberseiten springen und darauf landen; Seitenkontakt blockiert entsprechend den bestehenden mechanischen Bewegungsregeln. Nur gültiger Kontakt von oben am oberen Rechteck kann eine Funktion auslösen.
+- Identische plattformgebundene zweistufige Sockelgeometrie für Jumppod, Landmine und Flak/Flarak: exakt zwei Rechtecke, oberes Rechteck ist zugleich der aktive Bereich von Pod bzw. Mine. Keine dritte Triggerform. J1a: automatisch hinauflaufen bei Bodenbindung auf derselben Plattform; abwärts vorhandener Mini-Hop.
+- Sonec kann auf beide Oberseiten springen und darauf landen oder sie über die Treppenfunktion betreten. Seitenkontakt im Flug blockiert entsprechend den bestehenden mechanischen Bewegungsregeln. Nur gültiger Kontakt von oben oder ein gültiger Aufwärts-Stufenwechsel auf das obere Rechteck kann eine Funktion auslösen.
 - Beide Rechtecke bleiben nach Zerstörung mechanisch erhalten; der Sockel bleibt sichtbar, wird wie zerstörte Flak/Flarak umgefärbt und hat keine aktive Pod-/Minenfunktion mehr. Sonecs Waffen kollidieren weiterhin mit beiden Rechtecken von Pod/Mine, aber der zerstörte Sockel nimmt keinen weiteren Schaden.
 - Plattformentranslation, Tiefenregeln, frühester gültiger Kontakt, Restweg und einmalige Trägerübernahme bleiben erhalten. Schadensgeometrie von Sonec bleibt getrennt.
 - Walker dürfen neben Pods/Minen erscheinen und laufen an ihnen auch nach Zerstörung vorbei; keine Walker-Kollisions-/IK-Änderung und keine Walker-Auslösung. Gegnerische Geschosse ignorieren Pods/Minen und deren Wracks vollständig (kein Treffer, keine Blockade); allgemeine Explosionen aller Ursprünge dürfen intakte Objekte beschädigen und Kettenreaktionen auslösen.
@@ -18,7 +18,7 @@ Bewegungsgrundlage: [SONEC_MOVEMENT_SPEC.md](SONEC_MOVEMENT_SPEC.md). Parameter 
 ## 2. J1 – Jumppod
 
 - Grafik: `media/gfx/plate/jumppod.png`, zwei Frames: 1 = bereit, 2 = ausgelöst. Der obere Teil ist der Pod selbst.
-- Gültiger Kontakt von oben mit dem oberen Rechteck bei Frame 1 löst automatisch, ohne Tastendruck, einen Sprungimpuls aus; Faktor 2.0 des normalen vertikalen Sprungimpulses (aktuell 8, also zunächst 16), keine Energiekosten.
+- Gültiger Kontakt von oben mit dem oberen Rechteck oder Hinauflaufen auf die obere Stufe bei Frame 1 löst automatisch, ohne Tastendruck, einen Sprungimpuls aus; Faktor 2.0 des normalen vertikalen Sprungimpulses (aktuell 8, also zunächst 16), keine Energiekosten.
 - Frame 2 sofort anzeigen; Dauer als kurzer Millisekundenparameter. Währenddessen keine erneute Auslösung; mit Rückkehr zu Frame 1 wieder nutzbar. Kein zusätzlicher Animationsablauf.
 - Der Impuls ist der doppelte normale Absprungimpuls, nicht das Doppelte der Sprunghöhe. Horizontales Momentum, Trägerübernahme und anschließende Schwerkraft/Kollisionen wie bei normalem Sprung; kein Jetpack-Zwang.
 - Lebenspunkte; durch alle vier Spielerwaffen und allgemeine Explosionen zerstörbar. Kleine, tatsächlich schadensverursachende Zerstörungsexplosion.
@@ -28,7 +28,7 @@ Bewegungsgrundlage: [SONEC_MOVEMENT_SPEC.md](SONEC_MOVEMENT_SPEC.md). Parameter 
 
 - Grafik: `media/gfx/enemies/landmine.png`. Dieselbe Grundsilhouette und dieselben beiden Rechtecke wie der Jumppod, kein zweiter Auslöseframe.
 - Von weitem nicht eindeutig unterscheidbar; aus der Nähe zentrales blinkendes 2×2-Pixel-Quadrat als Erkennungsmerkmal. Blinkintervall, Farbe und Sichtbarkeitsdistanz sind Testparameter.
-- Nur gültiger direkter Kontakt von oben am oberen Rechteck löst aus: sofortige Explosion und Zerstörung ohne Wartezeit, Umfärbung und in J4 Rauch. Keine Auslösung beim Seitenkontakt.
+- Nur gültiger direkter Kontakt von oben am oberen Rechteck oder Hinauflaufen auf die obere Stufe löst aus: sofortige Explosion und Zerstörung ohne Wartezeit, Umfärbung und in J4 Rauch. Keine Auslösung beim Seitenkontakt.
 - Lebenspunkte und Fernzerstörung durch alle Spielerwaffen; auch allgemeine Explosionen können zerstören. Eigene schadensverursachende Explosion deutlich heftiger als die des Jumppods.
 - Nicht mit intelligenten oder einfachen fliegenden Minen vermischen. Keine Änderungen an deren Verhalten.
 
@@ -67,19 +67,19 @@ Quellbasis 37682ba9; folgende Integrationspunkte sind geprüft, der Entwurf ist 
 - MG im gemeinsamen frühesten Spielertreffersweep, Flamme wird am Sockel beendet, Granate explodiert beim Treffer, Plasma verwendet bestehende flächige Timer-Trefferlogik (keine neue Strahlabschneidung). Allgemeine Explosionen treffen beide Rechtecke mit einem gemeinsamen Ziel-Cooldown. Wracks bleiben geometrisch erhalten; Gegnergeschosse erhalten keinen Pod-Kollisionspfad.
 - Keine Landmine, keine Flak/Flarak-Mechanik und kein Rauch in J1. Keine Änderungen an Waffenwerten anderer Objekte oder Walker-Logik. Statische Struktur-/Aufrufprüfung durch Assistent; lokaler AGK-Compile und Entwicklertest anschließend bestanden.
 
-## 8. Priorisierte Erweiterung: Treppe (J1a-Vorschlag)
+## 8. J1a – Gemeinsame Treppenfunktion (implementiert, Test offen)
 
-- Entwickler priorisiert die Treppenidee nach J1; konkrete Bewegungsregeln und Umsetzung noch nicht vollständig freigegeben. Die abgenommene J1-Geometrie bleibt bis dahin unverändert.
-- Quellprüfung 8e24f0f: `SonecFindChestContact` verwendet am Boden eine seitliche Frontlinie mit 25 px Abstand; `SonecGroundClearancePath` korrigiert seitliche Überlappungen; `SonecSupportExitTime` / `SonecFinishChestEdge` lösen beim Verlassen eines Rechtecks den bisherigen Kisten-Mini-Hop aus. Ein bloßes Abschalten der Seitenkollision genügt daher nicht.
-- Vorschlag: eigener zeitlich aufgelöster Aufwärts-Stufenübergang ausschließlich für die gemeinsamen Sockelrechtecke (5 und 8 px), nur bei Bodenbindung und eigener Plattformebene; Fußauflage, freie Körperbahn, Restweg und Trägergeschwindigkeit erhalten. Kisten, freie Flugbewegung und Walker unverändert.
-- Entwickler schlägt vor, den Mini-Hop beim Verlassen der Treppe beizubehalten. Technisch sinnvoll: bestehende Support-Exit-/Mini-Hop-Funktion zunächst auch für abwärts verlassene Sockelstufen nutzen, keine neue Abstiegsmechanik; Verhalten im Spiel prüfen. Beim Aufwärtswechsel zwischen Stufen darf kein zusätzlicher Mini-Hop ausgelöst werden.
-- Entscheidung offen: soll der Übergang auf die obere Stufe einen aktiven Pod bzw. eine Mine unmittelbar auslösen, oder soll ausschließlich ein abwärts gerichteter Landekontakt auslösen? Empfehlung: auslösen, sobald die obere Stufe tatsächlich betreten wird; Seitenkontakt in der Luft bleibt ohne Auslösung.
-- Technischer Eingriff mittel, Regressionsrisiko im Bewegungsresolver relevant. Empfehlung: eigenes kleines Paket nach J1, vor J2/J3, mit gezieltem lokalem Bewegungsregressionstest. Kein Fremdbugfix; Flarak-Neustartfehler zurückgestellt.
+- Freigegeben: bei bestehender Bodenbindung auf eigener Plattformebene automatisch über 5 px (Plattform → Unterstufe) und 8 px (Unterstufe → Oberstufe) aufsteigen. Betreten der oberen Stufe löst intakten Pod bzw. in J2 Mine genauso wie Landung aus. Seitlicher Flugkontakt löst nicht aus. Wracks haben dieselbe Geometrie, aber keine aktive Funktion.
+- `TChest.MechanicalStepLevel` markiert nur die beiden Sockelrechtecke (1/2), gewöhnliche Kisten bleiben 0. Unter-/Oberstufe liegen in benachbarten Resolver-Slots; diese Zuordnung muss J3 ebenfalls wahren.
+- `SonecSockelStepMode` / `SonecSockelStepTime`: nur direkter Aufwärtswechsel vom zugehörigen Träger bzw. von dessen eigener Unterstufe; am Fußreferenzpunkt wird die Kante relativ zum Träger zeitlich erreicht. Maximalhöhe 8 px und Auflagetoleranz 0,05 px. Bei der oberen Stufe wird die normale 25-px-Frontlinie auch beim zulässigen Anlauf auf die untere Stufe ausgenommen, damit sie den 12-px-Vorsprung nicht vorzeitig blockiert. Seitliche Bodenkorrektur ist in diesen Fällen ebenfalls ausgenommen. Andere Kisten-/Flug-/Tiefenkontakte bleiben normal.
+- Kontaktart `SONEC_CONTACT_STEP_UP` (7) konkurriert im bestehenden frühesten Sweep vor Support-Exit, nach anderen gültigen Wandkontakten. Gewählter Kontakt wechselt auf die höhere Auflage, erhält den relativen horizontalen Restweg, nutzt vorhandene Trägerübernahme und dieselbe Auslösefunktion wie die Landung. Kein Kanten-Balanceimpuls oder Mini-Hop beim Aufwärtswechsel. Abwärts bestehender Support-Exit und Mini-Hop bleiben unverändert, keine neue Abstiegsmechanik.
+- Nicht geändert: normaler Sprung, Jetpack, Kisten, Waffen, Walker und Flarak-Reset. J2/J3/J4 noch nicht umgesetzt. Statische Strukturprüfung und übersetzte Geometrieprüfung; lokaler AGK-Compile/Test offen.
 
 ## 9. Abnahme
 
-- J1 **bestanden**, Entwickler, lokaler AGK-Compile und Test am 25.11.2026, bb16236, 10/10 bestätigt: Grafik/Farbe/Plattformposition, regelmäßige überschneidungsfreie Spawns, Seitenkontakt ohne Auslösung, automatischer doppelter Sprung, Framewechsel/Wiederverwendung/kein Energieverbrauch, alle vier Spielerwaffen, Schadensexplosion/Umfärbung/verbleibende Kollision, Walker/Gegnergeschosse ignorieren Pods, bestehende Bewegung und Neustart. Separater bestätigter Flarak-Raketen-Resetfehler in [KNOWNBUGS.md](../KNOWNBUGS.md); keine Aussage über dessen Behebung. Pod wirkt möglicherweise zu stark (normalen Sprung getrennt beurteilen); Treppenfunktion als spätere Idee, noch keine Änderung. Vermutete unterschiedliche Sockelgröße vom Entwickler als optische Täuschung korrigiert. Keine HTML5-/Langzeitabnahme behauptet.
-- J2: 25-%-Auswahlregel, Blinkmerkmal in Nähe, keine seitliche Auslösung, sofortige stärkere schadensverursachende Explosion auch bei Fernbeschuss; Kettenreaktion, Walker läuft vorbei, gegnerische Geschosse durchdringen auch Wracks, keine Überschneidung stationärer Objekte.
+- J1 **bestanden**, Entwickler, lokaler AGK-Compile und Test am 25.11.2026, bb16236, 10/10 bestätigt: Grafik/Farbe/Plattformposition, regelmäßige überschneidungsfreie Spawns, Seitenkontakt ohne Auslösung, automatischer doppelter Sprung, Framewechsel/Wiederverwendung/kein Energieverbrauch, alle vier Spielerwaffen, Schadensexplosion/Umfärbung/verbleibende Kollision, Walker/Gegnergeschosse ignorieren Pods, bestehende Bewegung und Neustart. Separater bestätigter Flarak-Raketen-Resetfehler in [KNOWNBUGS.md](../KNOWNBUGS.md); keine Aussage über dessen Behebung. Pod wirkt möglicherweise zu stark (normalen Sprung getrennt beurteilen); Treppenfunktion danach als J1a freigegeben und implementiert, eigener Test offen. Vermutete unterschiedliche Sockelgröße vom Entwickler als optische Täuschung korrigiert. Keine HTML5-/Langzeitabnahme behauptet.
+- J1a: Aufstieg aus beiden Richtungen über beide Stufen, gleiche obere Auslösung wie Landung, zerstörte Stufen ohne Auslösung, Mini-Hop abwärts, Plattformbewegung/Trägerimpuls, Flugseitenkontakt und Kistenmechanik unverändert; Test offen.
+- J2: 25-%-Auswahlregel, Blinkmerkmal in Nähe, keine seitliche Auslösung im Flug, Auslösung bei Aufwärtswechsel auf die Oberstufe, sofortige stärkere schadensverursachende Explosion auch bei Fernbeschuss; Kettenreaktion, Walker läuft vorbei, gegnerische Geschosse durchdringen auch Wracks, keine Überschneidung stationärer Objekte.
 - J3: Sockel vor/nach Zerstörung mechanisch nutzbar, Plattformbindung, Flak/Flarak-Gegnerfunktionen/Siloschutz unverändert.
 - J4: alle fünf Grafiken, Rotation, kontinuierlicher Aufstieg und Rechtsdrift, Ausfaden/minimal kleiner, ansteigende und verschiedene Dichte über Partikelanzahl, Emitter folgt Wrack und endet bei dessen Entfernung, keine Reste nach Neustart.
 - Tests an sinnvollen Paketgrenzen bündeln. Lokale AGK-Abnahmen durch Entwickler; übergreifender HTML5-Test getrennt. Kein Test als bestanden behaupten, bevor Rückmeldung vorliegt.

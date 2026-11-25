@@ -62,6 +62,7 @@ Der Draft-Test vom 18.11. belegt keine Auslieferung späterer Alpha-Änderungen.
 ### A5 – Jumppod, Landmine, Sockel und Rauch (J1 abgenommen)
 
 - J1: hilfreicher Jumppod mit doppeltem normalen Sprungimpuls ohne Energiekosten; zwei Frames, auslösbar durch Kontakt von oben.
+- J1a: automatischer Aufstieg über beide Sockelstufen mit oberem Trigger, Mini-Hop beim Abstieg; implementiert, AGK-Test offen.
 - J2: Landmine als erkennbare Attrappe (blinkendes Quadrat in der Nähe), sofortige stärkere Schadensexplosion, 25 % der regelmäßigen Testspawns.
 - J3: gemeinsame Zweirechteck-Sockelmechanik auch für Flak/Flarak; Sockel bleiben nach Zerstörung bestehen; bestehende Luftabwehrfunktion erhalten.
 - J4: wiederverwendbare Rauch-Unit; kontinuierliche Emission an zerstörten Objekten bis zum Weltende.
@@ -159,6 +160,6 @@ Gefahrenzulassung, Erholungsrhythmus, tatsächlicher Ressourcengewinn und Muniti
 Bekannte Qualitätsfragen erhalten eine ausdrückliche Entscheidung bzw. dokumentierte Grenze; der integrierte Alpha-Build wird auf der Zielplattform geprüft.
 Diese Kriterien sind Prüfaufträge für die Umsetzung, keine bereits bestandene Alpha-Abnahme. itch.io bleibt Draft/Secret URL bis zu einer gesonderten Entscheidung.
 
-**Nächster Schritt:** priorisierte Treppenfunktion der gemeinsamen Sockel (J1a-Vorschlag) fachlich entscheiden, siehe [Jumppod-Spezifikation](docs/JUMPPOD_SPEC.md); Fremdbugs separat zurückgestellt.
+**Nächster Schritt:** J1a (Treppenfunktion der gemeinsamen Sockel) lokal in AGK kompilieren und gemäß [Jumppod-Spezifikation](docs/JUMPPOD_SPEC.md) prüfen; Fremdbugs separat zurückgestellt.
 
 Spätere Varianten und Ideen stehen in [BACKLOG.md](BACKLOG.md). Frühere Langfassungen liegen im [Archiv](docs/archive/README.md); sie werden nur für konkrete historische Fragen gelesen.

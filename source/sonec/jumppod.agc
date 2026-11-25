@@ -78,6 +78,8 @@ function JumppodFollow(Pod ref as TJumppod,Plate ref as TPlate)
     Pod.WorldY = Plate.ObjectData.Position.y
     JumppodRectUpdate(Pod.Lower,Plate,Pod.PlateIndex,Pod.OffsetX-JUMPPOD_BASE_W*0.5,-JUMPPOD_BASE_H,JUMPPOD_BASE_W,JUMPPOD_BASE_H)
     JumppodRectUpdate(Pod.Upper,Plate,Pod.PlateIndex,Pod.OffsetX-JUMPPOD_TOP_W*0.5,-JUMPPOD_BASE_H-JUMPPOD_TOP_H,JUMPPOD_TOP_W,JUMPPOD_TOP_H)
+    Pod.Lower.MechanicalStepLevel = 1
+    Pod.Upper.MechanicalStepLevel = 2
 endfunction
 
 // Only fresh, off-screen platforms are offered to the periodic test spawner.

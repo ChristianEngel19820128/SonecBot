@@ -642,6 +642,8 @@ type TProtoChest
 endtype
 
 type TChest
+	// Resolver-only: 0 ordinary chest, 1 lower base step, 2 upper base step.
+	MechanicalStepLevel as integer
 	CollisionMoveStart as TPosition
 	Enabled as integer
 	CollisionData as TCollisionData

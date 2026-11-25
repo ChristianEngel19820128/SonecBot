@@ -11,7 +11,7 @@
 
 ## Aktueller Projektstand
 
-- Real Alpha, Arbeitsblock A weiterhin aktiv; A5 fachlich abgestimmt: J1 (Jumppod und gemeinsame Sockelmechanik) lokal abgenommen, 10/10 am 25.11.2026 auf bb16236; J2–J4 noch nicht implementiert. [A5-Spezifikation](docs/JUMPPOD_SPEC.md).
+- Real Alpha, Arbeitsblock A weiterhin aktiv; A5 fachlich abgestimmt: J1 (Jumppod und gemeinsame Sockelmechanik) lokal abgenommen, 10/10 am 25.11.2026 auf bb16236; J1a (automatischer Aufwärts-Stufenwechsel, oberer Trigger, Mini-Hop abwärts) implementiert, lokaler Compile/Test offen; J2–J4 noch nicht implementiert. [A5-Spezifikation](docs/JUMPPOD_SPEC.md).
 - Minen, Walker, Drohne, Bomber, Flarak/Flak, Warnungen und zentrale Rewards im bisherigen Umfang umgesetzt und lokal geprüft.
 - Bewegungsumstellung A–G2d einschließlich Jetstream am 25.11.2026 abgeschlossen und vom Entwickler akzeptiert.
 - Gemeinsamer Kontaktresolver, Restweg, Trägerbewegung, Tiefenebenen, Fuß-/Kistenkanten, Mini-Hop, Sprung/Jetpack und Rückstoß implementiert.
@@ -33,7 +33,7 @@
 
 ## Genau ein nächster Schritt
 
-Treppenfunktion für gemeinsame Sockel vorrangig fachlich entscheiden (J1a-Vorschlag vor J2); siehe [docs/JUMPPOD_SPEC.md](docs/JUMPPOD_SPEC.md). Bestehender Flarak-Neustartfehler ausdrücklich zurückgestellt; keine Korrektur im A5-Paket.
+J1a lokal in AGK kompilieren und die Treppenfunktion gemäß [docs/JUMPPOD_SPEC.md](docs/JUMPPOD_SPEC.md) prüfen; danach J2. Bestehender Flarak-Neustartfehler ausdrücklich zurückgestellt; keine Korrektur im A5-Paket.
 
 ## Referenzen
 

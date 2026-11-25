@@ -42,6 +42,10 @@
 // Kistenkante / balance and local depth eligibility (provisional values).
 #constant SONEC_FOOT_HALF_X 8.0
 #constant SONEC_GROUND_CLEARANCE_STEP_X 1.0
+// J1a: a supported foot may ascend only a tagged short base step.
+#constant SONEC_SOCKEL_MAX_STEP_Y 8.0
+#constant SONEC_SOCKEL_SUPPORT_EPSILON 0.05
+#constant SONEC_CONTACT_STEP_UP 7
 #constant SONEC_DEPTH_RELEVANCE_X 100.0
 #constant SONEC_BALANCE_X_STEP 0.5
 #constant SONEC_MINI_HOP_IMPULSE_Y 1.5
@@ -1082,6 +1086,81 @@ function SonecCarrierVelocity(Sonec ref as TSonec,PlateList ref as TPlateList,Pl
 endfunction Carry
 
 // Bounded correction of an existing ground-side gap, swept like other motion.
+// J1a: classify only a valid grounded approach to a tagged two-step base.
+// Mode 1: direct upward step candidate. Mode 2: the upper riser behind
+// its lower step, while still on the plate (do not block the approach).
+// All other surfaces and all airborne contacts keep the original wall rule.
+// The mechanical list places the lower and upper rectangle in adjacent slots.
+function SonecSockelStepMode(Sonec ref as TSonec,ChestList ref as TChestList,Index as integer)
+	local Level as integer
+	local PlateIndex as integer
+	local LowerIndex as integer
+	local FeetY as float
+	local TopY as float
+	local Rise as float
+	if Sonec.GroundContactActive = FALSE then exitfunction 0
+	if Index < 0 or Index > ChestList.Chest.Length then exitfunction 0
+	if ChestList.Chest[Index].Enabled = FALSE then exitfunction 0
+	Level = ChestList.Chest[Index].MechanicalStepLevel
+	if Level <> 1 and Level <> 2 then exitfunction 0
+	PlateIndex = ChestList.Chest[Index].CollisionData.Index
+	if PlateIndex <> Sonec.LinkedPlateIndex or PlateIndex < 0 then exitfunction 0
+	FeetY = Sonec.CollisionMoveStart.y+Sonec.ObjectData.Size.Height*0.5
+	TopY = SonecCollisionAxisAt(ChestList.Chest[Index].CollisionMoveStart.y,ChestList.Chest[Index].ObjectData.Position.y,Sonec.CollisionSegmentStartTime)
+	Rise = FeetY-TopY
+	// Direct ascent must start at the bottom of this riser, not through
+	// a wall at an arbitrary height or from a foreign depth plane.
+	if Level = 1
+		if Sonec.CollisionData.ListType = TYPEPLATE and Sonec.CollisionData.Index = PlateIndex
+			if Rise > SONEC_MECHANICAL_RELATIVE_EPSILON and Rise <= SONEC_SOCKEL_MAX_STEP_Y+SONEC_SOCKEL_SUPPORT_EPSILON
+				if Abs(Rise-ChestList.Chest[Index].ObjectData.Size.Height) <= SONEC_SOCKEL_SUPPORT_EPSILON then exitfunction 1
+			endif
+		endif
+		exitfunction 0
+	endif
+	LowerIndex = Index-1
+	if LowerIndex < 0 then exitfunction 0
+	if ChestList.Chest[LowerIndex].Enabled = FALSE or ChestList.Chest[LowerIndex].MechanicalStepLevel <> 1 then exitfunction 0
+	if ChestList.Chest[LowerIndex].CollisionData.Index <> PlateIndex then exitfunction 0
+	if Sonec.CollisionData.ListType = TYPECHEST and Sonec.CollisionData.Index = LowerIndex
+		if Rise > SONEC_MECHANICAL_RELATIVE_EPSILON and Rise <= SONEC_SOCKEL_MAX_STEP_Y+SONEC_SOCKEL_SUPPORT_EPSILON
+			if Abs(Rise-ChestList.Chest[Index].ObjectData.Size.Height) <= SONEC_SOCKEL_SUPPORT_EPSILON then exitfunction 1
+		endif
+	endif
+	if Sonec.CollisionData.ListType = TYPEPLATE and Sonec.CollisionData.Index = PlateIndex
+		// The normal 25px front line would otherwise hit the inner riser
+		// before the foot reaches the outer riser (12px ledge).
+		TopY = SonecCollisionAxisAt(ChestList.Chest[LowerIndex].CollisionMoveStart.y,ChestList.Chest[LowerIndex].ObjectData.Position.y,Sonec.CollisionSegmentStartTime)
+		Rise = FeetY-TopY
+		if Rise > SONEC_MECHANICAL_RELATIVE_EPSILON and Rise <= SONEC_SOCKEL_MAX_STEP_Y+SONEC_SOCKEL_SUPPORT_EPSILON
+			if Abs(Rise-ChestList.Chest[LowerIndex].ObjectData.Size.Height) <= SONEC_SOCKEL_SUPPORT_EPSILON then exitfunction 2
+		endif
+	endif
+endfunction 0
+
+// Sweep the foot reference (center X) into the new surface. At the edge
+// one foot is supported, using the existing one-foot support-exit rule.
+// No horizontal snap or extra displacement is introduced.
+function SonecSockelStepTime(Sonec ref as TSonec,ChestList ref as TChestList,Index as integer)
+	local StartX as float
+	local EndX as float
+	local DeltaX as float
+	local Width as float
+	local ContactTime as float
+	if SonecSockelStepMode(Sonec,ChestList,Index) <> 1 then exitfunction -1
+	StartX = Sonec.CollisionMoveStart.x-SonecCollisionAxisAt(ChestList.Chest[Index].CollisionMoveStart.x,ChestList.Chest[Index].ObjectData.Position.x,Sonec.CollisionSegmentStartTime)
+	EndX = Sonec.CollisionMoveEnd.x-ChestList.Chest[Index].ObjectData.Position.x
+	DeltaX = EndX-StartX
+	Width = ChestList.Chest[Index].ObjectData.Size.Width
+	ContactTime = -1
+	if DeltaX > SONEC_MECHANICAL_RELATIVE_EPSILON and StartX <= 0 and EndX >= 0
+		ContactTime = -StartX/DeltaX
+	endif
+	if DeltaX < -SONEC_MECHANICAL_RELATIVE_EPSILON and StartX >= Width and EndX <= Width
+		ContactTime = (Width-StartX)/DeltaX
+	endif
+endfunction ContactTime
+
 function SonecGroundClearancePath(Sonec ref as TSonec,PlateList ref as TPlateList,ChestList ref as TChestList)
 	local i as integer
 	local ChestX as float
@@ -1101,7 +1180,7 @@ function SonecGroundClearancePath(Sonec ref as TSonec,PlateList ref as TPlateLis
 	BestIndex = -1
 	BestCorrection = 0
 	for i = 0 to ChestList.Chest.Length
-		if SonecChestRelevant(Sonec,PlateList,ChestList,i,FALSE) = TRUE
+		if SonecChestRelevant(Sonec,PlateList,ChestList,i,FALSE) = TRUE and SonecSockelStepMode(Sonec,ChestList,i) = 0
 			if Sonec.CollisionData.ListType <> TYPECHEST or Sonec.CollisionData.Index <> i
 				ChestX = ChestList.Chest[i].CollisionMoveStart.x
 				ChestY = ChestList.Chest[i].CollisionMoveStart.y
@@ -1458,7 +1537,7 @@ function SonecFindContact(Sonec ref as TSonec,PlateList ref as TPlateList,ChestL
 	if Sonec.PassThroughChestIndex >= 0
 		PassPlateIndex = ChestList.Chest[Sonec.PassThroughChestIndex].CollisionData.Index
 	endif
-	// Deterministic tie order: chest top, plate top, side/underside, support exit.
+	// Deterministic tie order: chest top, plate top, side/underside, step up, support exit.
 	// Update all platform groups at the actual start of this residual sweep.
 	SonecDepthRefresh(Sonec,PlateList,ChestList,Sonec.CollisionMoveStart.x,Sonec.CollisionMoveStart.y + Sonec.ObjectData.Size.Height*0.5,Sonec.CollisionSegmentStartTime)
 	// Thrust intent is not the direction of travel: the relative feet sweep
@@ -1494,6 +1573,16 @@ function SonecFindContact(Sonec ref as TSonec,PlateList ref as TPlateList,ChestL
 			Best = Side
 		endif
 	endif
+	// A valid step competes in the same earliest-contact sweep; another
+	// earlier wall still stops the path. A step wins ties with support exit.
+	if Sonec.GroundContactActive = TRUE
+		for i = 0 to ChestList.Chest.Length
+			if SonecChestRelevant(Sonec,PlateList,ChestList,i,FALSE) = TRUE
+				ContactTime = SonecSockelStepTime(Sonec,ChestList,i)
+				Best = SonecContactChooseEarlier(Best,ContactTime,TYPECHEST,i,SONEC_CONTACT_STEP_UP)
+			endif
+		next i
+	endif
 	ContactTime = SonecSupportExitTime(Sonec,PlateList,ChestList)
 	Best = SonecContactChooseEarlier(Best,ContactTime,Sonec.CollisionData.ListType,Sonec.CollisionData.Index,4)
 	ContactTime = SonecDepthLinkExitTime(Sonec,PlateList)
@@ -1523,7 +1612,7 @@ function SonecResolveContact(Sonec ref as TSonec,PlateList ref as TPlateList,Che
 	Sonec.CollisionMoveStart.x = SonecCollisionAxisAt(Sonec.CollisionMoveStart.x,Sonec.CollisionMoveEnd.x,Best.ContactTime)
 	Sonec.CollisionMoveStart.y = SonecCollisionAxisAt(Sonec.CollisionMoveStart.y,Sonec.CollisionMoveEnd.y,Best.ContactTime)
 	Sonec.CollisionSegmentStartTime = SonecCollisionAxisAt(Sonec.CollisionSegmentStartTime,1.0,Best.ContactTime)
-	if Best.Kind = 1
+	if Best.Kind = 1 or Best.Kind = SONEC_CONTACT_STEP_UP
 		if Best.ListType = TYPECHEST
 			SurfaceY = SonecCollisionAxisAt(ChestList.Chest[i].CollisionMoveStart.y,ChestList.Chest[i].ObjectData.Position.y,Sonec.CollisionSegmentStartTime)
 			SurfaceEndY = ChestList.Chest[i].ObjectData.Position.y
@@ -1539,7 +1628,7 @@ function SonecResolveContact(Sonec ref as TSonec,PlateList ref as TPlateList,Che
 		Sonec.CollisionMoveEnd.y = SurfaceEndY - Sonec.ObjectData.Size.Height*0.5
 		if Best.ListType = TYPECHEST
 			if JumppodTryLaunch(i) = TRUE
-				// Land first, then release carrier momentum once, as for a normal jump.
+				// Establish support first (landing or step), then release carrier momentum once.
 				// Apply the pod impulse to the remaining swept path, not a second full tick.
 				SonecStartNormalJump(Sonec,0)
 				Sonec.State.Jump = FALSE
@@ -1554,7 +1643,15 @@ function SonecResolveContact(Sonec ref as TSonec,PlateList ref as TPlateList,Che
 					if Sonec.ObjectData.MoveSpeed.y < 0 then Sonec.ObjectData.MoveSpeed.y = 0
 				endif
 			else
-				SonecChestLandingEffects(Sonec,ChestList,i,Screen)
+				if Best.Kind = SONEC_CONTACT_STEP_UP
+					// Keep the relative X path/momentum; this is a support
+					// transition, not a landing or edge departure.
+					Sonec.BalanceActive = FALSE
+					Sonec.AnimationData.RepeatAnimation = TRUE
+					Sonec.AnimationData.Finished = FALSE
+				else
+					SonecChestLandingEffects(Sonec,ChestList,i,Screen)
+				endif
 			endif
 		endif
 	endif
@@ -2003,7 +2100,7 @@ function SonecFindChestContact(Sonec ref as TSonec,PlateList ref as TPlateList,C
 	Radius = SonecHitCircleRadius(Sonec)
 	WorldMinX = Sonec.ObjectData.Size.Width*0.5
 	for i = 0 to ChestList.Chest.Length
-		if SonecChestRelevant(Sonec,PlateList,ChestList,i,FALSE) = TRUE
+		if SonecChestRelevant(Sonec,PlateList,ChestList,i,FALSE) = TRUE and SonecSockelStepMode(Sonec,ChestList,i) = 0
 			if Sonec.GroundContactActive = FALSE or Sonec.CollisionData.ListType <> TYPECHEST or Sonec.CollisionData.Index <> i
 				ChestStartX = SonecCollisionAxisAt(ChestList.Chest[i].CollisionMoveStart.x,ChestList.Chest[i].ObjectData.Position.x,Sonec.CollisionSegmentStartTime)
 				ChestStartY = SonecCollisionAxisAt(ChestList.Chest[i].CollisionMoveStart.y,ChestList.Chest[i].ObjectData.Position.y,Sonec.CollisionSegmentStartTime)
