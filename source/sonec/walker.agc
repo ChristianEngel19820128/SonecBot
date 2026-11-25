@@ -282,7 +282,7 @@ function WalkerChestAreaFree(ChestList ref as TChestList,PlateIndex as integer,O
 	HullMaxY = OffsetY + WALKER_HULL_BOTTOM
 
 	for i = 0 to ChestList.Chest.Length
-		if ChestList.Chest[i].Enabled = TRUE and ChestList.Chest[i].CollisionData.Index = PlateIndex
+		if ChestList.Chest[i].Enabled = TRUE and ChestList.Chest[i].IsBackground = FALSE and ChestList.Chest[i].CollisionData.Index = PlateIndex
 			ChestMinX = ChestList.Chest[i].CollisionData.Position.x
 			ChestMaxX = ChestMinX + ChestList.Chest[i].ObjectData.Size.Width
 			ChestMinY = ChestList.Chest[i].CollisionData.Position.y
@@ -298,7 +298,7 @@ function WalkerChestAreaFree(ChestList ref as TChestList,PlateIndex as integer,O
 endfunction AreaClear
 
 // Find the closest free point to the platform center. If none is available,
-// skip this Walker; never create one inside a chest or beyond the platform.
+// skip this Walker; never create one inside a foreground chest or beyond the platform.
 function WalkerFindSpawnOffset(ChestList ref as TChestList,Plate ref as TPlate,PlateIndex as integer)
 
 	local SpawnOffsetX as float
@@ -335,7 +335,7 @@ function WalkerFindSpawnOffset(ChestList ref as TChestList,Plate ref as TPlate,P
 
 endfunction SpawnOffsetX
 
-// Free travel before the front edge of the same envelope reaches a chest.
+// Free travel before the front edge of the same envelope reaches a foreground chest.
 // Return zero if a chest already overlaps the envelope.
 function WalkerChestDistanceAhead(Walker ref as TWalker,ChestList ref as TChestList)
 
@@ -358,7 +358,7 @@ function WalkerChestDistanceAhead(Walker ref as TWalker,ChestList ref as TChestL
 	HullMaxY = Walker.PlateOffsetY + WALKER_HULL_BOTTOM
 
 	for i = 0 to ChestList.Chest.Length
-		if ChestList.Chest[i].Enabled = TRUE and ChestList.Chest[i].CollisionData.Index = Walker.PlateIndex
+		if ChestList.Chest[i].Enabled = TRUE and ChestList.Chest[i].IsBackground = FALSE and ChestList.Chest[i].CollisionData.Index = Walker.PlateIndex
 			ChestMinX = ChestList.Chest[i].CollisionData.Position.x
 			ChestMaxX = ChestMinX + ChestList.Chest[i].ObjectData.Size.Width
 			ChestMinY = ChestList.Chest[i].CollisionData.Position.y
