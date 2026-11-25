@@ -4,7 +4,7 @@
 
 ## Jetzt
 
-- [ ] G2d-1: kleine horizontale Sprungkorrektur und Jetpack ohne zusätzliche Haltezeit bei neuem Druck in der Luft implementiert; AGK-Compile/Funktionstest offen. Danach G2d-2 lokales Bewegungsbalancing (Sprunghöhe, vertikalen Jetpack-Bruttoschub 0.04 auf 0.02 halbieren; Schwerkraft 0.01 und horizontale Flugbeschleunigung 0.005 unverändert), Gesamtabnahme; Parameter gesammelt übernehmen. [Spezifikation §13](docs/SONEC_MOVEMENT_SPEC.md#13-offene-detailfragen-für-technische-durchsicht-und-tests).
+- [ ] G2d-2: G2d-1 `3e6e07c` 8/8 bestanden, Bewegungsumstellung technisch abgenommen. Entwickler lokales Bewegungsbalancing (Sprunghöhe, vertikaler Jetpack-Bruttoschub 0.02 als Testwert, weitere Konstanten), Gesamtspieltest und reine Parameteränderungen direkt selbst auf develop einchecken. Danach HEAD und Gesamtabnahme dokumentieren. [Spezifikation §13](docs/SONEC_MOVEMENT_SPEC.md#13-offene-detailfragen-für-technische-durchsicht-und-tests).
 
 ## Danach / separat
 
