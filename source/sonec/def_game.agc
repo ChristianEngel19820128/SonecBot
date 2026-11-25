@@ -241,6 +241,7 @@ type TProtoOrb
 endtype
 	
 type TOrb
+	FlameTargetId as integer
 	Enabled as integer
 	ObjectData as TObjectData
 	YShift as TYShift
@@ -260,6 +261,7 @@ type TProtoMine
 endtype
 	
 type TMine
+	FlameTargetId as integer
 	Enabled as integer
 	ObjectData as TObjectData
 	YShift as TYShift
@@ -316,6 +318,7 @@ type TWalkerCollisionData
 endtype
 
 type TWalker
+	FlameTargetId as integer
 	PlateIndex as integer
 	PlateOffsetX as float
 	PlateOffsetY as float
@@ -515,7 +518,13 @@ type TProtoFlame
 	AnimFlame as TProtoData
 endtype
 
+type TFlameHit
+	TargetId as integer
+	NextHitMs as integer
+endtype
+
 type TFlame
+	HitList as TFlameHit[-1]
 	Enabled as integer
 	ObjectData as TObjectData
 	SpriteData as TSpriteData
@@ -652,6 +661,7 @@ type TProtoChest
 endtype
 
 type TChest
+	FlameTargetId as integer
 	// Background chests retain damage geometry but are not Sonec supports.
 	IsBackground as integer
 	// Resolver-only: 0 ordinary chest, 1 lower base step, 2 upper base step.
@@ -860,6 +870,7 @@ type TProtoDrone
 endtype
 
 type TDrone
+	FlameTargetId as integer
     Health as THealth
     Enabled as integer
     Direction as integer
@@ -886,6 +897,7 @@ type TBomberBomb
 endtype
 
 type TBomber
+	FlameTargetId as integer
     Enabled as integer
     Health as integer
     HitFlashUntil as integer

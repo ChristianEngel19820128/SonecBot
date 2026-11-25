@@ -36,6 +36,7 @@ endfunction
 function OrbNew(Orb ref as TOrb,ProtoOrb ref as TProtoOrb,World ref as TWorld,y as integer,Now as integer)
 	
 	Orb.Enabled = TRUE
+	Orb.FlameTargetId = FlameNewTargetId()
 	TimeSet(Orb.ObjectData.MoveTimer,10,10)
 	TimeReset(Orb.ObjectData.MoveTimer,Now)
 	

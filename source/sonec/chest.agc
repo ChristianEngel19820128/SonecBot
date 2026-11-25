@@ -55,6 +55,7 @@ function ChestNew(ChestList ref as TChestList,Chest ref as TChest,ProtoChest ref
 	local imax as integer
 	
 	Chest.Enabled = TRUE
+	Chest.FlameTargetId = FlameNewTargetId()
 	// Reset on every creation, including a reused local or list slot.
 	Chest.IsBackground = FALSE
 

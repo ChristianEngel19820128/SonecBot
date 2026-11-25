@@ -81,6 +81,7 @@ type TFlarakTestRocket
 endtype
 
 type TFlarak
+    FlameTargetId as integer
     SmokeEmitter as TSmokeEmitter
     Health as integer
     Destroyed as integer
@@ -249,6 +250,7 @@ function FlarakSpawn(PlateList ref as TPlateList,ChestList ref as TChestList,Pla
     FreeLeft = FlarakFindFreeOffsetX(Plate,PlateIndex,ChestList)
     if FreeLeft < 0 then exitfunction
     F.Enabled = TRUE
+    F.FlameTargetId = FlameNewTargetId()
     F.Health = FLARAK_HEALTH_MAX
     F.Destroyed = FALSE
     F.HitFlashUntil = 0
@@ -565,14 +567,12 @@ function FlarakRocketCollideFlames(Game ref as TGame,Now as integer)
                     if FlarakRocketHitByFlame(FlarakList[k].Rocket1,Game.FlameList.Flame[i])
                         FlarakRocketIntercept(FlarakList[k].Rocket1,Game,Now)
                         FlarakMarkFree(k)
-                        FlameDelete(Game.FlameList,i)
                     endif
                 endif
                 if Game.FlameList.Flame[i].Enabled = TRUE
                     if FlarakRocketHitByFlame(FlarakList[k].Rocket2,Game.FlameList.Flame[i])
                         FlarakRocketIntercept(FlarakList[k].Rocket2,Game,Now)
                         FlarakMarkFree(k)
-                        FlameDelete(Game.FlameList,i)
                     endif
                 endif
             next k

@@ -23,10 +23,35 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
+// One damage interval per particle and live target identity, on virtual game time.
+#constant FLAME_DAMAGE_INTERVAL_MS 100
+global FlameTargetSerial as integer
+
+function FlameNewTargetId()
+	FlameTargetSerial = FlameTargetSerial+1
+endfunction FlameTargetSerial
+
+function FlameCanDamage(Flame ref as TFlame,TargetId as integer,Now as integer)
+	local i as integer
+	local Hit as TFlameHit
+	if TargetId <= 0 then exitfunction FALSE
+	for i = 0 to Flame.HitList.Length
+		if Flame.HitList[i].TargetId = TargetId
+			if Now < Flame.HitList[i].NextHitMs then exitfunction FALSE
+			Flame.HitList[i].NextHitMs = Now+FLAME_DAMAGE_INTERVAL_MS
+			exitfunction TRUE
+		endif
+	next i
+	Hit.TargetId = TargetId
+	Hit.NextHitMs = Now+FLAME_DAMAGE_INTERVAL_MS
+	Flame.HitList.Insert(Hit)
+endfunction TRUE
+
 function FlameInit(FlameList ref as TFlameList)
 	
 	TimeSet(FlameList.CreateTimer,10,1)
 	FlameList.Flame.Length = -1
+	FlameTargetSerial = 0
 	FlameList.FirstFree = 0
 	
 endfunction
@@ -40,6 +65,7 @@ function FlameNew(Flame ref as TFlame,ProtoFlame ref as TProtoFlame,World ref as
 	Speed as TPosition
 	
 	Flame.Enabled = TRUE
+	Flame.HitList.Length = -1
 	TimeSet(Flame.ObjectData.MoveTimer,10,10)
 	TimeReset(Flame.ObjectData.MoveTimer,Now)
 	
@@ -193,7 +219,7 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function FlameCollideOrbs(FlameList ref as TFlameList,OrbList ref as TOrbList)
+function FlameCollideOrbs(FlameList ref as TFlameList,OrbList ref as TOrbList,Now as integer)
 	
 	local i as integer
 	local k as integer
@@ -207,9 +233,10 @@ function FlameCollideOrbs(FlameList ref as TFlameList,OrbList ref as TOrbList)
 				if OrbList.Orb[k].Enabled = TRUE
 					Radius = CalcRadius(FlameList.Flame[i].ObjectData.Position,OrbList.Orb[k].ObjectData.Position)
 					if Radius < FlameRadius + OrbList.Orb[k].ObjectData.Radius
-						OrbList.Orb[k].Health.State = OrbList.Orb[k].Health.State - FlameList.Flame[i].BulletData.Damage
-						FlameDelete(FlameList,i)
-						ColorSet(OrbList.Orb[k].SpriteData.Color,255,0,0,255)
+						if FlameCanDamage(FlameList.Flame[i],OrbList.Orb[k].FlameTargetId,Now) = TRUE
+							OrbList.Orb[k].Health.State = OrbList.Orb[k].Health.State - FlameList.Flame[i].BulletData.Damage
+							ColorSet(OrbList.Orb[k].SpriteData.Color,255,0,0,255)
+						endif
 					endif
 				endif
 			next k
@@ -222,7 +249,7 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function FlameCollideMine(FlameList ref as TFlameList,MineList ref as TMineList)
+function FlameCollideMine(FlameList ref as TFlameList,MineList ref as TMineList,Now as integer)
 	
 	local i as integer
 	local k as integer
@@ -236,9 +263,10 @@ function FlameCollideMine(FlameList ref as TFlameList,MineList ref as TMineList)
 				if MineList.Mine[k].Enabled = TRUE
 					Radius = CalcRadius(FlameList.Flame[i].ObjectData.Position,MineList.Mine[k].ObjectData.Position)
 					if Radius < FlameRadius + MineList.Mine[k].ObjectData.Radius
-						MineList.Mine[k].Health.State = MineList.Mine[k].Health.State - FlameList.Flame[i].BulletData.Damage
-						FlameDelete(FlameList,i)
-						ColorSet(MineList.Mine[k].SpriteData.Color,255,0,0,255)
+						if FlameCanDamage(FlameList.Flame[i],MineList.Mine[k].FlameTargetId,Now) = TRUE
+							MineList.Mine[k].Health.State = MineList.Mine[k].Health.State - FlameList.Flame[i].BulletData.Damage
+							ColorSet(MineList.Mine[k].SpriteData.Color,255,0,0,255)
+						endif
 					endif
 				endif
 			next k
@@ -251,7 +279,7 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function FlameCollideChest(FlameList ref as TFlameList,ChestList ref as TChestList)
+function FlameCollideChest(FlameList ref as TFlameList,ChestList ref as TChestList,Now as integer)
 	
 	local i as integer
 	local k as integer
@@ -272,9 +300,10 @@ function FlameCollideChest(FlameList ref as TFlameList,ChestList ref as TChestLi
 					if NearestPoint.y < ChestList.Chest[k].CollisionData.Position1.y then NearestPoint.y = ChestList.Chest[k].CollisionData.Position1.y
 					if NearestPoint.y > ChestList.Chest[k].CollisionData.Position2.y then NearestPoint.y = ChestList.Chest[k].CollisionData.Position2.y
 					if CalcRadius(FlameList.Flame[i].ObjectData.Position,NearestPoint) <= Radius
-						ChestList.Chest[k].Health.State = ChestList.Chest[k].Health.State - FlameList.Flame[i].BulletData.Damage
-						if random(0,7*FlameList.Flame[i].SpriteData.Scale) = 0 then FlameDelete(FlameList,i)
-						ColorSet(ChestList.Chest[k].SpriteData.Color,255,0,0,255)
+						if FlameCanDamage(FlameList.Flame[i],ChestList.Chest[k].FlameTargetId,Now) = TRUE
+							ChestList.Chest[k].Health.State = ChestList.Chest[k].Health.State - FlameList.Flame[i].BulletData.Damage
+							ColorSet(ChestList.Chest[k].SpriteData.Color,255,0,0,255)
+						endif
 					endif
 				endif
 			next k
@@ -307,10 +336,11 @@ function FlameCollideWalkers(FlameList ref as TFlameList,WalkerList ref as TWalk
 					if NearestPoint.y < WalkerList.Walker[k].WalkerCollisionData.Tower.Position1.y then NearestPoint.y = WalkerList.Walker[k].WalkerCollisionData.Tower.Position1.y
 					if NearestPoint.y > WalkerList.Walker[k].WalkerCollisionData.Tower.Position2.y then NearestPoint.y = WalkerList.Walker[k].WalkerCollisionData.Tower.Position2.y
 					if CalcRadius(FlameList.Flame[i].ObjectData.Position,NearestPoint) <= Radius
-						WalkerList.Walker[k].Health.State = WalkerList.Walker[k].Health.State - FlameList.Flame[i].BulletData.Damage
-						WalkerList.Walker[k].HitFlashUntil = Now + 150
-						ColorSet(WalkerList.Walker[k].WalkerSpriteData.Tower.Color,255,0,0,255)
-						FlameDelete(FlameList,i)
+						if FlameCanDamage(FlameList.Flame[i],WalkerList.Walker[k].FlameTargetId,Now) = TRUE
+							WalkerList.Walker[k].Health.State = WalkerList.Walker[k].Health.State - FlameList.Flame[i].BulletData.Damage
+							WalkerList.Walker[k].HitFlashUntil = Now + 150
+							ColorSet(WalkerList.Walker[k].WalkerSpriteData.Tower.Color,255,0,0,255)
+						endif
 					endif
 				endif
 			next k
@@ -334,8 +364,9 @@ function FlameCollideFlaraks(FlameList ref as TFlameList,Game ref as TGame,Now a
             for k = 0 to FlarakList.Length
                 if FlameList.Flame[i].Enabled = TRUE and FlarakList[k].Enabled = TRUE and FlarakList[k].Destroyed = FALSE
                     if FlarakAreaHits(FlarakList[k],Game.World,FlameList.Flame[i].ObjectData.Position.x,FlameList.Flame[i].ObjectData.Position.y,R,R,TRUE)
-                        FlarakApplyDamage(FlarakList[k],Game,FlameList.Flame[i].BulletData.Damage,Now)
-                        FlameDelete(FlameList,i)
+                        if FlameCanDamage(FlameList.Flame[i],FlarakList[k].FlameTargetId,Now) = TRUE
+                            FlarakApplyDamage(FlarakList[k],Game,FlameList.Flame[i].BulletData.Damage,Now)
+                        endif
                     endif
                 endif
             next k
@@ -343,7 +374,7 @@ function FlameCollideFlaraks(FlameList ref as TFlameList,Game ref as TGame,Now a
     next i
 endfunction
 
-function FlameCollideDrone(FlameList ref as TFlameList,Drone ref as TDrone)
+function FlameCollideDrone(FlameList ref as TFlameList,Drone ref as TDrone,Now as integer)
     local i as integer
     local NearestPoint as TPosition
     local Radius as float
@@ -356,8 +387,9 @@ function FlameCollideDrone(FlameList ref as TFlameList,Drone ref as TDrone)
             if NearestPoint.y > Drone.Position.y+15 then NearestPoint.y = Drone.Position.y+15
             Radius = FlameCollisionRadius(FlameList.Flame[i])
             if CalcRadius(FlameList.Flame[i].ObjectData.Position,NearestPoint) <= Radius
-                DroneTakeDamage(Drone,FlameList.Flame[i].BulletData.Damage)
-                FlameDelete(FlameList,i)
+                if FlameCanDamage(FlameList.Flame[i],Drone.FlameTargetId,Now) = TRUE
+                    DroneTakeDamage(Drone,FlameList.Flame[i].BulletData.Damage)
+                endif
             endif
         endif
     next i

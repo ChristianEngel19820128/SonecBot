@@ -437,6 +437,7 @@ endfunction Distance
 function WalkerNew(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,World ref as TWorld,Plate ref as TPlate,PlateIndex as integer,Now as integer,SpawnOffsetX as float)
 	
 	Walker.Enabled = TRUE
+	Walker.FlameTargetId = FlameNewTargetId()
 	Walker.PlateIndex = PlateIndex
 	TimeSet(Walker.ObjectData.MoveTimer,10,10)
 	TimeReset(Walker.ObjectData.MoveTimer,Now)

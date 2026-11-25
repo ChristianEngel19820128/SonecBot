@@ -30,6 +30,7 @@
 #constant LANDMINE_WARNING_B 45
 
 type TJumppod
+    FlameTargetId as integer
     SmokeEmitter as TSmokeEmitter
     ObjectKind as integer
     ContactTriggered as integer
@@ -196,6 +197,7 @@ function JumppodSpawnOnPlate(Game ref as TGame,PlateIndex as integer,Now as inte
     endif
     JumppodNextSpawnMs = Now+JUMPPOD_TEST_SPAWN_MS
     Pod.Enabled = TRUE
+    Pod.FlameTargetId = FlameNewTargetId()
     Pod.PlateIndex = PlateIndex
     Pod.OffsetX = CenterX
     JumppodFollow(Pod,Game.PlateList.Plate[PlateIndex])
@@ -455,10 +457,11 @@ function JumppodCollideFlames(Game ref as TGame,Now as integer)
         if Game.FlameList.Flame[i].Enabled = TRUE
             R = FlameCollisionRadius(Game.FlameList.Flame[i])
             for k = 0 to JumppodList.Length
-                if Game.FlameList.Flame[i].Enabled = TRUE and JumppodList[k].Enabled = TRUE
+                if Game.FlameList.Flame[i].Enabled = TRUE and JumppodList[k].Enabled = TRUE and JumppodList[k].Destroyed = FALSE
                     if JumppodCircleHits(JumppodList[k],Game.FlameList.Flame[i].ObjectData.Position,R)
-                        JumppodApplyDamage(k,Game,Game.FlameList.Flame[i].BulletData.Damage,Now)
-                        FlameDelete(Game.FlameList,i)
+                        if FlameCanDamage(Game.FlameList.Flame[i],JumppodList[k].FlameTargetId,Now) = TRUE
+                            JumppodApplyDamage(k,Game,Game.FlameList.Flame[i].BulletData.Damage,Now)
+                        endif
                     endif
                 endif
             next k

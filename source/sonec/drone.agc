@@ -240,6 +240,7 @@ function DroneSpawn(Drone ref as TDrone,Screen as TSize,World ref as TWorld,Sone
                 DroneBaseY = SpawnY
                 Drone.Direction = ChosenSide
                 Drone.Enabled = TRUE
+                Drone.FlameTargetId = FlameNewTargetId()
                 Success = TRUE
             endif
         endif

@@ -12,6 +12,7 @@ Vor automatisierten Prüfungen auf Dubletten prüfen. Keine automatische Codefre
 ## Flammenwerfer: Kollision und Deckung
 - ID: Noch nicht vergeben · Priorität: Offen · Status: Vermutet.
 - Beobachtung: Flammenkollision bei Flak/Flarak im Silomodus ohne Wirkung. Siloschutz ist beabsichtigt; Löschung und Kistendeckung sind noch abzustimmende Designfragen, keine bestätigten Fehler. B2.1 Partikelbewegung lokal abgenommen (12/12, 1bed93b), auf Entwicklerwunsch unverändert lassen; Kollision/Deckung separat untersuchen.
+- B2.2/B2.3 Entwicklerentscheidung: Flammen durchdringen alle Objekte ohne Beschneidung oder Verbrauch bei Kontakt; bestehende Trefferzonen und Siloschutz bleiben erhalten. Pro Partikel und Ziel sofort 5 Schaden bei Erstkontakt, danach frühestens nach 100 ms virtueller Spielzeit (vorläufiger zentraler Parameter), keine Nachholtreffer. Separate Ziel-Instanzkennung bei jedem Spawn verhindert alte Cooldowns bei Slot-Recycling; HitList bei jeder Flammenerzeugung leer. Raketen/Bomben werden wie bisher sofort abgefangen, ohne Partikelverbrauch. Lokaler AGK-Test und Balancebeobachtung ausstehend.
 - Prüfung: Silozustand, Übergangsframes und andere Kollisionsziele getrennt prüfen; `FlameCollideFlaraks`, `FlarakAreaHits`, `FlameCollideChest`. Ursache und Korrektur offen.
 - Quelle: TODO und Bewegungsspezifikation vor Konsolidierung, Revision 0ba2ee8c665325f25a9e7da38a86c9ca49cb7e5a.
 

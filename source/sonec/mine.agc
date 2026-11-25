@@ -38,6 +38,7 @@ endfunction
 function MineNew(Mine ref as TMine,ProtoMine ref as TProtoMine,World ref as TWorld,y as integer,Now as integer)
 	
 	Mine.Enabled = TRUE
+	Mine.FlameTargetId = FlameNewTargetId()
 	TimeSet(Mine.ObjectData.MoveTimer,10,10)
 	TimeReset(Mine.ObjectData.MoveTimer,Now)
 	

@@ -196,6 +196,7 @@ function BomberDo(Bomber ref as TBomber,ProtoBomber ref as TProtoBomber,Warning 
         Bomber.NextJetMs = Now
         Bomber.LastJetX = Bomber.Position.x+GetSpriteWidth(ProtoBomber.Body.Sprite.ID)*0.5-BOMBER_JET_UPPER_X_FROM_RIGHT
         Bomber.Enabled = TRUE
+        Bomber.FlameTargetId = FlameNewTargetId()
         Bomber.Health = BOMBER_HEALTH_MAX
         Bomber.HitFlashUntil = 0
         Bomber.LastPlasmaHitMs = 0
@@ -355,7 +356,6 @@ function BomberBombCollideFlames(Bomber ref as TBomber,FlameList ref as TFlameLi
                     if CalcRadius(FlameList.Flame[i].ObjectData.Position,Bomber.Bomb[k].Position) <= Radius
                         HitPosition = Bomber.Bomb[k].Position
                         Bomber.Bomb[k].Enabled = FALSE
-                        FlameDelete(FlameList,i)
                         ExplosionAdd(Game.ExplosionList,Game.ProtoExplosion,Game,1,HitPosition,Now)
                     endif
                 endif
@@ -656,15 +656,16 @@ function BomberCollideWeapons(Bomber ref as TBomber,Game ref as TGame,Now as int
         endif
     next i
 
-    // Flamethrower: each contacting particle deals its normal damage once.
+    // Flamethrower: penetrating particles damage each live body at timed intervals.
     for i = 0 to Game.FlameList.Flame.Length
         if Bomber.Enabled = TRUE and Game.FlameList.Flame[i].Enabled = TRUE
             Radius = FlameCollisionRadius(Game.FlameList.Flame[i])
             NearX = Game.FlameList.Flame[i].ObjectData.Position.x
             NearY = Game.FlameList.Flame[i].ObjectData.Position.y
             if NearX >= MinPos.x-Radius and NearX <= MaxPos.x+Radius and NearY >= MinPos.y-Radius and NearY <= MaxPos.y+Radius
-                BomberTakeDamage(Bomber,Game,Game.FlameList.Flame[i].BulletData.Damage,Now)
-                FlameDelete(Game.FlameList,i)
+                if FlameCanDamage(Game.FlameList.Flame[i],Bomber.FlameTargetId,Now) = TRUE
+                    BomberTakeDamage(Bomber,Game,Game.FlameList.Flame[i].BulletData.Damage,Now)
+                endif
             endif
         endif
     next i
