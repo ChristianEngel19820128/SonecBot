@@ -35,7 +35,7 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function FlameNew(Flame ref as TFlame,ProtoFlame ref as TProtoFlame,World ref as TWorld,ObjectData as TObjectData,Position as TPosition,Angle as float,Radius as float,Now)
+function FlameNew(Flame ref as TFlame,ProtoFlame ref as TProtoFlame,World ref as TWorld,InheritedSpeed as TSpeed,Position as TPosition,Angle as float,Radius as float,Now)
 		
 	Speed as TPosition
 	
@@ -59,8 +59,9 @@ function FlameNew(Flame ref as TFlame,ProtoFlame ref as TProtoFlame,World ref as
 	Speed.y = 0
 	CalcPosition(Speed,Angle,1)
 
-	Flame.ObjectData.MoveSpeed.x = Speed.x + ObjectData.AutoSpeed.x
-	Flame.ObjectData.MoveSpeed.y = Speed.y + ObjectData.AutoSpeed.y
+	// Capture world velocity once, already converted to flame timer units.
+	Flame.ObjectData.MoveSpeed.x = Speed.x + InheritedSpeed.x
+	Flame.ObjectData.MoveSpeed.y = Speed.y + InheritedSpeed.y
 	
 	Flame.ObjectData.MoveAcceleration.x = 0.01
 	Flame.ObjectData.MoveAcceleration.y = 0.01
@@ -99,7 +100,7 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function FlameAdd(FlameList ref as TFlameList,ProtoFlame ref as TProtoFlame,World ref as TWorld,ObjectData as TObjectData,Position as TPosition,Angle as float,Radius as float,Now as integer)
+function FlameAdd(FlameList ref as TFlameList,ProtoFlame ref as TProtoFlame,World ref as TWorld,InheritedSpeed as TSpeed,Position as TPosition,Angle as float,Radius as float,Now as integer)
 	
 	local Value as integer
 	local Found as integer
@@ -110,7 +111,7 @@ function FlameAdd(FlameList ref as TFlameList,ProtoFlame ref as TProtoFlame,Worl
 	
 	if TimeGet(FlameList.CreateTimer,Now) > 0
 		
-		FlameNew(Flame,ProtoFlame,World,ObjectData,Position,Angle,Radius,Now)
+		FlameNew(Flame,ProtoFlame,World,InheritedSpeed,Position,Angle,Radius,Now)
 		
 		Found = FALSE
 		i = FlameList.FirstFree
@@ -362,45 +363,45 @@ function FlameCollideDrone(FlameList ref as TFlameList,Drone ref as TDrone)
     next i
 endfunction
 
+// The legacy drag is 0.01 per update at the 60 Hz reference.
+function FlameBrakeSpeed(Speed as float,Brake as float)
+	if Speed > 0
+		if Speed <= Brake then exitfunction 0.0
+		exitfunction Speed-Brake
+	endif
+	if Speed < 0
+		if -Speed <= Brake then exitfunction 0.0
+		exitfunction Speed+Brake
+	endif
+endfunction 0.0
+
+// Integrate linear drag over the actual elapsed range; stop at zero,
+// including when a long update would otherwise overshoot the stopping time.
+function FlameAxisDistance(OldSpeed as float,NewSpeed as float,Brake as float,StepRange as float)
+	if Brake > 0 and abs(OldSpeed) < Brake
+		StepRange = StepRange*abs(OldSpeed)/Brake
+	endif
+endfunction (OldSpeed+NewSpeed)*0.5*StepRange
+
 function FlameMove(Flame ref as TFlame,World ref as TWorld,Now as integer)
+
+	local OldSpeed as TSpeed
+	local Brake as TSpeed
+	local StepRange as float
+	local ReferenceSteps as float
 
 	if Flame.Enabled = TRUE
 		if TimeGet(Flame.ObjectData.MoveTimer,Now) > 0
 			
-			Flame.ObjectData.Position.x = Flame.ObjectData.Position.x + Flame.ObjectData.MoveSpeed.x * Flame.ObjectData.MoveTimer.CalcRange
-			Flame.ObjectData.Position.y = Flame.ObjectData.Position.y + Flame.ObjectData.MoveSpeed.y * Flame.ObjectData.MoveTimer.CalcRange
-			
-			if Flame.ObjectData.MoveSpeed.x > 0
-				if Flame.ObjectData.MoveSpeed.x - Flame.ObjectData.MoveAcceleration.x >= 0
-					Flame.ObjectData.MoveSpeed.x = Flame.ObjectData.MoveSpeed.x - Flame.ObjectData.MoveAcceleration.x
-				else
-					Flame.ObjectData.MoveSpeed.x = 0
-				endif
-			else
-				if Flame.ObjectData.MoveSpeed.x < 0
-					if Flame.ObjectData.MoveSpeed.x + Flame.ObjectData.MoveAcceleration.x <= 0
-						Flame.ObjectData.MoveSpeed.x = Flame.ObjectData.MoveSpeed.x + Flame.ObjectData.MoveAcceleration.x
-					else
-						Flame.ObjectData.MoveSpeed.x = 0
-					endif
-				endif
-			endif
-			
-			if Flame.ObjectData.MoveSpeed.y > 0
-				if Flame.ObjectData.MoveSpeed.y - Flame.ObjectData.MoveAcceleration.y >= 0
-					Flame.ObjectData.MoveSpeed.y = Flame.ObjectData.MoveSpeed.y - Flame.ObjectData.MoveAcceleration.y
-				else
-					Flame.ObjectData.MoveSpeed.y = 0
-				endif
-			else
-				if Flame.ObjectData.MoveSpeed.y < 0
-					if Flame.ObjectData.MoveSpeed.y + Flame.ObjectData.MoveAcceleration.y <= 0
-						Flame.ObjectData.MoveSpeed.y = Flame.ObjectData.MoveSpeed.y + Flame.ObjectData.MoveAcceleration.y
-					else
-						Flame.ObjectData.MoveSpeed.y = 0
-					endif
-				endif
-			endif
+			StepRange = Flame.ObjectData.MoveTimer.CalcRange
+			ReferenceSteps = Flame.ObjectData.MoveTimer.FullDifference*0.06
+			OldSpeed = Flame.ObjectData.MoveSpeed
+			Brake.x = Flame.ObjectData.MoveAcceleration.x*ReferenceSteps
+			Brake.y = Flame.ObjectData.MoveAcceleration.y*ReferenceSteps
+			Flame.ObjectData.MoveSpeed.x = FlameBrakeSpeed(OldSpeed.x,Brake.x)
+			Flame.ObjectData.MoveSpeed.y = FlameBrakeSpeed(OldSpeed.y,Brake.y)
+			Flame.ObjectData.Position.x = Flame.ObjectData.Position.x + FlameAxisDistance(OldSpeed.x,Flame.ObjectData.MoveSpeed.x,Brake.x,StepRange)
+			Flame.ObjectData.Position.y = Flame.ObjectData.Position.y + FlameAxisDistance(OldSpeed.y,Flame.ObjectData.MoveSpeed.y,Brake.y,StepRange)
 			
 			SpritePositionCalc(Flame.SpriteData.Position,Flame.ObjectData.Position,World.Position)
 			

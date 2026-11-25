@@ -423,6 +423,8 @@ function SonecFlameGunInput(Sonec ref as TSonec,FlameList ref as TFlameList,Prot
 	local Position as TPosition
 	local Angle as float
 	local Radius as float
+	local InheritedSpeed as TSpeed
+	local SourceStepRange as float
 	
 	if (InputActionState(Keys,JoystickIndex,ACTION_FIRE_FLAME) = 1 )and Sonec.Energy.State >= COSTFLAME
 		if TimeGet(Sonec.FlameGun.FireTimer,Now) > 0
@@ -448,7 +450,24 @@ function SonecFlameGunInput(Sonec ref as TSonec,FlameList ref as TFlameList,Prot
 				SoundPlay(Sound.MFlameSound)
 			endif
 			
-			FlameAdd(FlameList,ProtoFlame,World,Sonec.ObjectData,Position,Angle,Radius,Now)
+			// Sonec MoveSpeed is displacement per movement step, not per timer
+			// range. AutoSpeed uses the same step units and is only relative
+			// carrier momentum while grounded. Both timers use 10 ms / range 10.
+			SourceStepRange = Sonec.ObjectData.MoveTimer.CalcRange
+			if SourceStepRange <= 0 then SourceStepRange = Sonec.ObjectData.MoveTimer.Range
+			InheritedSpeed = Sonec.ObjectData.MoveSpeed
+			if Sonec.GroundContactActive = TRUE
+				InheritedSpeed.x = InheritedSpeed.x + Sonec.ObjectData.AutoSpeed.x
+				InheritedSpeed.y = InheritedSpeed.y + Sonec.ObjectData.AutoSpeed.y
+			endif
+			if SourceStepRange > 0
+				InheritedSpeed.x = InheritedSpeed.x/SourceStepRange
+				InheritedSpeed.y = InheritedSpeed.y/SourceStepRange
+			else
+				InheritedSpeed.x = 0
+				InheritedSpeed.y = 0
+			endif
+			FlameAdd(FlameList,ProtoFlame,World,InheritedSpeed,Position,Angle,Radius,Now)
 			Sonec.Energy.State = Sonec.Energy.State - COSTFLAME
 			
 			TimeReset(Sonec.FlameGun.FireTimer,Now)
