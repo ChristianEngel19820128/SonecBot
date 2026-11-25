@@ -9,7 +9,7 @@
 - Assistent implementiert vereinbarte Pakete, prüft Quellcode und aktualisiert betroffene Dokumentation.
 - Develop nicht mit veröffentlichtem itch.io-Build gleichsetzen.
 
-## Aktueller Auftrag: Bewegungsumstellung
+## Abgeschlossener Auftrag: Bewegungsumstellung
 
 Verbindliche Grundlage: [SONEC_MOVEMENT_SPEC.md](docs/SONEC_MOVEMENT_SPEC.md).
 
@@ -25,8 +25,9 @@ Verbindliche Grundlage: [SONEC_MOVEMENT_SPEC.md](docs/SONEC_MOVEMENT_SPEC.md).
 - G2a implementiert nach Abstimmung: alle Sonec-Eingaben bis vollständigem Welteintritt gesperrt, getrennte Schwerkraft/Bruttoschub/Sprungimpuls/Grenzen, optionales Fallmaximum zunächst aus. Zentrale Konstanten in sonec.agc; alte Hop-Anzeige entfernt, CSV erhalten. Entwicklertest `a41162c` 8/8 bestanden inkl. AGK-Compile. Beobachtung: Sonec weniger träge und relativ flott in der Luft; Feinjustierung vereinbarungsgemäß G2d, vorläufige Werte unverändert.
 - G2b implementiert: sofortiger Sprung bei neuer Hoch-Eingabe am Boden, Jetpack nach 180 ms Halten, Energiezufluss weiter wirksam; kein Dauersprung. Horizontaler Mindestimpuls optional (0 deaktiviert), vorhandenen Gegenschwung erhalten. Granatwerferrückstoß additiv (1,0), keine Eingabeflag-Änderung; Richtung umkehrbar. Entwicklertest `6c53fac` 11/11 bestanden inkl. AGK-Compile, Tippen/Halten, Fall, Loslassen, kein Dauersprung, Schwung, Rückstoß und bisherige Kontakte. Keine zusätzlichen Beobachtungen. Optionaler Mindestimpuls bleibt 0; Nichtnullwerte im G2d-Balancing prüfen.
 - G2c nach Abstimmung implementiert: Fußgrenze, richtungsabhängige Kistenrandlandung, Plattformfall ohne Hop, kombinierte Seitenlinie/Kreise und begrenzte Abstandskorrektur; horizontale Ebenenlösung und lokale dynamische Freigabehöhe (100). Entwicklertest `d87a2f6` 13/13 bestanden inkl. AGK-Compile; keine offenen Prüfpunkte. CSV erhalten. Neue Beobachtungen: kleine Sprungkorrekturen nötig, Sprunghöhe zu hoch, Jetpack ohne Verzögerung außerhalb des normalen Sprungs, vertikalen Jetpack-Bruttoschub 0.04 auf 0.02 halbieren, Schwerkraft 0.01 und horizontale Flugbeschleunigung 0.005 unverändert; Energieüberschuss/Overload-Tode, Gegner gefährlich, Drohne vergleichsweise harmlos. Steuerungsnacharbeit vor G2d-Balancing; Energie/Gegner als eigener TODO-Punkt separat.
-- G2d-1 nach Abstimmung implementiert: kleine energieunabhängige horizontale Sprungkorrektur (0.001, Richtungsgrenze 1.5), Jetpack ohne Zusatzverzögerung bei neuem Up-Druck in der Luft; 180 ms nur beim absprungauslösenden Tastendruck. Bestehende Konstanten und G2c-Kollisionen unverändert; Entwicklertest `3e6e07c` 8/8 bestanden inkl. AGK-Compile, Sprungkorrekturen beidseitig und neue Jetpack-Reaktion, bisherige Kontakte/Rückstoß. Keine offenen Prüfpunkte. Bewegungsumstellung technisch abgenommen; Gesamtspielgefühl/Parameterabnahme G2d-2 offen.
-- G2d-2 Entwicklerstand `ffe2e39`: Luftlimit 8, Bruttoschub 0.025, Aufwärtslimit 10, Falllimit 16, InputTimer 10 ms; Sprungimpuls 8. Entwickler Bewegung soweit angepasst, Langzeitbeobachtung offen. Jetstream-Nacharbeit `4cba3e3` 7/7 bestanden inkl. AGK-Compile, Dichte, Schubunterbrechung, Energie/Physik und keine auffällige Performanceverschlechterung. Entwicklercommit `43f4a35` Abstand 12→4, max. 3 und Zeitgrenze 100 ms unverändert. Verdichtung nur Sonec; Bomber bereits eigene Streckeninterpolation, Drohne/Rakete eigene Emission. Langzeitbeobachtung offen.
+- G2d-1 nach Abstimmung implementiert: kleine energieunabhängige horizontale Sprungkorrektur (0.001, Richtungsgrenze 1.5), Jetpack ohne Zusatzverzögerung bei neuem Up-Druck in der Luft; 180 ms nur beim absprungauslösenden Tastendruck. Bestehende Konstanten und G2c-Kollisionen unverändert; Entwicklertest `3e6e07c` 8/8 bestanden inkl. AGK-Compile, Sprungkorrekturen beidseitig und neue Jetpack-Reaktion, bisherige Kontakte/Rückstoß. Keine offenen Prüfpunkte. Bewegungsumstellung technisch abgenommen; G2d-2 siehe Abschlussstand.
+- G2d-2 Entwicklerstand `ffe2e39`: Luftlimit 8, Bruttoschub 0.025, Aufwärtslimit 10, Falllimit 16, InputTimer 10 ms; Sprungimpuls 8. Entwickler Bewegung soweit angepasst, Langzeitbeobachtung offen. Jetstream-Nacharbeit `4cba3e3` 7/7 bestanden inkl. AGK-Compile, Dichte, Schubunterbrechung, Energie/Physik und keine auffällige Performanceverschlechterung. Entwicklercommit `43f4a35` Abstand 12→4, max. 3 und Zeitgrenze 100 ms unverändert. Verdichtung nur Sonec; Bomber bereits eigene Streckeninterpolation, Drohne/Rakete eigene Emission. Gemeinsame Funktion als spätere Idee im BACKLOG.
+- Abschluss 25.11.2026: Entwickler betrachtet Bewegungsziele als erreicht, Assistent stimmt auf Basis der gemeldeten Tests zu. G2d-2 im vereinbarten Umfang abgeschlossen; aktuelle Entwicklerparameter als Ausgangsstand akzeptiert, weitere Feinjustierung nach Langzeitbeobachtung möglich. Kein konkreter Bewegungsfehler mit akutem Handlungsbedarf gemeldet. Keine separate Langzeit-/HTML5-Abnahme oder vollständige Einzelmatrix aller Randfälle behauptet; übergreifende Tests bleiben Meilensteinthema.
 
 ## Vereinbarter Arbeitsmodus für die Bewegungsumstellung
 
@@ -51,7 +52,7 @@ Verbindliche Grundlage: [SONEC_MOVEMENT_SPEC.md](docs/SONEC_MOVEMENT_SPEC.md).
 
 ## Genau ein nächster vereinbarter Schritt
 
-G2d-2: Bewegung und Jetstream technisch abgenommen, Entwicklerwerte eingecheckt. Langzeitbeobachtung und Rückmeldung zum Gesamtspielgefühl; weitere Parameteränderungen bei Bedarf direkt selbst einchecken. Ausweitung der Jetstream-Verdichtung auf Gegner nur nach gesonderter Entscheidung.
+Vereinbarte Prozess-/Dokumentationsauswertung der Bewegungsumstellung im separaten Themenchat durchführen; danach nächsten Arbeitsblock gemeinsam aus TODO/Roadmap auswählen. Langzeitbeobachtung der Bewegung läuft begleitend, ohne neuen Implementierungsauftrag.
 
 ## Referenzen
 

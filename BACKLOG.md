@@ -67,6 +67,8 @@ Bomber, Flarak, hilfreicher Jumppod, Gefahren-/Erfahrungsgrundsystem, kleine Zie
 
 ## Technik und wiederverwendbare Erkenntnisse
 
+- **Gemeinsame streckenabhängige Jetstream-Erzeugung (Idee, 25.11.2026):** Bei Bedarf die separaten Emissionspfade von Sonec, Drohne, Bomber und Flarak-Rakete über eine wiederverwendbare visuelle Funktion zusammenführen. Individuelle Düsenpositionen, Partikelabstände/-grenzen, Größe, Ausrichtung, Takt und je Düse eigener Verlauf bleiben einstellbar; Sonecs Energieverbrauch und Gegnerverhalten unverändert. Sonec-Verdichtung `4cba3e3` 7/7 bestanden, Bomber besitzt bereits eigene Streckeninterpolation. Kein aktueller Fehlernachweis bei Gegner-Jets, keine Releasezusage oder Codefreigabe.
+
 - **Sound-Trigger ordnen:** Ereignisse und Sonec-spezifische Aufrufe inventarisieren, Doppeltrigger vermeiden. Konkretes Audio-Kratzen bleibt Qualitätsfrage der Alpha-Roadmap.
 - **Aufnahmeverfahren:** lange GifCam-Aufnahmen/RAM-Verhalten bei Bedarf untersuchen; bisherige Ursache nur Hypothese.
 - **AGK-Knowledge-Base-Kandidaten:** Gamepad-Initialisierung, Browser-ESC/QUIT, XAMPP-Cache, zeitabhängige Spawns, Sprite-/Zahlenrechnung, Random-Grenzen, verschachtelte Konstanten und Turmprojektion.
