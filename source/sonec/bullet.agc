@@ -82,6 +82,9 @@ function BulletNew(Bullet ref as TBullet,ProtoBullet ref as TProtoBullet,World r
 	Bullet.ObjectData.Position = Position
 	CalcPosition(Bullet.ObjectData.Position,Angle,Radius)
 	Bullet.PreviousPosition = Bullet.ObjectData.Position
+	Bullet.SonecSweepStartMs = Now
+	Bullet.SonecSweepEndMs = Now
+	Bullet.SonecSweepReady = TRUE
 	
 	Bullet.ObjectData.MoveSpeedMax.x = 0
 	Bullet.ObjectData.MoveSpeedMax.y = 0
@@ -216,115 +219,42 @@ global SonecCollisionDebugVisible as integer
 global SonecCollisionDebugHitUntil0 as integer
 global SonecCollisionDebugHitUntil1 as integer
 
-function BulletSweepHitsSonecCircle(Bullet ref as TBullet,CenterX as float,CenterY as float,Radius as float)
-    local Dx as float
-    local Dy as float
-    local LengthSq as float
-    local Projection as float
-    local DeltaX as float
-    local DeltaY as float
-    Dx = Bullet.ObjectData.Position.x-Bullet.PreviousPosition.x
-    Dy = Bullet.ObjectData.Position.y-Bullet.PreviousPosition.y
-    LengthSq = Dx*Dx+Dy*Dy
-    Projection = 0
-    if LengthSq > 0
-        Projection = ((CenterX-Bullet.PreviousPosition.x)*Dx+(CenterY-Bullet.PreviousPosition.y)*Dy)/LengthSq
-        if Projection < 0 then Projection = 0
-        if Projection > 1 then Projection = 1
-    endif
-    DeltaX = Bullet.PreviousPosition.x+Projection*Dx-CenterX
-    DeltaY = Bullet.PreviousPosition.y+Projection*Dy-CenterY
-endfunction DeltaX*DeltaX+DeltaY*DeltaY < Radius*Radius
-
-function BulletSweepHitsSonecTwoCircles(Bullet ref as TBullet,Sonec ref as TSonec)
-    local Radius as float
-    local Hit as integer
-    Radius = SonecHitCircleRadius(Sonec)
-    Hit = FALSE
-    if BulletSweepHitsSonecCircle(Bullet,Sonec.ObjectData.Position.x,SonecHitCircleY(Sonec,0),Radius) = TRUE then Hit = TRUE
-    if BulletSweepHitsSonecCircle(Bullet,Sonec.ObjectData.Position.x,SonecHitCircleY(Sonec,1),Radius) = TRUE then Hit = TRUE
-endfunction Hit
-
-// K1c: check the whole last movement segment of an enemy bullet against
-// Sonec's existing circle. Do not enlarge the hitbox by the bullet radius.
-// A zero-length step is checked at its current position.
-function BulletSweepHitsSonec(Bullet ref as TBullet,Sonec ref as TSonec)
-    local Dx as float
-    local Dy as float
-    local LengthSq as float
-    local Projection as float
-    local ClosestX as float
-    local ClosestY as float
-    local DeltaX as float
-    local DeltaY as float
-    local RadiusSq as float
-    local Hit as integer
-
-    Hit = FALSE
-    Dx = Bullet.ObjectData.Position.x - Bullet.PreviousPosition.x
-    Dy = Bullet.ObjectData.Position.y - Bullet.PreviousPosition.y
-    LengthSq = Dx*Dx + Dy*Dy
-    Projection = 0
-    if LengthSq > 0
-        Projection = ((Sonec.ObjectData.Position.x-Bullet.PreviousPosition.x)*Dx + (Sonec.ObjectData.Position.y-Bullet.PreviousPosition.y)*Dy)/LengthSq
-        if Projection < 0 then Projection = 0
-        if Projection > 1 then Projection = 1
-    endif
-
-    ClosestX = Bullet.PreviousPosition.x + Projection*Dx
-    ClosestY = Bullet.PreviousPosition.y + Projection*Dy
-    DeltaX = ClosestX - Sonec.ObjectData.Position.x
-    DeltaY = ClosestY - Sonec.ObjectData.Position.y
-    RadiusSq = Sonec.ObjectData.Radius*Sonec.ObjectData.Radius
-    if DeltaX*DeltaX + DeltaY*DeltaY < RadiusSq then Hit = TRUE
-endfunction Hit
-
-// Determine the earliest contact using the same active hitbox switch and
-// strict hit predicate as BulletCollide. No additional bullet-radius padding.
-function BulletSonecImpactEntry(Bullet ref as TBullet,Sonec ref as TSonec)
-    local Center as TPosition
-    local CircleIndex as integer
-    local Radius as float
+// Preserve strict hit geometry and the legacy diagnostic comparison.
+function BulletSonecCircleEntry(Bullet ref as TBullet,Sonec ref as TSonec,CircleIndex as integer)
     local Entry as float
-    local BestEntry as float
-    BestEntry = 2.0
-    Center.x = Sonec.ObjectData.Position.x
-    if SONEC_TWO_CIRCLE_DAMAGE = 1 and SONEC_TWO_CIRCLE_TEST = 1
-        Radius = SonecHitCircleRadius(Sonec)
-        for CircleIndex = 0 to 1
-            Center.y = SonecHitCircleY(Sonec,CircleIndex)
-            if BulletSweepHitsSonecCircle(Bullet,Center.x,Center.y,Radius) = TRUE
-                Entry = CollisionCircleSweepEntry(Bullet.PreviousPosition,Bullet.ObjectData.Position,Center,Radius)
-                if Entry >= 0 and Entry < BestEntry then BestEntry = Entry
-            endif
-        next CircleIndex
-    else
-        Center.y = Sonec.ObjectData.Position.y
-        if BulletSweepHitsSonec(Bullet,Sonec) = TRUE
-            Entry = CollisionCircleSweepEntry(Bullet.PreviousPosition,Bullet.ObjectData.Position,Center,Sonec.ObjectData.Radius)
-            if Entry >= 0 then BestEntry = Entry
-        endif
-    endif
-    if BestEntry <= 1 then exitfunction BestEntry
-endfunction -1.0
+    Entry = SonecDamageSweepEntry(Sonec,Bullet.PreviousPosition,Bullet.ObjectData.Position,Bullet.SonecSweepStartMs,Bullet.SonecSweepEndMs,CircleIndex,0,0,TRUE)
+endfunction Entry
 
 function BulletCollide(BulletList ref as TBulletList,Sonec ref as TSonec,Shield ref as TShield,Game ref as TGame,Now as integer)
     local i as integer
     local Impact as TPosition
     local Entry as float
+    local OldEntry as float
+    local UpperEntry as float
+    local LowerEntry as float
+    local NewEntry as float
 
     for i = 0 to BulletList.Bullet.Length
         if BulletList.Bullet[i].Enabled = TRUE
-            if BulletList.Bullet[i].CollisionData.CollisionType = TYPEENEMY
+            if BulletList.Bullet[i].CollisionData.CollisionType = TYPEENEMY and BulletList.Bullet[i].SonecSweepReady = TRUE
                 local OldHit as integer
                 local NewHit as integer
                 local DamageHit as integer
                 OldHit = FALSE
                 NewHit = FALSE
                 DamageHit = FALSE
+                OldEntry = -1.0
+                NewEntry = -1.0
+                UpperEntry = -1.0
+                LowerEntry = -1.0
                 if SONEC_TWO_CIRCLE_TEST = 1
-                    OldHit = BulletSweepHitsSonec(BulletList.Bullet[i],Sonec)
-                    NewHit = BulletSweepHitsSonecTwoCircles(BulletList.Bullet[i],Sonec)
+                    OldEntry = BulletSonecCircleEntry(BulletList.Bullet[i],Sonec,-1)
+                    UpperEntry = BulletSonecCircleEntry(BulletList.Bullet[i],Sonec,0)
+                    LowerEntry = BulletSonecCircleEntry(BulletList.Bullet[i],Sonec,1)
+                    NewEntry = UpperEntry
+                    if LowerEntry >= 0 and (NewEntry < 0 or LowerEntry < NewEntry) then NewEntry = LowerEntry
+                    if OldEntry >= 0 then OldHit = TRUE
+                    if NewEntry >= 0 then NewHit = TRUE
                     SonecTwoCircleChecks = SonecTwoCircleChecks+1
                     if OldHit = TRUE and NewHit = TRUE then SonecTwoCircleBoth = SonecTwoCircleBoth+1
                     if OldHit = TRUE and NewHit = FALSE then SonecTwoCircleOldOnly = SonecTwoCircleOldOnly+1
@@ -332,32 +262,23 @@ function BulletCollide(BulletList ref as TBulletList,Sonec ref as TSonec,Shield 
                 endif
                 if SONEC_TWO_CIRCLE_DAMAGE = 1 and SONEC_TWO_CIRCLE_TEST = 1
                     DamageHit = NewHit
+                    Entry = NewEntry
                 else
-                    if SONEC_TWO_CIRCLE_TEST = 1
-                        DamageHit = OldHit
-                    else
-                        DamageHit = BulletSweepHitsSonec(BulletList.Bullet[i],Sonec)
-                    endif
+                    if SONEC_TWO_CIRCLE_TEST = 0 then OldEntry = BulletSonecCircleEntry(BulletList.Bullet[i],Sonec,-1)
+                    Entry = OldEntry
+                    if Entry >= 0 then DamageHit = TRUE
                 endif
                 if DamageHit = TRUE
                     // Diagnostic only: identify which body circle(s) the active sweep touched.
                     if SONEC_TWO_CIRCLE_TEST = 1 and SONEC_TWO_CIRCLE_DAMAGE = 1
-                        local DebugRadius as float
                         local DebugHitUntil as integer
-                        DebugRadius = SonecHitCircleRadius(Sonec)
                         DebugHitUntil = GetMilliseconds() + SONEC_COLLISION_DEBUG_HIT_MS
-                        if BulletSweepHitsSonecCircle(BulletList.Bullet[i],Sonec.ObjectData.Position.x,SonecHitCircleY(Sonec,0),DebugRadius) = TRUE
-                            SonecCollisionDebugHitUntil0 = DebugHitUntil
-                        endif
-                        if BulletSweepHitsSonecCircle(BulletList.Bullet[i],Sonec.ObjectData.Position.x,SonecHitCircleY(Sonec,1),DebugRadius) = TRUE
-                            SonecCollisionDebugHitUntil1 = DebugHitUntil
-                        endif
+                        if UpperEntry >= 0 then SonecCollisionDebugHitUntil0 = DebugHitUntil
+                        if LowerEntry >= 0 then SonecCollisionDebugHitUntil1 = DebugHitUntil
                     endif
                     // Explosive rounds use area damage instead of a second direct-hit damage event.
                     if BulletList.Bullet[i].Modification = BULLET_MOD_EXPLOSIVE
-                        Entry = BulletSonecImpactEntry(BulletList.Bullet[i],Sonec)
-                        // A valid sweep normally yields an entry; preserve the
-                        // existing hit if floating-point rounding rejects it.
+                        // Entry refers to the original world-space segment.
                         Impact = BulletList.Bullet[i].ObjectData.Position
                         if Entry >= 0
                             Impact.x = BulletList.Bullet[i].PreviousPosition.x+(Impact.x-BulletList.Bullet[i].PreviousPosition.x)*Entry
@@ -829,6 +750,9 @@ function BulletMove(Bullet ref as TBullet,World ref as TWorld,Now as integer)
         MoveUntil = Now
         MoveDue = FALSE
         StepRange = 0
+        Bullet.SonecSweepReady = FALSE
+        Bullet.SonecSweepStartMs = Bullet.ObjectData.MoveTimer.Stamp
+        Bullet.SonecSweepEndMs = Now
         if Bullet.Modification = BULLET_MOD_EXPLOSIVE and Now >= Bullet.ExplodeAtMs
             // A fuse inside this frame is an event on the path, not at the
             // overshot endpoint. Flush even a final sub-10ms movement.
@@ -843,6 +767,10 @@ function BulletMove(Bullet ref as TBullet,World ref as TWorld,Now as integer)
                 MoveDue = TRUE
             endif
         endif
+        // Resolve a closed movement gate on its next actual step.
+        // A newly spawned round may test only its current muzzle point.
+        Bullet.SonecSweepEndMs = MoveUntil
+        if MoveDue = TRUE or Bullet.SonecSweepStartMs = MoveUntil then Bullet.SonecSweepReady = TRUE
 		if MoveDue = TRUE
 			
 			Bullet.ObjectData.Position.x = Bullet.ObjectData.Position.x + Bullet.ObjectData.MoveSpeed.x * StepRange

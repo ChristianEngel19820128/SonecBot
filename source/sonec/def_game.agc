@@ -413,6 +413,9 @@ type TProtoBullet
 endtype
 
 type TBullet
+	SonecSweepStartMs as integer
+	SonecSweepEndMs as integer
+	SonecSweepReady as integer
 	Enabled as integer
 	Modification as integer
 	ExplodeAtMs as integer

@@ -62,6 +62,140 @@
 #constant SONEC_CAMERA_UPPER_FRACTION 0.33
 #constant SONEC_CAMERA_LOWER_FRACTION 0.66
 
+// Passive trace of the resolved mechanical path, with frame-relative times.
+type TSonecDamageSegment
+    FrameStartMs as integer
+    FrameEndMs as integer
+    FromMs as float
+    ToMs as float
+    StartPos as TPosition
+    EndPos as TPosition
+    BodyRadius as float
+    LegacyRadius as float
+    UpperOffset as float
+    LowerOffset as float
+endtype
+
+global SonecDamageSegments as TSonecDamageSegment[-1]
+global SonecDamageFrameStartMs as integer
+global SonecDamageFrameEndMs as integer
+
+function SonecDamageReset(Now as integer)
+    SonecDamageSegments.Length = -1
+    SonecDamageFrameStartMs = Now
+    SonecDamageFrameEndMs = Now
+endfunction
+
+function SonecDamageBegin(Now as integer)
+    local i as integer
+    local Count as integer
+    SonecDamageFrameStartMs = SonecDamageFrameEndMs
+    SonecDamageFrameEndMs = Now
+    // Keep more than the 10ms bullet movement gate can carry over.
+    Count = 0
+    for i = 0 to SonecDamageSegments.Length
+        if SonecDamageSegments[i].FrameEndMs >= SonecDamageFrameStartMs-100
+            if Count <> i then SonecDamageSegments[Count] = SonecDamageSegments[i]
+            Count = Count+1
+        endif
+    next i
+    SonecDamageSegments.Length = Count-1
+endfunction
+
+function SonecDamageRecord(Sonec ref as TSonec,StartPos as TPosition,EndPos as TPosition,FromT as float,ToT as float)
+    local Segment as TSonecDamageSegment
+    if ToT <= FromT or SonecDamageFrameEndMs <= SonecDamageFrameStartMs then exitfunction
+    Segment.FrameStartMs = SonecDamageFrameStartMs
+    Segment.FrameEndMs = SonecDamageFrameEndMs
+    Segment.FromMs = (SonecDamageFrameEndMs-SonecDamageFrameStartMs)*FromT
+    Segment.ToMs = (SonecDamageFrameEndMs-SonecDamageFrameStartMs)*ToT
+    Segment.StartPos = StartPos
+    Segment.EndPos = EndPos
+    Segment.BodyRadius = SonecHitCircleRadius(Sonec)
+    Segment.LegacyRadius = Sonec.ObjectData.Radius
+    Segment.UpperOffset = SonecHitCircleY(Sonec,0)-Sonec.ObjectData.Position.y
+    Segment.LowerOffset = SonecHitCircleY(Sonec,1)-Sonec.ObjectData.Position.y
+    SonecDamageSegments.Insert(Segment)
+endfunction
+
+// CircleIndex -1 = diagnostic legacy circle; 0/1 = shared body circles.
+// Return the earliest entry fraction on the original shot interval.
+function SonecDamageSweepEntry(Sonec ref as TSonec,ShotStart as TPosition,ShotEnd as TPosition,StartMs as integer,EndMs as integer,CircleIndex as integer,ExtraRadius as float,HalfLength as float,Strict as integer)
+    local i as integer
+    local Duration as float
+    local SegmentStart as float
+    local SegmentEnd as float
+    local OverlapStart as float
+    local OverlapEnd as float
+    local T0 as float
+    local T1 as float
+    local U0 as float
+    local U1 as float
+    local P0 as TPosition
+    local P1 as TPosition
+    local C0 as TPosition
+    local C1 as TPosition
+    local OffsetY as float
+    local Radius as float
+    local Entry as float
+    local Best as float
+    Duration = EndMs-StartMs
+    Best = 2.0
+    if Duration > 0
+        for i = 0 to SonecDamageSegments.Length
+            SegmentStart = SonecDamageSegments[i].FrameStartMs-StartMs+SonecDamageSegments[i].FromMs
+            SegmentEnd = SonecDamageSegments[i].FrameStartMs-StartMs+SonecDamageSegments[i].ToMs
+            OverlapStart = SegmentStart
+            if OverlapStart < 0 then OverlapStart = 0
+            OverlapEnd = SegmentEnd
+            if OverlapEnd > Duration then OverlapEnd = Duration
+            if OverlapEnd > OverlapStart and SegmentEnd > SegmentStart
+                T0 = OverlapStart/Duration
+                T1 = OverlapEnd/Duration
+                U0 = (OverlapStart-SegmentStart)/(SegmentEnd-SegmentStart)
+                U1 = (OverlapEnd-SegmentStart)/(SegmentEnd-SegmentStart)
+                P0.x = ShotStart.x+(ShotEnd.x-ShotStart.x)*T0
+                P0.y = ShotStart.y+(ShotEnd.y-ShotStart.y)*T0
+                P1.x = ShotStart.x+(ShotEnd.x-ShotStart.x)*T1
+                P1.y = ShotStart.y+(ShotEnd.y-ShotStart.y)*T1
+                Radius = SonecDamageSegments[i].BodyRadius
+                OffsetY = SonecDamageSegments[i].UpperOffset
+                if CircleIndex = 1 then OffsetY = SonecDamageSegments[i].LowerOffset
+                if CircleIndex < 0
+                    OffsetY = 0
+                    Radius = SonecDamageSegments[i].LegacyRadius
+                endif
+                C0.x = SonecDamageSegments[i].StartPos.x+(SonecDamageSegments[i].EndPos.x-SonecDamageSegments[i].StartPos.x)*U0
+                C0.y = SonecDamageSegments[i].StartPos.y+(SonecDamageSegments[i].EndPos.y-SonecDamageSegments[i].StartPos.y)*U0+OffsetY
+                C1.x = SonecDamageSegments[i].StartPos.x+(SonecDamageSegments[i].EndPos.x-SonecDamageSegments[i].StartPos.x)*U1
+                C1.y = SonecDamageSegments[i].StartPos.y+(SonecDamageSegments[i].EndPos.y-SonecDamageSegments[i].StartPos.y)*U1+OffsetY
+                Entry = CollisionRelativeSweepEntry(P0,P1,C0,C1,Radius+ExtraRadius,HalfLength,Strict)
+                if Entry >= 0
+                    Entry = T0+(T1-T0)*Entry
+                    if Entry < Best then Best = Entry
+                endif
+            endif
+        next i
+    endif
+    // New shots only see the final pose, never a pre-launch segment.
+    // Include zero-time corrections at the resolved endpoint as well.
+    if EndMs = SonecDamageFrameEndMs
+        C0 = Sonec.ObjectData.Position
+        Radius = SonecHitCircleRadius(Sonec)
+        if CircleIndex >= 0
+            C0.y = SonecHitCircleY(Sonec,CircleIndex)
+        else
+            Radius = Sonec.ObjectData.Radius
+        endif
+        Entry = CollisionRelativeSweepEntry(ShotEnd,ShotEnd,C0,C0,Radius+ExtraRadius,HalfLength,Strict)
+        if Entry >= 0
+            if Duration <= 0 then exitfunction 0.0
+            if Best > 1 then Best = 1.0
+        endif
+    endif
+    if Best <= 1 then exitfunction Best
+endfunction -1.0
+
 function SonecHitCircleRadius(Sonec ref as TSonec)
     local Radius as float
     Radius = Sonec.ObjectData.Size.Width*0.30
@@ -202,6 +336,7 @@ function SonecInit(Sonec ref as TSonec,ProtoSonec ref as TProtoSonec,World ref a
     Sonec.SpawnEntering = TRUE
 	Sonec.CollisionMoveStart = Sonec.ObjectData.Position
 	Sonec.CollisionMoveEnd = Sonec.ObjectData.Position
+	SonecDamageReset(Now)
 	Sonec.PassThroughChestIndex = -1
 	Sonec.LinkedPlateIndex = -1
 	Sonec.BlockedChestIndex = -1
@@ -1629,10 +1764,15 @@ function SonecResolveContact(Sonec ref as TSonec,PlateList ref as TPlateList,Che
 	local Carry as TSpeed
 	local WallSpeed as TSpeed
 	local TargetVX as float
+	local DamageStart as TPosition
+	local DamageStartT as float
+	DamageStart = Sonec.CollisionMoveStart
+	DamageStartT = Sonec.CollisionSegmentStartTime
 	i = Best.Index
 	Sonec.CollisionMoveStart.x = SonecCollisionAxisAt(Sonec.CollisionMoveStart.x,Sonec.CollisionMoveEnd.x,Best.ContactTime)
 	Sonec.CollisionMoveStart.y = SonecCollisionAxisAt(Sonec.CollisionMoveStart.y,Sonec.CollisionMoveEnd.y,Best.ContactTime)
 	Sonec.CollisionSegmentStartTime = SonecCollisionAxisAt(Sonec.CollisionSegmentStartTime,1.0,Best.ContactTime)
+	SonecDamageRecord(Sonec,DamageStart,Sonec.CollisionMoveStart,DamageStartT,Sonec.CollisionSegmentStartTime)
 	if Best.Kind = 1 or Best.Kind = SONEC_CONTACT_STEP_UP
 		if Best.ListType = TYPECHEST
 			SurfaceY = SonecCollisionAxisAt(ChestList.Chest[i].CollisionMoveStart.y,ChestList.Chest[i].ObjectData.Position.y,Sonec.CollisionSegmentStartTime)
@@ -1775,6 +1915,7 @@ function SonecCollidePlate(Sonec ref as TSonec,PlateList ref as TPlateList,Chest
 		if Done = FALSE and MechanicalCount < 8
 			Best = SonecFindContact(Sonec,PlateList,ChestList)
 			if Best.Valid = FALSE
+				SonecDamageRecord(Sonec,Sonec.CollisionMoveStart,Sonec.CollisionMoveEnd,Sonec.CollisionSegmentStartTime,1.0)
 				Sonec.CollisionMoveStart = Sonec.CollisionMoveEnd
 				Sonec.CollisionSegmentStartTime = 1
 				Done = TRUE
@@ -1791,6 +1932,7 @@ function SonecCollidePlate(Sonec ref as TSonec,PlateList ref as TPlateList,Chest
 		endif
 	next Iteration
 	Sonec.ObjectData.Position = Sonec.CollisionMoveStart
+	SonecDamageRecord(Sonec,Sonec.ObjectData.Position,Sonec.ObjectData.Position,Sonec.CollisionSegmentStartTime,1.0)
 	if Done = FALSE and Sonec.GroundContactActive = TRUE then SonecCollideReset(Sonec)
 	// Final support bookkeeping uses the resolved position, not the proposal.
 	if Sonec.GroundContactActive = TRUE

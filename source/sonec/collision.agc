@@ -104,3 +104,57 @@ function CollisionCircleSweepEntry(StartPos as TPosition,EndPos as TPosition,Cen
     Entry = (-B-Sqrt(Disc))/A
     if Entry >= 0 and Entry <= 1 then exitfunction Entry
 endfunction -1.0
+
+// Relative segment against a horizontal capsule (half-length 0 = circle).
+// Strict preserves the established enemy-bullet exclusion of pure tangency.
+function CollisionRelativeSweepEntry(ShotStart as TPosition,ShotEnd as TPosition,TargetStart as TPosition,TargetEnd as TPosition,Radius as float,HalfLength as float,Strict as integer)
+    local P0 as TPosition
+    local P1 as TPosition
+    local Center as TPosition
+    local BoxMin as TPosition
+    local BoxMax as TPosition
+    local Dx as float
+    local Dy as float
+    local LengthSq as float
+    local T as float
+    local Entry as float
+    local Best as float
+    P0.x = ShotStart.x-TargetStart.x
+    P0.y = ShotStart.y-TargetStart.y
+    P1.x = ShotEnd.x-TargetEnd.x
+    P1.y = ShotEnd.y-TargetEnd.y
+    Center.x = 0
+    Center.y = 0
+    if HalfLength <= 0
+        if Strict = TRUE
+            Dx = P1.x-P0.x
+            Dy = P1.y-P0.y
+            LengthSq = Dx*Dx+Dy*Dy
+            T = 0
+            if LengthSq > 0
+                T = -(P0.x*Dx+P0.y*Dy)/LengthSq
+                if T < 0 then T = 0
+                if T > 1 then T = 1
+            endif
+            Dx = P0.x+Dx*T
+            Dy = P0.y+Dy*T
+            if Dx*Dx+Dy*Dy >= Radius*Radius then exitfunction -1.0
+        endif
+        Entry = CollisionCircleSweepEntry(P0,P1,Center,Radius)
+        exitfunction Entry
+    endif
+    BoxMin.x = -HalfLength
+    BoxMin.y = -Radius
+    BoxMax.x = HalfLength
+    BoxMax.y = Radius
+    Best = 2.0
+    Entry = CollisionBoxSweepEntry(P0,P1,BoxMin,BoxMax,0,0)
+    if Entry >= 0 then Best = Entry
+    Center.x = -HalfLength
+    Entry = CollisionCircleSweepEntry(P0,P1,Center,Radius)
+    if Entry >= 0 and Entry < Best then Best = Entry
+    Center.x = HalfLength
+    Entry = CollisionCircleSweepEntry(P0,P1,Center,Radius)
+    if Entry >= 0 and Entry < Best then Best = Entry
+    if Best <= 1 then exitfunction Best
+endfunction -1.0

@@ -63,6 +63,9 @@ global DroneLaserX as float
 global DroneLaserY as float
 global DroneLaserDirection as integer
 global DroneLaserLastMs as integer
+global DroneLaserSweepStart as TPosition
+global DroneLaserSweepStartMs as integer
+global DroneLaserSweepPending as integer
 // D3c: count successful drone laser impacts.
 global DroneLaserHits as integer
 
@@ -163,6 +166,8 @@ function DroneInit(Drone ref as TDrone,Screen as TSize,World ref as TWorld,Now a
     DroneLaserDirection = MOVELEFT
     DroneLaserLastMs = Now
     DroneLaserHits = 0
+    DroneLaserSweepPending = FALSE
+    DroneLaserSweepStartMs = Now
     TimeSet(DroneMotionTimer,10,10)
     TimeReset(DroneMotionTimer,Now)
     DroneMotionLastMode = DroneMotionUseGate
@@ -261,7 +266,6 @@ endfunction
 function DroneMove(Drone ref as TDrone,Screen as TSize,Sonec ref as TSonec,Shield ref as TShield,Inenergie ref as TInenergie,Now as integer)
     local DeltaMs as integer
     local TurnChance as integer
-    local LaserOldX as float
     local TargetDx as float
     local TargetDy as float
     local ScanChance as float
@@ -322,17 +326,16 @@ function DroneMove(Drone ref as TDrone,Screen as TSize,Sonec ref as TSonec,Shiel
 
         // The projectile flies independently of subsequent drone movement.
         if DroneLaserActive = TRUE
-            LaserOldX = DroneLaserX
+            DroneLaserSweepStart.x = DroneLaserX
+            DroneLaserSweepStart.y = DroneLaserY
+            DroneLaserSweepStartMs = DroneLaserLastMs
+            DroneLaserSweepPending = TRUE
             if DroneLaserDirection = MOVELEFT
                 DroneLaserX = DroneLaserX-(Now-DroneLaserLastMs)*DRONE_LASER_SPEED
             else
                 DroneLaserX = DroneLaserX+(Now-DroneLaserLastMs)*DRONE_LASER_SPEED
             endif
             DroneLaserLastMs = Now
-            DroneLaserDetectHit(Sonec,Shield,LaserOldX,DroneLaserX,Now)
-            if DroneLaserX < -30 or DroneLaserX > Screen.Width+30
-                DroneLaserActive = FALSE
-            endif
         endif
 
         if DroneScanActive = TRUE
@@ -446,42 +449,34 @@ endfunction
 
 // D3c: swept horizontal segment against Sonec's two-circle body approximation.
 // Apply damage once per projectile, using the existing shield rules.
-function DroneLaserDetectHit(Sonec ref as TSonec,Shield ref as TShield,OldX as float,NewX as float,Now as integer)
-    local ClosestX as float
-    local Dx as float
-    local Dy as float
-    local Radius as float
+function DroneLaserResolve(Sonec ref as TSonec,Shield ref as TShield,Screen as TSize,Now as integer)
+    local EndPos as TPosition
     local CircleIndex as integer
+    local Entry as float
     local Hit as integer
     local HealthBeforeHit as integer
+    if DroneLaserSweepPending = FALSE then exitfunction
+    DroneLaserSweepPending = FALSE
+    // Preserve a shot already moved this frame even if its drone was
+    // destroyed before the deferred damage pass. No future laser movement.
+    EndPos.x = DroneLaserX
+    EndPos.y = DroneLaserY
     Hit = FALSE
-    if DroneLaserActive = TRUE and Sonec.IsLost = FALSE
-        // Include the 30px-long sprite, avoiding gaps at high frame times.
-        ClosestX = Sonec.ObjectData.Position.x
-        if DroneLaserDirection = MOVELEFT
-            if ClosestX > OldX+15 then ClosestX = OldX+15
-            if ClosestX < NewX-15 then ClosestX = NewX-15
-        else
-            if ClosestX < OldX-15 then ClosestX = OldX-15
-            if ClosestX > NewX+15 then ClosestX = NewX+15
-        endif
-        Dx = Sonec.ObjectData.Position.x-ClosestX
-        // S5: reuse Sonec's shared standing/ducking two-circle geometry.
-        Radius = SonecHitCircleRadius(Sonec)
+    if Sonec.IsLost = FALSE
         for CircleIndex = 0 to 1
-            Dy = SonecHitCircleY(Sonec,CircleIndex)-DroneLaserY
-            if Dx*Dx+Dy*Dy <= Radius*Radius then Hit = TRUE
+            Entry = SonecDamageSweepEntry(Sonec,DroneLaserSweepStart,EndPos,DroneLaserSweepStartMs,DroneLaserLastMs,CircleIndex,0,15,FALSE)
+            if Entry >= 0 then Hit = TRUE
         next CircleIndex
         if Hit = TRUE
             DroneLaserActive = FALSE
             DroneLaserHits = DroneLaserHits+1
-            // Same proportional shield absorption and hit flash as enemy bullets.
             HealthBeforeHit = Sonec.Health.State
             Sonec.Health.State = Sonec.Health.State - (DRONE_LASER_DAMAGE - ShieldAbsorbDamage(Shield,Sonec,DRONE_LASER_DAMAGE,Now))
             if Sonec.Health.State < HealthBeforeHit then SonecHitFlashUntil = Now+SONEC_HIT_FLASH_MS
         endif
     endif
-endfunction Hit
+    if DroneLaserX < -30 or DroneLaserX > Screen.Width+30 then DroneLaserActive = FALSE
+endfunction
 
 // Draw the charge frames at native size, with a centered 30x30 pivot.
 function DroneChargeDraw(SpriteID as integer,Frame as integer,Position as TPosition)

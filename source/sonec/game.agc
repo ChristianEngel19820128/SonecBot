@@ -325,6 +325,7 @@ function GameDo(Game ref as TGame,Now as integer)
 		endif
 	endif
 	CloudMoveAll(Game.CloudList,Game.World,Now)
+	SonecDamageBegin(Now)
 	SonecMove(Game.Sonec,Game.ChestList,Game.World,Game.Screen,Now)
 	
 	
@@ -446,6 +447,8 @@ function GameDo(Game ref as TGame,Now as integer)
 	JumppodMoveAll(Game.PlateList,Now)
 	JumppodBuildMechanicalList(Game.ChestList,Game.PlateList)
 	SonecCollidePlate(Game.Sonec,Game.PlateList,SonecMechanicalList,Game.World,Game.Screen)
+    DroneLaserResolve(Game.Sonec,Game.Shield,Game.Screen,Now)
+    FlarakRocketResolveAll(Game,Now)
 	JumppodResolveContactTriggers(Game,Now)
 	JumppodCollideExplosions(Game,Now)
 	SonecEdgeCsvWrite(Game,Now)

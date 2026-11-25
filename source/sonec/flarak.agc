@@ -63,6 +63,8 @@
 #constant FLARAK_TEST_BARREL_ANGLE_OFFSET 90
 
 type TFlarakTestRocket
+    SweepStart as TPosition
+    SweepStartMs as integer
     Active as integer
     LaunchMs as integer
     StartX as float
@@ -334,6 +336,15 @@ function FlarakRocketLaunch(Rocket ref as TFlarakTestRocket,X as float,Y as floa
     Rocket.LauncherY = Y
     Rocket.ClearDistance = 0
     Rocket.Active = TRUE
+    FlarakRocketCaptureStart(Rocket)
+endfunction
+
+// Snapshot before muzzle-follow translation or homing, also at launch.
+function FlarakRocketCaptureStart(Rocket ref as TFlarakTestRocket)
+    if Rocket.Active = FALSE then exitfunction
+    Rocket.SweepStart.x = Rocket.PosX+Sin(Rocket.Angle)*Rocket.TipDistance
+    Rocket.SweepStart.y = Rocket.PosY-Cos(Rocket.Angle)*Rocket.TipDistance
+    Rocket.SweepStartMs = Rocket.LastMs
 endfunction
 
 // Follow platform translation only while the rocket still clears the muzzle.
@@ -348,19 +359,10 @@ endfunction
 
 function FlarakRocketDo(Rocket ref as TFlarakTestRocket,Game ref as TGame,JetfireList ref as TJetfireList,ProtoJetfire ref as TProtoJetfire,World ref as TWorld,NowMs as integer)
     local RocketDeltaMs as integer
-    local OldX as float
-    local OldY as float
-    local OldAngle as float
     local ImpactPosition as TPosition
     local TargetAngle as float
     local AngleDiff as float
     local MaxTurn as float
-    local JetPosition as TPosition
-    local Jetfire as TJetfire
-    local JetIndex as integer
-    local JetFound as integer
-    local JetOutlet as integer
-    local JetBackDistance as float
     if Rocket.Active = FALSE then exitfunction
     if NowMs-Rocket.LaunchMs >= FLARAK_TEST_ROCKET_LIFETIME_MS
         ImpactPosition.x = Rocket.PosX
@@ -373,7 +375,6 @@ function FlarakRocketDo(Rocket ref as TFlarakTestRocket,Game ref as TGame,Jetfir
     if RocketDeltaMs < 0 then RocketDeltaMs = 0
     if RocketDeltaMs > 50 then RocketDeltaMs = 50
     Rocket.LastMs = NowMs
-    OldAngle = Rocket.Angle
     if NowMs-Rocket.LaunchMs >= FLARAK_TEST_HOMING_DELAY_MS
         TargetAngle = ATan2(Game.Sonec.ObjectData.Position.x-Rocket.PosX,Rocket.PosY-(Game.Sonec.ObjectData.Position.y))
         AngleDiff = TargetAngle-Rocket.Angle
@@ -388,8 +389,6 @@ function FlarakRocketDo(Rocket ref as TFlarakTestRocket,Game ref as TGame,Jetfir
         if AngleDiff < -MaxTurn then AngleDiff = -MaxTurn
         Rocket.Angle = Rocket.Angle+AngleDiff
     endif
-    OldX = Rocket.PosX
-    OldY = Rocket.PosY
     Rocket.PosX = Rocket.PosX+Sin(Rocket.Angle)*FLARAK_TEST_ROCKET_SPEED_PX_PER_MS*RocketDeltaMs
     Rocket.PosY = Rocket.PosY-Cos(Rocket.Angle)*FLARAK_TEST_ROCKET_SPEED_PX_PER_MS*RocketDeltaMs
     if Rocket.Attached = TRUE
@@ -402,8 +401,20 @@ function FlarakRocketDo(Rocket ref as TFlarakTestRocket,Game ref as TGame,Jetfir
         Rocket.Active = FALSE
         exitfunction
     endif
-    // Swept impact fuse: test the movement segment against both Sonec circles.
-    if FlarakRocketHitsSonec(Rocket,OldX,OldY,OldAngle,Game.Sonec,ImpactPosition) = TRUE
+endfunction
+
+// Resolve after Sonec's mechanical path is complete, before player weapon
+// interception. A destroyed rocket emits no extra trail at its endpoint.
+function FlarakRocketResolve(Rocket ref as TFlarakTestRocket,Game ref as TGame,JetfireList ref as TJetfireList,ProtoJetfire ref as TProtoJetfire,World ref as TWorld,NowMs as integer)
+    local ImpactPosition as TPosition
+    local JetPosition as TPosition
+    local Jetfire as TJetfire
+    local JetIndex as integer
+    local JetFound as integer
+    local JetOutlet as integer
+    local JetBackDistance as float
+    if Rocket.Active = FALSE then exitfunction
+    if FlarakRocketHitsSonec(Rocket,Game.Sonec,ImpactPosition) = TRUE
         Rocket.Active = FALSE
         ExplosionAdd(Game.ExplosionList,Game.ProtoExplosion,Game,3,ImpactPosition,NowMs)
         exitfunction
@@ -438,31 +449,22 @@ function FlarakRocketDo(Rocket ref as TFlarakTestRocket,Game ref as TGame,Jetfir
 endfunction
 
 // Use Sonec's shared two-circle geometry, in screen coordinates.
-function FlarakRocketHitsSonec(Rocket ref as TFlarakTestRocket,OldX as float,OldY as float,OldAngle as float,Sonec ref as TSonec,Impact ref as TPosition)
-    local TipOld as TPosition
+function FlarakRocketHitsSonec(Rocket ref as TFlarakTestRocket,Sonec ref as TSonec,Impact ref as TPosition)
     local TipNew as TPosition
-    local Center as TPosition
-    local Radius as float
     local CircleIndex as integer
     local Entry as float
     local BestEntry as float
     if Sonec.IsLost = TRUE then exitfunction FALSE
-    // Sweep the same rotated nose points and shared circles as before.
-    TipOld.x = OldX+Sin(OldAngle)*Rocket.TipDistance
-    TipOld.y = OldY-Cos(OldAngle)*Rocket.TipDistance
     TipNew.x = Rocket.PosX+Sin(Rocket.Angle)*Rocket.TipDistance
     TipNew.y = Rocket.PosY-Cos(Rocket.Angle)*Rocket.TipDistance
-    Radius = SonecHitCircleRadius(Sonec)
-    Center.x = Sonec.ObjectData.Position.x
     BestEntry = 2.0
     for CircleIndex = 0 to 1
-        Center.y = SonecHitCircleY(Sonec,CircleIndex)
-        Entry = CollisionCircleSweepEntry(TipOld,TipNew,Center,Radius)
+        Entry = SonecDamageSweepEntry(Sonec,Rocket.SweepStart,TipNew,Rocket.SweepStartMs,Rocket.LastMs,CircleIndex,0,0,FALSE)
         if Entry >= 0 and Entry < BestEntry then BestEntry = Entry
     next CircleIndex
     if BestEntry <= 1
-        Impact.x = TipOld.x+(TipNew.x-TipOld.x)*BestEntry
-        Impact.y = TipOld.y+(TipNew.y-TipOld.y)*BestEntry
+        Impact.x = Rocket.SweepStart.x+(TipNew.x-Rocket.SweepStart.x)*BestEntry
+        Impact.y = Rocket.SweepStart.y+(TipNew.y-Rocket.SweepStart.y)*BestEntry
         exitfunction TRUE
     endif
 endfunction FALSE
@@ -924,6 +926,8 @@ function FlarakDoAll(Game ref as TGame,JetfireList ref as TJetfireList,ProtoJetf
     local i as integer
     local PlateIndex as integer
     for i = 0 to FlarakList.Length
+        FlarakRocketCaptureStart(FlarakList[i].Rocket1)
+        FlarakRocketCaptureStart(FlarakList[i].Rocket2)
         if FlarakList[i].Enabled = TRUE
             PlateIndex = FlarakList[i].PlateIndex
             if PlateIndex < 0 or PlateIndex > PlateList.Plate.Length
@@ -953,6 +957,15 @@ function FlarakDoAll(Game ref as TGame,JetfireList ref as TJetfireList,ProtoJetf
             FlarakRocketDo(FlarakList[i].Rocket2,Game,JetfireList,ProtoJetfire,World,NowMs)
             FlarakMarkFree(i)
         endif
+    next i
+endfunction
+
+function FlarakRocketResolveAll(Game ref as TGame,NowMs as integer)
+    local i as integer
+    for i = 0 to FlarakList.Length
+        FlarakRocketResolve(FlarakList[i].Rocket1,Game,Game.JetfireList,Game.ProtoJetfire,Game.World,NowMs)
+        FlarakRocketResolve(FlarakList[i].Rocket2,Game,Game.JetfireList,Game.ProtoJetfire,Game.World,NowMs)
+        FlarakMarkFree(i)
     next i
 endfunction
 
