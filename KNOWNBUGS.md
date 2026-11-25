@@ -3,12 +3,6 @@
 Stand: 25.11.2026 · develop. Regeln: [AGENTS.md](AGENTS.md).
 Vor automatisierten Prüfungen auf Dubletten prüfen. Keine automatische Codefreigabe. Behobene oder widerlegte Einträge nach Nachweis entfernen; Historie in Git. IDs erst nach geprüfter Zuordnung vergeben.
 
-## Neustart: verbleibende Zustandslücken bei Sonec und Drohne
-- ID: Noch nicht vergeben · Priorität: Offen · Status: Korrektur B1.2–B1.4 implementiert; lokaler AGK-Test offen. Ursprüngliche Laufzeitwirkung nicht lokal reproduziert.
-- B1.2/B1.3: `SonecInit` setzt `Sonec.MGun.FireBurst` und `Sonec.PlasmaBlitzGun.Upload` nicht zurück. `SonecMGunInput` verarbeitet ausstehende Salven auch ohne Feuereingabe; bei gehaltenem Plasma-Eingang kann alter Ladestand erhalten bleiben. Soll: jede Runde ohne ausstehende Salve und ohne Ladestand. Prüfung: Neustart nach unterbrochener Mehrfachsalve bzw. Teilaufladung.
-- B1.4: `DroneDeathEffectPending` und `DroneDeathPosition` werden nicht beim Rundenreset gelöscht; normaler Verbrauch im selben `GameDo`, deshalb kein nachgewiesener Laufzeitfehler. Präventiv beide Werte in GameInit zurücksetzen; normale Drohnen-Zerstörung/Reward erhalten.
-- Quelle: Reset-Audit add9fe7, B1.1 a2ea2a8. B1.2–B1.4: SonecInit setzt FireBurst und Upload auf 0, GameInit verwirft ausstehendes Drohnen-Zerstörungsereignis und setzt dessen Position auf (0,0). Keine Waffenparameter oder normalen Zerstörungs-/Reward-Pfade geändert. Lokaler Compile, Neustart-/Waffenregression und normale Drohnenzerstörung noch zu prüfen. Der abgenommene Flarak-Neustartfehler ist kein offener Eintrag mehr; Nachweis in TECHNICAL.md und Git.
-
 ## Gelegentlich fehlende Direkttreffer
 - ID: Noch nicht vergeben · Priorität: Offen · Status: Vermutet.
 - Beobachtung: gelegentlich fehlende Granatwerfer/Flarak/Flak-Direkttreffer. Soll: gültige Direkttreffer zuverlässig erkennen; Explosionstreffer getrennt bewerten.

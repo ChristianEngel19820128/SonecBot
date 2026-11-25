@@ -18,7 +18,7 @@
 - Fachliche Endfassung und Abnahme: [Bewegungsspezifikation](docs/SONEC_MOVEMENT_SPEC.md).
 - Langzeitbeobachtung und weitere Parameterfeinjustierung möglich; keine separate HTML5-/Langzeitabnahme oder vollständige Randfallmatrix behauptet.
 - Schadensgeometrie mit zwei Körperkreisen bleibt von mechanischer Bewegung getrennt.
-- Bug-Chat: Reset-Audit abgeschlossen; B1.1 Flak/Flarak-Proto-Umstellung und Neustart-Reset lokal AGK-bestanden (11/11, a2ea2a8, 25.11.2026). Keine alten Raketen, Explosionen oder sonstigen Effekte bei getesteten Neustarts. Entwickler wünscht fortlaufende Langzeitbeobachtung bei normalen Tests; keine gesonderte Langzeit-/HTML5-Abnahme. Verbleibende Reset-Lücken und Index-Recycling-Verdachtsfälle in [KNOWNBUGS.md](KNOWNBUGS.md).
+- Bug-Chat: B1 (vollständiger Neustart-Reset) im geprüften Umfang abgeschlossen. B1.1 Flak/Flarak-Proto und Neustart lokal AGK-bestanden (11/11, a2ea2a8); B1.2–B1.4 MG-Salvenzähler, Plasmablitz-Ladestand und Drohnen-Zerstörungsereignis lokal AGK-bestanden (8/8, 7b9bb48), beide am 25.11.2026. Keine Auffälligkeiten in der zweiten Abnahme. Entwickler wünscht fortlaufende Langzeitbeobachtung beider Pakete bei normalen Spieltests; keine gesonderte Langzeit-/HTML5-Abnahme. Index-Recycling-Verdachtsfälle separat in [KNOWNBUGS.md](KNOWNBUGS.md).
 - Energieüberschuss, Overload und Gegnergefährlichkeit im nachgelagerten Gameplay-Balancing behandeln.
 - Debug-Masterschalter und Diagnosemöglichkeiten erhalten; keine beiläufigen Änderungen.
 - Keine Deadline; HTML5, Deployment, Balancing und Fehleranalyse getrennt behandeln.
@@ -33,7 +33,7 @@
 
 ## Genau ein nächster Schritt
 
-B1.2–B1.4 (MG-Salvenzähler, Plasmablitz-Ladestand, Drohnen-Zerstörungsereignis) implementiert; gebündelte lokale AGK-Abnahme ausstehend. Danach B2 Flammenwerfer, B3 Direkttreffer, zusätzliche belegte Befunde und B4 Abschluss gemäß KNOWNBUGS.md. Anschließend Arbeitsblock B fachlich abstimmen. Keine weiteren Änderungen am akzeptierten Rauchsystem.
+B2 Flammenwerfer: Bewegungsübernahme und Kollisions-/Deckungsfragen gemäß KNOWNBUGS.md getrennt analysieren, Korrekturumfang abstimmen und prüfen. Danach B3 Direkttreffer, zusätzliche belegte Befunde (einschließlich Index-Recycling-Verdachtsfälle) und B4 Abschluss des Bug-Chats. Anschließend Arbeitsblock B fachlich abstimmen. Keine weiteren Änderungen am akzeptierten Rauchsystem.
 
 ## Referenzen
 
