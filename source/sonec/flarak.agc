@@ -667,6 +667,7 @@ function FlarakSmokeDoAll(PlateList ref as TPlateList,Now as integer)
     local PlateIndex as integer
     local Density as integer
     local Position as TPosition
+    local CarrierY as float
     for i = 0 to FlarakList.Length
         if FlarakList[i].Enabled = TRUE and FlarakList[i].Destroyed = TRUE
             PlateIndex = FlarakList[i].PlateIndex
@@ -676,7 +677,8 @@ function FlarakSmokeDoAll(PlateList ref as TPlateList,Now as integer)
                     if FlarakList[i].Variant = FLARAK_VARIANT_FLAK then Density = SMOKE_DENSITY_FLAK
                     Position.x = PlateList.Plate[PlateIndex].ObjectData.Position.x+FlarakList[i].PlateOffsetX
                     Position.y = PlateList.Plate[PlateIndex].ObjectData.Position.y-JUMPPOD_BASE_H-JUMPPOD_TOP_H
-                    SmokeAdd(FlarakList[i].SmokeEmitter,Position,Density,Now)
+                    CarrierY = SmokePlateVelocityY(PlateList.Plate[PlateIndex])
+                    SmokeAdd(FlarakList[i].SmokeEmitter,Position,Density,CarrierY,Now)
                 endif
             endif
         endif

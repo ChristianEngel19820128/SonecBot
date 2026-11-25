@@ -502,7 +502,7 @@ function GameDo(Game ref as TGame,Now as integer)
 	PlasmaBlitzCollisionTimerReset(Game.PlasmaBlitzList,Now)
 	// Visual effects after all destruction paths and platform removal.
 	SmokeDoAll(Now)
-	JumppodSmokeDoAll(Now)
+	JumppodSmokeDoAll(Game.PlateList,Now)
 	FlarakSmokeDoAll(Game.PlateList,Now)
 	// D5c: consume one destruction event after all weapon collisions.
 	if DroneDeathEffectPending = TRUE

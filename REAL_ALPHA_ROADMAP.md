@@ -65,7 +65,7 @@ Der Draft-Test vom 18.11. belegt keine Auslieferung späterer Alpha-Änderungen.
 - J1a: automatischer Aufstieg über beide Sockelstufen mit oberem Trigger, Mini-Hop beim Abstieg; lokal AGK-bestanden (9/9, ddc24e8, 25.11.2026).
 - J2: Landmine als erkennbare Attrappe (blinkendes Quadrat in der Nähe), sofortige stärkere Schadensexplosion, 25 % der regelmäßigen Testspawns; lokal AGK-bestanden (12/12, 517763f, 25.11.2026).
 - J3: gemeinsame Zweirechteck-Sockelmechanik auch für Flak/Flarak; Sockel bleiben nach Zerstörung bestehen; bestehende Luftabwehrfunktion erhalten; lokal AGK-bestanden (10/10 am 25.11.2026 nach Compile-Korrektur ec23637 (Testformular c2858e9; lokale SHA nicht separat bestätigt)).
-- J4: wiederverwendbare Rauch-Unit; kontinuierliche Emission an zerstörten Objekten bis zum Weltende; lokal funktional bestanden (15/15), gezielter Compile/Sichttest der Skalierungs-/Alpha-Nachjustierung offen.
+- J4: wiederverwendbare Rauch-Unit; kontinuierliche Emission an zerstörten Objekten bis zum Weltende; lokal funktional bestanden (15/15), Entwickler-Feinjustierung ba4be02 und vertikale Trägergeschwindigkeitsübernahme implementiert; gezielter Compile/Sichttest offen.
 - Details, Interaktionen, Parameterrahmen und Abnahme in [docs/JUMPPOD_SPEC.md](docs/JUMPPOD_SPEC.md). Fachlich abgestimmt am 25.11.2026; J1 lokal AGK-bestanden (10/10, bb16236, 25.11.2026), J2 lokal AGK-bestanden (12/12, 517763f, 25.11.2026), J3 lokal AGK-bestanden (10/10), J4 lokal funktional bestanden (15/15, nach Compile-Korrektur e17440a; lokale SHA nicht separat bestätigt). Separater bestätigter Flarak-Neustartfehler in KNOWNBUGS; keine HTML5-/Langzeitabnahme.
 
 Legacy-Grafiken (`rakstellung.png`, `spacejet.png`, `falle.bmp`) sind Vorlagen, kein Beweis fertig implementierter Altmechaniken.
@@ -160,6 +160,6 @@ Gefahrenzulassung, Erholungsrhythmus, tatsächlicher Ressourcengewinn und Muniti
 Bekannte Qualitätsfragen erhalten eine ausdrückliche Entscheidung bzw. dokumentierte Grenze; der integrierte Alpha-Build wird auf der Zielplattform geprüft.
 Diese Kriterien sind Prüfaufträge für die Umsetzung, keine bereits bestandene Alpha-Abnahme. itch.io bleibt Draft/Secret URL bis zu einer gesonderten Entscheidung.
 
-**Nächster Schritt:** J4-Sichtnachjustierung gemäß [Jumppod-Spezifikation](docs/JUMPPOD_SPEC.md) lokal kompilieren und prüfen; Flammenwerfer-Bewegungsfehler getrennt in KNOWNBUGS; sonstige Fremdbugs zurückgestellt.
+**Nächster Schritt:** J4-Rauch auf ruhenden/auf-/abfahrenden Plattformen gemäß [Jumppod-Spezifikation](docs/JUMPPOD_SPEC.md) lokal kompilieren und prüfen, dann A5 abschließen; Flammenwerfer in separatem Bug-Chat; sonstige Fremdbugs zurückgestellt.
 
 Spätere Varianten und Ideen stehen in [BACKLOG.md](BACKLOG.md). Frühere Langfassungen liegen im [Archiv](docs/archive/README.md); sie werden nur für konkrete historische Fragen gelesen.

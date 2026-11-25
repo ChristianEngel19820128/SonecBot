@@ -390,17 +390,25 @@ endfunction
 
 // The owner supplies only its current top-center world position and density.
 // Disabled sources are no longer submitted; their particles expire normally.
-function JumppodSmokeDoAll(Now as integer)
+function JumppodSmokeDoAll(PlateList ref as TPlateList,Now as integer)
     local i as integer
+    local PlateIndex as integer
     local Density as integer
     local Position as TPosition
+    local CarrierY as float
     for i = 0 to JumppodList.Length
         if JumppodList[i].Enabled = TRUE and JumppodList[i].Destroyed = TRUE
-            Density = SMOKE_DENSITY_JUMPPOD
-            if JumppodList[i].ObjectKind = LANDMINE_KIND then Density = SMOKE_DENSITY_LANDMINE
-            Position.x = JumppodList[i].WorldX
-            Position.y = JumppodList[i].WorldY-JUMPPOD_BASE_H-JUMPPOD_TOP_H
-            SmokeAdd(JumppodList[i].SmokeEmitter,Position,Density,Now)
+            PlateIndex = JumppodList[i].PlateIndex
+            if PlateIndex >= 0 and PlateIndex <= PlateList.Plate.Length
+                if PlateList.Plate[PlateIndex].Enabled = TRUE
+                    Density = SMOKE_DENSITY_JUMPPOD
+                    if JumppodList[i].ObjectKind = LANDMINE_KIND then Density = SMOKE_DENSITY_LANDMINE
+                    Position.x = JumppodList[i].WorldX
+                    Position.y = JumppodList[i].WorldY-JUMPPOD_BASE_H-JUMPPOD_TOP_H
+                    CarrierY = SmokePlateVelocityY(PlateList.Plate[PlateIndex])
+                    SmokeAdd(JumppodList[i].SmokeEmitter,Position,Density,CarrierY,Now)
+                endif
+            endif
         endif
     next i
 endfunction

@@ -107,7 +107,20 @@ function SmokeStartEmitter(Emitter ref as TSmokeEmitter,Now as integer)
     Emitter.ParticleCredit = 0.85
 endfunction
 
-function SmokeInsertParticle(Position as TPosition,Now as integer)
+// Convert the carrier's signed vertical rate to the particle's px/s basis.
+// PlateMove uses MoveSpeed.y * elapsedSeconds * Range * Multiplier.
+// Use its current travel direction (including a just-completed turn), not
+// a frame-dependent displacement or a stale timer CalcRange.
+function SmokePlateVelocityY(Plate ref as TPlate)
+    local CarrierY as float
+    CarrierY = 0
+    if Plate.Enabled = TRUE and Plate.YShift.Enabled = TRUE and Plate.YShift.Min < Plate.YShift.Max
+        CarrierY = Plate.ObjectData.MoveSpeed.y*Plate.ObjectData.MoveTimer.Range*Plate.ObjectData.MoveTimer.Multiplier
+        if Plate.YShift.Alignment = MOVEUP then CarrierY = -CarrierY
+    endif
+endfunction CarrierY
+
+function SmokeInsertParticle(Position as TPosition,CarrierY as float,Now as integer)
     local P as TSmokeParticle
     local i as integer
     if SmokeLoadedCount <= 0 then exitfunction
@@ -118,7 +131,8 @@ function SmokeInsertParticle(Position as TPosition,Now as integer)
     P.Origin = Position
     P.Position = Position
     P.Velocity.x = SmokeRandomInt(SMOKE_DRIFT_MIN_PX_S,SMOKE_DRIFT_MAX_PX_S)
-    P.Velocity.y = -SmokeRandomInt(SMOKE_RISE_MIN_PX_S,SMOKE_RISE_MAX_PX_S)
+    // Inherit the emitter's vertical velocity once; relative rise stays intact.
+    P.Velocity.y = CarrierY-SmokeRandomInt(SMOKE_RISE_MIN_PX_S,SMOKE_RISE_MAX_PX_S)
     P.InitialAngle = SmokeRandomInt(0,359)
     P.Angle = P.InitialAngle
     P.AngularSpeed = SmokeRandomInt(SMOKE_ROTATE_MIN_DEG_S,SMOKE_ROTATE_MAX_DEG_S)
@@ -136,7 +150,7 @@ endfunction
 // Submit the source's current world position each active game tick.
 // Density affects only particle count. Fractional credit smoothly ramps
 // emission; no backlog burst after an interrupted or slow frame.
-function SmokeAdd(Emitter ref as TSmokeEmitter,Position as TPosition,Density as integer,Now as integer)
+function SmokeAdd(Emitter ref as TSmokeEmitter,Position as TPosition,Density as integer,CarrierY as float,Now as integer)
     local Ramp as float
     local ParticleCount as integer
     local i as integer
@@ -154,7 +168,7 @@ function SmokeAdd(Emitter ref as TSmokeEmitter,Position as TPosition,Density as 
     for i = 1 to ParticleCount
         RandomPosition = Position
         RandomPosition.x = RandomPosition.x - 25.0 + random(0,50000)/100
-        SmokeInsertParticle(Position,Now)
+        SmokeInsertParticle(Position,CarrierY,Now)
     next i
 endfunction
 
