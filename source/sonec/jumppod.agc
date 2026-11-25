@@ -52,7 +52,14 @@ global LandmineWarningSprite as integer
 global JumppodNextSpawnMs as integer
 global JumppodNowMs as integer
 // Resolver-only geometry, never passed to weapon/chest/Walker logic.
-// Stable slots: chest i -> 3*i, pod/mine i lower -> 3*i+1, upper -> 3*i+2.
+// Stable slots across list growth: chest i -> 5*i, pod/mine -> +1/+2,
+// Flak/Flarak -> +3/+4. Every base has adjacent lower/upper slots.
+#constant SONEC_MECHANICAL_SLOT_STRIDE 5
+#constant SONEC_MECHANICAL_CHEST_SLOT 0
+#constant SONEC_MECHANICAL_POD_LOWER_SLOT 1
+#constant SONEC_MECHANICAL_POD_UPPER_SLOT 2
+#constant SONEC_MECHANICAL_FLARAK_LOWER_SLOT 3
+#constant SONEC_MECHANICAL_FLARAK_UPPER_SLOT 4
 global SonecMechanicalList as TChestList
 
 function ProtoJumppodLoad()
@@ -102,13 +109,19 @@ function JumppodRectUpdate(Rect ref as TChest,Plate ref as TPlate,PlateIndex as 
     Rect.CollisionData.Position2.y = Rect.ObjectData.Position.y+H
 endfunction
 
+// Same fixed closed-frame base for all A5 objects. The sprite pivot
+// and deployable launcher parts are not mechanical geometry.
+function SockelUpdateRects(Lower ref as TChest,Upper ref as TChest,Plate ref as TPlate,PlateIndex as integer,CenterOffsetX as float)
+    JumppodRectUpdate(Lower,Plate,PlateIndex,CenterOffsetX-JUMPPOD_BASE_W*0.5,-JUMPPOD_BASE_H,JUMPPOD_BASE_W,JUMPPOD_BASE_H)
+    JumppodRectUpdate(Upper,Plate,PlateIndex,CenterOffsetX-JUMPPOD_TOP_W*0.5,-JUMPPOD_BASE_H-JUMPPOD_TOP_H,JUMPPOD_TOP_W,JUMPPOD_TOP_H)
+    Lower.MechanicalStepLevel = 1
+    Upper.MechanicalStepLevel = 2
+endfunction
+
 function JumppodFollow(Pod ref as TJumppod,Plate ref as TPlate)
     Pod.WorldX = Plate.ObjectData.Position.x+Pod.OffsetX
     Pod.WorldY = Plate.ObjectData.Position.y
-    JumppodRectUpdate(Pod.Lower,Plate,Pod.PlateIndex,Pod.OffsetX-JUMPPOD_BASE_W*0.5,-JUMPPOD_BASE_H,JUMPPOD_BASE_W,JUMPPOD_BASE_H)
-    JumppodRectUpdate(Pod.Upper,Plate,Pod.PlateIndex,Pod.OffsetX-JUMPPOD_TOP_W*0.5,-JUMPPOD_BASE_H-JUMPPOD_TOP_H,JUMPPOD_TOP_W,JUMPPOD_TOP_H)
-    Pod.Lower.MechanicalStepLevel = 1
-    Pod.Upper.MechanicalStepLevel = 2
+    SockelUpdateRects(Pod.Lower,Pod.Upper,Plate,Pod.PlateIndex,Pod.OffsetX)
 endfunction
 
 // Only fresh, off-screen platforms are offered to the periodic test spawner.
@@ -221,27 +234,52 @@ function JumppodMoveAll(PlateList ref as TPlateList,Now as integer)
     next i
 endfunction
 
-function JumppodBuildMechanicalList(ChestList ref as TChestList)
+function JumppodBuildMechanicalList(ChestList ref as TChestList,PlateList ref as TPlateList)
     local i as integer
+    local PlateIndex as integer
+    local Slot as integer
     local Last as integer
     local Empty as TChest
+    local Lower as TChest
+    local Upper as TChest
     Last = ChestList.Chest.Length
     if JumppodList.Length > Last then Last = JumppodList.Length
+    if FlarakList.Length > Last then Last = FlarakList.Length
     if Last < 0
         SonecMechanicalList.Chest.Length = -1
         exitfunction
     endif
-    SonecMechanicalList.Chest.Length = Last*3+2
+    SonecMechanicalList.Chest.Length = Last*SONEC_MECHANICAL_SLOT_STRIDE+SONEC_MECHANICAL_FLARAK_UPPER_SLOT
     for i = 0 to SonecMechanicalList.Chest.Length
         SonecMechanicalList.Chest[i] = Empty
     next i
     for i = 0 to ChestList.Chest.Length
-        SonecMechanicalList.Chest[i*3] = ChestList.Chest[i]
+        Slot = i*SONEC_MECHANICAL_SLOT_STRIDE
+        SonecMechanicalList.Chest[Slot+SONEC_MECHANICAL_CHEST_SLOT] = ChestList.Chest[i]
     next i
     for i = 0 to JumppodList.Length
         if JumppodList[i].Enabled = TRUE
-            SonecMechanicalList.Chest[i*3+1] = JumppodList[i].Lower
-            SonecMechanicalList.Chest[i*3+2] = JumppodList[i].Upper
+            Slot = i*SONEC_MECHANICAL_SLOT_STRIDE
+            SonecMechanicalList.Chest[Slot+SONEC_MECHANICAL_POD_LOWER_SLOT] = JumppodList[i].Lower
+            SonecMechanicalList.Chest[Slot+SONEC_MECHANICAL_POD_UPPER_SLOT] = JumppodList[i].Upper
+        endif
+    next i
+    // Only live platform bindings own a base, including destroyed stations.
+    // Fired rockets are independent; never create a base for a rocket-only slot.
+    // Use the plate's own start/end snapshots, not the elevated sprite pivot.
+    for i = 0 to FlarakList.Length
+        if FlarakList[i].Enabled = TRUE
+            PlateIndex = FlarakList[i].PlateIndex
+            if PlateIndex >= 0 and PlateIndex <= PlateList.Plate.Length
+                if PlateList.Plate[PlateIndex].Enabled = TRUE
+                    Slot = i*SONEC_MECHANICAL_SLOT_STRIDE
+                    Lower = Empty
+                    Upper = Empty
+                    SockelUpdateRects(Lower,Upper,PlateList.Plate[PlateIndex],PlateIndex,FlarakList[i].PlateOffsetX)
+                    SonecMechanicalList.Chest[Slot+SONEC_MECHANICAL_FLARAK_LOWER_SLOT] = Lower
+                    SonecMechanicalList.Chest[Slot+SONEC_MECHANICAL_FLARAK_UPPER_SLOT] = Upper
+                endif
+            endif
         endif
     next i
 endfunction
@@ -251,9 +289,10 @@ endfunction
 // consumed after the sweep in the same GameDo tick (where Game is available).
 function JumppodHandleUpperContact(SurfaceIndex as integer)
     local i as integer
-    if SurfaceIndex < 2 then exitfunction FALSE
-    i = Floor(SurfaceIndex/3.0)
-    if SurfaceIndex <> i*3+2 or i > JumppodList.Length then exitfunction FALSE
+    if SurfaceIndex < SONEC_MECHANICAL_POD_UPPER_SLOT then exitfunction FALSE
+    i = Floor(SurfaceIndex/(SONEC_MECHANICAL_SLOT_STRIDE*1.0))
+    // Only pod/mine upper slots have a contact effect; Flak/Flarak do not.
+    if SurfaceIndex <> i*SONEC_MECHANICAL_SLOT_STRIDE+SONEC_MECHANICAL_POD_UPPER_SLOT or i > JumppodList.Length then exitfunction FALSE
     if JumppodList[i].Enabled = FALSE or JumppodList[i].Destroyed = TRUE then exitfunction FALSE
     if JumppodList[i].ObjectKind = LANDMINE_KIND
         JumppodList[i].ContactTriggered = TRUE
