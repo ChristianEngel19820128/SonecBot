@@ -3,7 +3,7 @@
 **Stand:** 25. November 2026 · **Arbeitszweig:** develop
 
 
-- [ ] B3.2–B3.4 Direkttreffer: Kontakt-Explosionsposition, bewegte Ziele/Update-Reihenfolge, ballistische Flugphysik abstimmen und prüfen. B3.1 Granaten-Sweep abgenommen.
+- [ ] B3.3–B3.4 Direkttreffer: bewegte Ziele/Update-Reihenfolge und ballistische Flugphysik abstimmen und prüfen. B3.1 Granaten-Sweep und B3.2 Flak-/Flarak-Explosionsposition abgenommen; Explosionsgröße im späteren Balancing.
 - [ ] Zusätzliche belegte Befunde (Index-Recycling) und B4 Abschluss des Bug-Chats gemäß KNOWNBUGS.md.
 - [ ] Anschließend Arbeitsblock B fachlich abstimmen (Erfahrung, Ressourcen/Munition, Panzerung, Gefahrenbudget).
 
