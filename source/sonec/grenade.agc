@@ -44,6 +44,7 @@ function GrenadeNew(Grenade ref as TGrenade,ProtoGrenade ref as TProtoGrenade,Wo
 	
 	Grenade.ObjectData.Position = Position
 	CalcPosition(Grenade.ObjectData.Position,Angle,Radius)
+	Grenade.PreviousPosition = Grenade.ObjectData.Position
 	
 	Grenade.ObjectData.MoveSpeedMax.x = 3
 	Grenade.ObjectData.MoveSpeedMax.y = 3
@@ -139,8 +140,9 @@ endfunction
 
 function GrenadeDestroy(GrenadeList ref as TGrenadeList,Index as integer,ExplosionList ref as TExplosionList,ProtoExplosion ref as TProtoExplosion,Game ref as TGame,Position ref as TPosition,Now as integer)
 
-	ExplosionAdd(ExplosionList,ProtoExplosion,Game,1,Position,Now)
+	if GrenadeList.Grenade[Index].Enabled = FALSE then exitfunction
 	GrenadeDelete(GrenadeList,Index)
+	ExplosionAdd(ExplosionList,ProtoExplosion,Game,1,Position,Now)
 
 endfunction
 
@@ -148,184 +150,265 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function GrenadeCollideOrbs(GrenadeList ref as TGrenadeList,OrbList ref as TOrbList,Game ref as TGame,Now as integer)
-	
-	local i as integer
-	local k as integer
-	local Radius as float
-	
-	for i = 0 to GrenadeList.Grenade.Length
-		if GrenadeList.Grenade[i].Enabled = TRUE
-			for k = 0 to OrbList.Orb.Length
-				if OrbList.Orb[k].Enabled = TRUE
-					if BoxInBox(GrenadeList.Grenade[i].CollisionData.Position1,GrenadeList.Grenade[i].CollisionData.Position2,OrbList.Orb[k].CollisionData.Position1,OrbList.Orb[k].CollisionData.Position2)
-						OrbList.Orb[k].Health.State = OrbList.Orb[k].Health.State - GrenadeList.Grenade[i].BulletData.Damage
-						ColorSet(OrbList.Orb[k].SpriteData.Color,255,0,0,255)
-						GrenadeDestroy(GrenadeList,i,Game.ExplosionList,Game.ProtoExplosion,Game,GrenadeList.Grenade[i].ObjectData.Position,Now)
-					endif
-				endif
-			next k
-		endif
-	next i
-	
-endfunction
+// Preserve the existing horizontal grenade AABB (image height on X).
+function GrenadeBoxEntry(Grenade ref as TGrenade,MinPos as TPosition,MaxPos as TPosition)
+endfunction CollisionBoxSweepEntry(Grenade.PreviousPosition,Grenade.ObjectData.Position,MinPos,MaxPos,Grenade.ObjectData.Size.Height*0.5,Grenade.ObjectData.Size.Width*0.5)
 
-//----------------------------------------------------------------------
-// 
-//----------------------------------------------------------------------
+function GrenadeCircleEntry(Grenade ref as TGrenade,Center as TPosition,Radius as float)
+endfunction CollisionCircleSweepEntry(Grenade.PreviousPosition,Grenade.ObjectData.Position,Center,Radius+Grenade.ObjectData.Radius)
 
-function GrenadeCollideMine(GrenadeList ref as TGrenadeList,MineList ref as TMineList,Game ref as TGame,Now as integer)
-	
-	local i as integer
-	local k as integer
-	local Radius as float
-	
-	for i = 0 to GrenadeList.Grenade.Length
-		if GrenadeList.Grenade[i].Enabled = TRUE
-			for k = 0 to MineList.Mine.Length
-				if MineList.Mine[k].Enabled = TRUE
-					Radius = CalcRadius(GrenadeList.Grenade[i].ObjectData.Position,MineList.Mine[k].ObjectData.Position)
-					if Radius < GrenadeList.Grenade[i].ObjectData.Radius + MineList.Mine[k].ObjectData.Radius
-						MineList.Mine[k].Health.State = MineList.Mine[k].Health.State - GrenadeList.Grenade[i].BulletData.Damage
-						ColorSet(MineList.Mine[k].SpriteData.Color,255,0,0,255)
-						GrenadeDestroy(GrenadeList,i,Game.ExplosionList,Game.ProtoExplosion,Game,GrenadeList.Grenade[i].ObjectData.Position,Now)
-					endif
-				endif
-			next k
-		endif
-	next i
-	
-endfunction
+// Sweep against the same 2px sampled target footprint used by FlarakAreaHits.
+// A swept rectangle against each sampled point avoids skipping a target
+// between projectile positions without altering the approved silo geometry.
+function GrenadeFlarakEntry(Grenade ref as TGrenade,F ref as TFlarak,World ref as TWorld)
+    local MinPos as TPosition
+    local MaxPos as TPosition
+    local P as TPosition
+    local IX as integer
+    local IY as integer
+    local Entry as float
+    local Best as float
+    if F.Enabled = FALSE or F.Destroyed = TRUE or F.CurrentFrame <= 1 then exitfunction -1.0
+    MinPos.x = F.WorldX-46
+    MinPos.y = F.WorldY-56
+    MaxPos.x = F.WorldX+46
+    MaxPos.y = F.WorldY+40
+    if GrenadeBoxEntry(Grenade,MinPos,MaxPos) < 0 then exitfunction -1.0
+    Best = 2
+    for IX = -23 to 23
+        P.x = F.WorldX+IX*2
+        for IY = -28 to 20
+            P.y = F.WorldY+IY*2
+            Entry = GrenadeBoxEntry(Grenade,P,P)
+            if Entry >= 0 and Entry < Best
+                if FlarakPointHits(F,World,P.x,P.y) then Best = Entry
+            endif
+        next IY
+    next IX
+    if Best <= 1 then exitfunction Best
+endfunction -1.0
 
-//----------------------------------------------------------------------
-// 
-//----------------------------------------------------------------------
-
-function GrenadeCollideChest(GrenadeList ref as TGrenadeList,ChestList ref as TChestList,Game ref as TGame,Now as integer)
-	
-	local i as integer
-	local k as integer
-	local Radius as float
-	
-	for i = 0 to GrenadeList.Grenade.Length
-		if GrenadeList.Grenade[i].Enabled = TRUE
-			for k = 0 to ChestList.Chest.Length
-				if ChestList.Chest[k].Enabled = TRUE
-					if BoxInBox(GrenadeList.Grenade[i].CollisionData.Position1,GrenadeList.Grenade[i].CollisionData.Position2,ChestList.Chest[k].CollisionData.Position1,ChestList.Chest[k].CollisionData.Position2)
-						ChestList.Chest[k].Health.State = ChestList.Chest[k].Health.State - GrenadeList.Grenade[i].BulletData.Damage
-						ColorSet(ChestList.Chest[k].SpriteData.Color,255,0,0,255)
-						GrenadeDestroy(GrenadeList,i,Game.ExplosionList,Game.ProtoExplosion,Game,GrenadeList.Grenade[i].ObjectData.Position,Now)
-					endif
-				endif
-			next k
-		endif
-	next i
-	
-endfunction
-
-//----------------------------------------------------------------------
-// 
-//----------------------------------------------------------------------
-
-// Player grenade impacts the existing Walker turret hit zone.
-// The grenade creates its normal explosion; Walker blast damage is a later step.
-function GrenadeCollideWalkers(GrenadeList ref as TGrenadeList,WalkerList ref as TWalkerList,Game ref as TGame,Now as integer)
-
-	local i as integer
-	local k as integer
-
-	for i = 0 to GrenadeList.Grenade.Length
-		if GrenadeList.Grenade[i].Enabled = TRUE
-			for k = 0 to WalkerList.Walker.Length
-				if WalkerList.Walker[k].Enabled = TRUE and GrenadeList.Grenade[i].Enabled = TRUE
-					if BoxInBox(GrenadeList.Grenade[i].CollisionData.Position1,GrenadeList.Grenade[i].CollisionData.Position2,WalkerList.Walker[k].WalkerCollisionData.Tower.Position1,WalkerList.Walker[k].WalkerCollisionData.Tower.Position2)
-						WalkerList.Walker[k].Health.State = WalkerList.Walker[k].Health.State - GrenadeList.Grenade[i].BulletData.Damage
-						WalkerList.Walker[k].HitFlashUntil = Now + 150
-						ColorSet(WalkerList.Walker[k].WalkerSpriteData.Tower.Color,255,0,0,255)
-						GrenadeDestroy(GrenadeList,i,Game.ExplosionList,Game.ProtoExplosion,Game,GrenadeList.Grenade[i].ObjectData.Position,Now)
-					endif
-				endif
-			next k
-		endif
-	next i
-
-endfunction
-
-//-----------------------------------------------------------------------
-// 
-//-----------------------------------------------------------------------
-
-// D5b: direct grenade impact damages the drone and creates the normal blast.
-function GrenadeCollideFlaraks(GrenadeList ref as TGrenadeList,Game ref as TGame,Now as integer)
+// One earliest hit over every existing grenade target type. Stable tie order
+// retains legacy priority (bomb, rocket, orb, mines, chest, walker, drone,
+// Flak/Flarak, pod, plate, bomber). No damage while collecting candidates.
+function GrenadeCollideAll(Game ref as TGame,Now as integer)
     local i as integer
     local k as integer
-    local CX as float
-    local CY as float
-    local HW as float
-    local HH as float
-    for i = 0 to GrenadeList.Grenade.Length
-        if GrenadeList.Grenade[i].Enabled = TRUE
-            CX = (GrenadeList.Grenade[i].CollisionData.Position1.x+GrenadeList.Grenade[i].CollisionData.Position2.x)*0.5
-            CY = (GrenadeList.Grenade[i].CollisionData.Position1.y+GrenadeList.Grenade[i].CollisionData.Position2.y)*0.5
-            HW = Abs(GrenadeList.Grenade[i].CollisionData.Position2.x-GrenadeList.Grenade[i].CollisionData.Position1.x)*0.5
-            HH = Abs(GrenadeList.Grenade[i].CollisionData.Position2.y-GrenadeList.Grenade[i].CollisionData.Position1.y)*0.5
-            for k = 0 to FlarakList.Length
-                if GrenadeList.Grenade[i].Enabled = TRUE and FlarakList[k].Enabled = TRUE and FlarakList[k].Destroyed = FALSE
-                    if FlarakAreaHits(FlarakList[k],Game.World,CX,CY,HW,HH,FALSE)
-                        FlarakApplyDamage(FlarakList[k],Game,GrenadeList.Grenade[i].BulletData.Damage,Now)
-                        GrenadeDestroy(GrenadeList,i,Game.ExplosionList,Game.ProtoExplosion,Game,GrenadeList.Grenade[i].ObjectData.Position,Now)
+    local Entry as float
+    local BestEntry as float
+    local BestType as integer
+    local BestIndex as integer
+    local Damage as integer
+    local P as TPosition
+    local MinPos as TPosition
+    local MaxPos as TPosition
+    local Impact as TPosition
+    for i = 0 to Game.GrenadeList.Grenade.Length
+        if Game.GrenadeList.Grenade[i].Enabled = TRUE
+            BestEntry = 2
+            BestType = 0
+            BestIndex = -1
+            for k = 0 to BOMBER_BOMB_COUNT-1
+                if Game.Bomber.Bomb[k].Enabled = TRUE
+                    Entry = GrenadeCircleEntry(Game.GrenadeList.Grenade[i],Game.Bomber.Bomb[k].Position,BOMBER_BOMB_SHOT_RADIUS)
+                    if Entry >= 0 and Entry < BestEntry
+                        BestEntry = Entry
+                        BestType = 1
+                        BestIndex = k
                     endif
                 endif
             next k
-        endif
-    next i
-endfunction
-
-function GrenadeCollideDrone(GrenadeList ref as TGrenadeList,Drone ref as TDrone,Game ref as TGame,Now as integer)
-    local i as integer
-    local MinPos as TPosition
-    local MaxPos as TPosition
-    MinPos.x = Drone.Position.x-23
-    MinPos.y = Drone.Position.y-15
-    MaxPos.x = Drone.Position.x+23
-    MaxPos.y = Drone.Position.y+15
-    for i = 0 to GrenadeList.Grenade.Length
-        if Drone.Enabled = TRUE and GrenadeList.Grenade[i].Enabled = TRUE
-            if BoxInBox(GrenadeList.Grenade[i].CollisionData.Position1,GrenadeList.Grenade[i].CollisionData.Position2,MinPos,MaxPos)
-                DroneTakeDamage(Drone,GrenadeList.Grenade[i].BulletData.Damage)
-                GrenadeDestroy(GrenadeList,i,Game.ExplosionList,Game.ProtoExplosion,Game,GrenadeList.Grenade[i].ObjectData.Position,Now)
+            for k = 0 to FlarakList.Length
+                if FlarakList[k].Rocket1.Active = TRUE
+                    P.x = FlarakList[k].Rocket1.PosX
+                    P.y = FlarakList[k].Rocket1.PosY
+                    Entry = GrenadeCircleEntry(Game.GrenadeList.Grenade[i],P,FLARAK_ROCKET_SHOT_RADIUS)
+                    if Entry >= 0 and Entry < BestEntry
+                        BestEntry = Entry
+                        BestType = 2
+                        BestIndex = k
+                    endif
+                endif
+                if FlarakList[k].Rocket2.Active = TRUE
+                    P.x = FlarakList[k].Rocket2.PosX
+                    P.y = FlarakList[k].Rocket2.PosY
+                    Entry = GrenadeCircleEntry(Game.GrenadeList.Grenade[i],P,FLARAK_ROCKET_SHOT_RADIUS)
+                    if Entry >= 0 and Entry < BestEntry
+                        BestEntry = Entry
+                        BestType = 3
+                        BestIndex = k
+                    endif
+                endif
+            next k
+            for k = 0 to Game.OrbList.Orb.Length
+                if Game.OrbList.Orb[k].Enabled = TRUE
+                    Entry = GrenadeBoxEntry(Game.GrenadeList.Grenade[i],Game.OrbList.Orb[k].CollisionData.Position1,Game.OrbList.Orb[k].CollisionData.Position2)
+                    if Entry >= 0 and Entry < BestEntry
+                        BestEntry = Entry
+                        BestType = 4
+                        BestIndex = k
+                    endif
+                endif
+            next k
+            for k = 0 to Game.MineList.Mine.Length
+                if Game.MineList.Mine[k].Enabled = TRUE
+                    Entry = GrenadeCircleEntry(Game.GrenadeList.Grenade[i],Game.MineList.Mine[k].ObjectData.Position,Game.MineList.Mine[k].ObjectData.Radius)
+                    if Entry >= 0 and Entry < BestEntry
+                        BestEntry = Entry
+                        BestType = 5
+                        BestIndex = k
+                    endif
+                endif
+            next k
+            for k = 0 to Game.SimpleMineList.Mine.Length
+                if Game.SimpleMineList.Mine[k].Enabled = TRUE
+                    Entry = GrenadeCircleEntry(Game.GrenadeList.Grenade[i],Game.SimpleMineList.Mine[k].ObjectData.Position,Game.SimpleMineList.Mine[k].ObjectData.Radius)
+                    if Entry >= 0 and Entry < BestEntry
+                        BestEntry = Entry
+                        BestType = 6
+                        BestIndex = k
+                    endif
+                endif
+            next k
+            for k = 0 to Game.ChestList.Chest.Length
+                if Game.ChestList.Chest[k].Enabled = TRUE
+                    Entry = GrenadeBoxEntry(Game.GrenadeList.Grenade[i],Game.ChestList.Chest[k].CollisionData.Position1,Game.ChestList.Chest[k].CollisionData.Position2)
+                    if Entry >= 0 and Entry < BestEntry
+                        BestEntry = Entry
+                        BestType = 7
+                        BestIndex = k
+                    endif
+                endif
+            next k
+            for k = 0 to Game.WalkerList.Walker.Length
+                if Game.WalkerList.Walker[k].Enabled = TRUE
+                    Entry = GrenadeBoxEntry(Game.GrenadeList.Grenade[i],Game.WalkerList.Walker[k].WalkerCollisionData.Tower.Position1,Game.WalkerList.Walker[k].WalkerCollisionData.Tower.Position2)
+                    if Entry >= 0 and Entry < BestEntry
+                        BestEntry = Entry
+                        BestType = 8
+                        BestIndex = k
+                    endif
+                endif
+            next k
+            if Game.Drone.Enabled = TRUE
+                MinPos.x = Game.Drone.Position.x-23
+                MinPos.y = Game.Drone.Position.y-15
+                MaxPos.x = Game.Drone.Position.x+23
+                MaxPos.y = Game.Drone.Position.y+15
+                Entry = GrenadeBoxEntry(Game.GrenadeList.Grenade[i],MinPos,MaxPos)
+                if Entry >= 0 and Entry < BestEntry
+                    BestEntry = Entry
+                    BestType = 9
+                    BestIndex = -1
+                endif
+            endif
+            for k = 0 to FlarakList.Length
+                if FlarakList[k].Enabled = TRUE and FlarakList[k].Destroyed = FALSE
+                    Entry = GrenadeFlarakEntry(Game.GrenadeList.Grenade[i],FlarakList[k],Game.World)
+                    if Entry >= 0 and Entry < BestEntry
+                        BestEntry = Entry
+                        BestType = 10
+                        BestIndex = k
+                    endif
+                endif
+            next k
+            for k = 0 to JumppodList.Length
+                if JumppodList[k].Enabled = TRUE
+                    Entry = GrenadeBoxEntry(Game.GrenadeList.Grenade[i],JumppodList[k].Lower.CollisionData.Position1,JumppodList[k].Lower.CollisionData.Position2)
+                    if Entry >= 0 and Entry < BestEntry
+                        BestEntry = Entry
+                        BestType = 11
+                        BestIndex = k
+                    endif
+                    Entry = GrenadeBoxEntry(Game.GrenadeList.Grenade[i],JumppodList[k].Upper.CollisionData.Position1,JumppodList[k].Upper.CollisionData.Position2)
+                    if Entry >= 0 and Entry < BestEntry
+                        BestEntry = Entry
+                        BestType = 11
+                        BestIndex = k
+                    endif
+                endif
+            next k
+            for k = 0 to Game.PlateList.Plate.Length
+                if Game.PlateList.Plate[k].Enabled = TRUE
+                    Entry = GrenadeBoxEntry(Game.GrenadeList.Grenade[i],Game.PlateList.Plate[k].CollisionData.Position1,Game.PlateList.Plate[k].CollisionData.Position2)
+                    if Entry >= 0 and Entry < BestEntry
+                        BestEntry = Entry
+                        BestType = 12
+                        BestIndex = k
+                    endif
+                endif
+            next k
+            if Game.Bomber.Enabled = TRUE
+                MinPos.x = Game.Bomber.Position.x-BOMBER_HIT_HALF_WIDTH
+                MinPos.y = Game.Bomber.Position.y-BOMBER_HIT_HALF_HEIGHT
+                MaxPos.x = Game.Bomber.Position.x+BOMBER_HIT_HALF_WIDTH
+                MaxPos.y = Game.Bomber.Position.y+BOMBER_HIT_HALF_HEIGHT
+                Entry = GrenadeBoxEntry(Game.GrenadeList.Grenade[i],MinPos,MaxPos)
+                if Entry >= 0 and Entry < BestEntry
+                    BestEntry = Entry
+                    BestType = 13
+                    BestIndex = -1
+                endif
+            endif
+            if BestType > 0
+                Impact.x = Game.GrenadeList.Grenade[i].PreviousPosition.x+(Game.GrenadeList.Grenade[i].ObjectData.Position.x-Game.GrenadeList.Grenade[i].PreviousPosition.x)*BestEntry
+                Impact.y = Game.GrenadeList.Grenade[i].PreviousPosition.y+(Game.GrenadeList.Grenade[i].ObjectData.Position.y-Game.GrenadeList.Grenade[i].PreviousPosition.y)*BestEntry
+                Damage = Game.GrenadeList.Grenade[i].BulletData.Damage
+                // Interception retains the existing single target explosion,
+                // not an additional grenade blast.
+                if BestType = 1
+                    P = Game.Bomber.Bomb[BestIndex].Position
+                    Game.Bomber.Bomb[BestIndex].Enabled = FALSE
+                    GrenadeDelete(Game.GrenadeList,i)
+                    ExplosionAdd(Game.ExplosionList,Game.ProtoExplosion,Game,1,P,Now)
+                endif
+                if BestType = 2
+                    FlarakRocketIntercept(FlarakList[BestIndex].Rocket1,Game,Now)
+                    FlarakMarkFree(BestIndex)
+                    GrenadeDelete(Game.GrenadeList,i)
+                endif
+                if BestType = 3
+                    FlarakRocketIntercept(FlarakList[BestIndex].Rocket2,Game,Now)
+                    FlarakMarkFree(BestIndex)
+                    GrenadeDelete(Game.GrenadeList,i)
+                endif
+                if BestType = 4
+                    Game.OrbList.Orb[BestIndex].Health.State = Game.OrbList.Orb[BestIndex].Health.State-Damage
+                    ColorSet(Game.OrbList.Orb[BestIndex].SpriteData.Color,255,0,0,255)
+                endif
+                if BestType = 5
+                    Game.MineList.Mine[BestIndex].Health.State = Game.MineList.Mine[BestIndex].Health.State-Damage
+                    ColorSet(Game.MineList.Mine[BestIndex].SpriteData.Color,255,0,0,255)
+                endif
+                if BestType = 6
+                    Game.SimpleMineList.Mine[BestIndex].Health.State = Game.SimpleMineList.Mine[BestIndex].Health.State-Damage
+                    ColorSet(Game.SimpleMineList.Mine[BestIndex].SpriteData.Color,255,0,0,255)
+                endif
+                if BestType = 7
+                    Game.ChestList.Chest[BestIndex].Health.State = Game.ChestList.Chest[BestIndex].Health.State-Damage
+                    ColorSet(Game.ChestList.Chest[BestIndex].SpriteData.Color,255,0,0,255)
+                endif
+                if BestType = 8
+                    Game.WalkerList.Walker[BestIndex].Health.State = Game.WalkerList.Walker[BestIndex].Health.State-Damage
+                    Game.WalkerList.Walker[BestIndex].HitFlashUntil = Now+150
+                    ColorSet(Game.WalkerList.Walker[BestIndex].WalkerSpriteData.Tower.Color,255,0,0,255)
+                endif
+                if BestType = 9 then DroneTakeDamage(Game.Drone,Damage)
+                if BestType = 10 then FlarakApplyDamage(FlarakList[BestIndex],Game,Damage,Now)
+                if BestType = 11 then JumppodApplyDamage(BestIndex,Game,Damage,Now)
+                if BestType = 13 then BomberTakeDamage(Game.Bomber,Game,Damage,Now)
+                if BestType >= 4
+                    GrenadeDestroy(Game.GrenadeList,i,Game.ExplosionList,Game.ProtoExplosion,Game,Impact,Now)
+                endif
             endif
         endif
     next i
 endfunction
 
-function GrenadeCollidePlate(GrenadeList ref as TGrenadeList,PlateList ref as TPlateList,Game ref as TGame,Now as integer)
-	
-	local i as integer
-	local k as integer
-	local Radius as float
-	
-	for i = 0 to GrenadeList.Grenade.Length
-		if GrenadeList.Grenade[i].Enabled = TRUE
-			for k = 0 to PlateList.Plate.Length
-				if PlateList.Plate[k].Enabled = TRUE
-					if BoxInBox(GrenadeList.Grenade[i].CollisionData.Position1,GrenadeList.Grenade[i].CollisionData.Position2,PlateList.Plate[k].CollisionData.Position1,PlateList.Plate[k].CollisionData.Position2)
-						GrenadeDestroy(GrenadeList,i,Game.ExplosionList,Game.ProtoExplosion,Game,GrenadeList.Grenade[i].ObjectData.Position,Now)
-					endif
-				endif
-			next k
-		endif
-	next i
-	
-endfunction
-
-//----------------------------------------------------------------------
-// 
-//----------------------------------------------------------------------
-
 function GrenadeMove(Grenade ref as TGrenade,World ref as TWorld,Now as integer)
 
 	if Grenade.Enabled = TRUE
+		Grenade.PreviousPosition = Grenade.ObjectData.Position
 		if TimeGet(Grenade.ObjectData.MoveTimer,Now) > 0
 			
 			
@@ -358,12 +441,19 @@ endfunction
 //----------------------------------------------------------------------
 
 function GrenadeMoveAll(GrenadeList ref as TGrenadeList,World ref as TWorld,Now as integer)
+	local i as integer
+	for i = 0 to GrenadeList.Grenade.Length
+		GrenadeMove(GrenadeList.Grenade[i],World,Now)
+	next i
+endfunction
+
+// Cull only after testing the complete final movement segment.
+function GrenadeCullAll(GrenadeList ref as TGrenadeList,World ref as TWorld)
 
 	Local i as integer
 	
 	for i = 0 to GrenadeList.Grenade.Length
 		if GrenadeList.Grenade[i].Enabled = TRUE
-			GrenadeMove(GrenadeList.Grenade[i],World,Now)
 			if GrenadeList.Grenade[i].ObjectData.Position.y < -GrenadeList.Grenade[i].ObjectData.Size.Height
 				GrenadeDelete(GrenadeList,i)
 			else

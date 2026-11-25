@@ -580,41 +580,7 @@ function FlarakRocketCollideFlames(Game ref as TGame,Now as integer)
     next i
 endfunction
 
-function FlarakRocketHitByGrenade(Rocket ref as TFlarakTestRocket,Grenade ref as TGrenade)
-    local Radius as float
-    local DX as float
-    local DY as float
-    if Rocket.Active = FALSE then exitfunction FALSE
-    Radius = Grenade.ObjectData.Radius+FLARAK_ROCKET_SHOT_RADIUS
-    DX = Grenade.ObjectData.Position.x-Rocket.PosX
-    DY = Grenade.ObjectData.Position.y-Rocket.PosY
-    if DX*DX+DY*DY <= Radius*Radius then exitfunction TRUE
-endfunction FALSE
 
-function FlarakRocketCollideGrenades(Game ref as TGame,Now as integer)
-    local i as integer
-    local k as integer
-    for i = 0 to Game.GrenadeList.Grenade.Length
-        if Game.GrenadeList.Grenade[i].Enabled = TRUE
-            for k = 0 to FlarakList.Length
-                if Game.GrenadeList.Grenade[i].Enabled = TRUE
-                    if FlarakRocketHitByGrenade(FlarakList[k].Rocket1,Game.GrenadeList.Grenade[i])
-                        FlarakRocketIntercept(FlarakList[k].Rocket1,Game,Now)
-                        FlarakMarkFree(k)
-                        GrenadeDelete(Game.GrenadeList,i)
-                    endif
-                endif
-                if Game.GrenadeList.Grenade[i].Enabled = TRUE
-                    if FlarakRocketHitByGrenade(FlarakList[k].Rocket2,Game.GrenadeList.Grenade[i])
-                        FlarakRocketIntercept(FlarakList[k].Rocket2,Game,Now)
-                        FlarakMarkFree(k)
-                        GrenadeDelete(Game.GrenadeList,i)
-                    endif
-                endif
-            next k
-        endif
-    next i
-endfunction
 
 function FlarakRocketHitByPlasma(Rocket ref as TFlarakTestRocket,Plasma ref as TPlasmaBlitz)
     local MinPos as TPosition

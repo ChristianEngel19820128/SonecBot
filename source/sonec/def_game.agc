@@ -434,6 +434,7 @@ type TProtoGrenade
 endtype
 
 type TGrenade
+	PreviousPosition as TPosition
 	Enabled as integer
 	ObjectData as TObjectData
 	SpriteData as TSpriteData

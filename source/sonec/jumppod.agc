@@ -469,24 +469,6 @@ function JumppodCollideFlames(Game ref as TGame,Now as integer)
     next i
 endfunction
 
-function JumppodCollideGrenades(Game ref as TGame,Now as integer)
-    local i as integer
-    local k as integer
-    local Impact as TPosition
-    for i = 0 to Game.GrenadeList.Grenade.Length
-        if Game.GrenadeList.Grenade[i].Enabled = TRUE
-            for k = 0 to JumppodList.Length
-                if Game.GrenadeList.Grenade[i].Enabled = TRUE and JumppodList[k].Enabled = TRUE
-                    if JumppodBoxHits(JumppodList[k],Game.GrenadeList.Grenade[i].CollisionData.Position1,Game.GrenadeList.Grenade[i].CollisionData.Position2)
-                        Impact = Game.GrenadeList.Grenade[i].ObjectData.Position
-                        JumppodApplyDamage(k,Game,Game.GrenadeList.Grenade[i].BulletData.Damage,Now)
-                        GrenadeDestroy(Game.GrenadeList,i,Game.ExplosionList,Game.ProtoExplosion,Game,Impact,Now)
-                    endif
-                endif
-            next k
-        endif
-    next i
-endfunction
 
 // Like existing chest plasma contacts: damage once per collision timer, not per rectangle.
 function JumppodCollidePlasma(Game ref as TGame,Now as integer)
