@@ -3,7 +3,8 @@
 **Stand:** 25. November 2026 · **Arbeitszweig:** develop
 
 
-- [ ] B3 Direkttreffer, zusätzliche belegte Befunde (Index-Recycling) und B4 Abschluss des Bug-Chats gemäß KNOWNBUGS.md.
+- [ ] B3.2–B3.4 Direkttreffer: Kontakt-Explosionsposition, bewegte Ziele/Update-Reihenfolge, ballistische Flugphysik abstimmen und prüfen. B3.1 Granaten-Sweep abgenommen.
+- [ ] Zusätzliche belegte Befunde (Index-Recycling) und B4 Abschluss des Bug-Chats gemäß KNOWNBUGS.md.
 - [ ] Anschließend Arbeitsblock B fachlich abstimmen (Erfahrung, Ressourcen/Munition, Panzerung, Gefahrenbudget).
 
 B2 Flammenwerfer abgeschlossen (25.11.2026): B2.1 Partikelbewegung 12/12 auf 1bed93b, B2.2/B2.3 Durchdringung und zeitabhängiger Schaden 13/13 auf 7c44b93 lokal AGK-bestanden. Bewegung unverändert lassen; endgültiges Balancing nachgelagert.
