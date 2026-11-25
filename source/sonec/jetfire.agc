@@ -67,37 +67,44 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function JetfireAdd(JetfireList ref as TJetfireList,ProtoJetfire ref as TProtoJetfire,World ref as TWorld,Position as TPosition,Now as integer)
-	
-	local Value as integer
+// Insert one visual particle without changing the shared creation timer.
+// The gated JetfireAdd wrapper remains the normal gameplay emission.
+function JetfireInsertParticle(JetfireList ref as TJetfireList,ProtoJetfire ref as TProtoJetfire,World ref as TWorld,Position as TPosition,Now as integer)
 	local Found as integer
 	local i as integer
 	local Jetfire as TJetfire
+	JetfireNew(Jetfire,ProtoJetfire,World,Position,Now)
+	
+	Found = FALSE
+	i = JetfireList.FirstFree
+	while Found = FALSE and i <= JetfireList.Jetfire.Length
+		if JetfireList.Jetfire[i].Enabled = FALSE
+			Found = TRUE
+		else
+			i = i+1
+		endif
+	endwhile
+	
+	if Found = FALSE
+		JetfireList.Jetfire.Insert(Jetfire)
+		JetfireList.FirstFree = JetfireList.Jetfire.Length
+	else
+		JetfireList.Jetfire[i] = Jetfire
+		JetfireList.FirstFree = i+1
+	endif
+	
+endfunction
+
+function JetfireAdd(JetfireList ref as TJetfireList,ProtoJetfire ref as TProtoJetfire,World ref as TWorld,Position as TPosition,Now as integer)
+	
+	local Value as integer
 	
 	Value = FALSE
 	
 	if TimeGet(JetfireList.CreateTimer,Now) > 0
 		
-		JetfireNew(Jetfire,ProtoJetfire,World,Position,Now)
-		
-		Found = FALSE
-		i = JetfireList.FirstFree
-		while Found = FALSE and i <= JetfireList.Jetfire.Length
-			if JetfireList.Jetfire[i].Enabled = FALSE
-				Found = TRUE
-			else
-				i = i+1
-			endif
-		endwhile
-		
-		if Found = FALSE
-			JetfireList.Jetfire.Insert(Jetfire)
-			JetfireList.FirstFree = JetfireList.Jetfire.Length
-		else
-			JetfireList.Jetfire[i] = Jetfire
-			JetfireList.FirstFree = i+1
-		endif
-		
+		JetfireInsertParticle(JetfireList,ProtoJetfire,World,Position,Now)
+
 		Value = TRUE
 		
 		TimeReset(JetfireList.CreateTimer,Now)

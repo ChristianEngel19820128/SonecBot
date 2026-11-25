@@ -568,6 +568,11 @@ type TSonec
 	UpHoldStartMs as integer
 	UpJumpHoldPending as integer
 	AirThrustDirection as integer
+	JetstreamRequested as integer
+	JetstreamPreviousValid as integer
+	JetstreamPreviousPosition as TPosition
+	JetstreamPreviousMs as integer
+	JetstreamPreviousNozzleX as float
 	DebugTopTrace as string
 	PassThroughChestIndex as integer
 	LinkedPlateIndex as integer

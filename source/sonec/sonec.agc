@@ -47,6 +47,11 @@
 #constant SONEC_MINI_HOP_IMPULSE_Y 1.5
 #constant SONEC_MINI_HOP_MIN_RELATIVE_X 1.0
 
+// Jetstream visuals only: maximum total particles per accepted emission.
+#constant SONEC_JETSTREAM_SPACING 12.0
+#constant SONEC_JETSTREAM_MAX_PER_EMISSION 3
+#constant SONEC_JETSTREAM_MAX_GAP_MS 100
+
 // Diagnostics and camera (not movement balancing).
 #constant SONEC_INTEGRATION_TRACE 1
 #constant SONEC_CAMERA_EDGE_MARGIN 10
@@ -172,6 +177,10 @@ function SonecInit(Sonec ref as TSonec,ProtoSonec ref as TProtoSonec,World ref a
 	Sonec.UpHoldStartMs = Now
 	Sonec.UpJumpHoldPending = FALSE
 	Sonec.AirThrustDirection = 0
+	Sonec.JetstreamRequested = FALSE
+	Sonec.JetstreamPreviousValid = FALSE
+	Sonec.JetstreamPreviousMs = Now
+	Sonec.JetstreamPreviousNozzleX = 0
 	Sonec.DebugTopTrace = ""
 
 	Sonec.State.Fall  = TRUE
@@ -328,13 +337,45 @@ endfunction
 //----------------------------------------------------------------------
 
 function SonecJetfireAdd(Sonec ref as TSonec,JetfireList ref as TJetfireList,ProtoJetfire ref as TProtoJetfire,World ref as TWorld,Position as TPosition,Now as integer)
+	local DeltaX as float
+	local DeltaY as float
+	local Distance as float
+	local NozzleX as float
+	local Count as integer
+	local i as integer
+	local Fraction as float
+	local ExtraPosition as TPosition
 
 	if Sonec.Energy.State >= COSTJETFIRE
+		Sonec.JetstreamRequested = TRUE
+		// Keep the existing gated particle and its exact energy charge.
 		if JetfireAdd(JetfireList,ProtoJetfire,World,Position,Now) = TRUE
 			Sonec.Energy.State = Sonec.Energy.State - COSTJETFIRE
+			NozzleX = Position.x-Sonec.ObjectData.Position.x
+			if Sonec.JetstreamPreviousValid = TRUE and Now-Sonec.JetstreamPreviousMs <= SONEC_JETSTREAM_MAX_GAP_MS
+				// A facing change moves the nozzle; do not draw across the body.
+				if abs(NozzleX-Sonec.JetstreamPreviousNozzleX) < 0.01 and SONEC_JETSTREAM_SPACING > 0 and SONEC_JETSTREAM_MAX_PER_EMISSION > 1
+					DeltaX = Position.x-Sonec.JetstreamPreviousPosition.x
+					DeltaY = Position.y-Sonec.JetstreamPreviousPosition.y
+					Distance = sqrt(DeltaX*DeltaX+DeltaY*DeltaY)
+					Count = ceil(Distance/SONEC_JETSTREAM_SPACING)
+					if Count > SONEC_JETSTREAM_MAX_PER_EMISSION then Count = SONEC_JETSTREAM_MAX_PER_EMISSION
+					// The regular particle is already at the endpoint. Fill
+					// intermediate world positions, never emit duplicate endpoints.
+					for i = 1 to Count-1
+						Fraction = i*1.0/Count
+						ExtraPosition.x = Sonec.JetstreamPreviousPosition.x+DeltaX*Fraction
+						ExtraPosition.y = Sonec.JetstreamPreviousPosition.y+DeltaY*Fraction
+						JetfireInsertParticle(JetfireList,ProtoJetfire,World,ExtraPosition,Now)
+					next i
+				endif
+			endif
+			Sonec.JetstreamPreviousPosition = Position
+			Sonec.JetstreamPreviousMs = Now
+			Sonec.JetstreamPreviousNozzleX = NozzleX
+			Sonec.JetstreamPreviousValid = TRUE
 		endif
 	endif
-	
 endfunction
 
 //----------------------------------------------------------------------
@@ -829,6 +870,7 @@ function SonecInput(Sonec ref as TSonec,JetfireList ref as TJetfireList,ProtoJet
 	endif
 
 	if TimeGet(Sonec.InputTimer,Now) > 0
+		Sonec.JetstreamRequested = FALSE
 		
 		Position.y = Sonec.ObjectData.Position.y -10
 		if Sonec.State.LookAlignment = LOOKLEFT
@@ -900,6 +942,8 @@ function SonecInput(Sonec ref as TSonec,JetfireList ref as TJetfireList,ProtoJet
 			endif
 		endif
 
+		// Never bridge a non-powered interval with new trail particles.
+		if Sonec.JetstreamRequested = FALSE then Sonec.JetstreamPreviousValid = FALSE
 		TimeReset(Sonec.InputTimer,Now)
 	endif
 	

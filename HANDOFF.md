@@ -26,6 +26,7 @@ Verbindliche Grundlage: [SONEC_MOVEMENT_SPEC.md](docs/SONEC_MOVEMENT_SPEC.md).
 - G2b implementiert: sofortiger Sprung bei neuer Hoch-Eingabe am Boden, Jetpack nach 180 ms Halten, Energiezufluss weiter wirksam; kein Dauersprung. Horizontaler Mindestimpuls optional (0 deaktiviert), vorhandenen Gegenschwung erhalten. Granatwerferrückstoß additiv (1,0), keine Eingabeflag-Änderung; Richtung umkehrbar. Entwicklertest `6c53fac` 11/11 bestanden inkl. AGK-Compile, Tippen/Halten, Fall, Loslassen, kein Dauersprung, Schwung, Rückstoß und bisherige Kontakte. Keine zusätzlichen Beobachtungen. Optionaler Mindestimpuls bleibt 0; Nichtnullwerte im G2d-Balancing prüfen.
 - G2c nach Abstimmung implementiert: Fußgrenze, richtungsabhängige Kistenrandlandung, Plattformfall ohne Hop, kombinierte Seitenlinie/Kreise und begrenzte Abstandskorrektur; horizontale Ebenenlösung und lokale dynamische Freigabehöhe (100). Entwicklertest `d87a2f6` 13/13 bestanden inkl. AGK-Compile; keine offenen Prüfpunkte. CSV erhalten. Neue Beobachtungen: kleine Sprungkorrekturen nötig, Sprunghöhe zu hoch, Jetpack ohne Verzögerung außerhalb des normalen Sprungs, vertikalen Jetpack-Bruttoschub 0.04 auf 0.02 halbieren, Schwerkraft 0.01 und horizontale Flugbeschleunigung 0.005 unverändert; Energieüberschuss/Overload-Tode, Gegner gefährlich, Drohne vergleichsweise harmlos. Steuerungsnacharbeit vor G2d-Balancing; Energie/Gegner als eigener TODO-Punkt separat.
 - G2d-1 nach Abstimmung implementiert: kleine energieunabhängige horizontale Sprungkorrektur (0.001, Richtungsgrenze 1.5), Jetpack ohne Zusatzverzögerung bei neuem Up-Druck in der Luft; 180 ms nur beim absprungauslösenden Tastendruck. Bestehende Konstanten und G2c-Kollisionen unverändert; Entwicklertest `3e6e07c` 8/8 bestanden inkl. AGK-Compile, Sprungkorrekturen beidseitig und neue Jetpack-Reaktion, bisherige Kontakte/Rückstoß. Keine offenen Prüfpunkte. Bewegungsumstellung technisch abgenommen; Gesamtspielgefühl/Parameterabnahme G2d-2 offen.
+- G2d-2 Entwicklerstand `ffe2e39`: Luftlimit 8, Bruttoschub 0.025, Aufwärtslimit 10, Falllimit 16, InputTimer 10 ms; Sprungimpuls 8. Entwickler Bewegung soweit angepasst, Langzeitbeobachtung offen. Lückigen Jetstream beobachtet; vereinbarte optische Zwischenpartikel implementiert (Abstand 12, max. 3 pro regulärer Emission), Energie/Physik unverändert. Compile/Sichttest offen.
 
 ## Vereinbarter Arbeitsmodus für die Bewegungsumstellung
 
@@ -50,7 +51,7 @@ Verbindliche Grundlage: [SONEC_MOVEMENT_SPEC.md](docs/SONEC_MOVEMENT_SPEC.md).
 
 ## Genau ein nächster vereinbarter Schritt
 
-G2d-2: Entwickler nach einer Pause lokale Bewegungsparameter feinjustieren (vertikaler Bruttoschub 0.02 und Sprungimpuls 5 als Ausgangstestwerte, weitere Konstanten nach Spielgefühl), Gesamtspieltest und reine Parameteränderungen direkt selbst auf develop einchecken. Danach tatsächlichen HEAD und Abnahme dokumentieren; Energie/Gegner separat.
+Jetstream-Nacharbeit lokal kompilieren und visuell prüfen: langsamer/schneller Flug und Fallbremsung, diagonaler Flug, Blickrichtungswechsel und Schubunterbrechung, unveränderter Energieverbrauch und Performance. Danach G2d-2 Gesamtabnahme mit Langzeitbeobachtung bzw. weiteren lokal eingecheckten Parametern dokumentieren.
 
 ## Referenzen
 

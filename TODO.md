@@ -4,7 +4,7 @@
 
 ## Jetzt
 
-- [ ] G2d-2: G2d-1 `3e6e07c` 8/8 bestanden, Bewegungsumstellung technisch abgenommen. Entwickler lokales Bewegungsbalancing (Sprunghöhe, vertikaler Jetpack-Bruttoschub 0.02 als Testwert, weitere Konstanten), Gesamtspieltest und reine Parameteränderungen direkt selbst auf develop einchecken. Danach HEAD und Gesamtabnahme dokumentieren. [Spezifikation §13](docs/SONEC_MOVEMENT_SPEC.md#13-offene-detailfragen-für-technische-durchsicht-und-tests).
+- [ ] G2d-2 / Jetstream: Entwickler-Balancing `ffe2e39` eingecheckt, Langzeitbeobachtung offen. Optische Zwischenpartikel implementiert; AGK-Compile, Sichttest und Performance prüfen, danach Gesamtspielgefühl/Parameterstand dokumentieren. [Spezifikation §13](docs/SONEC_MOVEMENT_SPEC.md#13-offene-detailfragen-für-technische-durchsicht-und-tests).
 
 ## Danach / separat
 
