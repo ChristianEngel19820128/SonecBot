@@ -1,6 +1,6 @@
 // A5/J4: reusable world-space smoke; no gameplay collision or RNG calls.
 // All owners share one set of particle parameters; only density differs.
-#constant SMOKE_IMAGE_COUNT 5
+#constant SMOKE_IMAGE_COUNT 6
 #constant SMOKE_EMISSION_INTERVAL_MS 180
 #constant SMOKE_EMISSION_JITTER_MS 40
 #constant SMOKE_RAMP_MS 2200
@@ -13,15 +13,15 @@
 #constant SMOKE_RISE_MAX_PX_S 42
 #constant SMOKE_ROTATE_MIN_DEG_S -30
 #constant SMOKE_ROTATE_MAX_DEG_S 30
-#constant SMOKE_ALPHA_MIN 70
-#constant SMOKE_ALPHA_MAX 110
-#constant SMOKE_SIZE_MIN_PX 24
-#constant SMOKE_SIZE_MAX_PX 36
-#constant SMOKE_END_SIZE_FACTOR 0.90
-#constant SMOKE_DENSITY_JUMPPOD 1
-#constant SMOKE_DENSITY_LANDMINE 2
-#constant SMOKE_DENSITY_FLAK 3
-#constant SMOKE_DENSITY_FLARAK 3
+#constant SMOKE_ALPHA_MIN 35
+#constant SMOKE_ALPHA_MAX 75
+#constant SMOKE_SIZE_MIN_PX 5
+#constant SMOKE_SIZE_MAX_PX 25
+#constant SMOKE_END_SIZE_FACTOR 7.5
+#constant SMOKE_DENSITY_JUMPPOD 2
+#constant SMOKE_DENSITY_LANDMINE 4
+#constant SMOKE_DENSITY_FLAK 5
+#constant SMOKE_DENSITY_FLARAK 5
 
 type TSmokeParticle
     Enabled as integer
@@ -140,6 +140,7 @@ function SmokeAdd(Emitter ref as TSmokeEmitter,Position as TPosition,Density as 
     local Ramp as float
     local ParticleCount as integer
     local i as integer
+    local RandomPosition as TPosition
     if Emitter.Active = FALSE or Emitter.SessionID <> SmokeSessionID or Density <= 0 or SmokeLoadedCount <= 0 then exitfunction
     if Now < Emitter.NextMs then exitfunction
     Ramp = (Now-Emitter.StartMs)/(SMOKE_RAMP_MS*1.0)
@@ -151,6 +152,8 @@ function SmokeAdd(Emitter ref as TSmokeEmitter,Position as TPosition,Density as 
     Emitter.ParticleCredit = Emitter.ParticleCredit-ParticleCount
     Emitter.NextMs = Now+SmokeRandomInt(SMOKE_EMISSION_INTERVAL_MS-SMOKE_EMISSION_JITTER_MS,SMOKE_EMISSION_INTERVAL_MS+SMOKE_EMISSION_JITTER_MS)
     for i = 1 to ParticleCount
+        RandomPosition = Position
+        RandomPosition.x = RandomPosition.x - 25.0 + random(0,50000)/100
         SmokeInsertParticle(Position,Now)
     next i
 endfunction
@@ -190,11 +193,11 @@ function SmokeDrawAll(World ref as TWorld)
             DrawSize = SmokeParticles[i].InitialSize*(1.0-(1.0-SMOKE_END_SIZE_FACTOR)*SmokeParticles[i].AgeFraction)
             DrawAlpha = Floor(SmokeParticles[i].InitialAlpha*(1.0-SmokeParticles[i].AgeFraction))
             DrawScale = DrawSize/SmokeSpriteNativeSize[SmokeParticles[i].ImageIndex]
-            SetSpriteScaleByOffset(SpriteID,DrawScale,DrawScale)
             // Same centered scaled pivot convention as SpriteDraw.
             SetSpriteOffset(SpriteID,GetSpriteWidth(SpriteID)*0.5,GetSpriteHeight(SpriteID)*0.5)
+            SetSpriteScaleByOffset(SpriteID,DrawScale,DrawScale)
             SetSpriteAngle(SpriteID,SmokeParticles[i].Angle)
-            SetSpriteColor(SpriteID,255,255,255,DrawAlpha)
+            SetSpriteColor(SpriteID,55+random(0,55),125,55+random(0,55),DrawAlpha)
             SetSpritePositionByOffset(SpriteID,SmokeParticles[i].Position.x-World.Position.x,SmokeParticles[i].Position.y-World.Position.y)
             DrawSprite(SpriteID)
         endif
