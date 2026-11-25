@@ -2,7 +2,7 @@
 
 **Stand:** 25. November 2026 · **Arbeitszweig:** develop
 
-- [ ] J4: wiederverwendbare Rauch-Unit integrieren und A5 gebündelt prüfen.
+- [ ] J4: wiederverwendbare Rauch-Unit implementiert; AGK-Compile, Sichttest und A5-Regressionsabnahme offen.
 
 Bewegungsumstellung abgeschlossen. Offene Fehler: [KNOWNBUGS.md](KNOWNBUGS.md).
 Gameplay-Balancing nachgelagert gemäß [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROADMAP.md).

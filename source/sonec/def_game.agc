@@ -35,6 +35,16 @@ type TPosition
 	y as float
 endtype
 
+// Visual emitter state belongs to its owner; particles live independently.
+// Session prevents old owners from resuming emission after GameInit.
+type TSmokeEmitter
+	Active as integer
+	SessionID as integer
+	StartMs as integer
+	NextMs as integer
+	ParticleCredit as float
+endtype
+
 type TSize
 	Width as float
 	Height as float

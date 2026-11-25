@@ -94,6 +94,7 @@ global SonecEdgeCsvStarted as integer
 #include "image.agc"
 #include "sprite.agc"
 #include "jetfire.agc"
+#include "smoke.agc"
 #include "shield.agc"
 #include "inenergie.agc"
 #include "energie.agc"

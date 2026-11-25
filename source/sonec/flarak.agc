@@ -82,6 +82,7 @@ type TFlarakTestRocket
 endtype
 
 type TFlarak
+    SmokeEmitter as TSmokeEmitter
     Health as integer
     Destroyed as integer
     HitFlashUntil as integer
@@ -645,6 +646,7 @@ function FlarakDestroy(F ref as TFlarak,Game ref as TGame,NowMs as integer)
     local Impact as TPosition
     if F.Enabled = FALSE or F.Destroyed = TRUE then exitfunction
     F.Destroyed = TRUE
+    SmokeStartEmitter(F.SmokeEmitter,NowMs)
     F.Health = 0
     F.SecondPending = FALSE
     F.FlakShotsFired = 4
@@ -656,6 +658,29 @@ function FlarakDestroy(F ref as TFlarak,Game ref as TGame,NowMs as integer)
     Impact.y = F.WorldY-10
     ExplosionAdd(Game.ExplosionList,Game.ProtoExplosion,Game,4,Impact,NowMs)
     RewardDrop(Game,REWARD_OBJECT_FLARAK,Impact,NowMs)
+endfunction
+
+// Visual-only emission at the fixed common wreck base, not the elevated
+// launcher pivot. Validate the carrier again after PlateCheckAll.
+function FlarakSmokeDoAll(PlateList ref as TPlateList,Now as integer)
+    local i as integer
+    local PlateIndex as integer
+    local Density as integer
+    local Position as TPosition
+    for i = 0 to FlarakList.Length
+        if FlarakList[i].Enabled = TRUE and FlarakList[i].Destroyed = TRUE
+            PlateIndex = FlarakList[i].PlateIndex
+            if PlateIndex >= 0 and PlateIndex <= PlateList.Plate.Length
+                if PlateList.Plate[PlateIndex].Enabled = TRUE
+                    Density = SMOKE_DENSITY_FLARAK
+                    if FlarakList[i].Variant = FLARAK_VARIANT_FLAK then Density = SMOKE_DENSITY_FLAK
+                    Position.x = PlateList.Plate[PlateIndex].ObjectData.Position.x+FlarakList[i].PlateOffsetX
+                    Position.y = PlateList.Plate[PlateIndex].ObjectData.Position.y-JUMPPOD_BASE_H-JUMPPOD_TOP_H
+                    SmokeAdd(FlarakList[i].SmokeEmitter,Position,Density,Now)
+                endif
+            endif
+        endif
+    next i
 endfunction
 
 function FlarakApplyDamage(F ref as TFlarak,Game ref as TGame,Damage as integer,NowMs as integer)

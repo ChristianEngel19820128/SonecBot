@@ -30,6 +30,7 @@
 #constant LANDMINE_WARNING_B 45
 
 type TJumppod
+    SmokeEmitter as TSmokeEmitter
     ObjectKind as integer
     ContactTriggered as integer
     Enabled as integer
@@ -355,6 +356,7 @@ function JumppodApplyDamage(Index as integer,Game ref as TGame,Damage as integer
     if JumppodList[Index].Health <= 0
         JumppodList[Index].Health = 0
         JumppodList[Index].Destroyed = TRUE
+        SmokeStartEmitter(JumppodList[Index].SmokeEmitter,Now)
         JumppodList[Index].ActiveUntil = 0
         JumppodList[Index].ContactTriggered = FALSE
         Impact.x = JumppodList[Index].WorldX
@@ -382,6 +384,23 @@ function JumppodResolveContactTriggers(Game ref as TGame,Now as integer)
     for i = 0 to JumppodList.Length
         if JumppodList[i].Enabled = TRUE and JumppodList[i].Destroyed = FALSE and JumppodList[i].ObjectKind = LANDMINE_KIND and JumppodList[i].ContactTriggered = TRUE
             JumppodApplyDamage(i,Game,JumppodList[i].Health,Now)
+        endif
+    next i
+endfunction
+
+// The owner supplies only its current top-center world position and density.
+// Disabled sources are no longer submitted; their particles expire normally.
+function JumppodSmokeDoAll(Now as integer)
+    local i as integer
+    local Density as integer
+    local Position as TPosition
+    for i = 0 to JumppodList.Length
+        if JumppodList[i].Enabled = TRUE and JumppodList[i].Destroyed = TRUE
+            Density = SMOKE_DENSITY_JUMPPOD
+            if JumppodList[i].ObjectKind = LANDMINE_KIND then Density = SMOKE_DENSITY_LANDMINE
+            Position.x = JumppodList[i].WorldX
+            Position.y = JumppodList[i].WorldY-JUMPPOD_BASE_H-JUMPPOD_TOP_H
+            SmokeAdd(JumppodList[i].SmokeEmitter,Position,Density,Now)
         endif
     next i
 endfunction
