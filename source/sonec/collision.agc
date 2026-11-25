@@ -158,3 +158,62 @@ function CollisionRelativeSweepEntry(ShotStart as TPosition,ShotEnd as TPosition
     if Entry >= 0 and Entry < Best then Best = Entry
     if Best <= 1 then exitfunction Best
 endfunction -1.0
+
+// Relative circles, restricted to the common time interval. Entry is a
+// fraction of the original A segment. Instantaneous paths test only now.
+function CollisionTimedCircleEntry(A0 as TPosition,A1 as TPosition,AT0 as integer,AT1 as integer,B0 as TPosition,B1 as TPosition,BT0 as integer,BT1 as integer,Radius as float)
+    local FromMs as integer
+    local ToMs as integer
+    local U0 as float
+    local U1 as float
+    local V0 as float
+    local V1 as float
+    local P0 as TPosition
+    local P1 as TPosition
+    local Q0 as TPosition
+    local Q1 as TPosition
+    local Entry as float
+    FromMs = AT0
+    if BT0 > FromMs then FromMs = BT0
+    ToMs = AT1
+    if BT1 < ToMs then ToMs = BT1
+    if ToMs < FromMs then exitfunction -1.0
+    U0 = 1
+    U1 = 1
+    V0 = 1
+    V1 = 1
+    if AT1 > AT0
+        U0 = (FromMs-AT0)*1.0/(AT1-AT0)
+        U1 = (ToMs-AT0)*1.0/(AT1-AT0)
+    endif
+    if BT1 > BT0
+        V0 = (FromMs-BT0)*1.0/(BT1-BT0)
+        V1 = (ToMs-BT0)*1.0/(BT1-BT0)
+    endif
+    P0.x = A0.x+(A1.x-A0.x)*U0
+    P0.y = A0.y+(A1.y-A0.y)*U0
+    P1.x = A0.x+(A1.x-A0.x)*U1
+    P1.y = A0.y+(A1.y-A0.y)*U1
+    Q0.x = B0.x+(B1.x-B0.x)*V0
+    Q0.y = B0.y+(B1.y-B0.y)*V0
+    Q1.x = B0.x+(B1.x-B0.x)*V1
+    Q1.y = B0.y+(B1.y-B0.y)*V1
+    Entry = CollisionRelativeSweepEntry(P0,P1,Q0,Q1,Radius,0,FALSE)
+    if Entry < 0 then exitfunction -1.0
+    if AT1 = AT0 then exitfunction 0.0
+endfunction U0+(U1-U0)*Entry
+
+// Sample the active plasma rectangle at its current pose. Never test
+// an incoming object's path before the discharge was created.
+function CollisionTimedAreaEntry(StartPos as TPosition,EndPos as TPosition,StartMs as integer,EndMs as integer,AreaStartMs as integer,MinPos as TPosition,MaxPos as TPosition,Radius as float)
+    local P as TPosition
+    local T as float
+    local Entry as float
+    if AreaStartMs > EndMs then exitfunction -1.0
+    T = 0
+    if StartMs < AreaStartMs and EndMs > StartMs then T = (AreaStartMs-StartMs)*1.0/(EndMs-StartMs)
+    P.x = StartPos.x+(EndPos.x-StartPos.x)*T
+    P.y = StartPos.y+(EndPos.y-StartPos.y)*T
+    Entry = CollisionBoxSweepEntry(P,EndPos,MinPos,MaxPos,Radius,Radius)
+    if Entry < 0 then exitfunction -1.0
+endfunction T+(1.0-T)*Entry

@@ -262,9 +262,16 @@ function BomberBombDo(Bomber ref as TBomber,ProtoBomber ref as TProtoBomber,Worl
                 Bomber.Bomb[i].SpriteData.Angle = -90.0*Bomber.Bomb[i].Velocity.y/(HorizontalSpeed+Bomber.Bomb[i].Velocity.y+0.00001)
                 Bomber.Bomb[i].LastMoveMs = Now
             endif
-            if Bomber.Bomb[i].Position.y > World.Size.Height+32 or Bomber.Bomb[i].Position.x < -32
-                Bomber.Bomb[i].Enabled = FALSE
-            endif
+        endif
+    next i
+endfunction
+
+// Cull after direct contacts and all interception passes.
+function BomberBombCullAll(Bomber ref as TBomber,World ref as TWorld)
+    local i as integer
+    for i = 0 to BOMBER_BOMB_COUNT-1
+        if Bomber.Bomb[i].Enabled = TRUE
+            if Bomber.Bomb[i].Position.y > World.Size.Height+32 or Bomber.Bomb[i].Position.x < -32 then Bomber.Bomb[i].Enabled = FALSE
         endif
     next i
 endfunction
@@ -283,7 +290,7 @@ endfunction
 #constant BOMBER_BOMB_SHOT_RADIUS 7
 
 // B3b: use the existing growing flame radius to intercept bomber bombs.
-// Consume one flame and one bomb; use the same red airborne explosion as B3a.
+// Consume the bomb only; penetrating flame remains active.
 // B3c: a plasma discharge intercepts bombs inside its existing hit area.
 // Plasma persists, as it does against other targets; each bomb can explode once.
 // B3d: a player grenade directly intercepts a falling bomb.
@@ -296,19 +303,15 @@ endfunction
 function BomberBombCollidePlasmaBlitz(Bomber ref as TBomber,PlasmaBlitzList ref as TPlasmaBlitzList,Game ref as TGame,Now as integer)
     local i as integer
     local k as integer
-    local BombMin as TPosition
-    local BombMax as TPosition
+    local Entry as float
     local HitPosition as TPosition
 
     for i = 0 to PlasmaBlitzList.PlasmaBlitz.Length
         if PlasmaBlitzList.PlasmaBlitz[i].Enabled = TRUE
             for k = 0 to BOMBER_BOMB_COUNT-1
                 if Bomber.Bomb[k].Enabled = TRUE
-                    BombMin.x = Bomber.Bomb[k].Position.x-BOMBER_BOMB_SHOT_RADIUS
-                    BombMin.y = Bomber.Bomb[k].Position.y-BOMBER_BOMB_SHOT_RADIUS
-                    BombMax.x = Bomber.Bomb[k].Position.x+BOMBER_BOMB_SHOT_RADIUS
-                    BombMax.y = Bomber.Bomb[k].Position.y+BOMBER_BOMB_SHOT_RADIUS
-                    if BoxInBox(PlasmaBlitzList.PlasmaBlitz[i].CollisionData.Position1,PlasmaBlitzList.PlasmaBlitz[i].CollisionData.Position2,BombMin,BombMax)
+                    Entry = CollisionTimedAreaEntry(Bomber.Bomb[k].PreviousPosition,Bomber.Bomb[k].Position,Bomber.Bomb[k].SweepStartMs,Bomber.Bomb[k].LastMoveMs,PlasmaBlitzList.PlasmaBlitz[i].CreatedMs,PlasmaBlitzList.PlasmaBlitz[i].CollisionData.Position1,PlasmaBlitzList.PlasmaBlitz[i].CollisionData.Position2,BOMBER_BOMB_SHOT_RADIUS)
+                    if Entry >= 0
                         HitPosition = Bomber.Bomb[k].Position
                         Bomber.Bomb[k].Enabled = FALSE
                         ExplosionAdd(Game.ExplosionList,Game.ProtoExplosion,Game,1,HitPosition,Now)
@@ -327,6 +330,7 @@ function BomberBombCollideFlames(Bomber ref as TBomber,FlameList ref as TFlameLi
     local i as integer
     local k as integer
     local Radius as float
+    local Entry as float
     local HitPosition as TPosition
 
     for i = 0 to FlameList.Flame.Length
@@ -334,7 +338,8 @@ function BomberBombCollideFlames(Bomber ref as TBomber,FlameList ref as TFlameLi
             Radius = FlameCollisionRadius(FlameList.Flame[i])+BOMBER_BOMB_SHOT_RADIUS
             for k = 0 to BOMBER_BOMB_COUNT-1
                 if FlameList.Flame[i].Enabled = TRUE and Bomber.Bomb[k].Enabled = TRUE
-                    if CalcRadius(FlameList.Flame[i].ObjectData.Position,Bomber.Bomb[k].Position) <= Radius
+                    Entry = CollisionTimedCircleEntry(FlameList.Flame[i].PreviousPosition,FlameList.Flame[i].ObjectData.Position,FlameList.Flame[i].SweepStartMs,FlameList.Flame[i].SweepEndMs,Bomber.Bomb[k].PreviousPosition,Bomber.Bomb[k].Position,Bomber.Bomb[k].SweepStartMs,Bomber.Bomb[k].LastMoveMs,Radius)
+                    if Entry >= 0
                         HitPosition = Bomber.Bomb[k].Position
                         Bomber.Bomb[k].Enabled = FALSE
                         ExplosionAdd(Game.ExplosionList,Game.ProtoExplosion,Game,1,HitPosition,Now)
@@ -352,43 +357,36 @@ endfunction
 function BomberBombCollideBullets(Bomber ref as TBomber,BulletList ref as TBulletList,ExplosionList ref as TExplosionList,ProtoExplosion ref as TProtoExplosion,Game ref as TGame,Now as integer)
     local i as integer
     local k as integer
-    local Dx as float
-    local Dy as float
-    local LengthSq as float
-    local Fraction as float
-    local NearestX as float
-    local NearestY as float
-    local HitX as float
-    local HitY as float
+    local StartMs as integer
+    local Entry as float
+    local BestEntry as float
+    local BestIndex as integer
     local Radius as float
     local HitPosition as TPosition
-
     for i = 0 to BulletList.Bullet.Length
         if BulletList.Bullet[i].Enabled = TRUE and BulletList.Bullet[i].CollisionData.CollisionType = TYPEPLAYERONE
-            Dx = BulletList.Bullet[i].ObjectData.Position.x-BulletList.Bullet[i].PreviousPosition.x
-            Dy = BulletList.Bullet[i].ObjectData.Position.y-BulletList.Bullet[i].PreviousPosition.y
-            LengthSq = Dx*Dx+Dy*Dy
+            StartMs = BulletList.Bullet[i].SonecSweepStartMs
+            if BulletList.Bullet[i].SonecSweepReady = FALSE
+                if StartMs < SonecDamageFrameStartMs then StartMs = SonecDamageFrameStartMs
+            endif
             Radius = BOMBER_BOMB_SHOT_RADIUS+BulletList.Bullet[i].ObjectData.Radius
+            BestEntry = 2.0
+            BestIndex = -1
             for k = 0 to BOMBER_BOMB_COUNT-1
-                if BulletList.Bullet[i].Enabled = TRUE and Bomber.Bomb[k].Enabled = TRUE
-                    Fraction = 0
-                    if LengthSq > 0
-                        Fraction = ((Bomber.Bomb[k].Position.x-BulletList.Bullet[i].PreviousPosition.x)*Dx+(Bomber.Bomb[k].Position.y-BulletList.Bullet[i].PreviousPosition.y)*Dy)/LengthSq
-                        if Fraction < 0 then Fraction = 0
-                        if Fraction > 1 then Fraction = 1
-                    endif
-                    NearestX = BulletList.Bullet[i].PreviousPosition.x+Fraction*Dx
-                    NearestY = BulletList.Bullet[i].PreviousPosition.y+Fraction*Dy
-                    HitX = NearestX-Bomber.Bomb[k].Position.x
-                    HitY = NearestY-Bomber.Bomb[k].Position.y
-                    if HitX*HitX+HitY*HitY <= Radius*Radius
-                        Bomber.Bomb[k].Enabled = FALSE
-                        BulletDelete(BulletList,i)
-                        HitPosition = Bomber.Bomb[k].Position
-                        ExplosionAdd(ExplosionList,ProtoExplosion,Game,1,HitPosition,Now)
+                if Bomber.Bomb[k].Enabled = TRUE
+                    Entry = CollisionTimedCircleEntry(BulletList.Bullet[i].PreviousPosition,BulletList.Bullet[i].ObjectData.Position,StartMs,BulletList.Bullet[i].SonecSweepEndMs,Bomber.Bomb[k].PreviousPosition,Bomber.Bomb[k].Position,Bomber.Bomb[k].SweepStartMs,Bomber.Bomb[k].LastMoveMs,Radius)
+                    if Entry >= 0 and Entry < BestEntry
+                        BestEntry = Entry
+                        BestIndex = k
                     endif
                 endif
             next k
+            if BestIndex >= 0
+                HitPosition = Bomber.Bomb[BestIndex].Position
+                Bomber.Bomb[BestIndex].Enabled = FALSE
+                BulletDelete(BulletList,i)
+                ExplosionAdd(ExplosionList,ProtoExplosion,Game,1,HitPosition,Now)
+            endif
         endif
     next i
 endfunction

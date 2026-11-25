@@ -214,7 +214,7 @@ function GrenadeCollideAll(Game ref as TGame,Now as integer)
             BestIndex = -1
             for k = 0 to BOMBER_BOMB_COUNT-1
                 if Game.Bomber.Bomb[k].Enabled = TRUE
-                    Entry = GrenadeCircleEntry(Game.GrenadeList.Grenade[i],Game.Bomber.Bomb[k].Position,BOMBER_BOMB_SHOT_RADIUS)
+                    Entry = CollisionTimedCircleEntry(Game.GrenadeList.Grenade[i].PreviousPosition,Game.GrenadeList.Grenade[i].ObjectData.Position,Game.GrenadeList.Grenade[i].SweepStartMs,Game.GrenadeList.Grenade[i].SweepEndMs,Game.Bomber.Bomb[k].PreviousPosition,Game.Bomber.Bomb[k].Position,Game.Bomber.Bomb[k].SweepStartMs,Game.Bomber.Bomb[k].LastMoveMs,BOMBER_BOMB_SHOT_RADIUS+Game.GrenadeList.Grenade[i].ObjectData.Radius)
                     if Entry >= 0 and Entry < BestEntry
                         BestEntry = Entry
                         BestType = 1
@@ -226,7 +226,7 @@ function GrenadeCollideAll(Game ref as TGame,Now as integer)
                 if FlarakList[k].Rocket1.Active = TRUE
                     P.x = FlarakList[k].Rocket1.PosX
                     P.y = FlarakList[k].Rocket1.PosY
-                    Entry = GrenadeCircleEntry(Game.GrenadeList.Grenade[i],P,FLARAK_ROCKET_SHOT_RADIUS)
+                    Entry = CollisionTimedCircleEntry(Game.GrenadeList.Grenade[i].PreviousPosition,Game.GrenadeList.Grenade[i].ObjectData.Position,Game.GrenadeList.Grenade[i].SweepStartMs,Game.GrenadeList.Grenade[i].SweepEndMs,FlarakList[k].Rocket1.CenterSweepStart,P,FlarakList[k].Rocket1.SweepStartMs,FlarakList[k].Rocket1.LastMs,FLARAK_ROCKET_SHOT_RADIUS+Game.GrenadeList.Grenade[i].ObjectData.Radius)
                     if Entry >= 0 and Entry < BestEntry
                         BestEntry = Entry
                         BestType = 2
@@ -236,7 +236,7 @@ function GrenadeCollideAll(Game ref as TGame,Now as integer)
                 if FlarakList[k].Rocket2.Active = TRUE
                     P.x = FlarakList[k].Rocket2.PosX
                     P.y = FlarakList[k].Rocket2.PosY
-                    Entry = GrenadeCircleEntry(Game.GrenadeList.Grenade[i],P,FLARAK_ROCKET_SHOT_RADIUS)
+                    Entry = CollisionTimedCircleEntry(Game.GrenadeList.Grenade[i].PreviousPosition,Game.GrenadeList.Grenade[i].ObjectData.Position,Game.GrenadeList.Grenade[i].SweepStartMs,Game.GrenadeList.Grenade[i].SweepEndMs,FlarakList[k].Rocket2.CenterSweepStart,P,FlarakList[k].Rocket2.SweepStartMs,FlarakList[k].Rocket2.LastMs,FLARAK_ROCKET_SHOT_RADIUS+Game.GrenadeList.Grenade[i].ObjectData.Radius)
                     if Entry >= 0 and Entry < BestEntry
                         BestEntry = Entry
                         BestType = 3
@@ -413,7 +413,12 @@ function GrenadeMove(Grenade ref as TGrenade,World ref as TWorld,Now as integer)
 
 	if Grenade.Enabled = TRUE
 		Grenade.PreviousPosition = Grenade.ObjectData.Position
+		// On a closed gate the displayed projectile remains at its current pose.
+		Grenade.SweepStartMs = SonecDamageFrameStartMs
+		if Grenade.ObjectData.MoveTimer.Stamp > Grenade.SweepStartMs then Grenade.SweepStartMs = Grenade.ObjectData.MoveTimer.Stamp
+		Grenade.SweepEndMs = Now
 		if TimeGet(Grenade.ObjectData.MoveTimer,Now) > 0
+			Grenade.SweepStartMs = Grenade.ObjectData.MoveTimer.Stamp
 			
 			
 			

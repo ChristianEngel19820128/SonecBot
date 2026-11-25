@@ -423,7 +423,13 @@ function FlameMove(Flame ref as TFlame,World ref as TWorld,Now as integer)
 	local ReferenceSteps as float
 
 	if Flame.Enabled = TRUE
+		Flame.PreviousPosition = Flame.ObjectData.Position
+		// On a closed gate the displayed projectile remains at its current pose.
+		Flame.SweepStartMs = SonecDamageFrameStartMs
+		if Flame.ObjectData.MoveTimer.Stamp > Flame.SweepStartMs then Flame.SweepStartMs = Flame.ObjectData.MoveTimer.Stamp
+		Flame.SweepEndMs = Now
 		if TimeGet(Flame.ObjectData.MoveTimer,Now) > 0
+			Flame.SweepStartMs = Flame.ObjectData.MoveTimer.Stamp
 			
 			StepRange = Flame.ObjectData.MoveTimer.CalcRange
 			ReferenceSteps = Flame.ObjectData.MoveTimer.FullDifference*0.06
@@ -454,12 +460,18 @@ endfunction
 //----------------------------------------------------------------------
 
 function FlameMoveAll(FlameList ref as TFlameList,World ref as TWorld,Now as integer)
+	local i as integer
+	for i = 0 to FlameList.Flame.Length
+		FlameMove(FlameList.Flame[i],World,Now)
+	next i
+endfunction
+
+function FlameCullAll(FlameList ref as TFlameList,World ref as TWorld)
 
 	Local i as integer
 	
 	for i = 0 to FlameList.Flame.Length
 		if FlameList.Flame[i].Enabled = TRUE
-			FlameMove(FlameList.Flame[i],World,Now)
 			if FlameList.Flame[i].ObjectData.Position.y < -FlameList.Flame[i].ObjectData.Size.Height
 				FlameDelete(FlameList,i)
 			else

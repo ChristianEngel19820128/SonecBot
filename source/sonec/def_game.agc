@@ -413,6 +413,7 @@ type TProtoBullet
 endtype
 
 type TBullet
+	OutsideWorld as integer
 	SonecSweepStartMs as integer
 	SonecSweepEndMs as integer
 	SonecSweepReady as integer
@@ -437,6 +438,8 @@ type TProtoGrenade
 endtype
 
 type TGrenade
+	SweepStartMs as integer
+	SweepEndMs as integer
 	PreviousPosition as TPosition
 	Enabled as integer
 	ObjectData as TObjectData
@@ -494,6 +497,7 @@ type TProtoPlasmaBlitz
 endtype
 
 type TPlasmaBlitz
+	CreatedMs as integer
 	Enabled as integer
 	ObjectData as TObjectData
 	SpriteData as TSpriteData
@@ -528,6 +532,9 @@ type TFlameHit
 endtype
 
 type TFlame
+	PreviousPosition as TPosition
+	SweepStartMs as integer
+	SweepEndMs as integer
 	HitList as TFlameHit[-1]
 	Enabled as integer
 	ObjectData as TObjectData

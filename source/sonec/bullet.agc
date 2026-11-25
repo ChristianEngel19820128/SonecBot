@@ -82,6 +82,7 @@ function BulletNew(Bullet ref as TBullet,ProtoBullet ref as TProtoBullet,World r
 	Bullet.ObjectData.Position = Position
 	CalcPosition(Bullet.ObjectData.Position,Angle,Radius)
 	Bullet.PreviousPosition = Bullet.ObjectData.Position
+	Bullet.OutsideWorld = FALSE
 	Bullet.SonecSweepStartMs = Now
 	Bullet.SonecSweepEndMs = Now
 	Bullet.SonecSweepReady = TRUE
@@ -183,7 +184,7 @@ function BulletExplosiveFuses(BulletList ref as TBulletList,Game ref as TGame,No
     local i as integer
     for i = 0 to BulletList.Bullet.Length
         if BulletList.Bullet[i].Enabled = TRUE and BulletList.Bullet[i].Modification = BULLET_MOD_EXPLOSIVE
-            if Now >= BulletList.Bullet[i].ExplodeAtMs
+            if Now >= BulletList.Bullet[i].ExplodeAtMs and BulletList.Bullet[i].OutsideWorld = FALSE
                 ExplosionAdd(Game.ExplosionList,Game.ProtoExplosion,Game,BULLET_EXPLOSIVE_EXPLOSION_TYPE,BulletList.Bullet[i].ObjectData.Position,Now)
                 BulletDelete(BulletList,i)
             endif
@@ -798,17 +799,18 @@ function BulletMoveAll(BulletList ref as TBulletList,World ref as TWorld,Now as 
 	for i = 0 to BulletList.Bullet.Length
 		if BulletList.Bullet[i].Enabled = TRUE
 			BulletMove(BulletList.Bullet[i],World,Now)
+			BulletList.Bullet[i].OutsideWorld = FALSE
 			if BulletList.Bullet[i].ObjectData.Position.y < -BulletList.Bullet[i].ObjectData.Size.Height
-				BulletDelete(BulletList,i)
+				BulletList.Bullet[i].OutsideWorld = TRUE
 			else
 				if BulletList.Bullet[i].ObjectData.Position.y > World.Size.Height+BulletList.Bullet[i].ObjectData.Size.Height
-					BulletDelete(BulletList,i)
+					BulletList.Bullet[i].OutsideWorld = TRUE
 				else
 					if BulletList.Bullet[i].ObjectData.Position.x > World.Size.Width+BulletList.Bullet[i].ObjectData.Size.Width
-						BulletDelete(BulletList,i)
+						BulletList.Bullet[i].OutsideWorld = TRUE
 					else
 						if BulletList.Bullet[i].ObjectData.Position.x < -BulletList.Bullet[i].ObjectData.Size.Width
-							BulletDelete(BulletList,i)
+							BulletList.Bullet[i].OutsideWorld = TRUE
 						endif
 					endif
 				endif
@@ -821,6 +823,13 @@ endfunction
 //----------------------------------------------------------------------
 // 
 //----------------------------------------------------------------------
+
+function BulletCullAll(BulletList ref as TBulletList)
+    local i as integer
+    for i = 0 to BulletList.Bullet.Length
+        if BulletList.Bullet[i].Enabled = TRUE and BulletList.Bullet[i].OutsideWorld = TRUE then BulletDelete(BulletList,i)
+    next i
+endfunction
 
 function BulletDraw(Bullet ref as TBullet,ProtoBullet ref as TProtoBullet)
 

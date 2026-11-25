@@ -39,6 +39,7 @@ function PlasmaBlitzNew(PlasmaBlitz ref as TPlasmaBlitz,ProtoPlasmaBlitz ref as 
 	Speed as TPosition
 	
 	PlasmaBlitz.Enabled = TRUE
+	PlasmaBlitz.CreatedMs = Now
 	TimeSet(PlasmaBlitz.ObjectData.MoveTimer,10,10)
 	TimeReset(PlasmaBlitz.ObjectData.MoveTimer,Now)
 	TimeSet(PlasmaBlitz.EffectData.LifeCycleTimer,10,1)

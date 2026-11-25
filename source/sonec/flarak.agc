@@ -63,6 +63,8 @@
 #constant FLARAK_TEST_BARREL_ANGLE_OFFSET 90
 
 type TFlarakTestRocket
+    CenterSweepStart as TPosition
+    OutsideWorld as integer
     SweepStart as TPosition
     SweepStartMs as integer
     Active as integer
@@ -336,12 +338,15 @@ function FlarakRocketLaunch(Rocket ref as TFlarakTestRocket,X as float,Y as floa
     Rocket.LauncherY = Y
     Rocket.ClearDistance = 0
     Rocket.Active = TRUE
+    Rocket.OutsideWorld = FALSE
     FlarakRocketCaptureStart(Rocket)
 endfunction
 
 // Snapshot before muzzle-follow translation or homing, also at launch.
 function FlarakRocketCaptureStart(Rocket ref as TFlarakTestRocket)
     if Rocket.Active = FALSE then exitfunction
+    Rocket.CenterSweepStart.x = Rocket.PosX
+    Rocket.CenterSweepStart.y = Rocket.PosY
     Rocket.SweepStart.x = Rocket.PosX+Sin(Rocket.Angle)*Rocket.TipDistance
     Rocket.SweepStart.y = Rocket.PosY-Cos(Rocket.Angle)*Rocket.TipDistance
     Rocket.SweepStartMs = Rocket.LastMs
@@ -396,11 +401,9 @@ function FlarakRocketDo(Rocket ref as TFlarakTestRocket,Game ref as TGame,Jetfir
         if Rocket.ClearDistance >= FLARAK_TEST_ROCKET_CLEAR_DISTANCE then Rocket.Attached = FALSE
     endif
     Rocket.SpriteAngle = Rocket.Angle+90
-    // Remove rockets at world bounds, independently of the six-second fuse.
-    if Rocket.PosX < 0 or Rocket.PosX > World.Size.Width or Rocket.PosY < 0 or Rocket.PosY > World.Size.Height
-        Rocket.Active = FALSE
-        exitfunction
-    endif
+    // Keep the last sweep until all impact/interception checks finish.
+    Rocket.OutsideWorld = FALSE
+    if Rocket.PosX < 0 or Rocket.PosX > World.Size.Width or Rocket.PosY < 0 or Rocket.PosY > World.Size.Height then Rocket.OutsideWorld = TRUE
 endfunction
 
 // Resolve after Sonec's mechanical path is complete, before player weapon
@@ -419,6 +422,7 @@ function FlarakRocketResolve(Rocket ref as TFlarakTestRocket,Game ref as TGame,J
         ExplosionAdd(Game.ExplosionList,Game.ProtoExplosion,Game,3,ImpactPosition,NowMs)
         exitfunction
     endif
+    if Rocket.OutsideWorld = TRUE then exitfunction
     if NowMs >= Rocket.NextJetMs and ProtoJetfire.AnimJetfire.Sprite.ID > 0
         for JetOutlet = 0 to 3
             JetBackDistance = FLARAK_TEST_JET_TAIL_DISTANCE+JetOutlet*FLARAK_TEST_JET_BACK_SPACING
@@ -483,64 +487,69 @@ function FlarakRocketIntercept(Rocket ref as TFlarakTestRocket,Game ref as TGame
     ExplosionAdd(Game.ExplosionList,Game.ProtoExplosion,Game,3,Impact,Now)
 endfunction
 
-function FlarakRocketHitByBullet(Rocket ref as TFlarakTestRocket,Bullet ref as TBullet)
-    local DX as float
-    local DY as float
-    local LengthSq as float
-    local Fraction as float
-    local HitX as float
-    local HitY as float
-    local Radius as float
-    if Rocket.Active = FALSE then exitfunction FALSE
-    DX = Bullet.ObjectData.Position.x-Bullet.PreviousPosition.x
-    DY = Bullet.ObjectData.Position.y-Bullet.PreviousPosition.y
-    LengthSq = DX*DX+DY*DY
-    Fraction = 0
-    if LengthSq > 0
-        Fraction = ((Rocket.PosX-Bullet.PreviousPosition.x)*DX+(Rocket.PosY-Bullet.PreviousPosition.y)*DY)/LengthSq
-        if Fraction < 0 then Fraction = 0
-        if Fraction > 1 then Fraction = 1
+function FlarakRocketBulletEntry(Rocket ref as TFlarakTestRocket,Bullet ref as TBullet)
+    local P as TPosition
+    local StartMs as integer
+    local Entry as float
+    if Rocket.Active = FALSE then exitfunction -1.0
+    P.x = Rocket.PosX
+    P.y = Rocket.PosY
+    StartMs = Bullet.SonecSweepStartMs
+    if Bullet.SonecSweepReady = FALSE
+        if StartMs < SonecDamageFrameStartMs then StartMs = SonecDamageFrameStartMs
     endif
-    HitX = Bullet.PreviousPosition.x+Fraction*DX-Rocket.PosX
-    HitY = Bullet.PreviousPosition.y+Fraction*DY-Rocket.PosY
-    Radius = FLARAK_ROCKET_SHOT_RADIUS+Bullet.ObjectData.Radius
-    if HitX*HitX+HitY*HitY <= Radius*Radius then exitfunction TRUE
-endfunction FALSE
+    Entry = CollisionTimedCircleEntry(Bullet.PreviousPosition,Bullet.ObjectData.Position,StartMs,Bullet.SonecSweepEndMs,Rocket.CenterSweepStart,P,Rocket.SweepStartMs,Rocket.LastMs,FLARAK_ROCKET_SHOT_RADIUS+Bullet.ObjectData.Radius)
+endfunction Entry
 
 function FlarakRocketCollideBullets(Game ref as TGame,Now as integer)
     local i as integer
     local k as integer
+    local Entry as float
+    local BestEntry as float
+    local BestIndex as integer
+    local BestRocket as integer
     for i = 0 to Game.BulletList.Bullet.Length
         if Game.BulletList.Bullet[i].Enabled = TRUE and Game.BulletList.Bullet[i].CollisionData.CollisionType = TYPEPLAYERONE
+            BestEntry = 2.0
+            BestIndex = -1
+            BestRocket = 0
             for k = 0 to FlarakList.Length
-                if Game.BulletList.Bullet[i].Enabled = TRUE
-                    if FlarakRocketHitByBullet(FlarakList[k].Rocket1,Game.BulletList.Bullet[i])
-                        FlarakRocketIntercept(FlarakList[k].Rocket1,Game,Now)
-                        FlarakMarkFree(k)
-                        BulletDelete(Game.BulletList,i)
-                    endif
+                Entry = FlarakRocketBulletEntry(FlarakList[k].Rocket1,Game.BulletList.Bullet[i])
+                if Entry >= 0 and Entry < BestEntry
+                    BestEntry = Entry
+                    BestIndex = k
+                    BestRocket = 1
                 endif
-                if Game.BulletList.Bullet[i].Enabled = TRUE
-                    if FlarakRocketHitByBullet(FlarakList[k].Rocket2,Game.BulletList.Bullet[i])
-                        FlarakRocketIntercept(FlarakList[k].Rocket2,Game,Now)
-                        FlarakMarkFree(k)
-                        BulletDelete(Game.BulletList,i)
-                    endif
+                Entry = FlarakRocketBulletEntry(FlarakList[k].Rocket2,Game.BulletList.Bullet[i])
+                if Entry >= 0 and Entry < BestEntry
+                    BestEntry = Entry
+                    BestIndex = k
+                    BestRocket = 2
                 endif
             next k
+            if BestIndex >= 0
+                if BestRocket = 1
+                    FlarakRocketIntercept(FlarakList[BestIndex].Rocket1,Game,Now)
+                else
+                    FlarakRocketIntercept(FlarakList[BestIndex].Rocket2,Game,Now)
+                endif
+                FlarakMarkFree(BestIndex)
+                BulletDelete(Game.BulletList,i)
+            endif
         endif
     next i
 endfunction
 
 function FlarakRocketHitByFlame(Rocket ref as TFlarakTestRocket,Flame ref as TFlame)
+    local P as TPosition
     local Radius as float
-    local DX as float
-    local DY as float
+    local Entry as float
     if Rocket.Active = FALSE then exitfunction FALSE
+    P.x = Rocket.PosX
+    P.y = Rocket.PosY
     Radius = FlameCollisionRadius(Flame)+FLARAK_ROCKET_SHOT_RADIUS
-    DX = Flame.ObjectData.Position.x-Rocket.PosX
-    DY = Flame.ObjectData.Position.y-Rocket.PosY
-    if DX*DX+DY*DY <= Radius*Radius then exitfunction TRUE
+    Entry = CollisionTimedCircleEntry(Flame.PreviousPosition,Flame.ObjectData.Position,Flame.SweepStartMs,Flame.SweepEndMs,Rocket.CenterSweepStart,P,Rocket.SweepStartMs,Rocket.LastMs,Radius)
+    if Entry >= 0 then exitfunction TRUE
 endfunction FALSE
 
 function FlarakRocketCollideFlames(Game ref as TGame,Now as integer)
@@ -569,14 +578,13 @@ endfunction
 
 
 function FlarakRocketHitByPlasma(Rocket ref as TFlarakTestRocket,Plasma ref as TPlasmaBlitz)
-    local MinPos as TPosition
-    local MaxPos as TPosition
+    local P as TPosition
+    local Entry as float
     if Rocket.Active = FALSE then exitfunction FALSE
-    MinPos.x = Rocket.PosX-FLARAK_ROCKET_SHOT_RADIUS
-    MinPos.y = Rocket.PosY-FLARAK_ROCKET_SHOT_RADIUS
-    MaxPos.x = Rocket.PosX+FLARAK_ROCKET_SHOT_RADIUS
-    MaxPos.y = Rocket.PosY+FLARAK_ROCKET_SHOT_RADIUS
-    if BoxInBox(Plasma.CollisionData.Position1,Plasma.CollisionData.Position2,MinPos,MaxPos) then exitfunction TRUE
+    P.x = Rocket.PosX
+    P.y = Rocket.PosY
+    Entry = CollisionTimedAreaEntry(Rocket.CenterSweepStart,P,Rocket.SweepStartMs,Rocket.LastMs,Plasma.CreatedMs,Plasma.CollisionData.Position1,Plasma.CollisionData.Position2,FLARAK_ROCKET_SHOT_RADIUS)
+    if Entry >= 0 then exitfunction TRUE
 endfunction FALSE
 
 function FlarakRocketCollidePlasma(Game ref as TGame,Now as integer)
@@ -969,6 +977,21 @@ function FlarakRocketResolveAll(Game ref as TGame,NowMs as integer)
     next i
 endfunction
 
+function FlarakRocketCullAll()
+    local i as integer
+    for i = 0 to FlarakList.Length
+        if FlarakList[i].Rocket1.Active = TRUE and FlarakList[i].Rocket1.OutsideWorld = TRUE
+            FlarakList[i].Rocket1.Active = FALSE
+            FlarakList[i].Rocket1.Attached = FALSE
+        endif
+        if FlarakList[i].Rocket2.Active = TRUE and FlarakList[i].Rocket2.OutsideWorld = TRUE
+            FlarakList[i].Rocket2.Active = FALSE
+            FlarakList[i].Rocket2.Attached = FALSE
+        endif
+        FlarakMarkFree(i)
+    next i
+endfunction
+
 // Inspect the most recent Flak bullet immediately after BulletMoveAll,
 // before collision processing can remove it for unrelated reasons.
 function FlarakDebugAfterBulletMove(BulletList ref as TBulletList,NowMs as integer)
@@ -980,7 +1003,7 @@ function FlarakDebugAfterBulletMove(BulletList ref as TBulletList,NowMs as integ
             BulletIndex = FlarakList[i].FlakDebugLastBulletIndex
             FlarakList[i].FlakDebugLastMoveStatus = 3
             if BulletIndex >= 0 and BulletIndex <= BulletList.Bullet.Length
-                if BulletList.Bullet[BulletIndex].Enabled = TRUE then FlarakList[i].FlakDebugLastMoveStatus = 2
+                if BulletList.Bullet[BulletIndex].Enabled = TRUE and BulletList.Bullet[BulletIndex].OutsideWorld = FALSE then FlarakList[i].FlakDebugLastMoveStatus = 2
             endif
         endif
     next i
