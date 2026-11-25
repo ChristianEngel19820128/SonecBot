@@ -2,8 +2,7 @@
 
 **Stand:** 25. November 2026 · **Arbeitszweig:** develop
 
-- [ ] Pod-/Minen-Platzierung: 80-px-Spritebreite statt 58-px-Sockelbreite als Spawnreserve implementiert; gezielter Compile/Sichttest offen. A5c 2/6 bestanden, restliche Sichtprüfung langfristig gemäß KNOWNBUGS.md.
-- [ ] A6b: freigegebene größere Minen-Rudelformation (3×4, X 64–96 px, Y 80–120 px, ±16 px) nach Platzierungstest umsetzen und prüfen.
+- [ ] A6b: größere Minen-Rudelformation (3×4, X 64–96 px, Y 80–120 px, ±16 px) implementiert; lokaler AGK-Compile und Sicht-/Funktionsprüfung offen. A5c 2/6, weitere Sichtprüfung langfristig gemäß KNOWNBUGS.md.
 - [ ] Separater Bug-Chat: Flammenwerfer und Neustartfehler gemäß KNOWNBUGS.md untersuchen; alle Objekt-/Effekt-Resetpfade prüfen und Korrekturumfang abstimmen.
 - [ ] Anschließend Arbeitsblock B fachlich abstimmen (Erfahrung, Ressourcen/Munition, Panzerung, Gefahrenbudget).
 

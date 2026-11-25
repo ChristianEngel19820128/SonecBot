@@ -6,7 +6,11 @@
 #constant SIMPLE_MINE_COLOR_B 55
 #constant SIMPLE_MINE_PACK_MIN_COUNT 3
 #constant SIMPLE_MINE_PACK_MAX_COUNT 6
-#constant SIMPLE_MINE_PACK_JITTER 8
+#constant SIMPLE_MINE_PACK_JITTER 16
+#constant SIMPLE_MINE_PACK_MIN_SPACING_X 64
+#constant SIMPLE_MINE_PACK_MAX_SPACING_X 96
+#constant SIMPLE_MINE_PACK_MIN_SPACING_Y 80
+#constant SIMPLE_MINE_PACK_MAX_SPACING_Y 120
 #constant SIMPLE_MINE_WEDGE_MIN_COUNT 3
 #constant SIMPLE_MINE_WEDGE_MAX_COUNT 5
 #constant SIMPLE_MINE_FORMATION_MIN_COUNT 2
@@ -114,43 +118,73 @@ function SimpleMineWedgeAdd(MineList ref as TMineList,ProtoMine ref as TProtoMin
 endfunction
 
 
-// A3: random pack of 3-6 mines in a bounded 2x3 area.
-// Random unused slots and small offsets keep spacing safe without rejection loops.
-function SimpleMinePackAdd(MineList ref as TMineList,ProtoMine ref as TProtoMine,World ref as TWorld,CenterY as integer,MineCount as integer,SpacingX as integer,SpacingY as integer,Now as integer)
-    local Used as integer[5]
+// A6b: 3-6 mines in a sparse 3x4 grid with independent gap sizes.
+// Reserve the actual rolled height plus jitter and the existing world margin.
+// Draw slots without replacement; every selection terminates in one step.
+function SimpleMinePackAdd(MineList ref as TMineList,ProtoMine ref as TProtoMine,World ref as TWorld,MineCount as integer,Now as integer)
+    local ColumnX as integer[2]
+    local RowY as integer[3]
+    local Slots as integer[11]
     local i as integer
     local Slot as integer
+    local Pick as integer
+    local LastSlot as integer
     local Column as integer
     local Row as integer
     local Index as integer
+    local CenterY as integer
+    local HalfSpan as integer
+    local SafeHalfHeight as integer
+    local MineY as integer
     local DriftSpeed as float
+    local Spawned as integer
 
-    if MineCount < SIMPLE_MINE_PACK_MIN_COUNT then exitfunction
-    if MineCount > SIMPLE_MINE_PACK_MAX_COUNT then exitfunction
+    Spawned = FALSE
+    if MineCount < SIMPLE_MINE_PACK_MIN_COUNT then exitfunction FALSE
+    if MineCount > SIMPLE_MINE_PACK_MAX_COUNT then exitfunction FALSE
 
-    DriftSpeed = random(35,100)*0.001
+    ColumnX[0] = 0
+    for i = 1 to 2
+        ColumnX[i] = ColumnX[i-1]+Random(SIMPLE_MINE_PACK_MIN_SPACING_X,SIMPLE_MINE_PACK_MAX_SPACING_X)
+    next i
+    RowY[0] = 0
+    for i = 1 to 3
+        RowY[i] = RowY[i-1]+Random(SIMPLE_MINE_PACK_MIN_SPACING_Y,SIMPLE_MINE_PACK_MAX_SPACING_Y)
+    next i
+
+    HalfSpan = Floor(RowY[3]*0.5)
+    SafeHalfHeight = Ceil(RowY[3]*0.5)+SIMPLE_MINE_PACK_JITTER+SIMPLE_MINE_WORLD_MARGIN_Y+Floor((GetImageHeight(ProtoMine.AnimMine.Image.ID)+1)*0.5)
+    if World.Size.Height <= SafeHalfHeight*2 then exitfunction FALSE
+    CenterY = Random(SafeHalfHeight,World.Size.Height-SafeHalfHeight)
+
+    for i = 0 to 11
+        Slots[i] = i
+    next i
+    LastSlot = 11
+    DriftSpeed = Random(35,100)*0.001
     for i = 0 to MineCount-1
-        Slot = random(0,5)
-        while Used[Slot] = TRUE
-            Slot = random(0,5)
-        endwhile
-        Used[Slot] = TRUE
-        Column = floor(Slot/3)
-        Row = Slot-Column*3
+        Pick = Random(0,LastSlot)
+        Slot = Slots[Pick]
+        Slots[Pick] = Slots[LastSlot]
+        LastSlot = LastSlot-1
+        Column = Floor(Slot/4)
+        Row = Slot-Column*4
 
-        Index = SimpleMineAdd(MineList,ProtoMine,World,CenterY+(Row-1)*SpacingY+random(-SIMPLE_MINE_PACK_JITTER,SIMPLE_MINE_PACK_JITTER),Now)
+        MineY = CenterY+RowY[Row]-HalfSpan+Random(-SIMPLE_MINE_PACK_JITTER,SIMPLE_MINE_PACK_JITTER)
+        Index = SimpleMineAdd(MineList,ProtoMine,World,MineY,Now)
         if Index >= 0
-            MineList.Mine[Index].ObjectData.Position.x = MineList.Mine[Index].ObjectData.Position.x + Column*SpacingX + random(-SIMPLE_MINE_PACK_JITTER,SIMPLE_MINE_PACK_JITTER)
+            // Keep even a negatively jittered first-column mine off screen at spawn.
+            MineList.Mine[Index].ObjectData.Position.x = MineList.Mine[Index].ObjectData.Position.x + ColumnX[Column] + SIMPLE_MINE_PACK_JITTER + Random(-SIMPLE_MINE_PACK_JITTER,SIMPLE_MINE_PACK_JITTER)
             MineList.Mine[Index].ObjectData.MoveSpeed.x = DriftSpeed
             SpritePositionCalc(MineList.Mine[Index].SpriteData.Position,MineList.Mine[Index].ObjectData.Position,World.Position)
             MineList.Mine[Index].CollisionData.Position1.x = MineList.Mine[Index].ObjectData.Position.x - MineList.Mine[Index].ObjectData.Size.Width*0.5
             MineList.Mine[Index].CollisionData.Position2.x = MineList.Mine[Index].ObjectData.Position.x + MineList.Mine[Index].ObjectData.Size.Width*0.5
             MineList.Mine[Index].CollisionData.Position1.y = MineList.Mine[Index].ObjectData.Position.y - MineList.Mine[Index].ObjectData.Size.Height*0.5
             MineList.Mine[Index].CollisionData.Position2.y = MineList.Mine[Index].ObjectData.Position.y + MineList.Mine[Index].ObjectData.Size.Height*0.5
+            Spawned = TRUE
         endif
     next i
-endfunction
-
+endfunction Spawned
 
 // S3: Schedule one attempt at a time. Both initialization and update use the
 // same pause-aware virtual timestamp already passed to GameInit and GameDo.
@@ -190,17 +224,21 @@ function SimpleMineSpawnDo(Game ref as TGame,Now as integer)
 
         ActiveCount = MineCountAll(Game.SimpleMineList)
         if ActiveCount + FormationCount <= SIMPLE_MINE_MAX_ACTIVE
+            // Packs roll their own grid and validate its actual height.
+            // The existing diagonal/wedge geometry and scheduling stay unchanged.
+            if FormationType = 2
+                if SimpleMinePackAdd(Game.SimpleMineList,Game.ProtoSimpleMine,Game.World,FormationCount,Now) = TRUE
+                    WarningShow(Game.Warning,"MINEFIELD DETECTED",1,6000,Now)
+                endif
+                exitfunction
+            endif
             // Use the entire world's vertical range, not the 450 px viewport.
             // Preserve at least 50 px from both world edges for every mine
             // in the formation, including its half-height (11 px art).
             if FormationType = 0
                 SafeHalfHeight = ((FormationCount-1)*SpacingY)/2
             else
-                if FormationType = 1
-                    SafeHalfHeight = ((FormationCount-1)/2)*SpacingY
-                else
-                    SafeHalfHeight = SpacingY + SIMPLE_MINE_PACK_JITTER
-                endif
+                SafeHalfHeight = ((FormationCount-1)/2)*SpacingY
             endif
             SafeHalfHeight = SafeHalfHeight + SIMPLE_MINE_WORLD_MARGIN_Y + floor((GetImageHeight(Game.ProtoSimpleMine.AnimMine.Image.ID)+1)*0.5)
             if Game.World.Size.Height > SafeHalfHeight*2
@@ -208,11 +246,7 @@ function SimpleMineSpawnDo(Game ref as TGame,Now as integer)
                 if FormationType = 0
                     SimpleMineFormationAdd(Game.SimpleMineList,Game.ProtoSimpleMine,Game.World,CenterY,FormationCount,SpacingX,SpacingY,Direction,Now)
                 else
-                    if FormationType = 1
-                        SimpleMineWedgeAdd(Game.SimpleMineList,Game.ProtoSimpleMine,Game.World,CenterY,FormationCount,SpacingX,SpacingY,Now)
-                    else
-                        SimpleMinePackAdd(Game.SimpleMineList,Game.ProtoSimpleMine,Game.World,CenterY,FormationCount,SpacingX,SpacingY,Now)
-                    endif
+                    SimpleMineWedgeAdd(Game.SimpleMineList,Game.ProtoSimpleMine,Game.World,CenterY,FormationCount,SpacingX,SpacingY,Now)
                 endif
                 // Warn only for an actually spawned formation, never for a blocked attempt.
                 WarningShow(Game.Warning,"MINEFIELD DETECTED",1,6000,Now)
