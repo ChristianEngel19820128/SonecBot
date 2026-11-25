@@ -26,7 +26,6 @@ Bomber, Flarak, hilfreicher Jumppod, Gefahren-/Erfahrungsgrundsystem, kleine Zie
 
 ## Fortschritt, Wertung und Bedienung
 
-- **Doppeldruck auf Kreuz nach oben für Jetpack:** Optionale spätere Steuerungserweiterung: erster Druck löst am Boden den bisherigen Weitsprung mit festem horizontalem Absprungimpuls aus; ein zweiter Druck während des Sprungs könnte bei ausreichender Energie das Jetpack aktivieren. Zeitfenster, Eingabepriorität und Übergang der vertikalen Geschwindigkeit erst beim Gameplay-Design festlegen. Keine Änderung an der aktuellen Sprung-/Flugsteuerung.
 
 
 - **Hauptmenü-Minispiel: unsichtbarer Countdown und Punkte:** Nur während der Spieler aktiv im Hauptmenü spielt, intern Zeit und Punkte erfassen; genaue Spielregeln, Anzeige und Start-/Endbedingungen noch offen. Menüarbeiten als gelegentliche Abwechslung, nicht als aktueller Schwerpunkt.
@@ -79,7 +78,6 @@ Bomber, Flarak, hilfreicher Jumppod, Gefahren-/Erfahrungsgrundsystem, kleine Zie
 ## Spätere Eingabe- und Waffensteuerung (24. November 2026)
 
 - **Granatwerfer aufladen:** Granatwerfer-Taste gedrückt halten soll einen regulären Granatenwurf auslösen; die Granate fliegt ballistisch, die Haltedauer beeinflusst die Wurfstärke/Flugbahn. Genaue Auslöse- und Stärkegrenzen sowie Verhältnis zum bisherigen Rückstoß vor Umsetzung festlegen. **Nur Idee, nicht implementiert.**
-- **Steuerkreuz hoch – Tippen/Halten:** Kurzes Tippen löst einen Sprung aus; Halten aktiviert das Jetpack nach kurzer Verzögerung. Zeitgrenzen, Energiebedingungen und Verhalten bei Sprung/Fall später spezifizieren. **Nur Idee, nicht implementiert.**
 
 ## HUD, Warnungen und Trefferpartikel (24. November 2026)
 

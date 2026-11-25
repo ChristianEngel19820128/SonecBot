@@ -563,6 +563,8 @@ type TSonec
 	CollisionSegmentStartTime as float
 	GroundContactActive as integer
 	NormalJumpActive as integer
+	UpInputHeld as integer
+	UpHoldStartMs as integer
 	AirThrustDirection as integer
 	DebugTopTrace as string
 	PassThroughChestIndex as integer

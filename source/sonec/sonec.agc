@@ -29,6 +29,11 @@
 #constant SONEC_MAX_FALL_SPEED 0
 // A zero fall-speed limit disables it. Positive limits cap downward acceleration.
 #constant SONEC_JUMP_IMPULSE_Y 8
+// Optional minimum launch speed in the requested direction, relative to support.
+// Zero disables it; an opposite existing velocity is never redirected.
+#constant SONEC_JUMP_MIN_RELATIVE_X 0.0
+#constant SONEC_JETPACK_HOLD_MS 180
+#constant SONEC_GRENADE_RECOIL_X 1.0
 #constant SONEC_HOVER_AIR_DAMPING 0.20
 
 // Kistenkante / balance: unchanged provisional values.
@@ -156,6 +161,8 @@ function SonecInit(Sonec ref as TSonec,ProtoSonec ref as TProtoSonec,World ref a
 	Sonec.CollisionData.Index = -1
 	Sonec.GroundContactActive = FALSE
 	Sonec.NormalJumpActive = FALSE
+	Sonec.UpInputHeld = FALSE
+	Sonec.UpHoldStartMs = Now
 	Sonec.AirThrustDirection = 0
 	Sonec.DebugTopTrace = ""
 
@@ -543,54 +550,21 @@ function SonecGrenadeLauncherInput(Sonec ref as TSonec,GrenadeList ref as TGrena
 			GrenadeAdd(GrenadeList,ProtoGrenade,World,Position,Angle,Radius,Now)
 			TimeReset(Sonec.GrenadeLauncher.FireTimer,Now)
 			
-			Recoil = 1
-			
+			// Add recoil once in the opposite firing direction. MoveSpeed.x
+			// is support-relative on the ground and world-relative in the air.
+			// Do not overwrite input direction or create a false lift-off.
+			Recoil = SONEC_GRENADE_RECOIL_X
 			if Sonec.State.LookAlignment = LOOKRIGHT
-				
-				if Sonec.State.Move = TRUE and Sonec.State.Alignment = MOVELEFT
-					Sonec.ObjectData.MoveSpeed.x = Sonec.ObjectData.MoveSpeed.x - Recoil
-				endif
-				if Sonec.State.Move = FALSE
-					Sonec.ObjectData.MoveSpeed.x = -Recoil
-					Sonec.State.Alignment = MOVELEFT
-					Sonec.State.Move = TRUE
-					Sonec.State.Stand = FALSE
-				endif
-				
-				if Sonec.State.Move = TRUE and Sonec.State.Alignment = MOVERIGHT
-					Sonec.ObjectData.MoveSpeed.x = Sonec.ObjectData.MoveSpeed.x - Recoil
-					if Sonec.ObjectData.MoveSpeed.x < 0
-						Sonec.State.Alignment = MOVELEFT
-					endif
-				endif
-							
+				Sonec.ObjectData.MoveSpeed.x = Sonec.ObjectData.MoveSpeed.x - Recoil
+			else
+				Sonec.ObjectData.MoveSpeed.x = Sonec.ObjectData.MoveSpeed.x + Recoil
 			endif
-			
-			if Sonec.State.LookAlignment = LOOKLEFT
-				
-				if Sonec.State.Move = TRUE and Sonec.State.Alignment = MOVERIGHT
-					Sonec.ObjectData.MoveSpeed.x = Sonec.ObjectData.MoveSpeed.x + Recoil
-				endif
-				if Sonec.State.Move = FALSE
-					Sonec.ObjectData.MoveSpeed.x = Recoil
-					Sonec.State.Alignment = MOVERIGHT
-					Sonec.State.Move = TRUE
-					Sonec.State.Stand = FALSE
-				endif
-				
-				if Sonec.State.Move = TRUE and Sonec.State.Alignment = MOVELEFT
-					Sonec.ObjectData.MoveSpeed.x = Sonec.ObjectData.MoveSpeed.x + Recoil
-					if Sonec.ObjectData.MoveSpeed.x > 0
-						Sonec.State.Alignment = MOVERIGHT
-					endif
-				endif
-							
+			if Recoil <> 0 and Sonec.BalanceActive = TRUE
+				Sonec.BalanceActive = FALSE
+				Sonec.AnimationData.RepeatAnimation = TRUE
+				Sonec.AnimationData.Finished = FALSE
 			endif
-			
-			if Sonec.ObjectData.MoveAcceleration.x > Sonec.ObjectData.MoveSpeedMax.x
-				//Sonec.ObjectData.MoveAcceleration.x = Sonec.ObjectData.MoveSpeedMax.x
-			endif
-				
+
 		endif
 	endif
 		
@@ -732,14 +706,57 @@ endfunction
 // Phase A2: Keep all Up-button flight/jump/fall transitions in one place.
 // This extraction preserves the old branch priority and energy thresholds.
 // It does not yet redefine the physical grounded/contact model.
-function SonecInputVerticalState(Sonec ref as TSonec,JetfireList ref as TJetfireList,ProtoJetfire ref as TProtoJetfire,World ref as TWorld,Position as TPosition,UpHeld as integer,Now as integer)
-	if UpHeld and ((Sonec.State.Fly = FALSE and Sonec.Energy.State > COSTJETFIRE*10) or (Sonec.State.Fly = TRUE and Sonec.Energy.State >= COSTJETFIRE))
+// A fresh Up press at real support always starts a normal jump, even
+// with full energy. Apply optional launch assistance before carrier release.
+function SonecStartNormalJump(Sonec ref as TSonec,Direction as integer)
+	local RelativeVX as float
+	RelativeVX = Sonec.ObjectData.MoveSpeed.x
+	if SONEC_JUMP_MIN_RELATIVE_X > 0 and Direction <> 0
+		if RelativeVX*Direction >= 0 and RelativeVX*Direction < SONEC_JUMP_MIN_RELATIVE_X
+			Sonec.ObjectData.MoveSpeed.x = Direction*SONEC_JUMP_MIN_RELATIVE_X
+		endif
+	endif
+	Sonec.State.Jump = TRUE
+	Sonec.NormalJumpActive = TRUE
+	Sonec.AirThrustDirection = 0
+	SonecReleaseSupportMotion(Sonec)
+	Sonec.State.Stand = FALSE
+	Sonec.State.Fly = FALSE
+	Sonec.State.Fall = FALSE
+	Sonec.BalanceActive = FALSE
+	Sonec.AnimationData.RepeatAnimation = TRUE
+	Sonec.AnimationData.Finished = FALSE
+	Sonec.AnimationData.Frame = 0
+endfunction
+
+// Sample the combined logical action each active game frame, not just
+// the slower input timer. The virtual game clock excludes paused time.
+function SonecTrackUpInput(Sonec ref as TSonec,UpHeld as integer,UpPressed as integer,Direction as integer,Now as integer)
+	if Sonec.UpInputHeld = FALSE and (UpHeld = TRUE or UpPressed = TRUE)
+		Sonec.UpHoldStartMs = Now
+		if Sonec.GroundContactActive = TRUE
+			SonecStartNormalJump(Sonec,Direction)
+		endif
+	endif
+	Sonec.UpInputHeld = UpHeld
+	if UpHeld = FALSE
+		// Release thrust immediately; never cancel a queued jump impulse.
+		Sonec.State.Fly = FALSE
+		if Sonec.GroundContactActive = FALSE and Sonec.State.Jump = FALSE
+			Sonec.State.Fall = TRUE
+		endif
+	endif
+endfunction
+
+function SonecInputVerticalState(Sonec ref as TSonec,JetfireList ref as TJetfireList,ProtoJetfire ref as TProtoJetfire,World ref as TWorld,Position as TPosition,Now as integer)
+	// A pending jump must be integrated before the jetpack may engage.
+	// Landing does not reset the hold timestamp: held Up can lift off again.
+	if Sonec.State.Jump = TRUE then exitfunction
+	if Sonec.UpInputHeld = TRUE and Now-Sonec.UpHoldStartMs >= SONEC_JETPACK_HOLD_MS and ((Sonec.State.Fly = FALSE and Sonec.Energy.State > COSTJETFIRE*10) or (Sonec.State.Fly = TRUE and Sonec.Energy.State >= COSTJETFIRE))
 		if Sonec.State.Fly = FALSE
 			Sonec.Energy.State = Sonec.Energy.State - COSTJETFIRE*10
 		endif
-		// Powered flight supersedes a normal jump, including a queued impulse.
 		Sonec.NormalJumpActive = FALSE
-		Sonec.State.Jump = FALSE
 		Sonec.State.Fly = TRUE
 		Sonec.State.Fall = FALSE
 		Sonec.State.Stand = FALSE
@@ -747,23 +764,11 @@ function SonecInputVerticalState(Sonec ref as TSonec,JetfireList ref as TJetfire
 		Sonec.AnimationData.Frame = 0
 		SonecJetfireAdd(Sonec,JetfireList,ProtoJetfire,World,Position,Now)
 	else
-		if UpHeld and Sonec.State.Stand = TRUE
-			Sonec.State.Jump = TRUE
-			Sonec.NormalJumpActive = TRUE
-			Sonec.AirThrustDirection = 0
-			SonecReleaseSupportMotion(Sonec)
-			Sonec.State.Stand = FALSE
-			Sonec.State.Fly = FALSE
-			Sonec.State.Fall = FALSE
-			Sonec.AnimationData.Frame = 0
-		else
-			Sonec.State.Fly = FALSE
-			if Sonec.State.Stand = FALSE
-				Sonec.State.Fall = TRUE
-			endif
+		Sonec.State.Fly = FALSE
+		if Sonec.GroundContactActive = FALSE
+			Sonec.State.Fall = TRUE
 		endif
 	endif
-	
 endfunction
 
 // Phase A1: Input owns control intent and the existing Fly/Fall/Stand/Jump
@@ -772,6 +777,19 @@ endfunction
 function SonecInput(Sonec ref as TSonec,JetfireList ref as TJetfireList,ProtoJetfire ref as TProtoJetfire,World ref as TWorld,Keys ref as TKeys,Options ref as TGameOptions,JoystickIndex as integer,Now as integer)
 	
 	local Position as TPosition
+	local UpHeld as integer
+	local UpPressed as integer
+	local LeftHeld as integer
+	local RightHeld as integer
+	local JumpDirection as integer
+
+	UpHeld = (InputActionState(Keys,JoystickIndex,ACTION_MOVE_UP) = 1 or GetJoyY(JoystickIndex) < -0.5)
+	UpPressed = InputActionPressed(Keys,JoystickIndex,ACTION_MOVE_UP)
+	LeftHeld = (InputActionState(Keys,JoystickIndex,ACTION_MOVE_LEFT) = 1 or InputActionState(Keys,JoystickIndex,ACTION_MOVE_BACK_LEFT) = 1 or GetJoyX(JoystickIndex) < -0.5 or GetJoyZ(JoystickIndex) > 0.5)
+	RightHeld = (InputActionState(Keys,JoystickIndex,ACTION_MOVE_RIGHT) = 1 or InputActionState(Keys,JoystickIndex,ACTION_MOVE_BACK_RIGHT) = 1 or GetJoyX(JoystickIndex) > 0.5 or GetJoyRZ(JoystickIndex) > 0.5)
+	// Conflicting directions request no optional launch assistance.
+	JumpDirection = RightHeld - LeftHeld
+	SonecTrackUpInput(Sonec,UpHeld,UpPressed,JumpDirection,Now)
 	
 	// Toggle on a fresh press, including short taps between movement timer ticks.
 	// Hold mode follows the current key/button state, as in step 6c.
@@ -796,7 +814,7 @@ function SonecInput(Sonec ref as TSonec,JetfireList ref as TJetfireList,ProtoJet
 			Position.x = Sonec.ObjectData.Position.x -12
 		endif
 		
-		SonecInputVerticalState(Sonec,JetfireList,ProtoJetfire,World,Position,(InputActionState(Keys,JoystickIndex,ACTION_MOVE_UP) = 1 or GetJoyY(JoystickIndex) < -0.5),Now)
+		SonecInputVerticalState(Sonec,JetfireList,ProtoJetfire,World,Position,Now)
 
 		if InputActionState(Keys,JoystickIndex,ACTION_MOVE_DOWN) = 1 or GetJoyY(JoystickIndex) > 0.5
 			Sonec.State.Duck = TRUE
@@ -808,7 +826,7 @@ function SonecInput(Sonec ref as TSonec,JetfireList ref as TJetfireList,ProtoJet
 		Sonec.State.Move = FALSE
 		Sonec.AirThrustDirection = 0
 		
-		if InputActionState(Keys,JoystickIndex,ACTION_MOVE_LEFT) = 1 or InputActionState(Keys,JoystickIndex,ACTION_MOVE_BACK_LEFT) = 1 or GetJoyX(JoystickIndex) < -0.5 or GetJoyZ(JoystickIndex) > 0.5
+		if LeftHeld = TRUE
 			if InputActionState(Keys,JoystickIndex,ACTION_MOVE_LEFT) = 1 or GetJoyX(JoystickIndex) < -0.5
 				if GetJoyZ(JoystickIndex) = 0
 					Sonec.State.LookAlignment = LOOKLEFT
@@ -829,7 +847,7 @@ function SonecInput(Sonec ref as TSonec,JetfireList ref as TJetfireList,ProtoJet
 			endif
 		endif
 		
-		if InputActionState(Keys,JoystickIndex,ACTION_MOVE_RIGHT) = 1 or InputActionState(Keys,JoystickIndex,ACTION_MOVE_BACK_RIGHT) = 1 or GetJoyX(JoystickIndex) > 0.5 or GetJoyRZ(JoystickIndex) > 0.5
+		if RightHeld = TRUE
 			if InputActionState(Keys,JoystickIndex,ACTION_MOVE_RIGHT) = 1 or GetJoyX(JoystickIndex) > 0.5
 				if GetJoyRZ(1) = 0
 					Sonec.State.LookAlignment = LOOKRIGHT
@@ -2049,20 +2067,20 @@ function SonecMoveHorizontalSpeed(Sonec ref as TSonec)
 				acc = SONEC_COUNTERSTEER_FACTOR
 			endif
 		endif
+		VX = Sonec.ObjectData.MoveSpeed.x
+		StepX = acc * Sonec.ObjectData.MoveAcceleration.x * Sonec.ObjectData.MoveTimer.CalcRange
 		if Sonec.State.Alignment = MOVELEFT
-			Sonec.ObjectData.MoveSpeed.x = Sonec.ObjectData.MoveSpeed.x - acc * Sonec.ObjectData.MoveAcceleration.x * Sonec.ObjectData.MoveTimer.CalcRange
+			if VX > -Sonec.ObjectData.MoveSpeedMax.x
+				VX = VX - StepX
+				if VX < -Sonec.ObjectData.MoveSpeedMax.x then VX = -Sonec.ObjectData.MoveSpeedMax.x
+			endif
 		else
-			Sonec.ObjectData.MoveSpeed.x = Sonec.ObjectData.MoveSpeed.x + acc * Sonec.ObjectData.MoveAcceleration.x * Sonec.ObjectData.MoveTimer.CalcRange
-		endif
-			// Limit powered ground running only.
-		if Sonec.GroundContactActive = TRUE
-			if Sonec.ObjectData.MoveSpeed.x > Sonec.ObjectData.MoveSpeedMax.x
-				Sonec.ObjectData.MoveSpeed.x = Sonec.ObjectData.MoveSpeedMax.x
-			endif
-			if Sonec.ObjectData.MoveSpeed.x < -Sonec.ObjectData.MoveSpeedMax.x
-				Sonec.ObjectData.MoveSpeed.x = -Sonec.ObjectData.MoveSpeedMax.x
+			if VX < Sonec.ObjectData.MoveSpeedMax.x
+				VX = VX + StepX
+				if VX > Sonec.ObjectData.MoveSpeedMax.x then VX = Sonec.ObjectData.MoveSpeedMax.x
 			endif
 		endif
+		Sonec.ObjectData.MoveSpeed.x = VX
 	else
 		acc = SONEC_GROUND_COAST_FACTOR
 		if abs(Sonec.ObjectData.MoveSpeed.x) > SONEC_COAST_ZERO_SPEED
