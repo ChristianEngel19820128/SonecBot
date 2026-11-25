@@ -11,7 +11,7 @@
 
 ## Aktueller Projektstand
 
-- Real Alpha, Arbeitsblock A weiterhin aktiv; Jumppod-Grundversion offen.
+- Real Alpha, Arbeitsblock A weiterhin aktiv; A5 fachlich abgestimmt: Jumppod, Landmine, Flak/Flarak-Sockel und gemeinsame Rauch-Unit (J1–J4), noch nicht implementiert. [A5-Spezifikation](docs/JUMPPOD_SPEC.md).
 - Minen, Walker, Drohne, Bomber, Flarak/Flak, Warnungen und zentrale Rewards im bisherigen Umfang umgesetzt und lokal geprüft.
 - Bewegungsumstellung A–G2d einschließlich Jetstream am 25.11.2026 abgeschlossen und vom Entwickler akzeptiert.
 - Gemeinsamer Kontaktresolver, Restweg, Trägerbewegung, Tiefenebenen, Fuß-/Kistenkanten, Mini-Hop, Sprung/Jetpack und Rückstoß implementiert.
@@ -33,7 +33,7 @@
 
 ## Genau ein nächster Schritt
 
-Jumppod als verbleibende Grundversion von Arbeitsblock A gemeinsam spezifizieren; keine automatische Codefreigabe.
+A5 mit J1 (Jumppod und gemeinsame Sockelmechanik) umsetzen und lokal prüfen; J2–J4 sind fachlich abgestimmt. Technische Voranalyse und Abnahmekriterien stehen in [docs/JUMPPOD_SPEC.md](docs/JUMPPOD_SPEC.md).
 
 ## Referenzen
 

@@ -4,7 +4,7 @@
 **Status:** Unverbindliche Sammlung; ohne feste Reihenfolge, Termin oder Implementierungsfreigabe.
 
 Die beschlossenen Real-Alpha-Grundversionen stehen in [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROADMAP.md), nächste Schritte in [TODO.md](TODO.md).
-Bomber, Flarak, hilfreicher Jumppod, Gefahren-/Erfahrungsgrundsystem, kleine Ziele und die Munitions-/Panzerungsbasis sind dorthin übernommen.
+Bomber, Flarak, Jumppod einschließlich Landminen-Attrappe, Gefahren-/Erfahrungsgrundsystem, kleine Ziele und die Munitions-/Panzerungsbasis sind dorthin übernommen.
 
 ## Varianten und Unterstützung
 
@@ -14,7 +14,6 @@ Bomber, Flarak, hilfreicher Jumppod, Gefahren-/Erfahrungsgrundsystem, kleine Zie
 - **Dunkle Hintergrundkisten:** Als Variante/Mod der normalen Kisten vorgesehen: optisch dunkler und im Hintergrund; Sonec kann hindurchlaufen und hindurchspringen (keine blockierende Sonec-Kollision). Alle übrigen Eigenschaften und Funktionen sollen wie bei normalen Kisten bleiben. Spätere Umsetzung separat vereinbaren; aktuell nur vorgemerkt.
 
 - **Quadrokopter:** eigenständiges, noch offenes Konzept. Möglich sind zeitweilige verbündete Unterstützung, etwa als Belohnung nach zerstörten Flaraks, ein auf Abstand angreifender Verfolger oder Aufklärung. Keine Rolle endgültig gewählt; keine weitere Kamikaze-Kopie der intelligenten Mine als Vorgabe.
-- **Jumppod-Falle:** sehr seltene explodierende Attrappe. Nur erwägen, wenn ein kleiner erkennbarer Unterschied bzw. eine rechtzeitige Aktivierungsbewegung faire Gegenwehr erlaubt. Idee: bei Annäherung etwa einen Pixel ausfahren, Kontakt löst Explosion aus. Nicht auf alle vorhandenen Minentypen übertragen.
 - **Flarak-Massenwerfer:** ungenaue Raketensalve ohne Zielsuchraketen als spätere Modifikation.
 - **Drohnen-Schildfunktion:** Später ein eigenes Schildkonzept für Drohnen entwerfen (Aktivierung, Schutzwirkung, Trefferfeedback und Gegenmaßnahmen); keine aktuelle Implementierung oder Balancevorgabe.
 - **Gameplay-Balancing nach Bewegungsumstellung (25.11.2026):** G2c-Entwicklertest bestanden, aber durch normale Sprünge mehr Energie übrig und häufige Overload-Tode; Gegner insgesamt sehr gefährlich, Drohne vergleichsweise harmlos. Energiefluss, Startwert (derzeit 4500 bei Normalmaximum 4000 als früherer HUD-Testwert), Overload-Schadenspfade, Pickup-Verteilung und Gegnergefährlichkeit gemeinsam im vorgesehenen Balancing-Chat bewerten; keine automatische Änderung von Gegnerverhalten oder Overload-Mechanik. Bewegungsparameter getrennt in G2d.

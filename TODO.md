@@ -2,7 +2,10 @@
 
 **Stand:** 25. November 2026 · **Arbeitszweig:** develop
 
-- [ ] Arbeitsblock A fortsetzen: hilfreichen Jumppod fachlich abstimmen, implementieren und lokal prüfen. Konkrete Umsetzung erst nach Designfreigabe.
+- [ ] J1: Jumppod und gemeinsame Sockelmechanik implementieren und lokal prüfen; [A5-Spezifikation](docs/JUMPPOD_SPEC.md) ist abgestimmt, technische Voranalyse liegt vor.
+- [ ] J2: Landmine als Attrappe inklusive gemeinsamer Schadens-/Spawnregeln.
+- [ ] J3: mechanische Flak/Flarak-Sockel ohne Änderung des Gegnerverhaltens.
+- [ ] J4: wiederverwendbare Rauch-Unit integrieren und A5 gebündelt prüfen.
 
 Bewegungsumstellung abgeschlossen. Offene Fehler: [KNOWNBUGS.md](KNOWNBUGS.md).
 Gameplay-Balancing nachgelagert gemäß [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROADMAP.md).
