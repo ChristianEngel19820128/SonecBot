@@ -4,7 +4,7 @@
 
 ## Jetzt
 
-- [ ] G2a: Eingabesperre Welteintritt, getrennte vertikale Kräfte/Grenzen/Sprungimpuls, zentrale Bewegungskonstanten und entfernte Hop-Anzeige implementiert; AGK-Compile und Funktionstest offen. Danach G2b abstimmen (Tippen/Halten, horizontaler Sprungimpuls, Rückstoß), G2c Kollisions-/Tiefenebenenregeln, G2d lokales Balancing gesammelt übernehmen. [Spezifikation §13](docs/SONEC_MOVEMENT_SPEC.md#13-offene-detailfragen-für-technische-durchsicht-und-tests).
+- [ ] G2b fachlich abstimmen (Tippen/Halten über Key-Bindings, Sprungimpuls bei Richtungswunsch, Granatwerferrückstoß), danach implementieren und gebündelt testen. G2a `a41162c` 8/8 bestanden; agileres Fluggefühl für G2d-Balancing vorgemerkt. G2c Kollisions-/Tiefenebenenregeln und G2d lokales Balancing folgen. [Spezifikation §13](docs/SONEC_MOVEMENT_SPEC.md#13-offene-detailfragen-für-technische-durchsicht-und-tests).
 
 ## Danach / separat
 
