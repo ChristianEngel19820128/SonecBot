@@ -152,7 +152,7 @@ function ChestAdd(ChestList ref as TChestList,ProtoChest ref as TProtoChest,Worl
 	local Chest as TChest
 	local max as integer
 	
-	max = floor(Plate.ObjectData.Size.Width / GetImageWidth(ProtoChest.AnimChest.Image.ID) * 0.25)
+	max = floor(Plate.ObjectData.Size.Width / GetImageWidth(ProtoChest.AnimChest.Image.ID) * 0.5)
 	
 	for i = 1 to random(0,max)
 			
