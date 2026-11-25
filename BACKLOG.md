@@ -4,7 +4,7 @@
 **Status:** Unverbindliche Sammlung; ohne feste Reihenfolge, Termin oder Implementierungsfreigabe.
 
 Die beschlossenen Real-Alpha-Grundversionen stehen in [REAL_ALPHA_ROADMAP.md](REAL_ALPHA_ROADMAP.md), nächste Schritte in [TODO.md](TODO.md).
-Bomber, Flarak, Jumppod einschließlich Landminen-Attrappe, Gefahren-/Erfahrungsgrundsystem, kleine Ziele und die Munitions-/Panzerungsbasis sind dorthin übernommen. Am 25.11.2026 zusätzlich dunkle Hintergrundkisten und Nacharbeit an der Minen-Rudelformation in A6 aufgenommen; konkrete Ausführung dort abstimmen.
+Bomber, Flarak, Jumppod einschließlich Landminen-Attrappe, Gefahren-/Erfahrungsgrundsystem, kleine Ziele und die Munitions-/Panzerungsbasis sind dorthin übernommen. Am 25.11.2026 zusätzlich dunkle Hintergrundkisten und Nacharbeit an der Minen-Rudelformation in A6 übernommen, umgesetzt und abgenommen; siehe Roadmap.
 
 ## Varianten und Unterstützung
 
@@ -17,7 +17,7 @@ Bomber, Flarak, Jumppod einschließlich Landminen-Attrappe, Gefahren-/Erfahrungs
 - **Gameplay-Balancing nach Bewegungsumstellung (25.11.2026):** G2c-Entwicklertest bestanden, aber durch normale Sprünge mehr Energie übrig und häufige Overload-Tode; Gegner insgesamt sehr gefährlich, Drohne vergleichsweise harmlos. Energiefluss, Startwert (derzeit 4500 bei Normalmaximum 4000 als früherer HUD-Testwert), Overload-Schadenspfade, Pickup-Verteilung und Gegnergefährlichkeit gemeinsam im vorgesehenen Balancing-Chat bewerten; keine automatische Änderung von Gegnerverhalten oder Overload-Mechanik. Bewegungsparameter getrennt in G2d.
 - **Drohne später gefährlicher gestalten:** Nach lokal 8/8 bestandenem Scan-/Schussfrequenz-Feinschliff (22.11.2026) wirkt das Verhalten deutlich intelligenter; für die Alpha keine weiteren Verhaltensänderungen. Spätere zusätzliche Gefährlichkeit erst separat spielerisch konzipieren, keine aktuelle Balancevorgabe.
 - **Drohnen-Dauerlaser:** seltener, zeitlich begrenzter, über den Boden schwenkender Strahl; sichtbares Aufladen vor dem Angriff. Alpha-Basis sind kurze Laserprojektile.
-- **Flammenfalle:** stationäre Modifikation mit berechenbarem Feuerraum. Flammenwerfer müssen nicht exklusiv Sonec gehören.
+- **Plattform-Flammenfalle / Flammenaustritte (konsolidiert, 25.11.2026):** Stationäre Flammenaustritte auf Plattformen mit berechenbarem Feuerraum; Flammenwerfer müssen nicht exklusiv Sonec gehören. Als mögliche Ausführung den vorhandenen gemeinsamen Sockel von Jumppod, Landmine und Flak/Flarak wiederverwenden (Plattformbindung, Platzierungsreserve, mechanische Basis und Darstellung); separate Flammendüsen-/Aktivierungsmechanik erst entwerfen. Austrittsrichtung, Takt, Schadenszone, Zerstörbarkeit und Balance offen. Keine zweite redundante Flammenfallen-Idee, keine Implementierungs- oder Releasefreigabe.
 - **Luftunterstützung als Aufgabe/Belohnung:** Flaraks zerstören, um Unterstützung zu ermöglichen; mögliche Hilfe gegen ein oder zwei Bomber. Konkrete Aufgabe und Unterstützungsfunktion offen, kein Pflichtumfang der ersten kleinen Ziele.
 - **Walker-Erweiterungen:** zusätzliche Trefferzonen/Beinschaden als Beispiel für taktische Wirkung; gegebenenfalls stationäre Variante im Fallenkonzept. Kein neuer Auftrag am abgeschlossenen Alpha-Walker und keine Umdeutung seiner aktuellen Turm-Schadenszone.
 - **Weitere Bots/Bosse:** nur bei eigener spielerischer Rolle konkretisieren; keine Mindestzahl an Varianten.
@@ -76,6 +76,8 @@ Bomber, Flarak, Jumppod einschließlich Landminen-Attrappe, Gefahren-/Erfahrungs
 - **Jumppod-Sprungstärke (Balancing):** J1-Entwickler empfindet den Pod möglicherweise als zu stark; Ursache kann auch der normale Sprung sein. Beide getrennt im Spieltest bewerten. Aktuell Faktor 2.0; keine bestätigte Änderung.
 
 ## Spätere Eingabe- und Waffensteuerung (24. November 2026)
+
+- **Schadenswirksame Aufladeanimationen (25.11.2026):** Bereits während der sichtbaren Aufladung des Drohnenlasers und des Plasmablitzes soll eine Berührung der jeweiligen Aufladezone Schaden an gültigen Zielen verursachen können. Kontakt/Schaden unterbrechen weder die Aufladeanimation noch den regulären anschließenden Angriffs-/Schussprozess. Treffergeometrie, Fraktions-/Zielregeln, Schaden, Trefferintervall und Schild-/Panzerungswirkung später separat festlegen; gegen Sonec bestehende zentrale Zwei-Kreis-Treffergeometrie verwenden. Keine Änderung am bisherigen Angriff allein aufgrund dieses Backlog-Eintrags.
 
 - **Granatwerfer aufladen:** Granatwerfer-Taste gedrückt halten soll einen regulären Granatenwurf auslösen; die Granate fliegt ballistisch, die Haltedauer beeinflusst die Wurfstärke/Flugbahn. Genaue Auslöse- und Stärkegrenzen sowie Verhältnis zum bisherigen Rückstoß vor Umsetzung festlegen. **Nur Idee, nicht implementiert.**
 

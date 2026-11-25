@@ -13,12 +13,6 @@ Vor automatisierten Prüfungen auf Dubletten prüfen. Keine automatische Codefre
 - Reproduktion/Abnahme: bei aktiver Rakete bzw. vorhandenen intakten/zerstörten Flak/Flarak neu starten, keine alten Sprites, Raketen, KI oder Treffer; mehrfach wiederholen. Korrektur noch nicht implementiert.
 - Dublette: ersetzt „Sporadisches Sprite nach Neustart“, ursprünglich aus TODO, Revision 0ba2ee8c665325f25a9e7da38a86c9ca49cb7e5a.
 
-## Plattformobjekte: falsche Zeichnungsreihenfolge (A5c)
-- ID: Noch nicht vergeben · Priorität: Offen · Status: In Bearbeitung (Korrektur implementiert, Teiltest 2/6, Langzeitbeobachtung offen).
-- A6a-Test 1a3f642, 25.11.2026: Flak, Flarak, Landmine und Jumppod werden bei überlappenden Plattformen unzutreffend überdeckt bzw. überdecken Vordergrundplattformen. Soll: Darstellung der plattformgebundenen Objekte im Draw-Lauf ihrer Trägerplatte in korrekter Tiefenreihenfolge.
-- Quellbefund: `PlateAndChestDrawAll` ruft `JumppodDrawPlate` bereits pro Platte auf; `GameAnimate` ruft `FlarakDrawAll` nach allen Platten auf. Die genaue Ursache der Pod-/Minenbeobachtung ist damit noch nicht vollständig geklärt. `FlarakDraw` zeichnet auch Raketen; frei fliegende Raketen nicht an die Platte binden.
-- A5c implementiert: Stationen und angedockte Raketen je Trägerplatte; freie Raketen separat mit Fallback bei fehlendem Träger. Pod/Mine bereits im Plattenlauf und unverändert. Bestehende Plattenreihenfolge unverändert, kein Eingriff in Mechanik, Treffer oder Rauch. Teiltest f77a8c3 am 25.11.2026: AGK-Compile und bisherige Spielfunktionen bestätigt (2/6). Vier Sichtpunkte zu Flak/Flarak, Pod/Mine, Wracks, ausgefahrenen Waffen/Raketen mangels häufiger Plattformüberlappungen nicht geprüft; Langzeitbeobachtung. Ursprünglich sichtbarer Sockel könnte Flak gewesen sein, Pod-/Minenbefund nicht separat bestätigt. Eintrag bleibt bis geeigneter Sichtabnahme offen. Keine Dublette.
-
 ## Gelegentlich fehlende Direkttreffer
 - ID: Noch nicht vergeben · Priorität: Offen · Status: Vermutet.
 - Beobachtung: gelegentlich fehlende Granatwerfer/Flarak/Flak-Direkttreffer. Soll: gültige Direkttreffer zuverlässig erkennen; Explosionstreffer getrennt bewerten.
