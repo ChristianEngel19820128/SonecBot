@@ -367,7 +367,11 @@ function PlateAndChestDrawAll(PlateList ref as TPlateList,ProtoPlate ref as TPro
 				ChestDraw(ChestList.Chest[k],ProtoChest)
 			endif
 		next k
-		if PlateList.Plate[i].Enabled = TRUE then JumppodDrawPlate(i,World,PlayerPosition)
+		// Keep all stationary base objects in the carrier's existing draw order.
+		if PlateList.Plate[i].Enabled = TRUE
+			JumppodDrawPlate(i,World,PlayerPosition)
+			FlarakDrawPlate(i,World)
+		endif
 	next i
 	
 endfunction

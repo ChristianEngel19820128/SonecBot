@@ -896,9 +896,10 @@ function FlarakDraw(F ref as TFlarak,World ref as TWorld)
             if F.FlakSprite > 0 then SetSpriteColor(F.FlakSprite,0,255,0,255)
         endif
     endif
-    // Draw rockets first so the silo and rotating launcher cover their in-barrel section.
-    FlarakRocketDraw(F.Rocket1,World)
-    FlarakRocketDraw(F.Rocket2,World)
+    // Only muzzle-attached rockets belong to this plate's draw group.
+    // Draw before the silo so it covers the in-barrel section.
+    if F.Rocket1.Attached = TRUE then FlarakRocketDraw(F.Rocket1,World)
+    if F.Rocket2.Attached = TRUE then FlarakRocketDraw(F.Rocket2,World)
     SetSpriteFrame(F.BaseSprite,F.CurrentFrame)
     SetSpritePositionByOffset(F.BaseSprite,X,Y)
     DrawSprite(F.BaseSprite)
@@ -1250,13 +1251,32 @@ function FlarakCollisionDebugDrawAll(World ref as TWorld)
     next i
 endfunction
 
-function FlarakDrawAll(World ref as TWorld)
+// Draw the complete station (including wrecks) in its carrier's layer.
+function FlarakDrawPlate(PlateIndex as integer,World ref as TWorld)
     local i as integer
     for i = 0 to FlarakList.Length
-        if FlarakList[i].Enabled = TRUE then FlarakDraw(FlarakList[i],World)
-        if FlarakList[i].Enabled = FALSE
-            FlarakRocketDraw(FlarakList[i].Rocket1,World)
-            FlarakRocketDraw(FlarakList[i].Rocket2,World)
+        if FlarakList[i].Enabled = TRUE and FlarakList[i].PlateIndex = PlateIndex
+            FlarakDraw(FlarakList[i],World)
         endif
+    next i
+endfunction
+
+// Flight visuals remain independent after detachment, destruction or removal.
+// A carrier can disappear in PlateCheckAll after FlarakDoAll: an attached
+// rocket must still be drawn exactly once during that transitional frame.
+function FlarakFreeRocketDrawAll(PlateList ref as TPlateList,World ref as TWorld)
+    local i as integer
+    local PlateIndex as integer
+    local HasDrawCarrier as integer
+    for i = 0 to FlarakList.Length
+        HasDrawCarrier = FALSE
+        if FlarakList[i].Enabled = TRUE and FlarakList[i].BaseSprite > 0 and FlarakList[i].LauncherSprite > 0
+            PlateIndex = FlarakList[i].PlateIndex
+            if PlateIndex >= 0 and PlateIndex <= PlateList.Plate.Length
+                if PlateList.Plate[PlateIndex].Enabled = TRUE then HasDrawCarrier = TRUE
+            endif
+        endif
+        if HasDrawCarrier = FALSE or FlarakList[i].Rocket1.Attached = FALSE then FlarakRocketDraw(FlarakList[i].Rocket1,World)
+        if HasDrawCarrier = FALSE or FlarakList[i].Rocket2.Attached = FALSE then FlarakRocketDraw(FlarakList[i].Rocket2,World)
     next i
 endfunction
