@@ -48,7 +48,7 @@
 #constant SONEC_MINI_HOP_MIN_RELATIVE_X 1.0
 
 // Jetstream visuals only: maximum total particles per accepted emission.
-#constant SONEC_JETSTREAM_SPACING 12.0
+#constant SONEC_JETSTREAM_SPACING 4.0
 #constant SONEC_JETSTREAM_MAX_PER_EMISSION 3
 #constant SONEC_JETSTREAM_MAX_GAP_MS 100
 
