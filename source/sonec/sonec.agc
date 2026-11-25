@@ -256,6 +256,7 @@ function SonecInit(Sonec ref as TSonec,ProtoSonec ref as TProtoSonec,World ref a
 	TimeReset(Sonec.Health.RegenerationTimer,Now)
 	
 	Sonec.MGun.FlashIndex = -1
+	Sonec.MGun.FireBurst = 0
 	
 	Sonec.MGun.FireRate = 800
 	Sonec.MGun.FireBurstMax = 1
@@ -282,6 +283,7 @@ function SonecInit(Sonec ref as TSonec,ProtoSonec ref as TProtoSonec,World ref a
 	Sonec.PlasmaBlitzGun.FlashIndex = -1
 	Sonec.PlasmaBlitzGun.PlasmaBlitzIndex = -1
 	Sonec.PlasmaBlitzGun.UploadMax = 100
+	Sonec.PlasmaBlitzGun.Upload = 0
 
 	TimeSet(Sonec.PlasmaBlitzGun.FireTimer,300,1)
 	TimeReset(Sonec.PlasmaBlitzGun.FireTimer,Now)

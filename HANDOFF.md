@@ -33,7 +33,7 @@
 
 ## Genau ein nächster Schritt
 
-B1.2–B1.4 (MG-Salvenzähler, Plasmablitz-Ladestand, Drohnen-Zerstörungsereignis) als verbleibendes Reset-Paket abstimmen und prüfen. Danach B2 Flammenwerfer, B3 Direkttreffer, zusätzliche belegte Befunde und B4 Abschluss gemäß KNOWNBUGS.md. Anschließend Arbeitsblock B fachlich abstimmen. Keine weiteren Änderungen am akzeptierten Rauchsystem.
+B1.2–B1.4 (MG-Salvenzähler, Plasmablitz-Ladestand, Drohnen-Zerstörungsereignis) implementiert; gebündelte lokale AGK-Abnahme ausstehend. Danach B2 Flammenwerfer, B3 Direkttreffer, zusätzliche belegte Befunde und B4 Abschluss gemäß KNOWNBUGS.md. Anschließend Arbeitsblock B fachlich abstimmen. Keine weiteren Änderungen am akzeptierten Rauchsystem.
 
 ## Referenzen
 

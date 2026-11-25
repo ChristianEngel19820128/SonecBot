@@ -147,6 +147,10 @@ function GameInit(Game ref as TGame,Now as integer)
 	// S3: first automatic spawn attempt occurs after 18-30 seconds of active game time.
 	SimpleMineSpawnInit(Game,Now)
 	DroneInit(Game.Drone,Game.Screen,Game.World,Now)
+	// Discard any deferred destruction event from the previous round.
+	DroneDeathEffectPending = FALSE
+	DroneDeathPosition.x = 0
+	DroneDeathPosition.y = 0
 	BomberInit(Game.Bomber,Now)
 	WarningReset(Game.Warning)
 	WalkerInit(Game.WalkerList)
