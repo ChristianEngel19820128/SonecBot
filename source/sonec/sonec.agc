@@ -15,6 +15,9 @@
 #constant SONEC_MAX_AIR_THRUST_SPEED 5
 #constant SONEC_GROUND_ACCELERATION 0.005
 #constant SONEC_AIR_THRUST_ACCELERATION 0.005
+// Unpowered jump steering: no energy cost, no passive braking.
+#constant SONEC_JUMP_CORRECTION_ACCELERATION 0.001
+#constant SONEC_JUMP_MAX_CORRECTION_X 1.5
 #constant SONEC_NORMAL_ACCELERATION_FACTOR 1.0
 #constant SONEC_COUNTERSTEER_FACTOR 1.5
 #constant SONEC_GROUND_COAST_FACTOR 0.75
@@ -164,8 +167,10 @@ function SonecInit(Sonec ref as TSonec,ProtoSonec ref as TProtoSonec,World ref a
 	Sonec.CollisionData.Index = -1
 	Sonec.GroundContactActive = FALSE
 	Sonec.NormalJumpActive = FALSE
+	Sonec.JumpCorrectionDirection = 0
 	Sonec.UpInputHeld = FALSE
 	Sonec.UpHoldStartMs = Now
+	Sonec.UpJumpHoldPending = FALSE
 	Sonec.AirThrustDirection = 0
 	Sonec.DebugTopTrace = ""
 
@@ -737,29 +742,39 @@ endfunction
 function SonecTrackUpInput(Sonec ref as TSonec,UpHeld as integer,UpPressed as integer,Direction as integer,Now as integer)
 	if Sonec.UpInputHeld = FALSE and (UpHeld = TRUE or UpPressed = TRUE)
 		Sonec.UpHoldStartMs = Now
+		// Only the press which actually starts a jump needs the hold delay.
+		Sonec.UpJumpHoldPending = FALSE
 		if Sonec.GroundContactActive = TRUE
+			Sonec.UpJumpHoldPending = TRUE
 			SonecStartNormalJump(Sonec,Direction)
 		endif
 	endif
 	Sonec.UpInputHeld = UpHeld
 	if UpHeld = FALSE
+		Sonec.UpJumpHoldPending = FALSE
 		// Release thrust immediately; never cancel a queued jump impulse.
 		Sonec.State.Fly = FALSE
 		if Sonec.GroundContactActive = FALSE and Sonec.State.Jump = FALSE
 			Sonec.State.Fall = TRUE
 		endif
 	endif
+	// Once the original hold is long enough, no new delay is introduced
+	// by energy depletion, pickup or a landing during that same hold.
+	if Sonec.UpJumpHoldPending = TRUE and Now-Sonec.UpHoldStartMs >= SONEC_JETPACK_HOLD_MS
+		Sonec.UpJumpHoldPending = FALSE
+	endif
 endfunction
 
 function SonecInputVerticalState(Sonec ref as TSonec,JetfireList ref as TJetfireList,ProtoJetfire ref as TProtoJetfire,World ref as TWorld,Position as TPosition,Now as integer)
 	// A pending jump must be integrated before the jetpack may engage.
-	// Landing does not reset the hold timestamp: held Up can lift off again.
+	// Only the original ground-jump press has an additional hold delay.
 	if Sonec.State.Jump = TRUE then exitfunction
-	if Sonec.UpInputHeld = TRUE and Now-Sonec.UpHoldStartMs >= SONEC_JETPACK_HOLD_MS and ((Sonec.State.Fly = FALSE and Sonec.Energy.State > COSTJETFIRE*10) or (Sonec.State.Fly = TRUE and Sonec.Energy.State >= COSTJETFIRE))
+	if Sonec.UpInputHeld = TRUE and Sonec.UpJumpHoldPending = FALSE and ((Sonec.State.Fly = FALSE and Sonec.Energy.State > COSTJETFIRE*10) or (Sonec.State.Fly = TRUE and Sonec.Energy.State >= COSTJETFIRE))
 		if Sonec.State.Fly = FALSE
 			Sonec.Energy.State = Sonec.Energy.State - COSTJETFIRE*10
 		endif
 		Sonec.NormalJumpActive = FALSE
+		Sonec.JumpCorrectionDirection = 0
 		Sonec.State.Fly = TRUE
 		Sonec.State.Fall = FALSE
 		Sonec.State.Stand = FALSE
@@ -793,6 +808,11 @@ function SonecInput(Sonec ref as TSonec,JetfireList ref as TJetfireList,ProtoJet
 	// Conflicting directions request no optional launch assistance.
 	JumpDirection = RightHeld - LeftHeld
 	SonecTrackUpInput(Sonec,UpHeld,UpPressed,JumpDirection,Now)
+	// Sample weak unpowered steering every frame, including short taps.
+	Sonec.JumpCorrectionDirection = 0
+	if Sonec.NormalJumpActive = TRUE and Sonec.GroundContactActive = FALSE
+		Sonec.JumpCorrectionDirection = JumpDirection
+	endif
 	
 	// Toggle on a fresh press, including short taps between movement timer ticks.
 	// Hold mode follows the current key/button state, as in step 6c.
@@ -920,6 +940,7 @@ function SonecSetGroundContact(Sonec ref as TSonec,SurfaceType as integer,Surfac
 	Sonec.ObjectData.AutoSpeed = Carry
 	Sonec.GroundContactActive = TRUE
 	Sonec.NormalJumpActive = FALSE
+	Sonec.JumpCorrectionDirection = 0
 	Sonec.AirThrustDirection = 0
 	// A real landing ends the current flight. Held Up is evaluated again
 	// by the existing input path, with its normal activation energy rule.
@@ -2227,10 +2248,26 @@ function SonecMoveHorizontalSpeed(Sonec ref as TSonec)
 	local acc as float
 	local VX as float
 	local StepX as float
-	// Normal unpowered jump keeps its launch momentum until landing or
-	// powered flight. Collision and weapon recoil can still change it.
+	// Unpowered jump: preserve momentum without input; allow only weak
+	// directional correction. The cap limits added acceleration, not
+	// existing faster launch, carrier or recoil momentum.
 	if Sonec.GroundContactActive = FALSE
-		if Sonec.NormalJumpActive = TRUE then exitfunction
+		if Sonec.NormalJumpActive = TRUE
+			if SONEC_JUMP_CORRECTION_ACCELERATION > 0 and SONEC_JUMP_MAX_CORRECTION_X > 0
+				VX = Sonec.ObjectData.MoveSpeed.x
+				StepX = SONEC_JUMP_CORRECTION_ACCELERATION*Sonec.ObjectData.MoveTimer.CalcRange
+				if Sonec.JumpCorrectionDirection < 0 and VX > -SONEC_JUMP_MAX_CORRECTION_X
+					VX = VX - StepX
+					if VX < -SONEC_JUMP_MAX_CORRECTION_X then VX = -SONEC_JUMP_MAX_CORRECTION_X
+				endif
+				if Sonec.JumpCorrectionDirection > 0 and VX < SONEC_JUMP_MAX_CORRECTION_X
+					VX = VX + StepX
+					if VX > SONEC_JUMP_MAX_CORRECTION_X then VX = SONEC_JUMP_MAX_CORRECTION_X
+				endif
+				Sonec.ObjectData.MoveSpeed.x = VX
+			endif
+			exitfunction
+		endif
 		VX = Sonec.ObjectData.MoveSpeed.x
 		StepX = Sonec.ObjectData.MoveAcceleration.x * Sonec.ObjectData.MoveTimer.CalcRange
 		if Sonec.AirThrustDirection <> 0 then StepX = SONEC_AIR_THRUST_ACCELERATION * Sonec.ObjectData.MoveTimer.CalcRange
