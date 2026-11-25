@@ -33,7 +33,7 @@
 
 ## Genau ein nächster Schritt
 
-B2.1 Flammenpartikel-Bewegungsübernahme und zeitabhängige Luftbremsung lokal AGK-bestanden (12/12, 1bed93b, 25.11.2026). Entwickler bewertet Bewegung als berechenbar und fair; keine weiteren Bewegungsänderungen. B2.2/B2.3 durchdringende Flammen mit 100-ms-Trefferintervall je Partikel und Ziel implementiert; lokale AGK-Abnahme ausstehend. Danach B3 Direkttreffer, zusätzliche belegte Befunde (einschließlich Index-Recycling-Verdachtsfälle) und B4 Abschluss des Bug-Chats. Anschließend Arbeitsblock B fachlich abstimmen. Keine weiteren Änderungen am akzeptierten Rauchsystem.
+B2.1 Flammenpartikel-Bewegungsübernahme und zeitabhängige Luftbremsung lokal AGK-bestanden (12/12, 1bed93b, 25.11.2026). Entwickler bewertet Bewegung als berechenbar und fair; keine weiteren Bewegungsänderungen. B2.2/B2.3 durchdringende Flammen mit 100-ms-Trefferintervall je Partikel und Ziel lokal AGK-bestanden (13/13, 7c44b93, 25.11.2026); B2 insgesamt abgeschlossen. Schaden laut Entwickler relativ ähnlich zu älteren Versionen, Flammenwerfer stark bei Energieverbrauch; endgültiges Balancing später. Nächster Schritt: B3 Direkttreffer quellenbasiert analysieren und Korrekturumfang abstimmen. Danach zusätzliche belegte Befunde (einschließlich Index-Recycling-Verdachtsfälle) und B4 Abschluss des Bug-Chats. Anschließend Arbeitsblock B fachlich abstimmen. Keine weiteren Änderungen am akzeptierten Rauchsystem.
 
 ## Referenzen
 

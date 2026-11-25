@@ -3,11 +3,10 @@
 **Stand:** 25. November 2026 · **Arbeitszweig:** develop
 
 
-- [ ] B2.2/B2.3 Flammenwerfer: Kollision und Deckung getrennt analysieren, Korrekturen abstimmen und prüfen. B2.1 Partikelbewegung abgenommen; unverändert lassen.
 - [ ] B3 Direkttreffer, zusätzliche belegte Befunde (Index-Recycling) und B4 Abschluss des Bug-Chats gemäß KNOWNBUGS.md.
 - [ ] Anschließend Arbeitsblock B fachlich abstimmen (Erfahrung, Ressourcen/Munition, Panzerung, Gefahrenbudget).
 
-B2.1 Flammenpartikel-Bewegung abgeschlossen (25.11.2026): 12/12 lokal AGK-bestanden auf 1bed93b; keine weitere Bewegungsänderung gewünscht.
+B2 Flammenwerfer abgeschlossen (25.11.2026): B2.1 Partikelbewegung 12/12 auf 1bed93b, B2.2/B2.3 Durchdringung und zeitabhängiger Schaden 13/13 auf 7c44b93 lokal AGK-bestanden. Bewegung unverändert lassen; endgültiges Balancing nachgelagert.
 
 B1 Neustart-Reset abgeschlossen (25.11.2026): B1.1 11/11 auf a2ea2a8, B1.2–B1.4 8/8 auf 7b9bb48 lokal AGK-bestanden; Langzeitbeobachtung im normalen Spieltestbetrieb.
 
