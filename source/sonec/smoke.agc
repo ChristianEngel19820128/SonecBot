@@ -167,8 +167,8 @@ function SmokeAdd(Emitter ref as TSmokeEmitter,Position as TPosition,Density as 
     Emitter.NextMs = Now+SmokeRandomInt(SMOKE_EMISSION_INTERVAL_MS-SMOKE_EMISSION_JITTER_MS,SMOKE_EMISSION_INTERVAL_MS+SMOKE_EMISSION_JITTER_MS)
     for i = 1 to ParticleCount
         RandomPosition = Position
-        RandomPosition.x = RandomPosition.x - 25.0 + random(0,50000)/100
-        SmokeInsertParticle(Position,CarrierY,Now)
+        RandomPosition.x = RandomPosition.x - 5.0 + random(0,1000)/100
+        SmokeInsertParticle(RandomPosition,CarrierY,Now)
     next i
 endfunction
 

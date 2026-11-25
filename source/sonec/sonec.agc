@@ -31,7 +31,7 @@
 #constant SONEC_MAX_JETPACK_UP_SPEED 10
 #constant SONEC_MAX_FALL_SPEED 16
 // A zero fall-speed limit disables it. Positive limits cap downward acceleration.
-#constant SONEC_JUMP_IMPULSE_Y 8
+#constant SONEC_JUMP_IMPULSE_Y 6
 // Optional minimum launch speed in the requested direction, relative to support.
 // Zero disables it; an opposite existing velocity is never redirected.
 #constant SONEC_JUMP_MIN_RELATIVE_X 0.0
