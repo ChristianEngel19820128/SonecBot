@@ -1,7 +1,7 @@
 # SonecBot – Real Alpha Roadmap
 
-**Stand:** 24. November 2026 · **Arbeitsbranch:** `develop`
-**Status:** Gegnergrundversionen weitgehend abgeschlossen; Bewegungsumstellung in Arbeit; Jumppod und Grundsysteme offen.
+**Stand:** 25. November 2026 · **Arbeitsbranch:** `develop`
+**Status:** Arbeitsblock A aktiv; Bewegungsumstellung abgeschlossen; Jumppod und Grundsysteme offen.
 **Quellenbasis:** Entwicklerentscheidungen im Gespräch; Dokumentstand [`87927e5`](https://github.com/ChristianEngel19820128/SonecBot/commit/87927e564d5ce1539878b84773c8f8ea40c258d5), letzte Code-Referenz [`c2a2d4e`](https://github.com/ChristianEngel19820128/SonecBot/commit/c2a2d4ed1dd7b27de6aa13f1058a5431509b2d45).
 Nächste Aufgaben: [TODO.md](TODO.md) · Chatübergabe: [HANDOFF.md](HANDOFF.md) · Spätere Ideen: [BACKLOG.md](BACKLOG.md).
 Die Roadmap legt den Entwicklungsrahmen fest. Einzelne Codeänderungen, `main`-Merge und Veröffentlichung werden separat vereinbart.
@@ -67,11 +67,11 @@ Der Draft-Test vom 18.11. belegt keine Auslieferung späterer Alpha-Änderungen.
 Legacy-Grafiken (`rakstellung.png`, `spacejet.png`, `falle.bmp`) sind Vorlagen, kein Beweis fertig implementierter Altmechaniken.
 `falle.bmp` bezeichnet den Jumppod. Neue Grafikfassungen können separat entstehen; alte Konzepte müssen nicht unverändert übernommen werden.
 
-### Sonec-Bewegungsumstellung – in Arbeit
+### Sonec-Bewegungsumstellung – abgeschlossen (25.11.2026)
 
-- Verbindliche Anforderungen und Phasen A–G: [SONEC_MOVEMENT_SPEC.md](docs/SONEC_MOVEMENT_SPEC.md).
-- Phase A abgeschlossen und lokal geprüft; B/C-Grundverhalten bestätigt (Plattformtests, B/C-Test `0d0d7a0` 8/9, C-Nachtest `b1a21dd` 5/5). Optische Luft-Gewehrüberdeckung links und früherer kleiner Rückversatz rechts nach links bleiben D-Beobachtungen; gezielte Restweg-/Kontaktreihenfolgefälle bei Integration prüfen. Phase D `36a7f23` 9/9 bestanden; Rückversatz beim Laufen nicht mehr aufgetreten. Jetpack-Landungskorrektur `be7dc31` 6/6 bestanden; Phase D im getesteten Umfang abgeschlossen. Phase E `f2acaae` 9/9 bestanden. Situationsabhängig unfaire Plattformübernahme und Übernahmeberechtigung vertikal bewegter Fremdplattformen offen; gemeinsam auf G-Gesamtspieltest verschoben. Phase F `f4424a1` 9/9 bestanden. Zusatzbeobachtung Kistenrand-Fall mit etwa halber vertikaler Durchdringung/fehlendem Hop offen. G1 `093c173` technisch 9/9 bestanden; normaler Sprung laut Freitext wegen Energieüberschuss nicht gezielt prüfbar. G2-Nacharbeitsplan mit elf Beobachtungen in Bewegungsspezifikation §13 bewertet; G2a `a41162c` 8/8 bestanden einschließlich AGK-Compile; agileres Fluggefühl in G2d feinjustieren. G2b `6c53fac` 11/11 bestanden (Tippen/Halten, Schwung, Rückstoß, Kontakte, AGK-Compile); keine zusätzlichen Beobachtungen. G2c `d87a2f6` 13/13 bestanden inkl. AGK-Compile und neue Kollisions-/Tiefenebenenregeln. G2d-1 `3e6e07c` 8/8 bestanden inkl. AGK-Compile, Sprungkorrekturen und neue Jetpack-Reaktion; Bewegungsumstellung technisch abgenommen. G2d-2 lokale Bewegungsparameter und Gesamtspielgefühl noch offen; Entwickler checkt getestete reine Parameteränderungen direkt selbst auf develop ein. Energieüberschuss/Overload und Gegnergefährlichkeit separat im Gameplay-Balancing. Gesamtspielgefühl noch nicht abgenommen.
-- Mechanische Kontakte, Plattformmitnahme, Tiefenebenen, Mini-Hop und Integration gemäß Spezifikation abschließen.
+- Verbindliche Anforderungen und technische Abnahmen A–G2d: [SONEC_MOVEMENT_SPEC.md](docs/SONEC_MOVEMENT_SPEC.md). Gemeinsamer Kontaktresolver, Trägerbewegung, lokale Tiefenfreigabe, Fuß-/Kistenkanten, Mini-Hop, Sprung-/Jetpack-Steuerung und Rückstoß implementiert und im vereinbarten Umfang funktional abgenommen.
+- G1 `093c173` technisch bestanden; Nacharbeit G2a `a41162c` 8/8, G2b `6c53fac` 11/11, G2c `d87a2f6` 13/13 und G2d-1 `3e6e07c` 8/8 bestanden. G2d-2 Entwickler-Balancing `ffe2e39` und Jetstream `4cba3e3` 7/7 bestanden; Abstand in `43f4a35` feinjustiert. Entwickler betrachtet Ziele als erreicht, Assistent stimmt zu. Keine weitere aktive Bewegungsaufgabe; Langzeitbeobachtung, weitere lokale Parameterfeinjustierung und übergreifende HTML5-/Meilensteintests bleiben möglich. Keine gesonderte Langzeitmessung oder vollständige Einzelmatrix behauptet.
+- Energieüberschuss/Overload und Gegnergefährlichkeit im nachgelagerten Balancing; Flammenwerfer/Siloschutz in [KNOWNBUGS.md](KNOWNBUGS.md). Gemeinsame Jetstream-Erzeugung als unverbindliche Backlog-Idee.
 
 ## 4. Arbeitsblock B – Erfahrung, Ressourcen und Gefahr
 
@@ -132,7 +132,7 @@ Avatar/Sprachausgabe und umfangreiche Grafikpolitur sind keine Voraussetzung. Wa
 | --- | --- |
 | M1 / Bewegungsruckeln | Untersuchung zurückgestellt; bei 75 Hz laut Entwickler nicht mehr vorhanden, Ursache unbewiesen. Behandlung des früher vereinbarten Release-Gates vor Release ausdrücklich entscheiden; keine automatische Migration. |
 | K1 / Treffer | K1b/K1c abgenommen, K1d/Abendrunde erfolgreich rückgemeldet. Zwei spezielle K1a-Minenanordnungen waren nicht durchführbar; gezielten Nachtestbedarf festlegen, keine pauschale Wiederöffnung bestandener Tests. |
-| Plattformen / Walker | Laufbegrenzung/Bremsen früher korrigiert; gemeldete Durchfall- und Seitenkontaktprobleme werden in der Bewegungsumstellung untersucht. Sonec kann in den Walker springen; konkreten Körperkontakt separat bewerten, IK und Turm-Schadenszone schützen. |
+| Plattformen / Walker | Laufbegrenzung/Bremsen früher korrigiert; Bewegungsumstellung abgeschlossen; erneute konkrete Befunde separat erfassen. Sonec kann in den Walker springen; konkreten Körperkontakt separat bewerten, IK und Turm-Schadenszone schützen. |
 | Audio | Kratzen/Überlagerung mehrerer Sounds, etwa Kettenexplosionen, gezielt untersuchen. Kein bewiesener Enginefehler; Soundpolitur nach spielerischem Bedarf begrenzen. |
 | Minen / Browser | Welt-Y-Korrektur positiv rückgemeldet, längere Randbeobachtungen nicht vollständig protokolliert. Minen-/Warnhäufigkeit ins Balancing; frische und längere Browsersitzung getrennt beobachten. |
 | Paintball | Abgeschlossen und vom Entwickler unter Windows visuell bestätigt: ein Pixel breite farblich passende Laufnasen nach unten, korrekte Fleckenausrichtung nach AGK-UV-Korrektur und normales Orb-/Menüverhalten. Kein weiterer Grafikumbau. |
@@ -145,7 +145,7 @@ Avatar/Sprachausgabe und umfangreiche Grafikpolitur sind keine Voraussetzung. Wa
 | B – Grundsysteme | Erfahrung, Ressourcen/Munition, Panzerung und Gefahrenbudget in kleinen abgestimmten Schritten aufbauen. |
 | C – Ziele | Erste kleine Ziele samt Erfolgserkennung und Belohnung auswählen. |
 | D – Qualität | Konkrete Befunde, Warnungen und begrenzte Präsentationsaufgaben bearbeiten. |
-| Balancing | Eigener Chat: zunächst faire Testparameter, später mit ausreichender Gegnervielfalt vertiefen; umfassende Abstimmung bis 1.0. |
+| Balancing | Eigener Chat nach den Alpha-Grundsystemen: Energiefluss, Startenergie, Overload, Pickup-Verteilung und Gegnergefährlichkeit (Drohne vergleichsweise harmlos); vorab nur notwendige Testparameter. Umfassende Abstimmung bis 1.0. |
 | HTML5 / Deployment | Eigene Chats für Browserfragen/Meilensteintest bzw. getestete Revision, Export, Upload und gesonderte Merge-/Publish-Entscheidungen. |
 
 Die Alpha braucht mehrere Chats. Themenwechsel zur Abwechslung sind nach Abstimmung möglich; Abhängigkeiten und aktueller nächster Schritt bleiben sichtbar.
@@ -156,6 +156,6 @@ Gefahrenzulassung, Erholungsrhythmus, tatsächlicher Ressourcengewinn und Muniti
 Bekannte Qualitätsfragen erhalten eine ausdrückliche Entscheidung bzw. dokumentierte Grenze; der integrierte Alpha-Build wird auf der Zielplattform geprüft.
 Diese Kriterien sind Prüfaufträge für die Umsetzung, keine bereits bestandene Alpha-Abnahme. itch.io bleibt Draft/Secret URL bis zu einer gesonderten Entscheidung.
 
-**Nächster Schritt:** G2d-2 gemäß TODO: Entwickler Bewegungsparameter lokal feinjustieren, Gesamtspieltest, direkt einchecken; anschließend tatsächlichen HEAD und Gesamtabnahme dokumentieren. Weitere Arbeitsblöcke nach Abstimmung auswählen; keine automatische Codefreigabe aus dieser Roadmap ableiten.
+**Nächster Schritt:** Arbeitsblock A mit gemeinsamer Jumppod-Spezifikation fortsetzen; keine automatische Codefreigabe.
 
 Spätere Varianten und Ideen stehen in [BACKLOG.md](BACKLOG.md). Frühere Langfassungen liegen im [Archiv](docs/archive/README.md); sie werden nur für konkrete historische Fragen gelesen.
