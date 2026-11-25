@@ -175,6 +175,7 @@ function BulletSetModification(BulletList ref as TBulletList,Index as integer,Mo
 endfunction
 
 // Fuse detonations use the existing explosion system and its damage rules.
+// BulletMove stops explosive rounds at the deadline; call after Sonec impact checks.
 function BulletExplosiveFuses(BulletList ref as TBulletList,Game ref as TGame,Now as integer)
     local i as integer
     for i = 0 to BulletList.Bullet.Length
@@ -278,8 +279,39 @@ function BulletSweepHitsSonec(Bullet ref as TBullet,Sonec ref as TSonec)
     if DeltaX*DeltaX + DeltaY*DeltaY < RadiusSq then Hit = TRUE
 endfunction Hit
 
+// Determine the earliest contact using the same active hitbox switch and
+// strict hit predicate as BulletCollide. No additional bullet-radius padding.
+function BulletSonecImpactEntry(Bullet ref as TBullet,Sonec ref as TSonec)
+    local Center as TPosition
+    local CircleIndex as integer
+    local Radius as float
+    local Entry as float
+    local BestEntry as float
+    BestEntry = 2.0
+    Center.x = Sonec.ObjectData.Position.x
+    if SONEC_TWO_CIRCLE_DAMAGE = 1 and SONEC_TWO_CIRCLE_TEST = 1
+        Radius = SonecHitCircleRadius(Sonec)
+        for CircleIndex = 0 to 1
+            Center.y = SonecHitCircleY(Sonec,CircleIndex)
+            if BulletSweepHitsSonecCircle(Bullet,Center.x,Center.y,Radius) = TRUE
+                Entry = CollisionCircleSweepEntry(Bullet.PreviousPosition,Bullet.ObjectData.Position,Center,Radius)
+                if Entry >= 0 and Entry < BestEntry then BestEntry = Entry
+            endif
+        next CircleIndex
+    else
+        Center.y = Sonec.ObjectData.Position.y
+        if BulletSweepHitsSonec(Bullet,Sonec) = TRUE
+            Entry = CollisionCircleSweepEntry(Bullet.PreviousPosition,Bullet.ObjectData.Position,Center,Sonec.ObjectData.Radius)
+            if Entry >= 0 then BestEntry = Entry
+        endif
+    endif
+    if BestEntry <= 1 then exitfunction BestEntry
+endfunction -1.0
+
 function BulletCollide(BulletList ref as TBulletList,Sonec ref as TSonec,Shield ref as TShield,Game ref as TGame,Now as integer)
     local i as integer
+    local Impact as TPosition
+    local Entry as float
 
     for i = 0 to BulletList.Bullet.Length
         if BulletList.Bullet[i].Enabled = TRUE
@@ -323,8 +355,16 @@ function BulletCollide(BulletList ref as TBulletList,Sonec ref as TSonec,Shield 
                     endif
                     // Explosive rounds use area damage instead of a second direct-hit damage event.
                     if BulletList.Bullet[i].Modification = BULLET_MOD_EXPLOSIVE
-                        ExplosionAdd(Game.ExplosionList,Game.ProtoExplosion,Game,BULLET_EXPLOSIVE_EXPLOSION_TYPE,BulletList.Bullet[i].ObjectData.Position,Now)
+                        Entry = BulletSonecImpactEntry(BulletList.Bullet[i],Sonec)
+                        // A valid sweep normally yields an entry; preserve the
+                        // existing hit if floating-point rounding rejects it.
+                        Impact = BulletList.Bullet[i].ObjectData.Position
+                        if Entry >= 0
+                            Impact.x = BulletList.Bullet[i].PreviousPosition.x+(Impact.x-BulletList.Bullet[i].PreviousPosition.x)*Entry
+                            Impact.y = BulletList.Bullet[i].PreviousPosition.y+(Impact.y-BulletList.Bullet[i].PreviousPosition.y)*Entry
+                        endif
                         BulletDelete(BulletList,i)
+                        ExplosionAdd(Game.ExplosionList,Game.ProtoExplosion,Game,BULLET_EXPLOSIVE_EXPLOSION_TYPE,Impact,Now)
                     else
                     // Keep the established proportional shield protection and health damage.
                     local HealthBeforeHit as integer
@@ -780,19 +820,39 @@ endfunction
 
 function BulletMove(Bullet ref as TBullet,World ref as TWorld,Now as integer)
 
+    local MoveUntil as integer
+    local MoveDue as integer
+    local StepRange as float
 	if Bullet.Enabled = TRUE
 		// Always preserve a single-segment sweep, also when the 10-ms gate is closed.
 		Bullet.PreviousPosition = Bullet.ObjectData.Position
-		if TimeGet(Bullet.ObjectData.MoveTimer,Now) > 0
+        MoveUntil = Now
+        MoveDue = FALSE
+        StepRange = 0
+        if Bullet.Modification = BULLET_MOD_EXPLOSIVE and Now >= Bullet.ExplodeAtMs
+            // A fuse inside this frame is an event on the path, not at the
+            // overshot endpoint. Flush even a final sub-10ms movement.
+            MoveUntil = Bullet.ExplodeAtMs
+            if MoveUntil > Bullet.ObjectData.MoveTimer.Stamp
+                StepRange = (MoveUntil-Bullet.ObjectData.MoveTimer.Stamp)*0.001*Bullet.ObjectData.MoveTimer.Range*Bullet.ObjectData.MoveTimer.Multiplier
+                MoveDue = TRUE
+            endif
+        else
+            if TimeGet(Bullet.ObjectData.MoveTimer,Now) > 0
+                StepRange = Bullet.ObjectData.MoveTimer.CalcRange
+                MoveDue = TRUE
+            endif
+        endif
+		if MoveDue = TRUE
 			
-			Bullet.ObjectData.Position.x = Bullet.ObjectData.Position.x + Bullet.ObjectData.MoveSpeed.x * Bullet.ObjectData.MoveTimer.CalcRange
-			Bullet.ObjectData.Position.y = Bullet.ObjectData.Position.y + Bullet.ObjectData.MoveSpeed.y * Bullet.ObjectData.MoveTimer.CalcRange
+			Bullet.ObjectData.Position.x = Bullet.ObjectData.Position.x + Bullet.ObjectData.MoveSpeed.x * StepRange
+			Bullet.ObjectData.Position.y = Bullet.ObjectData.Position.y + Bullet.ObjectData.MoveSpeed.y * StepRange
 			
 			SpritePositionCalc(Bullet.SpriteData.Position,Bullet.ObjectData.Position,World.Position)
 			
 			BulletCollisionBoundsCalculate(Bullet)
 			
-			TimeReset(Bullet.ObjectData.MoveTimer,Now)
+			TimeReset(Bullet.ObjectData.MoveTimer,MoveUntil)
 			
 		endif
 	endif

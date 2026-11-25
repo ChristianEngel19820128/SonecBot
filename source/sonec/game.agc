@@ -468,10 +468,11 @@ function GameDo(Game ref as TGame,Now as integer)
 	BulletMoveall(Game.BulletList,Game.World,Now)
     // Flak diagnostic: see whether a freshly added bullet survives world-bound checks.
     FlarakDebugAfterBulletMove(Game.BulletList,Now)
-    BulletExplosiveFuses(Game.BulletList,Game,Now)
     BomberBombCollideBullets(Game.Bomber,Game.BulletList,Game.ExplosionList,Game.ProtoExplosion,Game,Now)
     FlarakRocketCollideBullets(Game,Now)
 	BulletCollide(Game.BulletList,Game.Sonec,Game.Shield,Game,Now)
+    // Impact wins only on the path up to the fuse deadline.
+    BulletExplosiveFuses(Game.BulletList,Game,Now)
 	// K1b: one nearest-hit sweep across all player-bullet target types.
 	BulletCollidePlayerTargets(Game.BulletList,Game.OrbList,Game.WalkerList,Game.MineList,Game.SimpleMineList,Game.ChestList,Game.Drone,Game,Now)
 	// Retain the established enemy-bullet interactions with mines and chests.

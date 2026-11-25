@@ -403,11 +403,9 @@ function FlarakRocketDo(Rocket ref as TFlarakTestRocket,Game ref as TGame,Jetfir
         exitfunction
     endif
     // Swept impact fuse: test the movement segment against both Sonec circles.
-    if FlarakRocketHitsSonec(Rocket,OldX,OldY,OldAngle,Game.Sonec) = TRUE
-        ImpactPosition.x = Rocket.PosX+Sin(Rocket.Angle)*Rocket.TipDistance
-        ImpactPosition.y = Rocket.PosY-Cos(Rocket.Angle)*Rocket.TipDistance
-        ExplosionAdd(Game.ExplosionList,Game.ProtoExplosion,Game,3,ImpactPosition,NowMs)
+    if FlarakRocketHitsSonec(Rocket,OldX,OldY,OldAngle,Game.Sonec,ImpactPosition) = TRUE
         Rocket.Active = FALSE
+        ExplosionAdd(Game.ExplosionList,Game.ProtoExplosion,Game,3,ImpactPosition,NowMs)
         exitfunction
     endif
     if NowMs >= Rocket.NextJetMs and ProtoJetfire.AnimJetfire.Sprite.ID > 0
@@ -440,47 +438,33 @@ function FlarakRocketDo(Rocket ref as TFlarakTestRocket,Game ref as TGame,Jetfir
 endfunction
 
 // Use Sonec's shared two-circle geometry, in screen coordinates.
-function FlarakRocketHitsSonec(Rocket ref as TFlarakTestRocket,OldX as float,OldY as float,OldAngle as float,Sonec ref as TSonec)
-    local TipOldX as float
-    local TipOldY as float
-    local TipNewX as float
-    local TipNewY as float
-    local Dx as float
-    local Dy as float
-    local LengthSquared as float
-    local T as float
-    local ClosestX as float
-    local ClosestY as float
-    local CircleY as float
-    local DistanceX as float
-    local DistanceY as float
+function FlarakRocketHitsSonec(Rocket ref as TFlarakTestRocket,OldX as float,OldY as float,OldAngle as float,Sonec ref as TSonec,Impact ref as TPosition)
+    local TipOld as TPosition
+    local TipNew as TPosition
+    local Center as TPosition
     local Radius as float
     local CircleIndex as integer
+    local Entry as float
+    local BestEntry as float
     if Sonec.IsLost = TRUE then exitfunction FALSE
-    // The image is centered; its nose is half a sprite width ahead along flight.
-    // Rotate both the previous and current nose points to sweep the actual fuse.
-    TipOldX = OldX+Sin(OldAngle)*Rocket.TipDistance
-    TipOldY = OldY-Cos(OldAngle)*Rocket.TipDistance
-    TipNewX = Rocket.PosX+Sin(Rocket.Angle)*Rocket.TipDistance
-    TipNewY = Rocket.PosY-Cos(Rocket.Angle)*Rocket.TipDistance
-    Dx = TipNewX-TipOldX
-    Dy = TipNewY-TipOldY
-    LengthSquared = Dx*Dx+Dy*Dy
+    // Sweep the same rotated nose points and shared circles as before.
+    TipOld.x = OldX+Sin(OldAngle)*Rocket.TipDistance
+    TipOld.y = OldY-Cos(OldAngle)*Rocket.TipDistance
+    TipNew.x = Rocket.PosX+Sin(Rocket.Angle)*Rocket.TipDistance
+    TipNew.y = Rocket.PosY-Cos(Rocket.Angle)*Rocket.TipDistance
     Radius = SonecHitCircleRadius(Sonec)
+    Center.x = Sonec.ObjectData.Position.x
+    BestEntry = 2.0
     for CircleIndex = 0 to 1
-        CircleY = SonecHitCircleY(Sonec,CircleIndex)
-        T = 0
-        if LengthSquared > 0
-            T = ((Sonec.ObjectData.Position.x-TipOldX)*Dx+(CircleY-TipOldY)*Dy)/LengthSquared
-            if T < 0 then T = 0
-            if T > 1 then T = 1
-        endif
-        ClosestX = TipOldX+Dx*T
-        ClosestY = TipOldY+Dy*T
-        DistanceX = Sonec.ObjectData.Position.x-ClosestX
-        DistanceY = CircleY-ClosestY
-        if DistanceX*DistanceX+DistanceY*DistanceY <= Radius*Radius then exitfunction TRUE
+        Center.y = SonecHitCircleY(Sonec,CircleIndex)
+        Entry = CollisionCircleSweepEntry(TipOld,TipNew,Center,Radius)
+        if Entry >= 0 and Entry < BestEntry then BestEntry = Entry
     next CircleIndex
+    if BestEntry <= 1
+        Impact.x = TipOld.x+(TipNew.x-TipOld.x)*BestEntry
+        Impact.y = TipOld.y+(TipNew.y-TipOld.y)*BestEntry
+        exitfunction TRUE
+    endif
 endfunction FALSE
 
 // Bomber-bomb interception model: a single hit destroys an airborne rocket.
