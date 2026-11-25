@@ -2,7 +2,6 @@
 
 **Stand:** 25. November 2026 · **Arbeitszweig:** develop
 
-- [ ] J1a: Treppenfunktion für gemeinsame Sockel implementiert; AGK-Compile und lokaler Bewegungsregressionstest offen.
 - [ ] J2: Landmine als Attrappe inklusive gemeinsamer Schadens-/Spawnregeln.
 - [ ] J3: mechanische Flak/Flarak-Sockel ohne Änderung des Gegnerverhaltens.
 - [ ] J4: wiederverwendbare Rauch-Unit integrieren und A5 gebündelt prüfen.

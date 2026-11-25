@@ -59,10 +59,10 @@ Der Draft-Test vom 18.11. belegt keine Auslieferung späterer Alpha-Änderungen.
 - Plattformdeckung und Explosionsschaden wurden implementiert und lokal geprüft; abschließendes Balancing bleibt offen.
 - Bomber-Abschüsse sollen selten bleiben; kein Vernichtungszwang. Charakteristischer Ankündigungssound und weitere Politur bei Bedarf prüfen.
 
-### A5 – Jumppod, Landmine, Sockel und Rauch (J1 abgenommen)
+### A5 – Jumppod, Landmine, Sockel und Rauch (J1/J1a abgenommen)
 
 - J1: hilfreicher Jumppod mit doppeltem normalen Sprungimpuls ohne Energiekosten; zwei Frames, auslösbar durch Kontakt von oben.
-- J1a: automatischer Aufstieg über beide Sockelstufen mit oberem Trigger, Mini-Hop beim Abstieg; implementiert, AGK-Test offen.
+- J1a: automatischer Aufstieg über beide Sockelstufen mit oberem Trigger, Mini-Hop beim Abstieg; lokal AGK-bestanden (9/9, ddc24e8, 25.11.2026).
 - J2: Landmine als erkennbare Attrappe (blinkendes Quadrat in der Nähe), sofortige stärkere Schadensexplosion, 25 % der regelmäßigen Testspawns.
 - J3: gemeinsame Zweirechteck-Sockelmechanik auch für Flak/Flarak; Sockel bleiben nach Zerstörung bestehen; bestehende Luftabwehrfunktion erhalten.
 - J4: wiederverwendbare Rauch-Unit; kontinuierliche Emission an zerstörten Objekten bis zum Weltende.
@@ -160,6 +160,6 @@ Gefahrenzulassung, Erholungsrhythmus, tatsächlicher Ressourcengewinn und Muniti
 Bekannte Qualitätsfragen erhalten eine ausdrückliche Entscheidung bzw. dokumentierte Grenze; der integrierte Alpha-Build wird auf der Zielplattform geprüft.
 Diese Kriterien sind Prüfaufträge für die Umsetzung, keine bereits bestandene Alpha-Abnahme. itch.io bleibt Draft/Secret URL bis zu einer gesonderten Entscheidung.
 
-**Nächster Schritt:** J1a (Treppenfunktion der gemeinsamen Sockel) lokal in AGK kompilieren und gemäß [Jumppod-Spezifikation](docs/JUMPPOD_SPEC.md) prüfen; Fremdbugs separat zurückgestellt.
+**Nächster Schritt:** J2 (Landmine als Attrappe) gemäß [Jumppod-Spezifikation](docs/JUMPPOD_SPEC.md) umsetzen; Fremdbugs separat zurückgestellt.
 
 Spätere Varianten und Ideen stehen in [BACKLOG.md](BACKLOG.md). Frühere Langfassungen liegen im [Archiv](docs/archive/README.md); sie werden nur für konkrete historische Fragen gelesen.
