@@ -1,4 +1,4 @@
-// A5/J1: platform-bound jumper and persistent two-rectangle base.
+// A5/J1/J2: platform-bound jumper, landmine decoy and persistent two-rectangle base.
 // All dimensions are native pixels from the idle 80x21 frame.
 #constant JUMPPOD_CELL_W 80
 #constant JUMPPOD_CELL_H 21
@@ -14,7 +14,24 @@
 #constant JUMPPOD_BLAST_SCALE 0.85
 #constant JUMPPOD_BLAST_DAMAGE 12
 
+// J2 provisional values; both variants use the very same mechanical base.
+#constant JUMPPOD_KIND 0
+#constant LANDMINE_KIND 1
+#constant LANDMINE_SPAWN_PERCENT 25
+#constant LANDMINE_HEALTH_MAX 80
+#constant LANDMINE_BLAST_TYPE 3
+#constant LANDMINE_BLAST_SCALE 1.8
+#constant LANDMINE_BLAST_DAMAGE 36
+#constant LANDMINE_BLINK_HALF_MS 140
+#constant LANDMINE_WARNING_RANGE 160.0
+#constant LANDMINE_WARNING_SIZE 2
+#constant LANDMINE_WARNING_R 255
+#constant LANDMINE_WARNING_G 155
+#constant LANDMINE_WARNING_B 45
+
 type TJumppod
+    ObjectKind as integer
+    ContactTriggered as integer
     Enabled as integer
     Destroyed as integer
     Health as integer
@@ -30,10 +47,12 @@ endtype
 
 global JumppodList as TJumppod[-1]
 global JumppodSprite as integer
+global LandmineSprite as integer
+global LandmineWarningSprite as integer
 global JumppodNextSpawnMs as integer
 global JumppodNowMs as integer
 // Resolver-only geometry, never passed to weapon/chest/Walker logic.
-// Stable slots: chest i -> 3*i, pod i lower -> 3*i+1, upper -> 3*i+2.
+// Stable slots: chest i -> 3*i, pod/mine i lower -> 3*i+1, upper -> 3*i+2.
 global SonecMechanicalList as TChestList
 
 function ProtoJumppodLoad()
@@ -45,6 +64,16 @@ function ProtoJumppodLoad()
         SetSpriteAnimation(JumppodSprite,JUMPPOD_CELL_W,JUMPPOD_CELL_H,2)
         SetSpriteOffset(JumppodSprite,JUMPPOD_CELL_W*0.5,JUMPPOD_CELL_H)
         SetSpriteFrame(JumppodSprite,1)
+    endif
+    Image.File.Path = "/media/gfx/enemies"
+    Image.File.Name = "landmine.png"
+    if ImageLoad(Image) = TRUE
+        LandmineSprite = CreateSprite(Image.ID)
+        SetSpriteOffset(LandmineSprite,JUMPPOD_CELL_W*0.5,JUMPPOD_BASE_H+JUMPPOD_TOP_H)
+        LandmineWarningSprite = CreateSprite(0)
+        SetSpriteSize(LandmineWarningSprite,LANDMINE_WARNING_SIZE,LANDMINE_WARNING_SIZE)
+        SetSpriteOffset(LandmineWarningSprite,LANDMINE_WARNING_SIZE*0.5,LANDMINE_WARNING_SIZE*0.5)
+        SetSpriteColor(LandmineWarningSprite,LANDMINE_WARNING_R,LANDMINE_WARNING_G,LANDMINE_WARNING_B,255)
     endif
 endfunction
 
@@ -141,9 +170,17 @@ function JumppodSpawnOnPlate(Game ref as TGame,PlateIndex as integer,Now as inte
     if Game.PlateList.Plate[PlateIndex].ObjectData.Size.Width < JUMPPOD_BASE_W then exitfunction
     CenterX = JumppodFreeCenter(Game.PlateList.Plate[PlateIndex],PlateIndex,Game.ChestList)
     if CenterX < 0 then exitfunction
+    // Draw the variant only after a free position has been found.
+    // One successful spawn consumes the same timer for either variant.
+    Pod.ObjectKind = JUMPPOD_KIND
+    Pod.Health = JUMPPOD_HEALTH_MAX
+    if Random(1,100) <= LANDMINE_SPAWN_PERCENT
+        if LandmineSprite = 0 then exitfunction
+        Pod.ObjectKind = LANDMINE_KIND
+        Pod.Health = LANDMINE_HEALTH_MAX
+    endif
     JumppodNextSpawnMs = Now+JUMPPOD_TEST_SPAWN_MS
     Pod.Enabled = TRUE
-    Pod.Health = JUMPPOD_HEALTH_MAX
     Pod.PlateIndex = PlateIndex
     Pod.OffsetX = CenterX
     JumppodFollow(Pod,Game.PlateList.Plate[PlateIndex])
@@ -209,35 +246,62 @@ function JumppodBuildMechanicalList(ChestList ref as TChestList)
     next i
 endfunction
 
-// Called only for the resolver's selected valid top contact, before landing effects.
-function JumppodTryLaunch(SurfaceIndex as integer)
+// Called only for the resolver's selected valid landing or upward step.
+// Return TRUE for a pod impulse; queue a mine detonation instead, to be
+// consumed after the sweep in the same GameDo tick (where Game is available).
+function JumppodHandleUpperContact(SurfaceIndex as integer)
     local i as integer
     if SurfaceIndex < 2 then exitfunction FALSE
     i = Floor(SurfaceIndex/3.0)
     if SurfaceIndex <> i*3+2 or i > JumppodList.Length then exitfunction FALSE
     if JumppodList[i].Enabled = FALSE or JumppodList[i].Destroyed = TRUE then exitfunction FALSE
+    if JumppodList[i].ObjectKind = LANDMINE_KIND
+        JumppodList[i].ContactTriggered = TRUE
+        exitfunction FALSE
+    endif
     if JumppodNowMs < JumppodList[i].ActiveUntil then exitfunction FALSE
     JumppodList[i].ActiveUntil = JumppodNowMs+JUMPPOD_FRAME2_MS
 endfunction TRUE
 
-function JumppodDrawPlate(PlateIndex as integer,World ref as TWorld)
+function JumppodDrawPlate(PlateIndex as integer,World ref as TWorld,PlayerPosition as TPosition)
     local i as integer
+    local SpriteID as integer
+    local LampPosition as TPosition
+    local BlinkPhase as integer
     if JumppodSprite = 0 then exitfunction
+    BlinkPhase = Floor(JumppodNowMs/(LANDMINE_BLINK_HALF_MS*1.0))
     for i = 0 to JumppodList.Length
         if JumppodList[i].Enabled = TRUE and JumppodList[i].PlateIndex = PlateIndex
-            SetSpriteFrame(JumppodSprite,1)
-            if JumppodList[i].Destroyed = TRUE
-                SetSpriteColor(JumppodSprite,FLARAK_WRECK_COLOR-8,FLARAK_WRECK_COLOR+14,FLARAK_WRECK_COLOR-8,255)
-            else
-                if JumppodNowMs < JumppodList[i].ActiveUntil then SetSpriteFrame(JumppodSprite,2)
-                if JumppodNowMs < JumppodList[i].HitFlashUntil
-                    SetSpriteColor(JumppodSprite,255,0,0,255)
+            SpriteID = JumppodSprite
+            if JumppodList[i].ObjectKind = LANDMINE_KIND then SpriteID = LandmineSprite
+            if SpriteID > 0
+                if JumppodList[i].ObjectKind = JUMPPOD_KIND
+                    SetSpriteFrame(SpriteID,1)
+                    if JumppodList[i].Destroyed = FALSE and JumppodNowMs < JumppodList[i].ActiveUntil then SetSpriteFrame(SpriteID,2)
+                endif
+                if JumppodList[i].Destroyed = TRUE
+                    SetSpriteColor(SpriteID,FLARAK_WRECK_COLOR-8,FLARAK_WRECK_COLOR+14,FLARAK_WRECK_COLOR-8,255)
                 else
-                    SetSpriteColor(JumppodSprite,0,255,0,255)
+                    if JumppodNowMs < JumppodList[i].HitFlashUntil
+                        SetSpriteColor(SpriteID,255,0,0,255)
+                    else
+                        SetSpriteColor(SpriteID,0,255,0,255)
+                    endif
+                endif
+                SetSpritePositionByOffset(SpriteID,JumppodList[i].WorldX-World.Position.x,JumppodList[i].WorldY-World.Position.y)
+                DrawSprite(SpriteID)
+                // A single shared 2x2 marker, visible only near a live mine.
+                if JumppodList[i].ObjectKind = LANDMINE_KIND and JumppodList[i].Destroyed = FALSE and LandmineWarningSprite > 0
+                    if BlinkPhase-2*Floor(BlinkPhase/2.0) = 0
+                        LampPosition.x = JumppodList[i].WorldX
+                        LampPosition.y = JumppodList[i].WorldY-JUMPPOD_BASE_H-JUMPPOD_TOP_H*0.5
+                        if CalcRadius(PlayerPosition,LampPosition) <= LANDMINE_WARNING_RANGE
+                            SetSpritePositionByOffset(LandmineWarningSprite,LampPosition.x-World.Position.x,LampPosition.y-World.Position.y)
+                            DrawSprite(LandmineWarningSprite)
+                        endif
+                    endif
                 endif
             endif
-            SetSpritePositionByOffset(JumppodSprite,JumppodList[i].WorldX-World.Position.x,JumppodList[i].WorldY-World.Position.y)
-            DrawSprite(JumppodSprite)
         endif
     next i
 endfunction
@@ -253,14 +317,34 @@ function JumppodApplyDamage(Index as integer,Game ref as TGame,Damage as integer
         JumppodList[Index].Health = 0
         JumppodList[Index].Destroyed = TRUE
         JumppodList[Index].ActiveUntil = 0
+        JumppodList[Index].ContactTriggered = FALSE
         Impact.x = JumppodList[Index].WorldX
         Impact.y = JumppodList[Index].WorldY-JUMPPOD_BASE_H-JUMPPOD_TOP_H*0.5
-        ExplosionNew(Blast,Game.ProtoExplosion,Game,JUMPPOD_BLAST_TYPE,Impact,Now)
-        Blast.SpriteData.Scale = JUMPPOD_BLAST_SCALE
-        Blast.BulletData.Damage = JUMPPOD_BLAST_DAMAGE
+        if JumppodList[Index].ObjectKind = LANDMINE_KIND
+            ExplosionNew(Blast,Game.ProtoExplosion,Game,LANDMINE_BLAST_TYPE,Impact,Now)
+            Blast.SpriteData.Scale = LANDMINE_BLAST_SCALE
+            Blast.BulletData.Damage = LANDMINE_BLAST_DAMAGE
+            PlaySound(Game.Sound.ExplosionSound)
+        else
+            ExplosionNew(Blast,Game.ProtoExplosion,Game,JUMPPOD_BLAST_TYPE,Impact,Now)
+            Blast.SpriteData.Scale = JUMPPOD_BLAST_SCALE
+            Blast.BulletData.Damage = JUMPPOD_BLAST_DAMAGE
+            PlaySound(Game.Sound.ImpactSound)
+        endif
         ExplosionInsert(Game.ExplosionList,Blast)
-        PlaySound(Game.Sound.ImpactSound)
     endif
+endfunction
+
+// Detonate only after an accepted upper contact, before weapon processing.
+// No arming delay, no second blast or special Sonec damage path. All blast
+// targets use the existing timed explosion/central body-circle damage rules.
+function JumppodResolveContactTriggers(Game ref as TGame,Now as integer)
+    local i as integer
+    for i = 0 to JumppodList.Length
+        if JumppodList[i].Enabled = TRUE and JumppodList[i].Destroyed = FALSE and JumppodList[i].ObjectKind = LANDMINE_KIND and JumppodList[i].ContactTriggered = TRUE
+            JumppodApplyDamage(i,Game,JumppodList[i].Health,Now)
+        endif
+    next i
 endfunction
 
 function JumppodBulletEntry(Bullet ref as TBullet,Pod ref as TJumppod)

@@ -1627,7 +1627,7 @@ function SonecResolveContact(Sonec ref as TSonec,PlateList ref as TPlateList,Che
 		Sonec.CollisionMoveStart.y = SurfaceY - Sonec.ObjectData.Size.Height*0.5
 		Sonec.CollisionMoveEnd.y = SurfaceEndY - Sonec.ObjectData.Size.Height*0.5
 		if Best.ListType = TYPECHEST
-			if JumppodTryLaunch(i) = TRUE
+			if JumppodHandleUpperContact(i) = TRUE
 				// Establish support first (landing or step), then release carrier momentum once.
 				// Apply the pod impulse to the remaining swept path, not a second full tick.
 				SonecStartNormalJump(Sonec,0)

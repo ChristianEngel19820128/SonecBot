@@ -349,7 +349,7 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function PlateAndChestDrawAll(PlateList ref as TPlateList,ProtoPlate ref as TProtoPlate,ChestList ref as TChestList,ProtoChest ref as TProtoChest,World ref as TWorld)
+function PlateAndChestDrawAll(PlateList ref as TPlateList,ProtoPlate ref as TProtoPlate,ChestList ref as TChestList,ProtoChest ref as TProtoChest,World ref as TWorld,PlayerPosition as TPosition)
 	
 	local i as integer
 	local k as integer
@@ -361,7 +361,7 @@ function PlateAndChestDrawAll(PlateList ref as TPlateList,ProtoPlate ref as TPro
 				ChestDraw(ChestList.Chest[k],ProtoChest)
 			endif
 		next k
-		if PlateList.Plate[i].Enabled = TRUE then JumppodDrawPlate(i,World)
+		if PlateList.Plate[i].Enabled = TRUE then JumppodDrawPlate(i,World,PlayerPosition)
 	next i
 	
 endfunction

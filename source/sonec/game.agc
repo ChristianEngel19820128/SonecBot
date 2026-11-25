@@ -439,6 +439,7 @@ function GameDo(Game ref as TGame,Now as integer)
 	JumppodMoveAll(Game.PlateList,Now)
 	JumppodBuildMechanicalList(Game.ChestList)
 	SonecCollidePlate(Game.Sonec,Game.PlateList,SonecMechanicalList,Game.World,Game.Screen)
+	JumppodResolveContactTriggers(Game,Now)
 	JumppodCollideExplosions(Game,Now)
 	SonecEdgeCsvWrite(Game,Now)
 	
@@ -594,7 +595,7 @@ function GameDraw(Game ref as TGame)
 	
 	//PlateDrawAll(Game.PlateList,Game.ProtoPlate)
 	//ChestDrawAll(Game.ChestList,Game.ProtoChest)
-	PlateAndChestDrawAll(Game.PlateList,Game.ProtoPlate,Game.ChestList,Game.ProtoChest,Game.World)
+	PlateAndChestDrawAll(Game.PlateList,Game.ProtoPlate,Game.ChestList,Game.ProtoChest,Game.World,Game.Sonec.ObjectData.Position)
 	
 	EnergieDrawAll(Game.EnergieList,Game.ProtoEnergie)
 	
