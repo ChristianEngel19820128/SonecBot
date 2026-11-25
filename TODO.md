@@ -4,7 +4,7 @@
 
 ## Jetzt
 
-- [ ] G2b: Tippen/Halten, optionaler horizontaler Sprungimpuls und unabhängiger Granatwerferrückstoß implementiert; AGK-Compile/Funktionstest offen. Danach G2c Kollisions-/Tiefenebenenregeln gemeinsam abstimmen, G2d lokales Balancing. G2a `a41162c` 8/8 bestanden; agileres Fluggefühl in G2d berücksichtigen. [Spezifikation §13](docs/SONEC_MOVEMENT_SPEC.md#13-offene-detailfragen-für-technische-durchsicht-und-tests).
+- [ ] G2c Kollisions-/Tiefenebenenregeln fachlich abstimmen (Kantenabgang, Randlandung, Luft-/Boden-Geometrie, horizontale und vertikale Plattformübernahme), danach implementieren und gebündelt testen. G2b `6c53fac` 11/11 bestanden. G2d lokales Balancing inkl. agilerem Fluggefühl und optionalem Sprungminimum folgt. [Spezifikation §13](docs/SONEC_MOVEMENT_SPEC.md#13-offene-detailfragen-für-technische-durchsicht-und-tests).
 
 ## Danach / separat
 
