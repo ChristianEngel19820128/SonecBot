@@ -256,7 +256,10 @@ function JumppodBuildMechanicalList(ChestList ref as TChestList,PlateList ref as
     next i
     for i = 0 to ChestList.Chest.Length
         Slot = i*SONEC_MECHANICAL_SLOT_STRIDE
-        SonecMechanicalList.Chest[Slot+SONEC_MECHANICAL_CHEST_SLOT] = ChestList.Chest[i]
+        // Keep stable slot indices; only foreground chests are Sonec supports.
+        if ChestList.Chest[i].IsBackground = FALSE
+            SonecMechanicalList.Chest[Slot+SONEC_MECHANICAL_CHEST_SLOT] = ChestList.Chest[i]
+        endif
     next i
     for i = 0 to JumppodList.Length
         if JumppodList[i].Enabled = TRUE

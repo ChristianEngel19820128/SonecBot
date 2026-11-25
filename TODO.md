@@ -2,8 +2,8 @@
 
 **Stand:** 25. November 2026 · **Arbeitszweig:** develop
 
-- [ ] A6a: dunkle Hintergrundkisten – Detailregeln abstimmen, vorhandene Kistenmechanik gezielt erweitern und prüfen.
-- [ ] A6b: Minen-Rudelformation – größere Zeilen-/Spaltenabstände und variableres Raster konkretisieren, umsetzen und prüfen.
+- [ ] A6a: dunkle Hintergrundkisten implementiert; lokaler AGK-Compile und Funktions-/Regressionstest offen.
+- [ ] A6b: freigegebene größere Minen-Rudelformation (3×4, X 64–96 px, Y 80–120 px, ±16 px) nach A6a-Abnahme umsetzen und prüfen.
 - [ ] Separater Bug-Chat: Flammenwerfer gemäß KNOWNBUGS.md untersuchen und Korrekturumfang abstimmen.
 - [ ] Anschließend Arbeitsblock B fachlich abstimmen (Erfahrung, Ressourcen/Munition, Panzerung, Gefahrenbudget).
 

@@ -652,6 +652,8 @@ type TProtoChest
 endtype
 
 type TChest
+	// Background chests retain damage geometry but are not Sonec supports.
+	IsBackground as integer
 	// Resolver-only: 0 ordinary chest, 1 lower base step, 2 upper base step.
 	MechanicalStepLevel as integer
 	CollisionMoveStart as TPosition

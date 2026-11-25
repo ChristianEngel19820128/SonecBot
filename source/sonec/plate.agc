@@ -356,8 +356,14 @@ function PlateAndChestDrawAll(PlateList ref as TPlateList,ProtoPlate ref as TPro
 	
 	for i = 0 to PlateList.Plate.Length
 		PlateDraw(PlateList.Plate[i],ProtoPlate)
+		// Background chests render before foreground objects on this plate.
 		for k = 0 to ChestList.Chest.Length
-			if ChestList.Chest[k].CollisionData.Index = i
+			if ChestList.Chest[k].CollisionData.Index = i and ChestList.Chest[k].IsBackground = TRUE
+				ChestDraw(ChestList.Chest[k],ProtoChest)
+			endif
+		next k
+		for k = 0 to ChestList.Chest.Length
+			if ChestList.Chest[k].CollisionData.Index = i and ChestList.Chest[k].IsBackground = FALSE
 				ChestDraw(ChestList.Chest[k],ProtoChest)
 			endif
 		next k

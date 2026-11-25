@@ -3,6 +3,20 @@
 // 
 //----------------------------------------------------------------------
 
+// A6a: a variant of existing chests, not an additional spawn pool.
+#constant CHEST_BACKGROUND_PERCENT 25
+#constant CHEST_BACKGROUND_R 32
+#constant CHEST_BACKGROUND_G 125
+#constant CHEST_BACKGROUND_B 55
+
+function ChestRestoreColor(Chest ref as TChest)
+	if Chest.IsBackground = TRUE
+		ColorSet(Chest.SpriteData.Color,CHEST_BACKGROUND_R,CHEST_BACKGROUND_G,CHEST_BACKGROUND_B,255)
+	else
+		ColorSet(Chest.SpriteData.Color,0,255,0,255)
+	endif
+endfunction
+
 function ProtoChestLoad(ProtoChest ref as TProtoChest,File as TFilePath)
 	
 	if FilePathSetAndCheck(File) = TRUE
@@ -41,6 +55,8 @@ function ChestNew(ChestList ref as TChestList,Chest ref as TChest,ProtoChest ref
 	local imax as integer
 	
 	Chest.Enabled = TRUE
+	// Reset on every creation, including a reused local or list slot.
+	Chest.IsBackground = FALSE
 
 	Chest.SpriteData.Angle = 0
 	Chest.SpriteData.Center = FALSE
@@ -64,7 +80,7 @@ function ChestNew(ChestList ref as TChestList,Chest ref as TChest,ProtoChest ref
 	TimeSet(Chest.Health.RegenerationTimer,Chest.Health.RegRate,1)
 	TimeReset(Chest.Health.RegenerationTimer,Now)
 	
-	ColorSet(Chest.SpriteData.Color,0,255,0,255)
+	ChestRestoreColor(Chest)
 	
 	Chest.CollisionData.Position1.x = Chest.ObjectData.Position.x
 	Chest.CollisionData.Position1.y = Chest.ObjectData.Position.y
@@ -88,6 +104,9 @@ function ChestNew(ChestList ref as TChestList,Chest ref as TChest,ProtoChest ref
 		Value = FALSE
 	else
 		Value = TRUE
+		// Choose the variant only for a successfully placed chest.
+		if Random(1,100) <= CHEST_BACKGROUND_PERCENT then Chest.IsBackground = TRUE
+		ChestRestoreColor(Chest)
 	endif
 	
 endfunction Value
@@ -105,7 +124,7 @@ function ChestHealthRegenerate(ChestList ref as TChestList,Game ref as TGame,Now
 			if TimeGet(ChestList.Chest[i].Health.RegenerationTimer,Now) > 0
 				if ChestList.Chest[i].Health.State + REGHEALTH <= ChestList.Chest[i].Health.StateMax
 					ChestList.Chest[i].Health.State = ChestList.Chest[i].Health.State + REGHEALTH
-					ColorSet(ChestList.Chest[i].SpriteData.Color,0,255,0,255)
+					ChestRestoreColor(ChestList.Chest[i])
 				else
 					if ChestList.Chest[i].Health.State < ChestList.Chest[i].Health.StateMax
 						ChestList.Chest[i].Health.State = ChestList.Chest[i].Health.StateMax

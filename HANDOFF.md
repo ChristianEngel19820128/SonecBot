@@ -11,7 +11,7 @@
 
 ## Aktueller Projektstand
 
-- Real Alpha, A5 abgeschlossen; Arbeitsblock A um A6 (dunkle Hintergrundkisten und großzügigere Minen-Rudelformation) erweitert, fachliche Detailabstimmung offen. A5: J1 (Jumppod und gemeinsame Sockelmechanik) lokal abgenommen, 10/10 am 25.11.2026 auf bb16236; J1a (automatischer Aufwärts-Stufenwechsel, oberer Trigger, Mini-Hop abwärts) lokal abgenommen, 9/9 am 25.11.2026 auf ddc24e8; J2 (Landmine als Attrappe) lokal abgenommen, 12/12 am 25.11.2026 auf 517763f; J3 (mechanische Flak/Flarak-Sockel) lokal abgenommen, 10/10 am 25.11.2026 nach Compile-Korrektur ec23637 (Testformular c2858e9; lokale SHA nicht separat bestätigt); J4 (universelle Rauch-Unit) funktional lokal abgenommen, 15/15 am 25.11.2026 nach Compile-Korrektur e17440a (Testformular d35a6e8; lokale SHA nicht separat bestätigt); visuelle Feinjustierung, vertikale Trägerübernahme f591fc7 und Entwicklerstand a2db24a am 25.11.2026 zusammenfassend akzeptiert. A5 abgeschlossen; keine weiteren Rauchänderungen. [A5-Spezifikation](docs/JUMPPOD_SPEC.md).
+- Real Alpha, A5 abgeschlossen; Arbeitsblock A um A6 erweitert; A6a Hintergrundkisten implementiert, lokaler AGK-Test offen; A6b Rudelformation fachlich freigegeben, Umsetzung nach A6a-Abnahme. A5: J1 (Jumppod und gemeinsame Sockelmechanik) lokal abgenommen, 10/10 am 25.11.2026 auf bb16236; J1a (automatischer Aufwärts-Stufenwechsel, oberer Trigger, Mini-Hop abwärts) lokal abgenommen, 9/9 am 25.11.2026 auf ddc24e8; J2 (Landmine als Attrappe) lokal abgenommen, 12/12 am 25.11.2026 auf 517763f; J3 (mechanische Flak/Flarak-Sockel) lokal abgenommen, 10/10 am 25.11.2026 nach Compile-Korrektur ec23637 (Testformular c2858e9; lokale SHA nicht separat bestätigt); J4 (universelle Rauch-Unit) funktional lokal abgenommen, 15/15 am 25.11.2026 nach Compile-Korrektur e17440a (Testformular d35a6e8; lokale SHA nicht separat bestätigt); visuelle Feinjustierung, vertikale Trägerübernahme f591fc7 und Entwicklerstand a2db24a am 25.11.2026 zusammenfassend akzeptiert. A5 abgeschlossen; keine weiteren Rauchänderungen. [A5-Spezifikation](docs/JUMPPOD_SPEC.md).
 - Minen, Walker, Drohne, Bomber, Flarak/Flak, Warnungen und zentrale Rewards im bisherigen Umfang umgesetzt und lokal geprüft.
 - Bewegungsumstellung A–G2d einschließlich Jetstream am 25.11.2026 abgeschlossen und vom Entwickler akzeptiert.
 - Gemeinsamer Kontaktresolver, Restweg, Trägerbewegung, Tiefenebenen, Fuß-/Kistenkanten, Mini-Hop, Sprung/Jetpack und Rückstoß implementiert.
@@ -33,7 +33,7 @@
 
 ## Genau ein nächster Schritt
 
-A6 (dunkle Hintergrundkisten und größere, variablere Minen-Rudelformation) fachlich konkretisieren und anschließend paketweise umsetzen. Danach vereinbarter separater Flammenwerfer-Bug-Chat gemäß [KNOWNBUGS.md](KNOWNBUGS.md), anschließend Arbeitsblock B. Flarak-Neustartfehler bleibt separat offen. Keine weiteren Änderungen am akzeptierten Rauchsystem.
+A6a (dunkle Hintergrundkisten) lokal kompilieren und gemäß REAL_ALPHA_ROADMAP.md prüfen; danach A6b (größere und variablere Rudelformation) umsetzen. Danach vereinbarter separater Flammenwerfer-Bug-Chat gemäß [KNOWNBUGS.md](KNOWNBUGS.md), anschließend Arbeitsblock B. Flarak-Neustartfehler bleibt separat offen. Keine weiteren Änderungen am akzeptierten Rauchsystem.
 
 ## Referenzen
 
