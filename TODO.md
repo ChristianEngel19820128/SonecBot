@@ -4,7 +4,7 @@
 
 ## Jetzt
 
-- [ ] G2c: Fußkanten, Randlandung, kombinierte Kollisionsgeometrie und lokale Tiefenebenenregeln implementiert; AGK-Compile/Funktionstest offen. Danach G2d lokales Balancing inkl. agilerem Fluggefühl, Fußabstand/Relevanzradius und optionalem Sprungminimum; finale Parameter gesammelt übernehmen. [Spezifikation §13](docs/SONEC_MOVEMENT_SPEC.md#13-offene-detailfragen-für-technische-durchsicht-und-tests).
+- [ ] G2d vorbereiten: G2c `d87a2f6` 13/13 bestanden; kleine horizontale Sprungkorrektur und Jetpack ohne Haltezeit außerhalb des normalen Sprungs abstimmen, danach gezielt umsetzen/testen. Lokales Bewegungsbalancing (Sprunghöhe, Flugbeschleunigung, weitere Konstanten) und Gesamtabnahme; Parameter gesammelt übernehmen. [Spezifikation §13](docs/SONEC_MOVEMENT_SPEC.md#13-offene-detailfragen-für-technische-durchsicht-und-tests).
 
 ## Danach / separat
 
