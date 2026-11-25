@@ -18,7 +18,7 @@
 - Fachliche Endfassung und Abnahme: [Bewegungsspezifikation](docs/SONEC_MOVEMENT_SPEC.md).
 - Langzeitbeobachtung und weitere Parameterfeinjustierung möglich; keine separate HTML5-/Langzeitabnahme oder vollständige Randfallmatrix behauptet.
 - Schadensgeometrie mit zwei Körperkreisen bleibt von mechanischer Bewegung getrennt.
-- Offene Fehler und Verdachtsfälle stehen in [KNOWNBUGS.md](KNOWNBUGS.md), nicht als parallele TODO-Liste. J1-Test identifizierte den bekannten Neustart-Spritefehler als Flarak-Rakete; fehlender Flarak-Reset in GameInit quellenbelegt, Korrektur noch offen. A5c-Test meldet zusätzlich kleine Explosionen nach Neustart; Ursache nicht isoliert. Im separaten Bug-Chat ausdrücklich alle Spielobjekt-/Effekt-Resetpfade prüfen.
+- Bug-Chat: Reset-Audit abgeschlossen; B1.1 Flak/Flarak-Proto-Umstellung und Neustart-Reset lokal AGK-bestanden (11/11, a2ea2a8, 25.11.2026). Keine alten Raketen, Explosionen oder sonstigen Effekte bei getesteten Neustarts. Entwickler wünscht fortlaufende Langzeitbeobachtung bei normalen Tests; keine gesonderte Langzeit-/HTML5-Abnahme. Verbleibende Reset-Lücken und Index-Recycling-Verdachtsfälle in [KNOWNBUGS.md](KNOWNBUGS.md).
 - Energieüberschuss, Overload und Gegnergefährlichkeit im nachgelagerten Gameplay-Balancing behandeln.
 - Debug-Masterschalter und Diagnosemöglichkeiten erhalten; keine beiläufigen Änderungen.
 - Keine Deadline; HTML5, Deployment, Balancing und Fehleranalyse getrennt behandeln.
@@ -33,7 +33,7 @@
 
 ## Genau ein nächster Schritt
 
-Im vereinbarten separaten Bug-Chat Flammenwerfer und Neustartfehler gemäß [KNOWNBUGS.md](KNOWNBUGS.md) untersuchen, alle Objekt-/Effekt-Resetpfade prüfen und Korrekturpakete abstimmen. Anschließend Arbeitsblock B fachlich abstimmen. Arbeitsblock A abgeschlossen. Neue Ideen zu schadenswirksamen Aufladungen und Plattform-Flammenfallen im [BACKLOG.md](BACKLOG.md), ohne Implementierungsfreigabe. Keine weiteren Änderungen am akzeptierten Rauchsystem.
+B1.2–B1.4 (MG-Salvenzähler, Plasmablitz-Ladestand, Drohnen-Zerstörungsereignis) als verbleibendes Reset-Paket abstimmen und prüfen. Danach B2 Flammenwerfer, B3 Direkttreffer, zusätzliche belegte Befunde und B4 Abschluss gemäß KNOWNBUGS.md. Anschließend Arbeitsblock B fachlich abstimmen. Keine weiteren Änderungen am akzeptierten Rauchsystem.
 
 ## Referenzen
 

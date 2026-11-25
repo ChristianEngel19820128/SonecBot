@@ -3,16 +3,11 @@
 Stand: 25.11.2026 · develop. Regeln: [AGENTS.md](AGENTS.md).
 Vor automatisierten Prüfungen auf Dubletten prüfen. Keine automatische Codefreigabe. Behobene oder widerlegte Einträge nach Nachweis entfernen; Historie in Git. IDs erst nach geprüfter Zuordnung vergeben.
 
-## Spielobjekte/Effekte bleiben nach Neustart erhalten (Flarak-Rakete, kleine Explosionen)
-- ID: Noch nicht vergeben · Priorität: Offen · Status: Bestätigt.
-- Entwicklerbefund: J1-Test am 25.11.2026, Revision bb16236: bisher mysteriöses Sprite als Flarak-Rakete identifiziert; möglicherweise bleiben auch Launcher erhalten. Soll: alle Spielobjektinstanzen beim Neustart entfernen, Prototypressourcen behalten.
-- Quellbefund bb16236: `GameCreate` ruft `FlarakVisualTestCreate` auf, `GameInit` leert die FlarakList nicht. `FlarakDoAll` und `FlarakDrawAll` verarbeiten auch Raketen deaktivierter Launcher. Die fehlende Reset-Anbindung erklärt den Befund; sichtbare weitere Altobjekte sind noch nicht bestätigt.
-- Ergänzung A5c-Test f77a8c3, 25.11.2026: kleine Explosionen werden nach Neustart gezeichnet; Entwickler vermutet Flak. Quellbeleg: GameInit ruft ExplosionInit und BulletInit auf, beide leeren ihre Listen; FlarakList fehlt weiterhin. FlarakRocketDo kann bei Treffer/Ablauf neue kleine Explosionen vom Typ 3 erzeugen, Flak nutzt explosive Bullets. Ein fortlebendes Altobjekt könnte also nach dem Reset neue Explosionen erzeugen; konkrete Quelle nicht isoliert, kein Nachweis einer ungeleerten Explosionsliste.
-- Entwicklerauftrag für separaten Bug-Chat: sämtliche Spielobjekt-/Effekt-Initialisierungen auf vollständige Löschung/Deaktivierung prüfen, einschließlich globaler Einzelinstanzen, Listen, per Instanz erzeugter Sprites, Projektile, Timer, Folgespawns und Referenzen; Prototypen erhalten. Erst Befunde sichern, dann Korrekturpakete abstimmen.
-- Reset-Audit auf add9fe7: übrige Listen-/Einzelinstanz-Initialisierungen geprüft; Sonec.MGun.FireBurst und PlasmaBlitzGun.Upload fehlen in SonecInit; möglicher Salven-/Ladungsübertrag (noch kein lokaler Nachweis). DroneDeathEffectPending/DroneDeathPosition fehlen im Rundenreset, regulär aber im selben GameDo verbraucht (präventive Reset-Lücke). B1.2–B1.4 noch offen.
-- B1.1: nach Entwicklerfreigabe gemeinsame Proto-Sprites für Basis, Launcher, Flak, Rakete und Warnung; nur einmal in GameCreate geladen. FlarakInit leert Instanzen bei GameInit und setzt FirstFree auf 0; aktive Raketen blockieren Slot-Wiederverwendung, kein Remove während der Runde. Wrackfarbe und Debug-Pivots aus Instanzzustand; Kollisionsregeln unverändert. Lokaler Compile und Laufzeittest offen.
-- Reproduktion/Abnahme: bei aktiver Rakete bzw. vorhandenen intakten/zerstörten Flak/Flarak neu starten, keine alten Sprites, Raketen, KI oder Treffer; mehrfach wiederholen. Mehrere Stellungen, unterschiedliche Farben/Frames/Ausrichtung, Sockel, freie Raketen und Debug-Geometrie prüfen.
-- Dublette: ersetzt „Sporadisches Sprite nach Neustart“, ursprünglich aus TODO, Revision 0ba2ee8c665325f25a9e7da38a86c9ca49cb7e5a.
+## Neustart: verbleibende Zustandslücken bei Sonec und Drohne
+- ID: Noch nicht vergeben · Priorität: Offen · Status: Quellbefund bestätigt, Laufzeitwirkung nicht lokal reproduziert.
+- B1.2/B1.3: `SonecInit` setzt `Sonec.MGun.FireBurst` und `Sonec.PlasmaBlitzGun.Upload` nicht zurück. `SonecMGunInput` verarbeitet ausstehende Salven auch ohne Feuereingabe; bei gehaltenem Plasma-Eingang kann alter Ladestand erhalten bleiben. Soll: jede Runde ohne ausstehende Salve und ohne Ladestand. Prüfung: Neustart nach unterbrochener Mehrfachsalve bzw. Teilaufladung.
+- B1.4: `DroneDeathEffectPending` und `DroneDeathPosition` werden nicht beim Rundenreset gelöscht; normaler Verbrauch im selben `GameDo`, deshalb kein nachgewiesener Laufzeitfehler. Präventiv beide Werte in GameInit zurücksetzen; normale Drohnen-Zerstörung/Reward erhalten.
+- Quelle: Reset-Audit add9fe7, B1.1 a2ea2a8. Keine Korrektur dieser drei Lücken in B1.1. Der abgenommene Flarak-Neustartfehler ist kein offener Eintrag mehr; Nachweis in TECHNICAL.md und Git.
 
 ## Gelegentlich fehlende Direkttreffer
 - ID: Noch nicht vergeben · Priorität: Offen · Status: Vermutet.

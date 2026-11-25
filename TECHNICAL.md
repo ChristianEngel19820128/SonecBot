@@ -62,6 +62,13 @@ Objektverwaltung und Kollisionen bestehen weitgehend aus eigenen Strukturen/Pool
 - Direkte Seitenfront und Luft-Eckkreise, Fußlandung, Kisten-Support-Exit und Mini-Hop gemeinsam auflösen. Bewegungsparameter zentral in sonec.agc; aktuelle Werte dort prüfen.
 - Temporäre CSV-Diagnose nur unter Debug-Schaltern; Messmethode vor Schlussfolgerungen prüfen. Historische technische Details im [vorherigen Stand](https://github.com/ChristianEngel19820128/SonecBot/blob/0ba2ee8c665325f25a9e7da38a86c9ca49cb7e5a/TECHNICAL.md).
 
+## Flak/Flarak – Proto-Ressourcen und Rundenreset (B1.1, 25.11.2026)
+
+- `TProtoFlarak` hält fünf gemeinsame Sprite-Ressourcen (Basis, Launcher, Flak, Rakete, Warnanzeige), geladen in `GameCreate` über `FlarakProtoLoad`. Instanzen speichern Zustand statt Sprite-IDs. Draw setzt instanzbezogene Position, Winkel, Frame und Farben; Debug-Pivots werden aus Instanzpose berechnet. Kein Create/Delete pro Spawn; Debug-Ressourcen weiterhin separat.
+- `FlarakFirstFree` und wiederverwertbare Slots: kein Remove/Umsortieren während einer Runde; Wiederverwendung nur bei deaktivierter Stellung und zwei inaktiven Raketen. `FlarakInit` leert Liste und setzt FirstFree auf 0 in GameInit; Prototypen bleiben geladen. Sockel-Slotzuordnung, Treffergeometrie und freie Raketen bleiben erhalten.
+- **Lokaler AGK-Compile und Entwicklertest bestanden (11/11, a2ea2a8, 25.11.2026):** beide Varianten, Animation/Ausrichtung/Schüsse, mehrere Stellungen, isolierte Treffer-/Wrackfarben, Sockel/Plattformbindung/Zeichenreihenfolge, Raketen/Jetstreams, freie Raketen nach Trägerabgang, Debug-Hitboxen, Neustart mit aktiven Raketen und wiederholte Neustarts ohne alte Explosionen oder sonstige Effekte. Keine offenen Einzelpunkte. Der ursprüngliche Flarak-Neustartfehler gilt im geprüften Umfang als behoben; die frühere genaue Quelle kleiner Explosionen wurde nicht separat isoliert.
+- Entwickler wünscht weitere Langzeitbeobachtung bei laufenden Spieltests. Keine gesonderte Langzeitmessung, Ressourcenmessung oder HTML5-Abnahme behauptet. Index-Recycling-Verdachtsfälle sowie übrige Reset-Lücken bleiben separat in KNOWNBUGS.md.
+
 ## 3. Alpha-Walker: unveränderter Referenzstand
 
 ### Pivots und IK
