@@ -3,8 +3,7 @@
 **Stand:** 26. November 2026 · **Arbeitszweig:** develop
 
 
-- [ ] B3.3c relative Abfangkollisionen und Weltgrenzen. B3.1, B3.2, B3.3a und B3.3b lokal abgenommen.
-- [ ] B3.4 ballistische Flugphysik separat abstimmen und prüfen. Explosionsgröße im späteren Balancing.
+- [ ] B3.4 ballistische Flugphysik separat abstimmen und prüfen (physics.agc, spätere Wurfgranaten). B3.1–B3.3 lokal abgenommen. Explosionsgröße im späteren Balancing.
 - [ ] Zusätzliche belegte Befunde (Index-Recycling) und B4 Abschluss des Bug-Chats gemäß KNOWNBUGS.md.
 - [ ] Anschließend Arbeitsblock B fachlich abstimmen (Erfahrung, Ressourcen/Munition, Panzerung, Gefahrenbudget).
 
