@@ -125,6 +125,12 @@ Im bisherigen Spielkonzept sind folgende Systeme vorgesehen beziehungsweise teil
 Der tatsächliche Implementierungsstand wird in `TECHNICAL.md` festgehalten.
 
 
+### Granatwerfer und Wurfgranaten – Designentscheidung (26.11.2026)
+
+Der Granatwerfer schießt schnell und nahezu bzw. exakt horizontal in Blickrichtung. Seine flache ballistische Flugbahn soll bei stehendem Sonec auf einer theoretisch langen ebenen Plattform ungefähr nach drei Vierteln der Bildschirmbreite den Boden erreichen (bei der derzeitigen virtuellen Breite von 900 px etwa 675 px). Die genaue Kalibrierung berücksichtigt Abschusshöhe und Kollisionsgeometrie; keine endgültige Balancezahl.
+
+Dieselbe Taste soll später zwei eindeutig getrennte Aktionen auslösen: kurzes Drücken für den Granatwerfer, längeres Halten und anschließendes Loslassen für eine reguläre Wurfgranate. Längere Haltedauer bedeutet größere Wurfweite. Wurfgranaten fliegen in einem deutlicheren Bogen mit niedrigerer Geschwindigkeit als Werfergranaten. Die gemeinsame parametrierbare ballistische Physik soll in physics.agc von Kollisionsgeometrie und Waffenlogik getrennt werden. Halteschwelle, maximale Ladezeit, genaue Wurfparameter, Munition und Rückstoß sind noch abzustimmen. Die zukünftige kombinierte Bedienung ist noch nicht implementiert; B3.4 bereitet zunächst die Physik vor.
+
 ### Energieschild – Stand November 2026
 
 Der Energieschild ist für die Alpha in seinen wesentlichen Funktionen lokal getestet: Auf- und Abbau, erneutes Aktivieren während des Abbaus, proportionaler Schutz gegen Explosionen, Schadensverbrauch der Schildladung, verzögerte Regeneration und eine rote HUD-Schadensanzeige. Die rote Anzeige wächst bei weiteren Treffern und baut sich anschließend ab. Die Schildregeneration beginnt nach dem letzten Explosionsschaden verzögert; dies wurde im Spieltest bestätigt.

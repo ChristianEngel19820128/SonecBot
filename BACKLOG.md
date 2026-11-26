@@ -79,7 +79,7 @@ Bomber, Flarak, Jumppod einschließlich Landminen-Attrappe, Gefahren-/Erfahrungs
 
 - **Schadenswirksame Aufladeanimationen (25.11.2026):** Bereits während der sichtbaren Aufladung des Drohnenlasers und des Plasmablitzes soll eine Berührung der jeweiligen Aufladezone Schaden an gültigen Zielen verursachen können. Kontakt/Schaden unterbrechen weder die Aufladeanimation noch den regulären anschließenden Angriffs-/Schussprozess. Treffergeometrie, Fraktions-/Zielregeln, Schaden, Trefferintervall und Schild-/Panzerungswirkung später separat festlegen; gegen Sonec bestehende zentrale Zwei-Kreis-Treffergeometrie verwenden. Keine Änderung am bisherigen Angriff allein aufgrund dieses Backlog-Eintrags.
 
-- **Granatwerfer aufladen:** Granatwerfer-Taste gedrückt halten soll einen regulären Granatenwurf auslösen; die Granate fliegt ballistisch, die Haltedauer beeinflusst die Wurfstärke/Flugbahn. Genaue Auslöse- und Stärkegrenzen sowie Verhältnis zum bisherigen Rückstoß vor Umsetzung festlegen. **Nur Idee, nicht implementiert.**
+- **Granatwerfer/Wurfgranaten – spätere kombinierte Eingabe:** kurz drücken = Granatwerfer, halten und loslassen = ballistischer Wurf mit haltedauerabhängiger Wurfweite. Design in PROJECT.md festgehalten; B3.4 bereitet die gemeinsame Physik vor. Halteschwelle, Ladegrenzen, Rückstoß und Munition vor Eingabeimplementierung abstimmen; noch nicht implementiert.
 
 ## HUD, Warnungen und Trefferpartikel (24. November 2026)
 
