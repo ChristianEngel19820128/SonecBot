@@ -1025,11 +1025,13 @@ type TMenuOrb
 endtype
 
 type TMenuPaint
-    SpriteID as integer
-    Drip1SpriteID as integer
-    Drip2SpriteID as integer
-    Drip1TipSpriteID as integer
-    Drip2TipSpriteID as integer
+    Frame as integer
+    X as float
+    Y as float
+    Size as float
+    Red as integer
+    Green as integer
+    Blue as integer
     Drip1Length as float
     Drip2Length as float
     Drip1Max as float
@@ -1042,6 +1044,9 @@ type TMenuPaint
 endtype
 
 type TIntro
+    PaintSpriteID as integer
+    PaintDripSpriteID as integer
+    PaintTipSpriteID as integer
     PaintImageID as integer
     OrbImageID as integer
     OrbSpriteID as integer
