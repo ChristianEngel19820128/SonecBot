@@ -3,10 +3,11 @@
 **Stand:** 26. November 2026 · **Arbeitszweig:** develop
 
 
-- [ ] Lokale AGK-Abnahme der implementierten Landefreigabe tieferer Plattformen (KNOWNBUGS.md); danach Chatabschluss. Waffen-Tiefenfreigabe 18/18 auf 8d3c8a1 abgenommen.
-- [ ] Index-Recycling-Befunde und B4 Abschluss des Bug-Chats gemäß KNOWNBUGS.md.
 - [ ] Real Alpha: erweiterte Walker-Körperteil-Trefferzonen früh in Arbeitsblock B fachlich abstimmen, vor Panzerung/Schadenswirkung (IK/Bewegung schützen).
 - [ ] Arbeitsblock B Grundsysteme abstimmen (Erfahrung, Ressourcen/Munition, Panzerung, Gefahrenbudget).
+- [ ] Zwei Index-Recycling-Verdachtsfälle separat gezielt bewerten, spätestens vor Release (KNOWNBUGS.md); keine bestätigte Laufzeitregression.
+
+Bug-Chat im vereinbarten Umfang abgeschlossen (26.11.2026): Landefreigabe 6/6 auf 5bfba31, Waffen-Tiefenfreigabe 18/18 auf 8d3c8a1. Insgesamt 149/149 lokale Testpunkte, 12 Implementierungspakete, eine Compile-Korrektur, keine funktionale Nachkorrektur.
 
 B3.1–B3.4 lokal abgenommen (26.11.2026), B3.4 12/12 auf 1c32657. Explosionsgröße im späteren Balancing; Wurfgranaten-Bedienung später.
 
