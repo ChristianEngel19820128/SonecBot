@@ -38,7 +38,7 @@ Bomber, Flarak, Jumppod einschließlich Landminen-Attrappe, Gefahren-/Erfahrungs
 - **Gamepad-Rebinding, Maus und weitere Bedienoptionen:** später; Entwickler ist mit der vorhandenen Gamepad-Steuerung zufrieden. Keyboard-Umbelegung, Speicherung und Reset sind umgesetzt.
 - **Spieloptionen zurücksetzen:** Umfang getrennt vom fertigen Keyboard-Reset klären.
 - **Energieanziehung als Halten/Umschalten:** mögliche spätere Einstellung; heutiges Verhalten nicht automatisch ändern.
-- **Umfangreichere Missionen, Informationsavatar oder Sprache:** über die kleinen Alpha-Ziele und vorhandenen Warn-/Hilfetexte hinausgehender Ausbau.
+- **Umfangreichere Missionen, Informationsavatar oder Sprache:** über die kleinen Alpha-Ziele und vorhandenen Warn-/Hilfetexte hinausgehender Ausbau. Polishing-Idee 26.11.: gezielte englische Sprachmeldungen zu Spielereignissen, z. B. „Touchdown imminent“ (Formulierungsvorschlag für bevorstehende Landung); Auswahl, Trigger, Audio und Prioritäten später konkretisieren.
 - **Optionale Draufsicht und Multiplayer:** langfristig, ohne zugesagten Release.
 
 ## Belohnungs-Balancing: Grenzfälle und Ersatznutzen
@@ -57,7 +57,7 @@ Bomber, Flarak, Jumppod einschließlich Landminen-Attrappe, Gefahren-/Erfahrungs
 
 - **Trefferfarben nach Schadenshöhe:** Optional später ein einheitliches Farbspektrum für die Höhe eines erlittenen Treffers entwerfen. Derzeit bleibt Standardrot RGB (255,0,0) für alle Gegner bestehen; keine Umsetzung im aktuellen Drohnenschritt.
 
-- **Weitere Paintball-Flecken:** zusätzliche Grafiken bei Gelegenheit; optionaler Alpha-Mini-Schritt ist bereits auf ein Pixel breite Laufnasen ohne Fleckenrotation begrenzt. Aufwendige organische Tropfen sind kein aktueller Auftrag.
+- **Menü-Paintball als freiwillige Entspannungs-/Abwechslungsaufgabe (26.11.2026):** Entwickler beobachtet sich regelmäßig wiederholende Fleckenfarbtypen; vielfältigere Farbrandomisierung, ausdrücklich auch Schwarz möglich, kleinere Mindestgröße der Kugeln. Optional eigene Graffiti im Titel-Hintergrundbild durch Entwickler. Bestehende abgenommene UV-Ausrichtung und ein Pixel breite Laufnasen erhalten; Farbalgorithmus und Größen separat abstimmen. Zusätzliche Fleckengrafiken bei Gelegenheit, kein Releaseblocker.
 - **Drohnen-/Quadrokopter-Art-Pass:** an den Spielstil angleichen, separat vom Funktionsausbau. Fehlende Endgrafik ist kein Entwicklungsblocker; beim Quadrokopter zunächst die Rolle klären.
 - **Strukturierte externe Hilfetexte, etwa JSON:** mögliche spätere Ausbaustufe, kein aktueller Architekturauftrag.
 - **Öffentliche Hinweise:** englische itch.io-Bereiche `COMING SOON` und `TIPS & TRICKS` bei passendem Deployment-Schritt; Pläne und verfügbare Funktionen unterscheiden.
@@ -74,6 +74,12 @@ Bomber, Flarak, Jumppod einschließlich Landminen-Attrappe, Gefahren-/Erfahrungs
 
 
 - **Jumppod-Sprungstärke (Balancing):** J1-Entwickler empfindet den Pod möglicherweise als zu stark; Ursache kann auch der normale Sprung sein. Beide getrennt im Spieltest bewerten. Aktuell Faktor 2.0; keine bestätigte Änderung.
+
+## Bewegungs-Ergänzungen (26. November 2026)
+
+- **Normale horizontale Sprungkorrektur leicht erhöhen:** Entwickler wünscht etwas mehr Einfluss im regulären Sprung; bestehende schwache Korrektur (0.001 Beschleunigung, 1.5 Richtungsgrenze laut docs/SONEC_MOVEMENT_SPEC.md) als Referenz, konkrete Parameter noch offen. Keine Änderung an Jetpack, vertikalem Sprungimpuls oder Trägermomentum ohne Entscheidung.
+- **Allgemeines Treppensystem:** vorhandene Sockel-/Stufenmechanik so auslagern und parametrisieren, dass Höhen übergeben werden können und z. B. kleinste Vordergrundkisten als Stufe nutzbar sind. Bestehende Kollisions-/Mini-Hop-Regeln erhalten; zulässige Höhen und Geometrie separat abstimmen.
+- **Absichtliches Fallenlassen auf tiefere Ebene:** mögliche Eingabekombination Ducken + Rückwärtsbewegung (im Ducken kein aktives Laufen). Gezielte Freigabe nur der verlassenen Oberfläche, tiefere gültige Landung und Vermeidung versehentlicher Auslösung vor Umsetzung entwerfen. Separat vom unerwarteten Durchfall-Bug in KNOWNBUGS.md.
 
 ## Spätere Eingabe- und Waffensteuerung (24. November 2026)
 

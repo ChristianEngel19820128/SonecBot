@@ -147,7 +147,7 @@ Avatar/Sprachausgabe und umfangreiche Grafikpolitur sind keine Voraussetzung. Wa
 | Plattformen / Walker | Laufbegrenzung/Bremsen früher korrigiert; Bewegungsumstellung abgeschlossen; erneute konkrete Befunde separat erfassen. Sonec kann in den Walker springen; mechanischen Körperkontakt separat bewerten. Erweiterte Waffentrefferzonen in Arbeitsblock B priorisiert, IK und akzeptierte Turm-Funktion schützen. |
 | Audio | Kratzen/Überlagerung mehrerer Sounds, etwa Kettenexplosionen, gezielt untersuchen. Kein bewiesener Enginefehler; Soundpolitur nach spielerischem Bedarf begrenzen. |
 | Minen / Browser | Welt-Y-Korrektur positiv rückgemeldet, längere Randbeobachtungen nicht vollständig protokolliert. Minen-/Warnhäufigkeit ins Balancing; frische und längere Browsersitzung getrennt beobachten. |
-| Paintball | Abgeschlossen und vom Entwickler unter Windows visuell bestätigt: ein Pixel breite farblich passende Laufnasen nach unten, korrekte Fleckenausrichtung nach AGK-UV-Korrektur und normales Orb-/Menüverhalten. Kein weiterer Grafikumbau. |
+| Paintball | Abgeschlossen und vom Entwickler unter Windows visuell bestätigt: ein Pixel breite farblich passende Laufnasen nach unten, korrekte Fleckenausrichtung nach AGK-UV-Korrektur und normales Orb-/Menüverhalten. Bestehende Grafikabnahme erhalten; freiwillige spätere Menü-Farb-/Größenvariation und Graffiti-Idee im BACKLOG. |
 
 ## 7. Themenchats, offene Details und Abschluss
 
@@ -168,6 +168,6 @@ Gefahrenzulassung, Erholungsrhythmus, tatsächlicher Ressourcengewinn und Muniti
 Bekannte Qualitätsfragen erhalten eine ausdrückliche Entscheidung bzw. dokumentierte Grenze; der integrierte Alpha-Build wird auf der Zielplattform geprüft.
 Diese Kriterien sind Prüfaufträge für die Umsetzung, keine bereits bestandene Alpha-Abnahme. itch.io bleibt Draft/Secret URL bis zu einer gesonderten Entscheidung.
 
-**Nächster Schritt:** verbleibende konkrete Befunde im Bug-Chat gemäß [KNOWNBUGS.md](KNOWNBUGS.md) (Tiefenfreigabe Spielerwaffen, Index-Recycling), anschließend Arbeitsblock B einschließlich priorisierter Walker-Körperteil-Trefferzonen fachlich abstimmen. B1–B3.4 im vereinbarten Umfang lokal abgenommen; keine weiteren Rauchänderungen.
+**Nächster Schritt:** verbleibende konkrete Befunde im Bug-Chat gemäß [KNOWNBUGS.md](KNOWNBUGS.md) (unerwarteter Durchfall durch tiefere Plattform mit Todesfolge zuerst, danach Index-Recycling), anschließend Arbeitsblock B einschließlich priorisierter Walker-Körperteil-Trefferzonen fachlich abstimmen. B1–B3.4 und Waffen-Tiefenfreigabe (18/18, 8d3c8a1) im vereinbarten Umfang lokal abgenommen; keine weiteren Rauchänderungen. Neue Bewegungs- und Polishing-Ideen in BACKLOG.md, Menü-Paintball freiwillige Abwechslung ohne Releaseblocker.
 
 Spätere Varianten und Ideen stehen in [BACKLOG.md](BACKLOG.md). Frühere Langfassungen liegen im [Archiv](docs/archive/README.md); sie werden nur für konkrete historische Fragen gelesen.

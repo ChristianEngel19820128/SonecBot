@@ -28,6 +28,7 @@ Aktiver AGK-Code: `source/sonec/`; historische BlitzBasic-Quellen: `source/legac
 | controls.agc / def_joypad.agc | Eingabehelfer und Joystick-Auswahl |
 | timer.agc | Eigene Zeit-/Timerhilfen; nicht mit AGK-Physik gleichsetzen |
 | physics.agc / collision.agc | Gemeinsame ballistische Zeitintegration und geometrische Sweep-Verfahren; getrennt von Waffenreaktionen |
+| weaponcollision.agc | Gemeinsame quellen- und ebenenbezogene Freigabe direkter Waffentreffer |
 | sprite.agc | Geteilte Protosprites, SpriteData/Offsets und Zeichenpfad |
 | plate.agc / chest.agc / orb.agc / mine.agc | Plattformen, Kisten, Orbs und Minen |
 | bullet.agc / flame.agc / explosion.agc | Projektile, Flammen und Explosionsschaden |
@@ -134,6 +135,13 @@ Objektverwaltung und Kollisionen bestehen weitgehend aus eigenen Strukturen/Pool
 - **Lokaler AGK-Compile und Entwicklertest bestanden (12/12, 1c32657, 26.11.2026):** horizontale Schüsse beidseitig, flache gleichmäßig gekrümmte Flugbahn, ca. 3/4 Bildschirmbreite im Stehen, kürzer im Ducken/länger aus höherer Position, Treffer und Abfangen, Explosionsposition, Feuerrate/Munition/Rückstoß, übrige Waffen/Sonec-Bewegung und Weltgrenzen bestätigt. Entwickler bewertet Granatwerfer gegenüber früherer unpräziser Version als verbessert. Neuer separater Tiefenüberdeckungsbefund in KNOWNBUGS.md, kein offener B3.4-Einzeltest.
 - Separate Rechenmodellprüfung 15/15; keine instrumentierte Framezeitmessung, Langzeit-/HTML5-Abnahme oder tatsächliche Nutzung des optionalen Luftwiderstands im Spiel behauptet. B3.1–B3.4 im vereinbarten Umfang abgeschlossen.
 
+## Waffen-Tiefenfreigabe (26.11.2026)
+
+- TWeaponDepth / WeaponDepthAllows: gesperrte Plattformidentitäten und getrennte Hintergrund-Unterebenen. MG, Granatwerfer, Flammenpartikel und Walker-MG übernehmen beim Abschuss eine unveränderliche Momentaufnahme; aktives Plasma übernimmt aktuelle Pose und Freigabe vor der Schadensprüfung, abgelöster Resteffekt behält den letzten Zustand. Sonec nutzt SONEC_DEPTH_PASSAGE und gültigen mechanischen PassThroughChestIndex sowie tatsächliche Hintergrundkisten-Überdeckung. Walker nutzt vorhandene Bewegungshülle und Trägergeometrie. Eindeutige Plattform-ID pro Erzeugung schützt Projektil-Snapshots vor Slot-Recycling, nicht vor dem separat registrierten alten Flarak-Trägerbindungsbefund.
+- Direkte bestehende Trefferpfade einschließlich zusätzlicher Bullet-Kistenprüfung gefiltert; freie Gegner/Abfangziele, Flak, Bomberbomben, indirekte Explosionen, Bewegungsmechanik unverändert. Neu erzeugte Plattformen nicht in alten Snapshots; Walker-Überdeckung angenähert, keine neuen Körperteil-Trefferzonen.
+- **Lokaler AGK-Compile und Entwicklertest bestanden (18/18, 8d3c8a1, 26.11.2026):** alle vier Waffen gegen Hintergrundkisten und bei Durchflug, freie Hintergrund-/Vordergrundziele, plattformgebundene Ziele, andere Ebenen, gespeicherte Projektilfreigabe, Live-Plasma, freie Gegner/Abfangen, Walker-MG, Flak/Bomber, Explosionen/Deckung, Bewegung/Animation, Neustart und subjektive Performance bestätigt. Keine offenen Einzelpunkte. Entwickler: großer Testaufwand, zufriedenstellend. Separater Rechenmodelltest 22/22; keine instrumentierte Langzeit- oder HTML5-Abnahme.
+- Neuer separater mechanischer Befund: unerwarteter Durchfall durch tiefer liegende Plattform mit Todesfolge; in KNOWNBUGS.md priorisiert, Ursache offen. Keine nachgewiesene Regression durch weaponcollision.agc.
+
 ## 3. Alpha-Walker: unveränderter Referenzstand
 
 ### Pivots und IK
@@ -228,7 +236,7 @@ Hochhausbewegung standardmäßig positiver dt-Pfad (B); Plattformbewegung im Nor
 
 ### Browserneustart nach längeren Tests – Entwicklerbeobachtung vom 20.11.2026
 
-Der Entwickler berichtet von Performance-Einbußen nach längerem Testen, die sich durch einen Browserneustart wieder besserten. Ursache und Reproduzierbarkeit wurden nicht isoliert nachgewiesen.
+Der Entwickler berichtet von Performance-Einbußen nach längerem Testen, die sich durch einen Browserneustart wieder besserten. Erneute Beobachtung am 26.11.2026 nach der Waffen-Tiefenfreigabe: auch Chat-Texteingabe träge, Browserneustart beabsichtigt. Kein isolierter Nachweis der Ursache, kein belegter Zusammenhang mit Spiellaufzeit oder neuer Waffenlogik, keine neue Messung.
 
 Für vergleichbare Tests dieselbe Build-Revision und Umgebung festhalten; Zustand direkt nach Browserneustart und nach längerer Sitzung getrennt beurteilen. Vor einem Vergleich bei auffälliger Trägheit eine frische Sitzung als Ausgangspunkt prüfen, die Auffälligkeit der längeren Sitzung aber ebenfalls dokumentieren. Ein flüssiger Neustart allein schließt ein Laufzeitproblem nicht aus.
 
