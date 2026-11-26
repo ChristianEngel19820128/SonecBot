@@ -106,7 +106,7 @@ Legacy-Grafiken (`rakstellung.png`, `spacejet.png`, `falle.bmp`) sind Vorlagen, 
 - Explosiv- und panzerbrechende Geschosse sind besprochene Beispiele. Umrechnungsmenge, Kapazitäten und Umgang mit bereits gemischten Vorräten werden vor Umsetzung konkretisiert.
 - Energie und Munition sind Belohnungen und Überlebensmittel. Aufbau von Vorräten darf spätere Herausforderung begründen; wirkungsloses Einsammeln erzeugt keinen künstlichen Fortschritt.
 - Einfache Schadenskategorien/Widerstände ermöglichen später das Konterprinzip. Keine vollständige Rüstungsmatrix oder endgültigen Multiplikatoren für die Alpha verlangen.
-- Walker-Beinschäden sind ein Beispiel für taktische Wirkung, kein beschlossener Umbau der akzeptierten Walker-Kollision.
+- **Walker-Körperteil-Trefferzonen – höher priorisierte Real-Alpha-Aufgabe (Entwicklerentscheidung 26.11.2026):** Der bisher vorwiegend am Turm treffbare Walker wirkt noch halbfertig. Zusätzliche direkte Trefferzonen an den sichtbaren Körperteilen früh in Arbeitsblock B und vor der Panzerungs-/Schadenswirkung fachlich abstimmen. Bestehende Posen/IK, Bewegung, Zielen und Rückstoß erhalten. Konkrete Zonen (z. B. Corpus, Beine), Treffergeometrie, Schadensverteilung, taktische Beeinträchtigungen und Explosionen im eigenen Entwurf festlegen; keine automatisch beschlossene Teilzerstörung oder neue Bewegungsphysik.
 
 ### Gefahrenbudget und Erholung – offen
 
@@ -144,7 +144,7 @@ Avatar/Sprachausgabe und umfangreiche Grafikpolitur sind keine Voraussetzung. Wa
 | --- | --- |
 | M1 / Bewegungsruckeln | Untersuchung zurückgestellt; bei 75 Hz laut Entwickler nicht mehr vorhanden, Ursache unbewiesen. Behandlung des früher vereinbarten Release-Gates vor Release ausdrücklich entscheiden; keine automatische Migration. |
 | K1 / Treffer | K1b/K1c abgenommen, K1d/Abendrunde erfolgreich rückgemeldet. Zwei spezielle K1a-Minenanordnungen waren nicht durchführbar; gezielten Nachtestbedarf festlegen, keine pauschale Wiederöffnung bestandener Tests. |
-| Plattformen / Walker | Laufbegrenzung/Bremsen früher korrigiert; Bewegungsumstellung abgeschlossen; erneute konkrete Befunde separat erfassen. Sonec kann in den Walker springen; konkreten Körperkontakt separat bewerten, IK und Turm-Schadenszone schützen. |
+| Plattformen / Walker | Laufbegrenzung/Bremsen früher korrigiert; Bewegungsumstellung abgeschlossen; erneute konkrete Befunde separat erfassen. Sonec kann in den Walker springen; mechanischen Körperkontakt separat bewerten. Erweiterte Waffentrefferzonen in Arbeitsblock B priorisiert, IK und akzeptierte Turm-Funktion schützen. |
 | Audio | Kratzen/Überlagerung mehrerer Sounds, etwa Kettenexplosionen, gezielt untersuchen. Kein bewiesener Enginefehler; Soundpolitur nach spielerischem Bedarf begrenzen. |
 | Minen / Browser | Welt-Y-Korrektur positiv rückgemeldet, längere Randbeobachtungen nicht vollständig protokolliert. Minen-/Warnhäufigkeit ins Balancing; frische und längere Browsersitzung getrennt beobachten. |
 | Paintball | Abgeschlossen und vom Entwickler unter Windows visuell bestätigt: ein Pixel breite farblich passende Laufnasen nach unten, korrekte Fleckenausrichtung nach AGK-UV-Korrektur und normales Orb-/Menüverhalten. Kein weiterer Grafikumbau. |
@@ -168,6 +168,6 @@ Gefahrenzulassung, Erholungsrhythmus, tatsächlicher Ressourcengewinn und Muniti
 Bekannte Qualitätsfragen erhalten eine ausdrückliche Entscheidung bzw. dokumentierte Grenze; der integrierte Alpha-Build wird auf der Zielplattform geprüft.
 Diese Kriterien sind Prüfaufträge für die Umsetzung, keine bereits bestandene Alpha-Abnahme. itch.io bleibt Draft/Secret URL bis zu einer gesonderten Entscheidung.
 
-**Nächster Schritt:** vereinbarter separater Flammenwerfer-/Neustart-Bug-Chat gemäß [KNOWNBUGS.md](KNOWNBUGS.md), anschließend Arbeitsblock B fachlich abstimmen. Sonstige Fremdbugs zurückgestellt; keine weiteren Rauchänderungen.
+**Nächster Schritt:** verbleibende konkrete Befunde im Bug-Chat gemäß [KNOWNBUGS.md](KNOWNBUGS.md) (Tiefenfreigabe Spielerwaffen, Index-Recycling), anschließend Arbeitsblock B einschließlich priorisierter Walker-Körperteil-Trefferzonen fachlich abstimmen. B1–B3.4 im vereinbarten Umfang lokal abgenommen; keine weiteren Rauchänderungen.
 
 Spätere Varianten und Ideen stehen in [BACKLOG.md](BACKLOG.md). Frühere Langfassungen liegen im [Archiv](docs/archive/README.md); sie werden nur für konkrete historische Fragen gelesen.

@@ -3,9 +3,12 @@
 **Stand:** 26. November 2026 · **Arbeitszweig:** develop
 
 
-- [ ] B3.4 ballistische Flugphysik separat abstimmen und prüfen (physics.agc, spätere Wurfgranaten). B3.1–B3.3 lokal abgenommen. Explosionsgröße im späteren Balancing.
-- [ ] Zusätzliche belegte Befunde (Index-Recycling) und B4 Abschluss des Bug-Chats gemäß KNOWNBUGS.md.
-- [ ] Anschließend Arbeitsblock B fachlich abstimmen (Erfahrung, Ressourcen/Munition, Panzerung, Gefahrenbudget).
+- [ ] Spielerwaffen-Tiefenfreigabe bei Hintergrundkisten und Durchflug von unten analysieren und Korrekturumfang abstimmen; weitere plattformgebundene Objekte prüfen (KNOWNBUGS.md).
+- [ ] Index-Recycling-Befunde und B4 Abschluss des Bug-Chats gemäß KNOWNBUGS.md.
+- [ ] Real Alpha: erweiterte Walker-Körperteil-Trefferzonen früh in Arbeitsblock B fachlich abstimmen, vor Panzerung/Schadenswirkung (IK/Bewegung schützen).
+- [ ] Arbeitsblock B Grundsysteme abstimmen (Erfahrung, Ressourcen/Munition, Panzerung, Gefahrenbudget).
+
+B3.1–B3.4 lokal abgenommen (26.11.2026), B3.4 12/12 auf 1c32657. Explosionsgröße im späteren Balancing; Wurfgranaten-Bedienung später.
 
 B2 Flammenwerfer abgeschlossen (25.11.2026): B2.1 Partikelbewegung 12/12 auf 1bed93b, B2.2/B2.3 Durchdringung und zeitabhängiger Schaden 13/13 auf 7c44b93 lokal AGK-bestanden. Bewegung unverändert lassen; endgültiges Balancing nachgelagert.
 
