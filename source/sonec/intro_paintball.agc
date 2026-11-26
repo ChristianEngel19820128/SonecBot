@@ -126,6 +126,9 @@ function IntroPaintShoot(Intro ref as TIntro,X as float,Y as float)
     local Paint as TMenuPaint
     local Size as float
     local HitRadius as float
+    local CrossRed as integer
+    local CrossGreen as integer
+    local CrossBlue as integer
     if Intro.PaintImageID <= 0 then exitfunction
     for i = MENU_ORB_COUNT-1 to 0 step -1
         if Intro.Orbs[i].Enabled = TRUE
@@ -165,7 +168,13 @@ function IntroPaintShoot(Intro ref as TIntro,X as float,Y as float)
                 Paint.Drip2Max = Random(7,20)
                 Intro.Paint.Insert(Paint)
                 if Intro.CrossSpriteID > 0
-                    SetSpriteColor(Intro.CrossSpriteID,Max(80,Paint.Red),Max(80,Paint.Green),Max(80,Paint.Blue),255)
+                    CrossRed = Paint.Red
+                    CrossGreen = Paint.Green
+                    CrossBlue = Paint.Blue
+                    if CrossRed < 80 then CrossRed = 80
+                    if CrossGreen < 80 then CrossGreen = 80
+                    if CrossBlue < 80 then CrossBlue = 80
+                    SetSpriteColor(Intro.CrossSpriteID,CrossRed,CrossGreen,CrossBlue,255)
                 endif
                 exitfunction
             endif
