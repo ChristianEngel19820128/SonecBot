@@ -38,7 +38,7 @@ function IntroPaintUpdate(Intro ref as TIntro,Now as integer)
             Intro.Orbs[FreeSlot].Enabled = TRUE
             Intro.Orbs[FreeSlot].X = Random(35,Intro.MenuWidth-35)
             Intro.Orbs[FreeSlot].Y = Intro.MenuHeight+30
-            Intro.Orbs[FreeSlot].Size = Random(12,18)
+            Intro.Orbs[FreeSlot].Size = Random(6,20)
             Intro.Orbs[FreeSlot].Speed = Random(18,48)*0.001
             Intro.Orbs[FreeSlot].SpeedX = Random(-18,18)*0.001
             Intro.Orbs[FreeSlot].NextSteerMs = Now+Random(180,450)
@@ -217,8 +217,9 @@ function IntroPaintDraw(Intro ref as TIntro)
     if Intro.OrbSpriteID > 0
         for i = 0 to MENU_ORB_COUNT-1
             if Intro.Orbs[i].Enabled = TRUE
-                SetSpriteSize(Intro.OrbSpriteID,Intro.Orbs[i].Size,Intro.Orbs[i].Size)
-                SetSpriteOffset(Intro.OrbSpriteID,Intro.Orbs[i].Size*0.5,Intro.Orbs[i].Size*0.5)
+                // Absolute scale of the native 20x20 orb; apply the final pivot after scaling.
+                SetSpriteScaleByOffset(Intro.OrbSpriteID,Intro.Orbs[i].Size/20.0,Intro.Orbs[i].Size/20.0)
+                SetSpriteOffset(Intro.OrbSpriteID,GetSpriteWidth(Intro.OrbSpriteID)*0.5,GetSpriteHeight(Intro.OrbSpriteID)*0.5)
                 SetSpritePositionByOffset(Intro.OrbSpriteID,Intro.Orbs[i].X,Intro.Orbs[i].Y)
                 DrawSprite(Intro.OrbSpriteID)
             endif
