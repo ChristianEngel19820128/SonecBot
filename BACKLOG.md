@@ -103,3 +103,5 @@ Bomber, Flarak, Jumppod einschließlich Landminen-Attrappe, Gefahren-/Erfahrungs
 
 Historische Ausgangsstände bleiben im [Archiv](docs/archive/README.md); kein Pflichtlesestoff beim Chatstart.
 
+
+- **Experimentelle Menü-Musik (26.11.2026):** Entwickler eigener WAV-Loop `media/mfx/mystery_loop_2026-11-11.wav`, testweise als wiederholter Sound mit Lautstärke 35 im Menü inklusive Optionen; Stopp beim Spielstart/Programmende, Neustart bei Rückkehr. HTML5-Start nach Eingabe vorgesehen; lokaler Audio-/Plattformtest offen. Keine neuen Audiooptionen.

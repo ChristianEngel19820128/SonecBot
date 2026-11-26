@@ -285,7 +285,12 @@ repeat
 	endif
 
 	if Game.IsLost = TRUE
+        // Browsers require a user gesture before audio can begin.
+        if Device$ <> "html5" or GetPointerPressed() = 1 or GetRawLastKey() > 0
+            IntroMusicStart(Intro)
+        endif
 		if IntroDo(Intro,Game.Sound,Keys,Options,Game.JoystickIndex,CurrentNow) = TRUE
+			IntroMusicStop(Intro)
 			GameInit(Game,CurrentNow)
 		endif
 		IntroDraw(Intro)
@@ -321,5 +326,8 @@ repeat
 	Swap()
 	
 until GetESCPressed() = 1 or (Device$ <> "html5" and Intro.IsQuit = TRUE)
+
+IntroMusicStop(Intro)
+if Intro.MusicSoundID > 0 then DeleteSound(Intro.MusicSoundID)
 
 

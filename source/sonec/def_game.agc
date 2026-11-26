@@ -1048,6 +1048,8 @@ type TMenuPaint
 endtype
 
 type TIntro
+    MusicSoundID as integer
+    MusicInstanceID as integer
     PaintSpriteID as integer
     PaintDripSpriteID as integer
     PaintTipSpriteID as integer

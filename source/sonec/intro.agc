@@ -27,6 +27,7 @@ function IntroCreate(Intro ref as TIntro,vx as integer,vy as integer,Now as inte
 
 	IntroProtoLoad(Intro)
     IntroPaintCreate(Intro,vx,vy,Now)
+    Intro.MusicSoundID = LoadSound("/media/mfx/mystery_loop_2026-11-11.wav")
 	
 	
 	Intro.Background.SpriteData.Center = TRUE
@@ -402,6 +403,20 @@ function IntroKeyboardTableUpdate(Intro ref as TIntro,Keys ref as TKeys)
 			endif
 		endif
 	next Row
+endfunction
+
+// Experimental menu-only loop; keep sound effects and gameplay audio independent.
+function IntroMusicStart(Intro ref as TIntro)
+    if Intro.MusicSoundID > 0 and Intro.MusicInstanceID = 0
+        Intro.MusicInstanceID = PlaySound(Intro.MusicSoundID,35,1)
+    endif
+endfunction
+
+function IntroMusicStop(Intro ref as TIntro)
+    if Intro.MusicSoundID > 0 and Intro.MusicInstanceID > 0
+        StopSound(Intro.MusicSoundID)
+        Intro.MusicInstanceID = 0
+    endif
 endfunction
 
 function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Options ref as TGameOptions,JoystickIndex as integer,Now as integer)
