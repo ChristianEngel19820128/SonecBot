@@ -164,6 +164,9 @@ function IntroPaintShoot(Intro ref as TIntro,X as float,Y as float)
                 Paint.Drip1Max = Random(10,28)
                 Paint.Drip2Max = Random(7,20)
                 Intro.Paint.Insert(Paint)
+                if Intro.CrossSpriteID > 0
+                    SetSpriteColor(Intro.CrossSpriteID,Max(80,Paint.Red),Max(80,Paint.Green),Max(80,Paint.Blue),255)
+                endif
                 exitfunction
             endif
         endif

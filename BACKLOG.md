@@ -105,3 +105,5 @@ Historische Ausgangsstände bleiben im [Archiv](docs/archive/README.md); kein Pf
 
 
 - **Experimentelle Menü-Musik (26.11.2026):** Entwickler eigener WAV-Loop `media/mfx/mystery_loop_2026-11-11.wav`, testweise als wiederholter Sound mit Lautstärke 35 im Menü inklusive Optionen; Stopp beim Spielstart/Programmende, Neustart bei Rückkehr. HTML5-Start nach Eingabe vorgesehen; lokaler Audio-/Plattformtest offen. Keine neuen Audiooptionen.
+
+- **Menü-Fadenkreuz:** `media/gfx/gui/cross.png` (18×18), gemeinsames Software-Sprite am Pointer-Mittelpunkt, zuletzt gezeichnet; Systemcursor innerhalb der Menüfläche ausgeblendet, bei Spielstart/Ende wieder sichtbar. Trefferfarbe mit RGB-Untergrenze 80 für Sichtbarkeit; lokaler Desktop-/HTML5-Test offen. Musik unverändert.

@@ -27,6 +27,11 @@ function IntroCreate(Intro ref as TIntro,vx as integer,vy as integer,Now as inte
 
 	IntroProtoLoad(Intro)
     IntroPaintCreate(Intro,vx,vy,Now)
+    Intro.CrossImageID = LoadImage("/media/gfx/gui/cross.png")
+    if Intro.CrossImageID > 0
+        Intro.CrossSpriteID = CreateSprite(Intro.CrossImageID)
+        SetSpriteOffset(Intro.CrossSpriteID,GetSpriteWidth(Intro.CrossSpriteID)*0.5,GetSpriteHeight(Intro.CrossSpriteID)*0.5)
+    endif
     Intro.MusicSoundID = LoadSound("/media/mfx/mystery_loop_2026-11-11.wav")
 	
 	
@@ -827,6 +832,20 @@ endfunction Value
 //----------------------------------------------------------------------
 // 
 //----------------------------------------------------------------------
+
+function IntroCrossDraw(Intro ref as TIntro)
+    local X as float
+    local Y as float
+    X = GetPointerX()
+    Y = GetPointerY()
+    if Intro.CrossSpriteID > 0 and X >= 0 and X < Intro.MenuWidth and Y >= 0 and Y < Intro.MenuHeight
+        SetRawMouseVisible(0)
+        SetSpritePositionByOffset(Intro.CrossSpriteID,X,Y)
+        DrawSprite(Intro.CrossSpriteID)
+    else
+        SetRawMouseVisible(1)
+    endif
+endfunction
 
 function IntroDraw(Intro ref as TIntro)
 	local k as integer

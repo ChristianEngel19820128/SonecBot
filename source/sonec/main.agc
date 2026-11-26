@@ -291,6 +291,7 @@ repeat
         endif
 		if IntroDo(Intro,Game.Sound,Keys,Options,Game.JoystickIndex,CurrentNow) = TRUE
 			IntroMusicStop(Intro)
+            SetRawMouseVisible(1)
 			GameInit(Game,CurrentNow)
 		endif
 		IntroDraw(Intro)
@@ -323,10 +324,14 @@ repeat
 	endif	
 	
 	Drawtext(FPS)
+    if Game.IsLost = TRUE
+        IntroCrossDraw(Intro)
+    endif
 	Swap()
 	
 until GetESCPressed() = 1 or (Device$ <> "html5" and Intro.IsQuit = TRUE)
 
+SetRawMouseVisible(1)
 IntroMusicStop(Intro)
 if Intro.MusicSoundID > 0 then DeleteSound(Intro.MusicSoundID)
 
