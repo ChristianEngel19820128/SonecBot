@@ -155,9 +155,9 @@ function IntroPaintShoot(Intro ref as TIntro,X as float,Y as float)
                 Paint.Drip2X = X+Size*0.10
                 Paint.Drip1Width = 1
                 Paint.Drip2Width = 1
-                Paint.Drip1TipWidth = Random(2,4)
+                Paint.Drip1TipWidth = Random(2,3)
                 Paint.Drip1TipHeight = Random(2,5)
-                Paint.Drip2TipWidth = Random(2,4)
+                Paint.Drip2TipWidth = Random(2,3)
                 Paint.Drip2TipHeight = Random(2,5)
                 Paint.Drip1Length = 1
                 Paint.Drip2Length = 1
