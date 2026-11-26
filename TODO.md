@@ -3,7 +3,7 @@
 **Stand:** 26. November 2026 · **Arbeitszweig:** develop
 
 
-- [ ] Unerwarteten Durchfall durch tiefer liegende Plattform mit Todesfolge gezielt analysieren, Korrekturumfang abstimmen und nach Freigabe prüfen (KNOWNBUGS.md). Waffen-Tiefenfreigabe 18/18 auf 8d3c8a1 abgenommen.
+- [ ] Lokale AGK-Abnahme der implementierten Landefreigabe tieferer Plattformen (KNOWNBUGS.md); danach Chatabschluss. Waffen-Tiefenfreigabe 18/18 auf 8d3c8a1 abgenommen.
 - [ ] Index-Recycling-Befunde und B4 Abschluss des Bug-Chats gemäß KNOWNBUGS.md.
 - [ ] Real Alpha: erweiterte Walker-Körperteil-Trefferzonen früh in Arbeitsblock B fachlich abstimmen, vor Panzerung/Schadenswirkung (IK/Bewegung schützen).
 - [ ] Arbeitsblock B Grundsysteme abstimmen (Erfahrung, Ressourcen/Munition, Panzerung, Gefahrenbudget).

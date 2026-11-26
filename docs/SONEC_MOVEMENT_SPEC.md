@@ -26,7 +26,8 @@ Die 2D-Darstellung bildet verschiedene räumliche Tiefenebenen ab.
 ## 3. Landungen und gleichzeitige Kontakte
 
 - Eine Landung ist nur bei einem gültigen **Kontakt von oben** möglich: Die Füße müssen die Oberfläche von oben erreichen und beim Abwärtsweg kreuzen. Dass nur der Kopf eine Höhe erreicht, genügt nicht.
-- Plattformoberflächen und Oberseiten aktiver Kisten sind mögliche Landeflächen.
+- Plattformoberflächen und Oberseiten aktiver mechanischer Kisten/Sockel sind mögliche Landeflächen.
+- Zusatzregel 26.11.2026 (implementiert, lokale Abnahme offen): Träger unterhalb der gekoppelten Plattform sind für gültige Top-Kontakte auch bei PASSAGE freigegeben; Vergleich der Trägeroberkanten zum tatsächlichen Kontaktzeitpunkt. Bei horizontalem Link-Exit letzte gültige Trägerhöhe einfrieren, bei Trägerverlust letzte bekannte Höhe behalten; vor erster Landung kein zusätzlicher Filter. Höhere/gleich hohe Ebenen, Seiten-/Unterseitenkontakte und bisherige Aufwärtsfreigabe unverändert. Keine Landung ohne gültigen Fuß-Sweep und keine pauschale Aktivierung der Plattformgruppe.
 - Beim gültigen Landekontakt wird die Plattformzuordnung übernommen.
 - Bei mehreren Kandidaten gewinnt der **früheste gültige Kontakt entlang des Wegs**. Bei gleicher Höhe gilt „first in“: die in Bewegungsrichtung zuerst erreichte gültige Fläche; exakte Gleichstände sind deterministisch aufzulösen.
 - Hohe Fallgeschwindigkeit darf keine gültige Landung überspringen.

@@ -616,6 +616,9 @@ type TSonec
 	DebugTopTrace as string
 	PassThroughChestIndex as integer
 	LinkedPlateIndex as integer
+	// Last valid linked deck height, retained after horizontal unlink.
+	LandingReferenceValid as integer
+	LandingReferenceY as float
 	BlockedChestIndex as integer
 	BlockedChestSide as integer
 	BlockedChestOffsetX as float
