@@ -412,7 +412,14 @@ type TProtoBullet
 	AnimBullet as TProtoData
 endtype
 
+// Immutable launch snapshot for detached projectiles; live for attached plasma.
+type TWeaponDepth
+    ExcludedPlateIds as integer[-1]
+    ExcludedBackgroundIds as integer[-1]
+endtype
+
 type TBullet
+    WeaponDepth as TWeaponDepth
 	OutsideWorld as integer
 	SonecSweepStartMs as integer
 	SonecSweepEndMs as integer
@@ -438,6 +445,7 @@ type TProtoGrenade
 endtype
 
 type TGrenade
+    WeaponDepth as TWeaponDepth
 	SweepStartMs as integer
 	SweepEndMs as integer
 	PreviousPosition as TPosition
@@ -497,6 +505,7 @@ type TProtoPlasmaBlitz
 endtype
 
 type TPlasmaBlitz
+    WeaponDepth as TWeaponDepth
 	CreatedMs as integer
 	Enabled as integer
 	ObjectData as TObjectData
@@ -532,6 +541,7 @@ type TFlameHit
 endtype
 
 type TFlame
+    WeaponDepth as TWeaponDepth
 	PreviousPosition as TPosition
 	SweepStartMs as integer
 	SweepEndMs as integer
@@ -636,6 +646,7 @@ type TProtoPlate
 endtype
 	
 type TPlate
+    WeaponDepthId as integer
 	// Mechanical depth state for the single player: 0 neutral, 1 passage, 2 cleared.
 	SonecDepthState as integer
 	CollisionMoveStart as TPosition

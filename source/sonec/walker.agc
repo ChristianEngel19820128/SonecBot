@@ -1145,15 +1145,25 @@ function WalkerMuzzlePositionCalculate(Walker ref as TWalker,ProtoWalker ref as 
 	endif
 endfunction Angle
 
-function WalkerFireShot(Walker ref as TWalker,WalkerIndex as integer,ProtoWalker ref as TProtoWalker,BulletList ref as TBulletList,ProtoBullet ref as TProtoBullet,FlashList ref as TFlashList,ProtoFlash ref as TProtoFlash,World ref as TWorld,Now as integer)
+function WalkerFireShot(Walker ref as TWalker,WalkerIndex as integer,ProtoWalker ref as TProtoWalker,BulletList ref as TBulletList,ProtoBullet ref as TProtoBullet,FlashList ref as TFlashList,ProtoFlash ref as TProtoFlash,World ref as TWorld,Now as integer,PlateList ref as TPlateList,ChestList ref as TChestList)
 	local MuzzlePosition as TPosition
 	local FireAngle as float
 	local FlashIndex as integer
 	local BarrelIndex as integer
+    local BulletIndex as integer
+    local MinPos as TPosition
+    local MaxPos as TPosition
+    local Depth as TWeaponDepth
 	BarrelIndex = 1
 	if Walker.FireState = 1 then BarrelIndex = 0
 	FireAngle = WalkerMuzzlePositionCalculate(Walker,ProtoWalker,MuzzlePosition)
-	BulletAdd(BulletList,ProtoBullet,World,MuzzlePosition,FireAngle,0.0,TYPEENEMY,Now)
+    MinPos.x = Walker.ObjectData.Position.x-WALKER_HULL_HALF_WIDTH-WALKER_HULL_HORIZONTAL_CLEARANCE
+    MaxPos.x = Walker.ObjectData.Position.x+WALKER_HULL_HALF_WIDTH+WALKER_HULL_HORIZONTAL_CLEARANCE
+    MinPos.y = Walker.ObjectData.Position.y-WALKER_HULL_TOP
+    MaxPos.y = Walker.ObjectData.Position.y+WALKER_HULL_BOTTOM
+    WeaponDepthCaptureGrounded(Depth,PlateList,ChestList,Walker.PlateIndex,MinPos,MaxPos)
+    BulletIndex = BulletAdd(BulletList,ProtoBullet,World,MuzzlePosition,FireAngle,0.0,TYPEENEMY,Now)
+    if BulletIndex >= 0 then BulletList.Bullet[BulletIndex].WeaponDepth = Depth
 	// Both effects use the same origin; flash following removes visual recoil.
 	FlashIndex = FlashAdd(FlashList,ProtoFlash,World,0,WALKER_MUZZLE_FLASH_CYCLES,MuzzlePosition,FireAngle,0.0,Now)
 	if FlashIndex >= 0
@@ -1172,7 +1182,7 @@ endfunction
 
 // FireState: 0 = idle, 1 = waiting for second bullet, 2 = recovery, 3 = aiming.
 // A started burst always finishes before WalkerMove may resume walking.
-function WalkerFireAll(WalkerList ref as TWalkerList,ProtoWalker ref as TProtoWalker,BulletList ref as TBulletList,ProtoBullet ref as TProtoBullet,FlashList ref as TFlashList,ProtoFlash ref as TProtoFlash,World ref as TWorld,Sonec ref as TSonec,VisionDistance as float,Now as integer)
+function WalkerFireAll(WalkerList ref as TWalkerList,ProtoWalker ref as TProtoWalker,BulletList ref as TBulletList,ProtoBullet ref as TProtoBullet,FlashList ref as TFlashList,ProtoFlash ref as TProtoFlash,World ref as TWorld,Sonec ref as TSonec,VisionDistance as float,Now as integer,PlateList ref as TPlateList,ChestList ref as TChestList)
 	local i as integer
 	local LeftFootX as float
 	local RightFootX as float
@@ -1184,14 +1194,14 @@ function WalkerFireAll(WalkerList ref as TWalkerList,ProtoWalker ref as TProtoWa
 					if Now >= WalkerList.Walker[i].FireStateUntilMs
 						// Complete the pose before spawning the first bullet/flash.
 						WalkerAnimate(WalkerList.Walker[i],ProtoWalker,World,Now)
-						WalkerFireShot(WalkerList.Walker[i],i,ProtoWalker,BulletList,ProtoBullet,FlashList,ProtoFlash,World,Now)
+						WalkerFireShot(WalkerList.Walker[i],i,ProtoWalker,BulletList,ProtoBullet,FlashList,ProtoFlash,World,Now,PlateList,ChestList)
 						WalkerList.Walker[i].FireState = 1
 						WalkerList.Walker[i].FireStateUntilMs = Now + WALKER_BURST_SHOT_DELAY_MS
 					endif
 				else
 					if WalkerList.Walker[i].FireState = 1
 						if Now >= WalkerList.Walker[i].FireStateUntilMs
-							WalkerFireShot(WalkerList.Walker[i],i,ProtoWalker,BulletList,ProtoBullet,FlashList,ProtoFlash,World,Now)
+							WalkerFireShot(WalkerList.Walker[i],i,ProtoWalker,BulletList,ProtoBullet,FlashList,ProtoFlash,World,Now,PlateList,ChestList)
 							WalkerList.Walker[i].FireState = 2
 							WalkerList.Walker[i].FireStateUntilMs = Now + WALKER_BURST_RECOVERY_MS
 						endif
@@ -1219,7 +1229,7 @@ function WalkerFireAll(WalkerList ref as TWalkerList,ProtoWalker ref as TProtoWa
 										WalkerAnimate(WalkerList.Walker[i],ProtoWalker,World,Now)
 									else
 										// No target: keep the ordinary horizontal burst immediate.
-										WalkerFireShot(WalkerList.Walker[i],i,ProtoWalker,BulletList,ProtoBullet,FlashList,ProtoFlash,World,Now)
+										WalkerFireShot(WalkerList.Walker[i],i,ProtoWalker,BulletList,ProtoBullet,FlashList,ProtoFlash,World,Now,PlateList,ChestList)
 										WalkerList.Walker[i].FireState = 1
 										WalkerList.Walker[i].FireStateUntilMs = Now + WALKER_BURST_SHOT_DELAY_MS
 									endif

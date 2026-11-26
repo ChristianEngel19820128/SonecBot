@@ -89,6 +89,7 @@ global SonecEdgeCsvStarted as integer
 #include "math.agc"
 #include "collision.agc"
 #include "physics.agc"
+#include "weaponcollision.agc"
 #include "color.agc"
 #include "file.agc"
 #include "timer.agc"

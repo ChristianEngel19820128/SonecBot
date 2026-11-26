@@ -39,6 +39,7 @@ function PlasmaBlitzNew(PlasmaBlitz ref as TPlasmaBlitz,ProtoPlasmaBlitz ref as 
 	Speed as TPosition
 	
 	PlasmaBlitz.Enabled = TRUE
+    WeaponDepthReset(PlasmaBlitz.WeaponDepth)
 	PlasmaBlitz.CreatedMs = Now
 	TimeSet(PlasmaBlitz.ObjectData.MoveTimer,10,10)
 	TimeReset(PlasmaBlitz.ObjectData.MoveTimer,Now)
@@ -292,7 +293,7 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function PlasmaBlitzCollideChest(PlasmaBlitzList ref as TPlasmaBlitzList,ChestList ref as TChestList,Now as integer)
+function PlasmaBlitzCollideChest(PlasmaBlitzList ref as TPlasmaBlitzList,ChestList ref as TChestList,Now as integer,PlateList ref as TPlateList)
 
 	local i as integer
 	local k as integer
@@ -301,7 +302,7 @@ function PlasmaBlitzCollideChest(PlasmaBlitzList ref as TPlasmaBlitzList,ChestLi
 		if PlasmaBlitzList.PlasmaBlitz[i].Enabled = TRUE
 			if TimeGet(PlasmaBlitzList.PlasmaBlitz[i].CollisionData.CollisionTimer,Now) > 0
 				for k = 0 to ChestList.Chest.Length
-					if ChestList.Chest[k].Enabled = TRUE
+					if ChestList.Chest[k].Enabled = TRUE and WeaponDepthAllows(PlasmaBlitzList.PlasmaBlitz[i].WeaponDepth,PlateList,ChestList.Chest[k].CollisionData.Index,ChestList.Chest[k].IsBackground) = TRUE
 						if BoxInBox(PlasmaBlitzList.PlasmaBlitz[i].CollisionData.Position1,PlasmaBlitzList.PlasmaBlitz[i].CollisionData.Position2,ChestList.Chest[k].CollisionData.Position1,ChestList.Chest[k].CollisionData.Position2)
 							ChestList.Chest[k].Health.State = ChestList.Chest[k].Health.State - PlasmaBlitzList.PlasmaBlitz[i].BulletData.Damage
 							ColorSet(ChestList.Chest[k].SpriteData.Color,255,0,0,255)
@@ -315,7 +316,7 @@ function PlasmaBlitzCollideChest(PlasmaBlitzList ref as TPlasmaBlitzList,ChestLi
 endfunction
 
 // Plasma discharge damages the existing Walker turret hit zone.
-function PlasmaBlitzCollideWalkers(PlasmaBlitzList ref as TPlasmaBlitzList,WalkerList ref as TWalkerList,Now as integer)
+function PlasmaBlitzCollideWalkers(PlasmaBlitzList ref as TPlasmaBlitzList,WalkerList ref as TWalkerList,Now as integer,PlateList ref as TPlateList)
 
 	local i as integer
 	local k as integer
@@ -324,7 +325,7 @@ function PlasmaBlitzCollideWalkers(PlasmaBlitzList ref as TPlasmaBlitzList,Walke
 		if PlasmaBlitzList.PlasmaBlitz[i].Enabled = TRUE
 			if TimeGet(PlasmaBlitzList.PlasmaBlitz[i].CollisionData.CollisionTimer,Now) > 0
 				for k = 0 to WalkerList.Walker.Length
-					if WalkerList.Walker[k].Enabled = TRUE
+					if WalkerList.Walker[k].Enabled = TRUE and WeaponDepthAllows(PlasmaBlitzList.PlasmaBlitz[i].WeaponDepth,PlateList,WalkerList.Walker[k].PlateIndex,FALSE) = TRUE
 						if BoxInBox(PlasmaBlitzList.PlasmaBlitz[i].CollisionData.Position1,PlasmaBlitzList.PlasmaBlitz[i].CollisionData.Position2,WalkerList.Walker[k].WalkerCollisionData.Tower.Position1,WalkerList.Walker[k].WalkerCollisionData.Tower.Position2)
 							WalkerList.Walker[k].Health.State = WalkerList.Walker[k].Health.State - PlasmaBlitzList.PlasmaBlitz[i].BulletData.Damage
 							WalkerList.Walker[k].HitFlashUntil = Now + 150
@@ -374,7 +375,7 @@ function PlasmaBlitzCollideFlaraks(PlasmaBlitzList ref as TPlasmaBlitzList,Game 
                 HW = Abs(PlasmaBlitzList.PlasmaBlitz[i].CollisionData.Position2.x-PlasmaBlitzList.PlasmaBlitz[i].CollisionData.Position1.x)*0.5
                 HH = Abs(PlasmaBlitzList.PlasmaBlitz[i].CollisionData.Position2.y-PlasmaBlitzList.PlasmaBlitz[i].CollisionData.Position1.y)*0.5
                 for k = 0 to FlarakList.Length
-                    if FlarakList[k].Enabled = TRUE and FlarakList[k].Destroyed = FALSE
+                    if FlarakList[k].Enabled = TRUE and FlarakList[k].Destroyed = FALSE and WeaponDepthAllows(PlasmaBlitzList.PlasmaBlitz[i].WeaponDepth,Game.PlateList,FlarakList[k].PlateIndex,FALSE) = TRUE
                         if FlarakAreaHits(FlarakList[k],Game.World,CX,CY,HW,HH,FALSE)
                             FlarakApplyDamage(FlarakList[k],Game,PlasmaBlitzList.PlasmaBlitz[i].BulletData.Damage,Now)
                         endif

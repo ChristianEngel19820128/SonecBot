@@ -26,6 +26,7 @@ endfunction
 //----------------------------------------------------------------------
 
 function PlateInit(PlateList ref as TPlateList)
+    WeaponDepthSerial = 0
 	
 	TimeSet(PlateList.CreateTimer,1000,1)
 	PlateList.Plate.Length = -1
@@ -40,6 +41,8 @@ endfunction
 function PlateNew(Plate ref as TPlate,ProtoPlate ref as TProtoPlate,World ref as TWorld,y as integer,Now as integer)
 	
 	Plate.Enabled = TRUE
+    WeaponDepthSerial = WeaponDepthSerial+1
+    Plate.WeaponDepthId = WeaponDepthSerial
 	Plate.SonecDepthState = 0
 	Plate.DebugDeltaX = 0
 	Plate.DebugDeltaY = 0

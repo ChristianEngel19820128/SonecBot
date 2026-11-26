@@ -126,7 +126,7 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function FlameAdd(FlameList ref as TFlameList,ProtoFlame ref as TProtoFlame,World ref as TWorld,InheritedSpeed as TSpeed,Position as TPosition,Angle as float,Radius as float,Now as integer)
+function FlameAdd(FlameList ref as TFlameList,ProtoFlame ref as TProtoFlame,World ref as TWorld,InheritedSpeed as TSpeed,Position as TPosition,Angle as float,Radius as float,Now as integer,Depth ref as TWeaponDepth)
 	
 	local Value as integer
 	local Found as integer
@@ -138,6 +138,7 @@ function FlameAdd(FlameList ref as TFlameList,ProtoFlame ref as TProtoFlame,Worl
 	if TimeGet(FlameList.CreateTimer,Now) > 0
 		
 		FlameNew(Flame,ProtoFlame,World,InheritedSpeed,Position,Angle,Radius,Now)
+        Flame.WeaponDepth = Depth
 		
 		Found = FALSE
 		i = FlameList.FirstFree
@@ -279,7 +280,7 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function FlameCollideChest(FlameList ref as TFlameList,ChestList ref as TChestList,Now as integer)
+function FlameCollideChest(FlameList ref as TFlameList,ChestList ref as TChestList,Now as integer,PlateList ref as TPlateList)
 	
 	local i as integer
 	local k as integer
@@ -292,7 +293,7 @@ function FlameCollideChest(FlameList ref as TFlameList,ChestList ref as TChestLi
 			// Follow the current visual growth without changing other flame collision rules.
 			Radius = FlameCollisionRadius(FlameList.Flame[i])
 			for k = 0 to ChestList.Chest.Length
-				if ChestList.Chest[k].Enabled = TRUE
+				if ChestList.Chest[k].Enabled = TRUE and WeaponDepthAllows(FlameList.Flame[i].WeaponDepth,PlateList,ChestList.Chest[k].CollisionData.Index,ChestList.Chest[k].IsBackground) = TRUE
 					// Closest point on the chest AABB to the flame-circle center.
 					NearestPoint = FlameList.Flame[i].ObjectData.Position
 					if NearestPoint.x < ChestList.Chest[k].CollisionData.Position1.x then NearestPoint.x = ChestList.Chest[k].CollisionData.Position1.x
@@ -318,7 +319,7 @@ endfunction
 // the Walker's accepted pose, animation or projectile damage values.
 //----------------------------------------------------------------------
 
-function FlameCollideWalkers(FlameList ref as TFlameList,WalkerList ref as TWalkerList,Now as integer)
+function FlameCollideWalkers(FlameList ref as TFlameList,WalkerList ref as TWalkerList,Now as integer,PlateList ref as TPlateList)
 
 	local i as integer
 	local k as integer
@@ -329,7 +330,7 @@ function FlameCollideWalkers(FlameList ref as TFlameList,WalkerList ref as TWalk
 		if FlameList.Flame[i].Enabled = TRUE
 			Radius = FlameCollisionRadius(FlameList.Flame[i])
 			for k = 0 to WalkerList.Walker.Length
-				if WalkerList.Walker[k].Enabled = TRUE and FlameList.Flame[i].Enabled = TRUE
+				if WalkerList.Walker[k].Enabled = TRUE and FlameList.Flame[i].Enabled = TRUE and WeaponDepthAllows(FlameList.Flame[i].WeaponDepth,PlateList,WalkerList.Walker[k].PlateIndex,FALSE) = TRUE
 					NearestPoint = FlameList.Flame[i].ObjectData.Position
 					if NearestPoint.x < WalkerList.Walker[k].WalkerCollisionData.Tower.Position1.x then NearestPoint.x = WalkerList.Walker[k].WalkerCollisionData.Tower.Position1.x
 					if NearestPoint.x > WalkerList.Walker[k].WalkerCollisionData.Tower.Position2.x then NearestPoint.x = WalkerList.Walker[k].WalkerCollisionData.Tower.Position2.x
@@ -362,7 +363,7 @@ function FlameCollideFlaraks(FlameList ref as TFlameList,Game ref as TGame,Now a
         if FlameList.Flame[i].Enabled = TRUE
             R = FlameCollisionRadius(FlameList.Flame[i])
             for k = 0 to FlarakList.Length
-                if FlameList.Flame[i].Enabled = TRUE and FlarakList[k].Enabled = TRUE and FlarakList[k].Destroyed = FALSE
+                if FlameList.Flame[i].Enabled = TRUE and FlarakList[k].Enabled = TRUE and FlarakList[k].Destroyed = FALSE and WeaponDepthAllows(FlameList.Flame[i].WeaponDepth,Game.PlateList,FlarakList[k].PlateIndex,FALSE) = TRUE
                     if FlarakAreaHits(FlarakList[k],Game.World,FlameList.Flame[i].ObjectData.Position.x,FlameList.Flame[i].ObjectData.Position.y,R,R,TRUE)
                         if FlameCanDamage(FlameList.Flame[i],FlarakList[k].FlameTargetId,Now) = TRUE
                             FlarakApplyDamage(FlarakList[k],Game,FlameList.Flame[i].BulletData.Damage,Now)

@@ -74,6 +74,7 @@ function BulletNew(Bullet ref as TBullet,ProtoBullet ref as TProtoBullet,World r
 	Speed as TPosition
 	
 	Bullet.Enabled = TRUE
+    WeaponDepthReset(Bullet.WeaponDepth)
 	Bullet.Modification = BULLET_MOD_STANDARD
 	Bullet.ExplodeAtMs = 0
 	TimeSet(Bullet.ObjectData.MoveTimer,10,10)
@@ -523,7 +524,7 @@ function BulletCollidePlayerTargets(BulletList ref as TBulletList,OrbList ref as
             next k
 
             for k = 0 to WalkerList.Walker.Length
-                if WalkerList.Walker[k].Enabled = TRUE
+                if WalkerList.Walker[k].Enabled = TRUE and WeaponDepthAllows(BulletList.Bullet[i].WeaponDepth,Game.PlateList,WalkerList.Walker[k].PlateIndex,FALSE) = TRUE
                     Entry = BulletBoxSweepEntry(BulletList.Bullet[i],WalkerList.Walker[k].WalkerCollisionData.Tower.Position1,WalkerList.Walker[k].WalkerCollisionData.Tower.Position2)
                     if Entry >= 0 and Entry < BestEntry
                         BestEntry = Entry
@@ -556,7 +557,7 @@ function BulletCollidePlayerTargets(BulletList ref as TBulletList,OrbList ref as
             next k
 
             for k = 0 to ChestList.Chest.Length
-                if ChestList.Chest[k].Enabled = TRUE
+                if ChestList.Chest[k].Enabled = TRUE and WeaponDepthAllows(BulletList.Bullet[i].WeaponDepth,Game.PlateList,ChestList.Chest[k].CollisionData.Index,ChestList.Chest[k].IsBackground) = TRUE
                     Entry = BulletBoxSweepEntry(BulletList.Bullet[i],ChestList.Chest[k].CollisionData.Position1,ChestList.Chest[k].CollisionData.Position2)
                     if Entry >= 0 and Entry < BestEntry
                         BestEntry = Entry
@@ -581,7 +582,7 @@ function BulletCollidePlayerTargets(BulletList ref as TBulletList,OrbList ref as
 
             // Include deployed Flarak/Flak in the same nearest-hit decision.
             for k = 0 to FlarakList.Length
-                if FlarakList[k].Enabled = TRUE and FlarakList[k].Destroyed = FALSE
+                if FlarakList[k].Enabled = TRUE and FlarakList[k].Destroyed = FALSE and WeaponDepthAllows(BulletList.Bullet[i].WeaponDepth,Game.PlateList,FlarakList[k].PlateIndex,FALSE) = TRUE
                     Entry = BulletFlarakSweepEntry(BulletList.Bullet[i],FlarakList[k],Game.World)
                     if Entry >= 0 and Entry < BestEntry
                         BestEntry = Entry
@@ -593,7 +594,7 @@ function BulletCollidePlayerTargets(BulletList ref as TBulletList,OrbList ref as
 
             // Both rectangles participate in the same nearest-hit sweep, including wrecks.
             for k = 0 to JumppodList.Length
-                if JumppodList[k].Enabled = TRUE
+                if JumppodList[k].Enabled = TRUE and WeaponDepthAllows(BulletList.Bullet[i].WeaponDepth,Game.PlateList,JumppodList[k].PlateIndex,FALSE) = TRUE
                     Entry = JumppodBulletEntry(BulletList.Bullet[i],JumppodList[k])
                     if Entry >= 0 and Entry < BestEntry
                         BestEntry = Entry
@@ -714,7 +715,7 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function BulletCollideChest(BulletList ref as TBulletList,ChestList ref as TChestList)
+function BulletCollideChest(BulletList ref as TBulletList,ChestList ref as TChestList,PlateList ref as TPlateList)
 	
 	local i as integer
 	local k as integer
@@ -723,7 +724,7 @@ function BulletCollideChest(BulletList ref as TBulletList,ChestList ref as TChes
 	for i = 0 to BulletList.Bullet.Length
 		if BulletList.Bullet[i].Enabled = TRUE
 			for k = 0 to ChestList.Chest.Length
-				if ChestList.Chest[k].Enabled = TRUE
+				if ChestList.Chest[k].Enabled = TRUE and WeaponDepthAllows(BulletList.Bullet[i].WeaponDepth,PlateList,ChestList.Chest[k].CollisionData.Index,ChestList.Chest[k].IsBackground) = TRUE
 					if BoxInBox(BulletList.Bullet[i].CollisionData.Position1,BulletList.Bullet[i].CollisionData.Position2,ChestList.Chest[k].CollisionData.Position1,ChestList.Chest[k].CollisionData.Position2)
 						ChestList.Chest[k].Health.State = ChestList.Chest[k].Health.State - BulletList.Bullet[i].BulletData.Damage
 						BulletDelete(BulletList,i)

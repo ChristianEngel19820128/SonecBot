@@ -94,13 +94,14 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function GrenadeAdd(GrenadeList ref as TGrenadeList,ProtoGrenade ref as TProtoGrenade,World ref as TWorld,Position as TPosition,Angle as float,Radius as float,ReferenceMuzzleHeight as float,Now as integer)
+function GrenadeAdd(GrenadeList ref as TGrenadeList,ProtoGrenade ref as TProtoGrenade,World ref as TWorld,Position as TPosition,Angle as float,Radius as float,ReferenceMuzzleHeight as float,Now as integer,Depth ref as TWeaponDepth)
 	
 	local Found as integer
 	local i as integer
 	local Grenade as TGrenade
 		
 	GrenadeNew(Grenade,ProtoGrenade,World,Position,Angle,Radius,ReferenceMuzzleHeight,Now)
+    Grenade.WeaponDepth = Depth
 	
 	Found = FALSE
 	i = GrenadeList.FirstFree
@@ -276,7 +277,7 @@ function GrenadeCollideAll(Game ref as TGame,Now as integer)
                 endif
             next k
             for k = 0 to Game.ChestList.Chest.Length
-                if Game.ChestList.Chest[k].Enabled = TRUE
+                if Game.ChestList.Chest[k].Enabled = TRUE and WeaponDepthAllows(Game.GrenadeList.Grenade[i].WeaponDepth,Game.PlateList,Game.ChestList.Chest[k].CollisionData.Index,Game.ChestList.Chest[k].IsBackground) = TRUE
                     Entry = GrenadeBoxEntry(Game.GrenadeList.Grenade[i],Game.ChestList.Chest[k].CollisionData.Position1,Game.ChestList.Chest[k].CollisionData.Position2)
                     if Entry >= 0 and Entry < BestEntry
                         BestEntry = Entry
@@ -286,7 +287,7 @@ function GrenadeCollideAll(Game ref as TGame,Now as integer)
                 endif
             next k
             for k = 0 to Game.WalkerList.Walker.Length
-                if Game.WalkerList.Walker[k].Enabled = TRUE
+                if Game.WalkerList.Walker[k].Enabled = TRUE and WeaponDepthAllows(Game.GrenadeList.Grenade[i].WeaponDepth,Game.PlateList,Game.WalkerList.Walker[k].PlateIndex,FALSE) = TRUE
                     Entry = GrenadeBoxEntry(Game.GrenadeList.Grenade[i],Game.WalkerList.Walker[k].WalkerCollisionData.Tower.Position1,Game.WalkerList.Walker[k].WalkerCollisionData.Tower.Position2)
                     if Entry >= 0 and Entry < BestEntry
                         BestEntry = Entry
@@ -308,7 +309,7 @@ function GrenadeCollideAll(Game ref as TGame,Now as integer)
                 endif
             endif
             for k = 0 to FlarakList.Length
-                if FlarakList[k].Enabled = TRUE and FlarakList[k].Destroyed = FALSE
+                if FlarakList[k].Enabled = TRUE and FlarakList[k].Destroyed = FALSE and WeaponDepthAllows(Game.GrenadeList.Grenade[i].WeaponDepth,Game.PlateList,FlarakList[k].PlateIndex,FALSE) = TRUE
                     Entry = GrenadeFlarakEntry(Game.GrenadeList.Grenade[i],FlarakList[k],Game.World)
                     if Entry >= 0 and Entry < BestEntry
                         BestEntry = Entry
@@ -318,7 +319,7 @@ function GrenadeCollideAll(Game ref as TGame,Now as integer)
                 endif
             next k
             for k = 0 to JumppodList.Length
-                if JumppodList[k].Enabled = TRUE
+                if JumppodList[k].Enabled = TRUE and WeaponDepthAllows(Game.GrenadeList.Grenade[i].WeaponDepth,Game.PlateList,JumppodList[k].PlateIndex,FALSE) = TRUE
                     Entry = GrenadeBoxEntry(Game.GrenadeList.Grenade[i],JumppodList[k].Lower.CollisionData.Position1,JumppodList[k].Lower.CollisionData.Position2)
                     if Entry >= 0 and Entry < BestEntry
                         BestEntry = Entry
@@ -334,7 +335,7 @@ function GrenadeCollideAll(Game ref as TGame,Now as integer)
                 endif
             next k
             for k = 0 to Game.PlateList.Plate.Length
-                if Game.PlateList.Plate[k].Enabled = TRUE
+                if Game.PlateList.Plate[k].Enabled = TRUE and WeaponDepthAllows(Game.GrenadeList.Grenade[i].WeaponDepth,Game.PlateList,k,FALSE) = TRUE
                     Entry = GrenadeBoxEntry(Game.GrenadeList.Grenade[i],Game.PlateList.Plate[k].CollisionData.Position1,Game.PlateList.Plate[k].CollisionData.Position2)
                     if Entry >= 0 and Entry < BestEntry
                         BestEntry = Entry

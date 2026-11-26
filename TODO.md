@@ -3,7 +3,7 @@
 **Stand:** 26. November 2026 · **Arbeitszweig:** develop
 
 
-- [ ] Spielerwaffen-Tiefenfreigabe bei Hintergrundkisten und Durchflug von unten analysieren und Korrekturumfang abstimmen; weitere plattformgebundene Objekte prüfen (KNOWNBUGS.md).
+- [ ] Lokale AGK-Abnahme der implementierten Waffen-Tiefenfreigabe (Sonec und Walker; Plasma live, übrige Projektile Snapshot; KNOWNBUGS.md).
 - [ ] Index-Recycling-Befunde und B4 Abschluss des Bug-Chats gemäß KNOWNBUGS.md.
 - [ ] Real Alpha: erweiterte Walker-Körperteil-Trefferzonen früh in Arbeitsblock B fachlich abstimmen, vor Panzerung/Schadenswirkung (IK/Bewegung schützen).
 - [ ] Arbeitsblock B Grundsysteme abstimmen (Erfahrung, Ressourcen/Munition, Panzerung, Gefahrenbudget).

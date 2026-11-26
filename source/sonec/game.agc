@@ -196,14 +196,16 @@ endfunction
 //----------------------------------------------------------------------
 
 function GameActionInput(Game ref as TGame,Keys ref as TKeys,Now as integer)
+    local Depth as TWeaponDepth
 
 	if Now < Game.TouchdownUntilMs then exitfunction
     GameTouchdownStart(Game,Now)
 	if Game.Sonec.SpawnEntering = TRUE or Game.Sonec.IsLost = TRUE then exitfunction
-	SonecFlameGunInput(Game.Sonec,Game.FlameList,Game.ProtoFlame,Game.World,Game.Sound,Keys,Game.JoystickIndex,Now)
-	SonecPlasmaBlitzGunInput(Game.Sonec,Game.FlashList,Game.ProtoFlash,Game.PlasmaBlitzList,Game.ProtoPlasmaBlitz,Game.World,Keys,Game.JoystickIndex,Now)
-	SonecMGunInput(Game.Sonec,Game.FlashList,Game.ProtoFlash,Game.BulletList,Game.ProtoBullet,Game.World,Game.Sound,Keys,Game.JoystickIndex,Now)
-	SonecGrenadeLauncherInput(Game.Sonec,Game.GrenadeList,Game.ProtoGrenade,Game.World,Game.Sound,Keys,Game.JoystickIndex,Now)
+    WeaponDepthCaptureSonec(Depth,Game.Sonec,Game.PlateList,Game.ChestList)
+	SonecFlameGunInput(Game.Sonec,Game.FlameList,Game.ProtoFlame,Game.World,Game.Sound,Keys,Game.JoystickIndex,Now,Depth)
+	SonecPlasmaBlitzGunInput(Game.Sonec,Game.FlashList,Game.ProtoFlash,Game.PlasmaBlitzList,Game.ProtoPlasmaBlitz,Game.World,Keys,Game.JoystickIndex,Now,Depth)
+	SonecMGunInput(Game.Sonec,Game.FlashList,Game.ProtoFlash,Game.BulletList,Game.ProtoBullet,Game.World,Game.Sound,Keys,Game.JoystickIndex,Now,Depth)
+	SonecGrenadeLauncherInput(Game.Sonec,Game.GrenadeList,Game.ProtoGrenade,Game.World,Game.Sound,Keys,Game.JoystickIndex,Now,Depth)
 	SonecShieldInput(Game.Sonec,Game.Shield,Game.World,Keys,Game.JoystickIndex,Now)
 	SonecInenergieInput(Game.Sonec,Game.Inenergie,Game.EnergieList,Game.World,Keys,Game.JoystickIndex,Now)
 
@@ -434,7 +436,7 @@ function GameDo(Game ref as TGame,Now as integer)
 	WalkerTurretFaceTargetAll(Game.WalkerList,Game.Sonec,Game.Screen.Width,Now)
 	WalkerAnimateAll(Game.WalkerList,Game.ProtoWalker,Game.World,Now)
 	// Turret world positions are current; enemy bullets join the normal Bullet pipeline.
-	WalkerFireAll(Game.WalkerList,Game.ProtoWalker,Game.BulletList,Game.ProtoBullet,Game.FlashList,Game.ProtoFlash,Game.World,Game.Sonec,Game.Screen.Width,Now)
+	WalkerFireAll(Game.WalkerList,Game.ProtoWalker,Game.BulletList,Game.ProtoBullet,Game.FlashList,Game.ProtoFlash,Game.World,Game.Sonec,Game.Screen.Width,Now,Game.PlateList,Game.ChestList)
 	// Keep live Walker flashes on their barrels while platforms move vertically.
 	WalkerFlashFollowAll(Game.WalkerList,Game.FlashList,Game.World)
 	ChestMoveAll(Game.ChestList,Game.PlateList,Game.World)
@@ -462,8 +464,8 @@ function GameDo(Game ref as TGame,Now as integer)
 	FlameCollideMine(Game.FlameList,Game.MineList,Now)
 	FlameCollideMine(Game.FlameList,Game.SimpleMineList,Now)
 	JumppodCollideFlames(Game,Now)
-	FlameCollideChest(Game.FlameList,Game.ChestList,Now)
-	FlameCollideWalkers(Game.FlameList,Game.WalkerList,Now)
+	FlameCollideChest(Game.FlameList,Game.ChestList,Now,Game.PlateList)
+	FlameCollideWalkers(Game.FlameList,Game.WalkerList,Now,Game.PlateList)
 	FlameCollideDrone(Game.FlameList,Game.Drone,Now)
     FlameCollideFlaraks(Game.FlameList,Game,Now)
 	
@@ -479,13 +481,14 @@ function GameDo(Game ref as TGame,Now as integer)
 	BulletCollidePlayerTargets(Game.BulletList,Game.OrbList,Game.WalkerList,Game.MineList,Game.SimpleMineList,Game.ChestList,Game.Drone,Game,Now)
 	// Retain the established enemy-bullet interactions with mines and chests.
 	BulletCollideMines(Game.BulletList,Game.MineList,Game.SimpleMineList)
-	BulletCollideChest(Game.BulletList,Game.ChestList)
+	BulletCollideChest(Game.BulletList,Game.ChestList,Game.PlateList)
 	
 	GrenadeMoveall(Game.GrenadeList,Game.World,Now)
 	GrenadeCollideAll(Game,Now)
 	GrenadeCullAll(Game.GrenadeList,Game.World)
 	
 	PlasmaBlitzLifeCycle(Game.PlasmaBlitzList,Now)
+    SonecRefreshPlasmaDepth(Game)
     BomberBombCollidePlasmaBlitz(Game.Bomber,Game.PlasmaBlitzList,Game,Now)
     FlarakRocketCollidePlasma(Game,Now)
     // B4: all four weapon pools have moved/updated before this check.
@@ -496,8 +499,8 @@ function GameDo(Game ref as TGame,Now as integer)
 	PlasmaBlitzCollideOrbs(Game.PlasmaBlitzList,Game.OrbList,Now)
 	PlasmaBlitzCollideMine(Game.PlasmaBlitzList,Game.MineList,Now)
 	PlasmaBlitzCollideMine(Game.PlasmaBlitzList,Game.SimpleMineList,Now)
-	PlasmaBlitzCollideChest(Game.PlasmaBlitzList,Game.ChestList,Now)
-	PlasmaBlitzCollideWalkers(Game.PlasmaBlitzList,Game.WalkerList,Now)
+	PlasmaBlitzCollideChest(Game.PlasmaBlitzList,Game.ChestList,Now,Game.PlateList)
+	PlasmaBlitzCollideWalkers(Game.PlasmaBlitzList,Game.WalkerList,Now,Game.PlateList)
 	PlasmaBlitzCollideDrone(Game.PlasmaBlitzList,Game.Drone,Now)
     PlasmaBlitzCollideFlaraks(Game.PlasmaBlitzList,Game,Now)
 	JumppodCollidePlasma(Game,Now)

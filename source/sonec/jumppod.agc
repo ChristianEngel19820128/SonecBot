@@ -457,7 +457,7 @@ function JumppodCollideFlames(Game ref as TGame,Now as integer)
         if Game.FlameList.Flame[i].Enabled = TRUE
             R = FlameCollisionRadius(Game.FlameList.Flame[i])
             for k = 0 to JumppodList.Length
-                if Game.FlameList.Flame[i].Enabled = TRUE and JumppodList[k].Enabled = TRUE and JumppodList[k].Destroyed = FALSE
+                if Game.FlameList.Flame[i].Enabled = TRUE and JumppodList[k].Enabled = TRUE and JumppodList[k].Destroyed = FALSE and WeaponDepthAllows(Game.FlameList.Flame[i].WeaponDepth,Game.PlateList,JumppodList[k].PlateIndex,FALSE) = TRUE
                     if JumppodCircleHits(JumppodList[k],Game.FlameList.Flame[i].ObjectData.Position,R)
                         if FlameCanDamage(Game.FlameList.Flame[i],JumppodList[k].FlameTargetId,Now) = TRUE
                             JumppodApplyDamage(k,Game,Game.FlameList.Flame[i].BulletData.Damage,Now)
@@ -478,7 +478,7 @@ function JumppodCollidePlasma(Game ref as TGame,Now as integer)
         if Game.PlasmaBlitzList.PlasmaBlitz[i].Enabled = TRUE
             if TimeGet(Game.PlasmaBlitzList.PlasmaBlitz[i].CollisionData.CollisionTimer,Now) > 0
                 for k = 0 to JumppodList.Length
-                    if JumppodList[k].Enabled = TRUE
+                    if JumppodList[k].Enabled = TRUE and WeaponDepthAllows(Game.PlasmaBlitzList.PlasmaBlitz[i].WeaponDepth,Game.PlateList,JumppodList[k].PlateIndex,FALSE) = TRUE
                         if JumppodBoxHits(JumppodList[k],Game.PlasmaBlitzList.PlasmaBlitz[i].CollisionData.Position1,Game.PlasmaBlitzList.PlasmaBlitz[i].CollisionData.Position2)
                             JumppodApplyDamage(k,Game,Game.PlasmaBlitzList.PlasmaBlitz[i].BulletData.Damage,Now)
                         endif

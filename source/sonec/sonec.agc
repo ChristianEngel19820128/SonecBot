@@ -523,37 +523,47 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
+// Common muzzle pose for the continuous plasma and attached visual effects.
+function SonecRefreshWeaponPose(Sonec ref as TSonec,Position ref as TPosition)
+    local Angle as float
+    Position = Sonec.ObjectData.Position
+    if Sonec.State.Duck = TRUE
+        Position.y = Position.y+4
+    else
+        Position.y = Position.y-6
+    endif
+    Angle = 90
+    if Sonec.State.LookAlignment = LOOKLEFT then Angle = 270
+endfunction Angle
+
 function SonecRefreshAnimations(Sonec ref as TSonec,PlasmaBlitzList ref as TPlasmaBlitzList,FlashList ref as TFlashList,World ref as TWorld)
-	
-	local Position as TPosition
-	local Angle as float
-	local Radius as float
-	
-	Position.x = Sonec.ObjectData.Position.x
-	
-	if Sonec.State.Duck = TRUE
-		Position.y = Sonec.ObjectData.Position.y + 4
-	else
-		Position.y = Sonec.ObjectData.Position.y - 6
-	endif
-	
-	if Sonec.State.LookAlignment = LOOKLEFT
-		Angle = 270
-	else
-		Angle = 90
-	endif
-	
-	FlashRefresh(FlashList,World,Sonec.MGun.FlashIndex,Position,Angle)
-	FlashRefresh(FlashList,World,Sonec.PlasmaBlitzGun.FlashIndex,Position,Angle)
-	PlasmaBlitzRefresh(PlasmaBlitzList,Sonec.PlasmaBlitzGun.PlasmaBlitzIndex,Position,Angle,World)
-	
+    local Position as TPosition
+    local Angle as float
+    Angle = SonecRefreshWeaponPose(Sonec,Position)
+    FlashRefresh(FlashList,World,Sonec.MGun.FlashIndex,Position,Angle)
+    FlashRefresh(FlashList,World,Sonec.PlasmaBlitzGun.FlashIndex,Position,Angle)
+    PlasmaBlitzRefresh(PlasmaBlitzList,Sonec.PlasmaBlitzGun.PlasmaBlitzIndex,Position,Angle,World)
+endfunction
+
+// Update the active beam's position and depth together before damage.
+// A released afterglow retains its last position and exclusion snapshot.
+function SonecRefreshPlasmaDepth(Game ref as TGame)
+    local i as integer
+    local Position as TPosition
+    local Angle as float
+    i = Game.Sonec.PlasmaBlitzGun.PlasmaBlitzIndex
+    if i < 0 or i > Game.PlasmaBlitzList.PlasmaBlitz.Length then exitfunction
+    if Game.PlasmaBlitzList.PlasmaBlitz[i].Enabled = FALSE then exitfunction
+    Angle = SonecRefreshWeaponPose(Game.Sonec,Position)
+    PlasmaBlitzRefresh(Game.PlasmaBlitzList,i,Position,Angle,Game.World)
+    WeaponDepthCaptureSonec(Game.PlasmaBlitzList.PlasmaBlitz[i].WeaponDepth,Game.Sonec,Game.PlateList,Game.ChestList)
 endfunction
 
 //----------------------------------------------------------------------
 // 
 //----------------------------------------------------------------------
 
-function SonecFlameGunInput(Sonec ref as TSonec,FlameList ref as TFlameList,ProtoFlame ref as TProtoFlame,World ref as TWorld,Sound ref as TSound,Keys ref as TKeys,JoystickIndex as integer,Now as integer)
+function SonecFlameGunInput(Sonec ref as TSonec,FlameList ref as TFlameList,ProtoFlame ref as TProtoFlame,World ref as TWorld,Sound ref as TSound,Keys ref as TKeys,JoystickIndex as integer,Now as integer,Depth ref as TWeaponDepth)
 	
 	local Position as TPosition
 	local Angle as float
@@ -602,7 +612,7 @@ function SonecFlameGunInput(Sonec ref as TSonec,FlameList ref as TFlameList,Prot
 				InheritedSpeed.x = 0
 				InheritedSpeed.y = 0
 			endif
-			FlameAdd(FlameList,ProtoFlame,World,InheritedSpeed,Position,Angle,Radius,Now)
+			FlameAdd(FlameList,ProtoFlame,World,InheritedSpeed,Position,Angle,Radius,Now,Depth)
 			Sonec.Energy.State = Sonec.Energy.State - COSTFLAME
 			
 			TimeReset(Sonec.FlameGun.FireTimer,Now)
@@ -616,7 +626,7 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function SonecPlasmaBlitzGunInput(Sonec ref as TSonec,FlashList ref as TFlashList,ProtoFlash ref as TProtoFlash,PlasmaBlitzList ref as TPlasmaBlitzList,ProtoPlasmaBlitz ref as TProtoPlasmaBlitz,World ref as TWorld,Keys ref as TKeys,JoystickIndex as integer,Now as integer)
+function SonecPlasmaBlitzGunInput(Sonec ref as TSonec,FlashList ref as TFlashList,ProtoFlash ref as TProtoFlash,PlasmaBlitzList ref as TPlasmaBlitzList,ProtoPlasmaBlitz ref as TProtoPlasmaBlitz,World ref as TWorld,Keys ref as TKeys,JoystickIndex as integer,Now as integer,Depth ref as TWeaponDepth)
 	
 	local Position as TPosition
 	local Angle as float
@@ -656,6 +666,7 @@ function SonecPlasmaBlitzGunInput(Sonec ref as TSonec,FlashList ref as TFlashLis
 						Sonec.PlasmaBlitzGun.FlashIndex = -1
 						Radius = 25
 						Sonec.PlasmaBlitzGun.PlasmaBlitzIndex = PlasmaBlitzAdd(PlasmaBlitzList,ProtoPlasmaBlitz,World,Position,Angle,Radius,Now)
+                        if Sonec.PlasmaBlitzGun.PlasmaBlitzIndex >= 0 then PlasmaBlitzList.PlasmaBlitz[Sonec.PlasmaBlitzGun.PlasmaBlitzIndex].WeaponDepth = Depth
 						TimeReset(Sonec.PlasmaBlitzGun.FireTimer,Now)
 					endif
 				endif
@@ -675,11 +686,12 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function SonecMGunInput(Sonec ref as TSonec,FlashList ref as TFlashList,ProtoFlash ref as TProtoFlash,BulletList ref as TBulletList,ProtoBullet ref as TProtoBullet,World ref as TWorld,Sound ref as TSound,Keys ref as TKeys,JoystickIndex as integer,Now as integer)
+function SonecMGunInput(Sonec ref as TSonec,FlashList ref as TFlashList,ProtoFlash ref as TProtoFlash,BulletList ref as TBulletList,ProtoBullet ref as TProtoBullet,World ref as TWorld,Sound ref as TSound,Keys ref as TKeys,JoystickIndex as integer,Now as integer,Depth ref as TWeaponDepth)
 	
 	local Position as TPosition
 	local Angle as float
 	local Radius as float
+    local BulletIndex as integer
 	
 	if (InputActionState(Keys,JoystickIndex,ACTION_FIRE_MG) = 1 or Sonec.MGun.FireBurst > 0) and Sonec.MGun.Ammo > 0
 		if (Sonec.MGun.FireBurst = 0 and TimeGet(Sonec.MGun.FireTimer,Now) > 0)  or (Sonec.MGun.FireBurst > 0 and TimeGet(Sonec.MGun.FireBurstTimer,Now) > 0)
@@ -715,7 +727,8 @@ function SonecMGunInput(Sonec ref as TSonec,FlashList ref as TFlashList,ProtoFla
 			SoundPlay(Sound.MGunSound)
 			Sonec.MGun.FlashIndex = FlashAdd(FlashList,ProtoFlash,World,0,10,Position,Angle,Radius,Now)
 			Radius = 25
-			BulletAdd(BulletList,ProtoBullet,World,Position,Angle,Radius,TYPEPLAYERONE,Now)
+			BulletIndex = BulletAdd(BulletList,ProtoBullet,World,Position,Angle,Radius,TYPEPLAYERONE,Now)
+            if BulletIndex >= 0 then BulletList.Bullet[BulletIndex].WeaponDepth = Depth
 			TimeReset(Sonec.MGun.FireTimer,Now)
 			TimeReset(Sonec.MGun.FireBurstTimer,Now)
 			
@@ -728,7 +741,7 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function SonecGrenadeLauncherInput(Sonec ref as TSonec,GrenadeList ref as TGrenadeList,ProtoGrenade ref as TProtoGrenade,World ref as TWorld,Sound ref as TSound,Keys ref as TKeys,JoystickIndex as integer,Now as integer)
+function SonecGrenadeLauncherInput(Sonec ref as TSonec,GrenadeList ref as TGrenadeList,ProtoGrenade ref as TProtoGrenade,World ref as TWorld,Sound ref as TSound,Keys ref as TKeys,JoystickIndex as integer,Now as integer,Depth ref as TWeaponDepth)
 	
 	local Position as TPosition
 	local Angle as float
@@ -758,7 +771,7 @@ function SonecGrenadeLauncherInput(Sonec ref as TSonec,GrenadeList ref as TGrena
 			SoundPlay(Sound.GrenadeLauncherSound)
 			Radius = 25
 			ReferenceMuzzleHeight = Sonec.ObjectData.Size.Height*0.5-GRENADE_STANDING_MUZZLE_OFFSET_Y
-			GrenadeAdd(GrenadeList,ProtoGrenade,World,Position,Angle,Radius,ReferenceMuzzleHeight,Now)
+			GrenadeAdd(GrenadeList,ProtoGrenade,World,Position,Angle,Radius,ReferenceMuzzleHeight,Now,Depth)
 			TimeReset(Sonec.GrenadeLauncher.FireTimer,Now)
 			
 			// Add recoil once in the opposite firing direction. MoveSpeed.x
