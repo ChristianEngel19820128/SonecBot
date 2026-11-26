@@ -107,6 +107,11 @@ function IntroCreate(Intro ref as TIntro,Now as integer)
 	SetTextAlignment(Intro.TextHelp,ALIGNMENT_HELP_STANDARD)
 	SetTextPosition(Intro.TextHelp,wx*0.5,wy-GetTextTotalHeight(Intro.TextHelp)-dy*0.5)
 	SetTextColor(Intro.TextHelp,NORMAL_RED,NORMAL_GREEN,NORMAL_BLUE,NORMAL_ALPHA)
+	SetTextSize(Intro.PaintScoreText,SIZE_HELP_STANDARD)
+	SetTextBold(Intro.PaintScoreText,BOLD_HELP_STANDARD)
+	SetTextAlignment(Intro.PaintScoreText,ALIGNMENT_HELP_STANDARD)
+	SetTextPosition(Intro.PaintScoreText,wx*0.5,wy-GetTextTotalHeight(Intro.TextHelp)-dy*0.5)
+	SetTextColor(Intro.PaintScoreText,NORMAL_RED,NORMAL_GREEN,NORMAL_BLUE,NORMAL_ALPHA)
 	
 	// Reusable options rows: root categories and compact submenu screens.
 	Intro.TextOptionsTitle = CreateText("OPTIONS")
@@ -925,7 +930,6 @@ function IntroDraw(Intro ref as TIntro)
 	SpriteDraw(Intro.ProtoBackground.Sprite,Intro.Background.SpriteData)
     if Intro.IsOption = FALSE
         IntroPaintDraw(Intro)
-        if Intro.PaintResultEnd > 0 then DrawText(Intro.PaintScoreText)
     endif
 	
 	if Intro.IsOption = TRUE
@@ -958,7 +962,11 @@ function IntroDraw(Intro ref as TIntro)
 		Drawtext(Intro.TextEnd)
 	endif
 	// Shared help string stays visible on the main and options screens.
-	Drawtext(Intro.TextHelp)
+	if Intro.IsOption = FALSE and Intro.PaintResultEnd > 0
+		DrawText(Intro.PaintScoreText)
+	else
+		Drawtext(Intro.TextHelp)
+	endif
 	
 endfunction
 

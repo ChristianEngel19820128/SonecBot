@@ -109,3 +109,5 @@ Historische Ausgangsstände bleiben im [Archiv](docs/archive/README.md); kein Pf
 - **Menü-Fadenkreuz:** `media/gfx/gui/cross.png` (18×18), gemeinsames Software-Sprite am Pointer-Mittelpunkt, zuletzt gezeichnet; Systemcursor innerhalb der Menüfläche ausgeblendet, bei Spielstart/Ende wieder sichtbar. Trefferfarbe mit RGB-Untergrenze 80 für Sichtbarkeit; lokaler Desktop-/HTML5-Test offen. Musik unverändert.
 
 - **Experimentelle Paintball-Wertung:** 24 Kugeln statt 8, Spawnintervall 200–800 ms, Randabprallen unverändert. Erster Treffer startet 60 Sekunden unsichtbare Wertung (21 minus Kugeldurchmesser); Ergebnis nur bei Punkten für 10 Sekunden sichtbar. Treffer während Ergebnisanzeige erzeugen weiterhin Farbe, aber keine Punkte. Lokaler Compile-/Sichttest offen.
+
+- **Paintball-Kurzrunde:** Entwickler bestätigt lokalen Wertungstest (174 Punkte). Rundendauer auf 20 Sekunden reduziert; Ergebnis ersetzt für 10 Sekunden den sichtbaren Hilfetext im schwarzen unteren Bereich, normale Hilfetextrotation bleibt erhalten. Erneuter lokaler Sichttest offen.

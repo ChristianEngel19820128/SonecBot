@@ -2,7 +2,7 @@
 // The transparent paintball.png atlas uses 90x90 cells in ten columns.
 #constant MENU_PAINT_LIMIT 500
 #constant MENU_ORB_COUNT 24
-#constant MENU_PAINT_ROUND_MS 60000
+#constant MENU_PAINT_ROUND_MS 20000
 #constant MENU_PAINT_RESULT_MS 10000
 #constant MENU_PAINT_CELL 90
 
