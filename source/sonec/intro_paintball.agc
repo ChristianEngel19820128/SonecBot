@@ -1,7 +1,9 @@
 // Main-menu-only Easter egg: rising energy orbs and persistent paint splashes.
 // The transparent paintball.png atlas uses 90x90 cells in ten columns.
 #constant MENU_PAINT_LIMIT 500
-#constant MENU_ORB_COUNT 8
+#constant MENU_ORB_COUNT 24
+#constant MENU_PAINT_ROUND_MS 60000
+#constant MENU_PAINT_RESULT_MS 10000
 #constant MENU_PAINT_CELL 90
 
 function IntroPaintCreate(Intro ref as TIntro,Width as integer,Height as integer,Now as integer)
@@ -9,6 +11,14 @@ function IntroPaintCreate(Intro ref as TIntro,Width as integer,Height as integer
     Intro.MenuWidth = Width
     Intro.MenuHeight = Height
     Intro.Paint.Length = -1
+    Intro.PaintScoreText = CreateText("")
+    SetTextSize(Intro.PaintScoreText,24)
+    SetTextAlignment(Intro.PaintScoreText,1)
+    SetTextBold(Intro.PaintScoreText,1)
+    SetTextPosition(Intro.PaintScoreText,Width*0.5,20)
+    Intro.PaintScore = 0
+    Intro.PaintRoundEnd = 0
+    Intro.PaintResultEnd = 0
     Intro.LastPaintFrame = -1
     Intro.NextOrbMs = Now+500
     Intro.OrbImageID = LoadImage("/media/gfx/objects/energie.png")
@@ -55,6 +65,17 @@ function IntroPaintUpdate(Intro ref as TIntro,Now as integer)
     local Delta as float
     local FreeSlot as integer
     local DripLength as float
+    if Intro.PaintRoundEnd > 0 and Now >= Intro.PaintRoundEnd
+        Intro.PaintRoundEnd = 0
+        if Intro.PaintScore > 0
+            Intro.PaintResultEnd = Now+MENU_PAINT_RESULT_MS
+            SetTextString(Intro.PaintScoreText,"PAINTBALL SCORE: "+Str(Intro.PaintScore))
+        endif
+    endif
+    if Intro.PaintResultEnd > 0 and Now >= Intro.PaintResultEnd
+        Intro.PaintResultEnd = 0
+        Intro.PaintScore = 0
+    endif
     if Intro.NextOrbMs > Now+2000 then Intro.NextOrbMs = Now+500
     if Intro.NextOrbMs <= Now
         FreeSlot = -1
@@ -73,7 +94,7 @@ function IntroPaintUpdate(Intro ref as TIntro,Now as integer)
             Intro.Orbs[FreeSlot].NextSteerMs = Now+Random(180,450)
             IntroPaintRandomColor(Intro.Orbs[FreeSlot])
         endif
-        Intro.NextOrbMs = Now+Random(600,1400)
+        Intro.NextOrbMs = Now+Random(200,800)
     endif
     Delta = GetFrameTime()*1000
     if Delta > 60 then Delta = 60
@@ -120,7 +141,7 @@ function IntroPaintUpdate(Intro ref as TIntro,Now as integer)
     next i
 endfunction
 
-function IntroPaintShoot(Intro ref as TIntro,X as float,Y as float)
+function IntroPaintShoot(Intro ref as TIntro,X as float,Y as float,Now as integer)
     local i as integer
     local Frame as integer
     local Paint as TMenuPaint
@@ -136,6 +157,13 @@ function IntroPaintShoot(Intro ref as TIntro,X as float,Y as float)
             HitRadius = Intro.Orbs[i].Size*0.5
             if (X-Intro.Orbs[i].X)*(X-Intro.Orbs[i].X)+(Y-Intro.Orbs[i].Y)*(Y-Intro.Orbs[i].Y) <= HitRadius*HitRadius
                 Intro.Orbs[i].Enabled = FALSE
+                if Intro.PaintResultEnd = 0
+                    if Intro.PaintRoundEnd = 0
+                        Intro.PaintScore = 0
+                        Intro.PaintRoundEnd = Now+MENU_PAINT_ROUND_MS
+                    endif
+                    Intro.PaintScore = Intro.PaintScore+21-Floor(Intro.Orbs[i].Size)
+                endif
                 if Intro.Paint.Length >= MENU_PAINT_LIMIT-1
                     Intro.Paint.Remove(0)
                 endif

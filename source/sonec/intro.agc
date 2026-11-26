@@ -895,7 +895,7 @@ SetTextPosition(Intro.TextOption,wx-SIZE_MENU_MARGINRIGHT,wy-dy-SIZE_MENU_MARGIN
 SetTextPosition(Intro.TextEnd,wx-SIZE_MENU_MARGINRIGHT,wy-dy-SIZE_MENU_MARGINBOTTOM-SIZE_MENU_LINEHEIGHT*1.0-GetTextTotalHeight(Intro.TextEnd)*0.5)
 
 		if GetPointerPressed()
-            IntroPaintShoot(Intro,pointerNX,pointerNY)
+            IntroPaintShoot(Intro,pointerNX,pointerNY,Now)
         endif
 		
 	endif
@@ -925,6 +925,7 @@ function IntroDraw(Intro ref as TIntro)
 	SpriteDraw(Intro.ProtoBackground.Sprite,Intro.Background.SpriteData)
     if Intro.IsOption = FALSE
         IntroPaintDraw(Intro)
+        if Intro.PaintResultEnd > 0 then DrawText(Intro.PaintScoreText)
     endif
 	
 	if Intro.IsOption = TRUE

@@ -1062,7 +1062,11 @@ type TIntro
     OrbImageID as integer
     OrbSpriteID as integer
     Paint as TMenuPaint[-1]
-    Orbs as TMenuOrb[7]
+    Orbs as TMenuOrb[23]
+    PaintScore as integer
+    PaintRoundEnd as integer
+    PaintResultEnd as integer
+    PaintScoreText as integer
     NextOrbMs as integer
     LastPaintFrame as integer
     MenuWidth as integer
