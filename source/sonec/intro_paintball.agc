@@ -21,6 +21,27 @@ function IntroPaintCreate(Intro ref as TIntro,Width as integer,Height as integer
     next i
 endfunction
 
+// Choose a stable color per spawned orb, including occasional pure black and white.
+function IntroPaintRandomColor(Orb ref as TMenuOrb)
+    local Mode as integer
+    Mode = Random(0,19)
+    if Mode = 0
+        Orb.Red = 0
+        Orb.Green = 0
+        Orb.Blue = 0
+    else
+        if Mode = 1
+            Orb.Red = 255
+            Orb.Green = 255
+            Orb.Blue = 255
+        else
+            Orb.Red = Random(0,255)
+            Orb.Green = Random(0,255)
+            Orb.Blue = Random(0,255)
+        endif
+    endif
+endfunction
+
 function IntroPaintUpdate(Intro ref as TIntro,Now as integer)
     local i as integer
     local Delta as float
@@ -42,6 +63,7 @@ function IntroPaintUpdate(Intro ref as TIntro,Now as integer)
             Intro.Orbs[FreeSlot].Speed = Random(18,48)*0.001
             Intro.Orbs[FreeSlot].SpeedX = Random(-18,18)*0.001
             Intro.Orbs[FreeSlot].NextSteerMs = Now+Random(180,450)
+            IntroPaintRandomColor(Intro.Orbs[FreeSlot])
         endif
         Intro.NextOrbMs = Now+Random(600,1400)
     endif
@@ -102,7 +124,6 @@ function IntroPaintShoot(Intro ref as TIntro,X as float,Y as float)
     local U1 as float
     local U2 as float
     local HitRadius as float
-    local PaintColor as integer
     local R as integer
     local G as integer
     local B as integer
@@ -137,35 +158,9 @@ function IntroPaintShoot(Intro ref as TIntro,X as float,Y as float)
                 SetSpritePositionByOffset(Paint.SpriteID,X,Y)
                 // Preserve the source frame's upright orientation and baked-in drips.
                 // White paintball frames can now be tinted to match their drips.
-                PaintColor = Random(0,5)
-                R = 238
-                G = 76
-                B = 148
-                if PaintColor = 1
-                    R = 40
-                    G = 201
-                    B = 232
-                endif
-                if PaintColor = 2
-                    R = 246
-                    G = 212
-                    B = 71
-                endif
-                if PaintColor = 3
-                    R = 140
-                    G = 230
-                    B = 173
-                endif
-                if PaintColor = 4
-                    R = 173
-                    G = 117
-                    B = 232
-                endif
-                if PaintColor = 5
-                    R = 242
-                    G = 123
-                    B = 66
-                endif
+                R = Intro.Orbs[i].Red
+                G = Intro.Orbs[i].Green
+                B = Intro.Orbs[i].Blue
                 SetSpriteColor(Paint.SpriteID,R,G,B,255)
                 // One-pixel vertical trails with small, rounded splatter tips.
                 Paint.DripY = Y+Size*0.12
@@ -221,6 +216,7 @@ function IntroPaintDraw(Intro ref as TIntro)
                 SetSpriteScaleByOffset(Intro.OrbSpriteID,Intro.Orbs[i].Size/20.0,Intro.Orbs[i].Size/20.0)
                 SetSpriteOffset(Intro.OrbSpriteID,GetSpriteWidth(Intro.OrbSpriteID)*0.5,GetSpriteHeight(Intro.OrbSpriteID)*0.5)
                 SetSpritePositionByOffset(Intro.OrbSpriteID,Intro.Orbs[i].X,Intro.Orbs[i].Y)
+                SetSpriteColor(Intro.OrbSpriteID,Intro.Orbs[i].Red,Intro.Orbs[i].Green,Intro.Orbs[i].Blue,255)
                 DrawSprite(Intro.OrbSpriteID)
             endif
         next i

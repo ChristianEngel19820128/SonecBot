@@ -1012,6 +1012,9 @@ type TGame
 endtype
 
 type TMenuOrb
+    Red as integer
+    Green as integer
+    Blue as integer
     Enabled as integer
     X as float
     Y as float
