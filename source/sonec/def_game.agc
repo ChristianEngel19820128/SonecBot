@@ -1048,6 +1048,9 @@ type TIntro
     PaintDripSpriteID as integer
     PaintTipSpriteID as integer
     PaintImageID as integer
+    PaintColumns as integer
+    PaintRows as integer
+    PaintFrames as integer
     OrbImageID as integer
     OrbSpriteID as integer
     Paint as TMenuPaint[-1]

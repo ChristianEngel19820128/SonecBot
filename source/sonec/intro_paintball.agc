@@ -1,8 +1,8 @@
 // Main-menu-only Easter egg: rising energy orbs and persistent paint splashes.
-// The transparent paintball.png strip is 900x30: 30 frames of 30x30 pixels.
+// The transparent paintball.png atlas uses 90x90 cells in ten columns.
 #constant MENU_PAINT_LIMIT 500
 #constant MENU_ORB_COUNT 8
-#constant MENU_PAINT_FRAMES 30
+#constant MENU_PAINT_CELL 90
 
 function IntroPaintCreate(Intro ref as TIntro,Width as integer,Height as integer,Now as integer)
     local i as integer
@@ -17,10 +17,13 @@ function IntroPaintCreate(Intro ref as TIntro,Width as integer,Height as integer
     endif
     Intro.PaintImageID = LoadImage("/media/gfx/effects/paintball.png")
     if Intro.PaintImageID > 0
+        Intro.PaintColumns = Floor(GetImageWidth(Intro.PaintImageID)*1.0/MENU_PAINT_CELL)
+        Intro.PaintRows = Floor(GetImageHeight(Intro.PaintImageID)*1.0/MENU_PAINT_CELL)
+        Intro.PaintFrames = Intro.PaintColumns*Intro.PaintRows
         Intro.PaintSpriteID = CreateSprite(Intro.PaintImageID)
         Intro.PaintDripSpriteID = CreateSprite(0)
         Intro.PaintTipSpriteID = CreateSprite(Intro.PaintImageID)
-        SetSpriteUV(Intro.PaintTipSpriteID,0,0,0,1,1.0/MENU_PAINT_FRAMES,0,1.0/MENU_PAINT_FRAMES,1)
+        SetSpriteUV(Intro.PaintTipSpriteID,0,0,0,1.0/Intro.PaintRows,1.0/Intro.PaintColumns,0,1.0/Intro.PaintColumns,1.0/Intro.PaintRows)
     endif
     for i = 0 to MENU_ORB_COUNT-1
         Intro.Orbs[i].Enabled = FALSE
@@ -134,12 +137,12 @@ function IntroPaintShoot(Intro ref as TIntro,X as float,Y as float)
                 if Intro.Paint.Length >= MENU_PAINT_LIMIT-1
                     Intro.Paint.Remove(0)
                 endif
-                Frame = Random(0,MENU_PAINT_FRAMES-1)
+                Frame = Random(0,Intro.PaintFrames-1)
                 if Frame = Intro.LastPaintFrame
-                    Frame = Mod(Frame+1,MENU_PAINT_FRAMES)
+                    Frame = Mod(Frame+1,Intro.PaintFrames)
                 endif
                 Intro.LastPaintFrame = Frame
-                Size = Intro.Orbs[i].Size*4.0
+                Size = Intro.Orbs[i].Size*4.5
                 Paint.Frame = Frame
                 Paint.X = X
                 Paint.Y = Y
@@ -168,6 +171,10 @@ function IntroPaintDraw(Intro ref as TIntro)
     local i as integer
     local U1 as float
     local U2 as float
+    local V1 as float
+    local V2 as float
+    local Column as integer
+    local Row as integer
     local Size as float
     for i = 0 to Intro.Paint.Length
         // Draw both one-pixel trails before their rounded tips and the splat.
@@ -189,12 +196,16 @@ function IntroPaintDraw(Intro ref as TIntro)
         SetSpriteOffset(Intro.PaintTipSpriteID,Size*0.5,Size*0.5)
         SetSpritePositionByOffset(Intro.PaintTipSpriteID,Intro.Paint[i].Drip2X+Intro.Paint[i].Drip2Width*0.5,Intro.Paint[i].DripY+Intro.Paint[i].Drip2Length)
         DrawSprite(Intro.PaintTipSpriteID)
-        // The native sprite is the entire 900x30 strip; UV selects one 30x30 frame.
-        U1 = Intro.Paint[i].Frame*1.0/MENU_PAINT_FRAMES
-        U2 = (Intro.Paint[i].Frame+1)*1.0/MENU_PAINT_FRAMES
-        SetSpriteUV(Intro.PaintSpriteID,U1,0,U1,1,U2,0,U2,1)
+        // Select one 90x90 atlas cell in row-major order.
+        Column = Mod(Intro.Paint[i].Frame,Intro.PaintColumns)
+        Row = Floor(Intro.Paint[i].Frame*1.0/Intro.PaintColumns)
+        U1 = Column*1.0/Intro.PaintColumns
+        U2 = (Column+1)*1.0/Intro.PaintColumns
+        V1 = Row*1.0/Intro.PaintRows
+        V2 = (Row+1)*1.0/Intro.PaintRows
+        SetSpriteUV(Intro.PaintSpriteID,U1,V1,U1,V2,U2,V1,U2,V2)
         Size = Intro.Paint[i].Size
-        SetSpriteScaleByOffset(Intro.PaintSpriteID,Size/900.0,Size/30.0)
+        SetSpriteScaleByOffset(Intro.PaintSpriteID,Size/GetImageWidth(Intro.PaintImageID),Size/GetImageHeight(Intro.PaintImageID))
         SetSpriteOffset(Intro.PaintSpriteID,GetSpriteWidth(Intro.PaintSpriteID)*0.5,GetSpriteHeight(Intro.PaintSpriteID)*0.5)
         SetSpritePositionByOffset(Intro.PaintSpriteID,Intro.Paint[i].X,Intro.Paint[i].Y)
         SetSpriteColor(Intro.PaintSpriteID,Intro.Paint[i].Red,Intro.Paint[i].Green,Intro.Paint[i].Blue,255)
