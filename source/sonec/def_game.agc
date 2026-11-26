@@ -1041,6 +1041,10 @@ type TMenuPaint
     DripY as float
     Drip1Width as float
     Drip2Width as float
+    Drip1TipWidth as float
+    Drip1TipHeight as float
+    Drip2TipWidth as float
+    Drip2TipHeight as float
 endtype
 
 type TIntro

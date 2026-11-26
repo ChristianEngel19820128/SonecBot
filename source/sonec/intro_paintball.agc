@@ -22,8 +22,7 @@ function IntroPaintCreate(Intro ref as TIntro,Width as integer,Height as integer
         Intro.PaintFrames = Intro.PaintColumns*Intro.PaintRows
         Intro.PaintSpriteID = CreateSprite(Intro.PaintImageID)
         Intro.PaintDripSpriteID = CreateSprite(0)
-        Intro.PaintTipSpriteID = CreateSprite(Intro.PaintImageID)
-        SetSpriteUV(Intro.PaintTipSpriteID,0,0,0,1.0/Intro.PaintRows,1.0/Intro.PaintColumns,0,1.0/Intro.PaintColumns,1.0/Intro.PaintRows)
+        Intro.PaintTipSpriteID = CreateSprite(Intro.OrbImageID)
     endif
     for i = 0 to MENU_ORB_COUNT-1
         Intro.Orbs[i].Enabled = FALSE
@@ -156,6 +155,10 @@ function IntroPaintShoot(Intro ref as TIntro,X as float,Y as float)
                 Paint.Drip2X = X+Size*0.10
                 Paint.Drip1Width = 1
                 Paint.Drip2Width = 1
+                Paint.Drip1TipWidth = Random(2,4)
+                Paint.Drip1TipHeight = Random(2,5)
+                Paint.Drip2TipWidth = Random(2,4)
+                Paint.Drip2TipHeight = Random(2,5)
                 Paint.Drip1Length = 1
                 Paint.Drip2Length = 1
                 Paint.Drip1Max = Random(10,28)
@@ -186,14 +189,12 @@ function IntroPaintDraw(Intro ref as TIntro)
         SetSpritePosition(Intro.PaintDripSpriteID,Intro.Paint[i].Drip2X,Intro.Paint[i].DripY)
         DrawSprite(Intro.PaintDripSpriteID)
         SetSpriteColor(Intro.PaintTipSpriteID,Intro.Paint[i].Red,Intro.Paint[i].Green,Intro.Paint[i].Blue,255)
-        Size = Intro.Paint[i].Drip1Width+1
-        SetSpriteSize(Intro.PaintTipSpriteID,Size,Size)
-        SetSpriteOffset(Intro.PaintTipSpriteID,Size*0.5,Size*0.5)
+        SetSpriteScaleByOffset(Intro.PaintTipSpriteID,Intro.Paint[i].Drip1TipWidth/20.0,Intro.Paint[i].Drip1TipHeight/20.0)
+        SetSpriteOffset(Intro.PaintTipSpriteID,GetSpriteWidth(Intro.PaintTipSpriteID)*0.5,GetSpriteHeight(Intro.PaintTipSpriteID)*0.5)
         SetSpritePositionByOffset(Intro.PaintTipSpriteID,Intro.Paint[i].Drip1X+Intro.Paint[i].Drip1Width*0.5,Intro.Paint[i].DripY+Intro.Paint[i].Drip1Length)
         DrawSprite(Intro.PaintTipSpriteID)
-        Size = Intro.Paint[i].Drip2Width+1
-        SetSpriteSize(Intro.PaintTipSpriteID,Size,Size)
-        SetSpriteOffset(Intro.PaintTipSpriteID,Size*0.5,Size*0.5)
+        SetSpriteScaleByOffset(Intro.PaintTipSpriteID,Intro.Paint[i].Drip2TipWidth/20.0,Intro.Paint[i].Drip2TipHeight/20.0)
+        SetSpriteOffset(Intro.PaintTipSpriteID,GetSpriteWidth(Intro.PaintTipSpriteID)*0.5,GetSpriteHeight(Intro.PaintTipSpriteID)*0.5)
         SetSpritePositionByOffset(Intro.PaintTipSpriteID,Intro.Paint[i].Drip2X+Intro.Paint[i].Drip2Width*0.5,Intro.Paint[i].DripY+Intro.Paint[i].Drip2Length)
         DrawSprite(Intro.PaintTipSpriteID)
         // Select one 90x90 atlas cell in row-major order.
