@@ -22,11 +22,54 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function IntroCreate(Intro ref as TIntro,vx as integer,vy as integer,Now as integer)
+#constant CONFLICT_RED 255
+#constant CONFLICT_GREEN 65
+#constant CONFLICT_BLUE 65
+#constant CONFLICT_ALPHA 222
+
+#constant SELECTED_RED 0
+#constant SELECTED_GREEN 255
+#constant SELECTED_BLUE 255
+#constant SELECTED_ALPHA 222
+
+#constant NORMAL_RED 255
+#constant NORMAL_GREEN 255
+#constant NORMAL_BLUE 255
+#constant NORMAL_ALPHA 222
+
+#constant ALIGNMENT_HELP_STANDARD 1
+#constant BOLD_HELP_STANDARD 1
+
+#constant SIZE_HELP_STANDARD 28
+
+#constant ALIGNMENT_MENU_STANDARD 2
+#constant BOLD_MENU_STANDARD 1
+
+#constant SIZE_MENU_STANDARD 30
+#constant SIZE_MENU_SELECTION 40
+
+#constant SIZE_MENU_LINEHEIGHT 32
+#constant SIZE_MENU_MARGINRIGHT 30
+#constant SIZE_MENU_MARGINBOTTOM 45
+
+#constant ALIGNMENT_OPTION_STANDARD 1
+#constant BOLD_OPTION_STANDARD 1
+
+#constant SIZE_OPTION_HEADER 48
+#constant SIZE_OPTION_STANDARD 32
+#constant SIZE_OPTION_SELECTION 38
+
+#constant SIZE_OPTION_LINEHEIGHT 34
+
+#constant ALIGNMENT_KEYBOARD_STANDARD 1
+#constant BOLD_KEYBOARD_STANDARD 1
+
+function IntroCreate(Intro ref as TIntro,Now as integer)
 	local k as integer
+	local dy as float
 
 	IntroProtoLoad(Intro)
-    IntroPaintCreate(Intro,vx,vy,Now)
+    IntroPaintCreate(Intro,wx,wy,Now)
     Intro.CrossImageID = LoadImage("/media/gfx/gui/cross.png")
     if Intro.CrossImageID > 0
         Intro.CrossSpriteID = CreateSprite(Intro.CrossImageID)
@@ -34,100 +77,93 @@ function IntroCreate(Intro ref as TIntro,vx as integer,vy as integer,Now as inte
     endif
     Intro.MusicSoundID = LoadSound("/media/mfx/mystery_loop_2026-11-11.wav")
 	
-	
+	dy = wy - GetImageHeight(Intro.ProtoBackground.Image.ID)
+
 	Intro.Background.SpriteData.Center = TRUE
-	Intro.Background.SpriteData.Position.x = vx*0.5
-	Intro.Background.SpriteData.Position.y = vy*0.5 - 12
+	Intro.Background.SpriteData.Position.x = wx * 0.5
+	Intro.Background.SpriteData.Position.y = wy * 0.5 - dy
 	
 	Intro.TextStart = CreateText("START")
-	SetTextAlignment(Intro.TextStart,2)
-	SetTextPosition(Intro.TextStart,vx-20,vy-140)
-	SetTextSize(Intro.TextStart,28)
-	SetTextBold(Intro.TextStart,1)
+	SetTextSize(Intro.TextStart,SIZE_MENU_SELECTION)
+	SetTextBold(Intro.TextStart,BOLD_MENU_STANDARD)
+	SetTextAlignment(Intro.TextStart,ALIGNMENT_MENU_STANDARD)
 	
 	Intro.TextOption = CreateText("OPTIONS")
-	SetTextAlignment(Intro.TextOption,2)
-	SetTextPosition(Intro.TextOption,vx-20,vy-110)
-	SetTextSize(Intro.TextOption,28)
-	SetTextBold(Intro.TextOption,1)
+	SetTextSize(Intro.TextOption,SIZE_MENU_STANDARD)
+	SetTextBold(Intro.TextOption,BOLD_MENU_STANDARD)
+	SetTextAlignment(Intro.TextOption,ALIGNMENT_MENU_STANDARD)
 	
 	Intro.TextEnd = CreateText("QUIT")
-	SetTextAlignment(Intro.TextEnd,2)
-	SetTextPosition(Intro.TextEnd,vx-20,vy-80)
-	SetTextSize(Intro.TextEnd,28)
-	SetTextBold(Intro.TextEnd,1)
+	SetTextSize(Intro.TextEnd,SIZE_MENU_STANDARD)
+	SetTextBold(Intro.TextEnd,BOLD_MENU_STANDARD)
+	SetTextAlignment(Intro.TextEnd,ALIGNMENT_MENU_STANDARD)
 	
 	Intro.TextHelp = CreateText("U need a Joypad")
     if GetDeviceBaseName() = "html5"
-        SetTextString(Intro.TextHelp,"Click game window to enable keyboard")
+        SetTextString(Intro.TextHelp,"Click game window to enable keyboard and audio")
     endif
-	SetTextAlignment(Intro.TextHelp,1)
-	SetTextPosition(Intro.TextHelp,vx/2,vy-23)
-	SetTextSize(Intro.TextHelp,18)
-	SetTextBold(Intro.TextHelp,1)
-	SetTextColor(Intro.TextHelp,255,255,255,222)
+	SetTextSize(Intro.TextHelp,SIZE_HELP_STANDARD)
+	SetTextBold(Intro.TextHelp,BOLD_HELP_STANDARD)
+	SetTextAlignment(Intro.TextHelp,ALIGNMENT_HELP_STANDARD)
+	SetTextPosition(Intro.TextHelp,wx*0.5,wy-GetTextTotalHeight(Intro.TextHelp)-dy*0.5)
+	SetTextColor(Intro.TextHelp,NORMAL_RED,NORMAL_GREEN,NORMAL_BLUE,NORMAL_ALPHA)
 	
 	// Reusable options rows: root categories and compact submenu screens.
 	Intro.TextOptionsTitle = CreateText("OPTIONS")
-	SetTextAlignment(Intro.TextOptionsTitle,1)
-	SetTextPosition(Intro.TextOptionsTitle,vx/2,vy/2-90)
-	SetTextSize(Intro.TextOptionsTitle,30)
-	SetTextBold(Intro.TextOptionsTitle,1)
-	SetTextColor(Intro.TextOptionsTitle,0,255,255,222)
+	SetTextAlignment(Intro.TextOptionsTitle,ALIGNMENT_OPTION_STANDARD)
+	SetTextSize(Intro.TextOptionsTitle,SIZE_OPTION_HEADER)
+	SetTextBold(Intro.TextOptionsTitle,BOLD_OPTION_STANDARD)
+	SetTextColor(Intro.TextOptionsTitle,SELECTED_RED,SELECTED_GREEN,SELECTED_BLUE,SELECTED_ALPHA)
 
 	Intro.TextOptionsEntry1 = CreateText("GAMEPLAY")
-	SetTextAlignment(Intro.TextOptionsEntry1,1)
-	SetTextPosition(Intro.TextOptionsEntry1,vx/2,vy/2-35)
-	SetTextSize(Intro.TextOptionsEntry1,19)
-	SetTextBold(Intro.TextOptionsEntry1,1)
+	SetTextAlignment(Intro.TextOptionsEntry1,ALIGNMENT_OPTION_STANDARD)
+	SetTextSize(Intro.TextOptionsEntry1,SIZE_OPTION_STANDARD)
+	SetTextBold(Intro.TextOptionsEntry1,BOLD_OPTION_STANDARD)
 
 	Intro.TextOptionsEntry2 = CreateText("CONTROLS")
-	SetTextAlignment(Intro.TextOptionsEntry2,1)
-	SetTextPosition(Intro.TextOptionsEntry2,vx/2,vy/2)
-	SetTextSize(Intro.TextOptionsEntry2,19)
-	SetTextBold(Intro.TextOptionsEntry2,1)
+	SetTextAlignment(Intro.TextOptionsEntry2,ALIGNMENT_OPTION_STANDARD)
+	SetTextSize(Intro.TextOptionsEntry2,SIZE_OPTION_STANDARD)
+	SetTextBold(Intro.TextOptionsEntry2,BOLD_OPTION_STANDARD)
 
 	Intro.TextOptionsEntry3 = CreateText("AUDIO")
-	SetTextAlignment(Intro.TextOptionsEntry3,1)
-	SetTextPosition(Intro.TextOptionsEntry3,vx/2,vy/2+35)
-	SetTextSize(Intro.TextOptionsEntry3,19)
-	SetTextBold(Intro.TextOptionsEntry3,1)
+	SetTextAlignment(Intro.TextOptionsEntry3,ALIGNMENT_OPTION_STANDARD)
+	SetTextSize(Intro.TextOptionsEntry3,SIZE_OPTION_STANDARD)
+	SetTextBold(Intro.TextOptionsEntry3,BOLD_OPTION_STANDARD)
 
 	Intro.TextOptionsEntry4 = CreateText("BACK")
-	SetTextAlignment(Intro.TextOptionsEntry4,1)
-	SetTextPosition(Intro.TextOptionsEntry4,vx/2,vy/2+70)
-	SetTextSize(Intro.TextOptionsEntry4,19)
-	SetTextBold(Intro.TextOptionsEntry4,1)
+	SetTextAlignment(Intro.TextOptionsEntry4,ALIGNMENT_OPTION_STANDARD)
+	SetTextSize(Intro.TextOptionsEntry4,SIZE_OPTION_STANDARD)
+	SetTextBold(Intro.TextOptionsEntry4,BOLD_OPTION_STANDARD)
 
 	// Two compact keyboard tables share eleven fixed rows (no scrolling).
 	// Labels are right aligned, key values left aligned, close to the centre.
-	Intro.KeyboardCenterX = vx/2
-	Intro.KeyboardCenterY = vy/2
+	Intro.KeyboardCenterX = wx*0.5
+	Intro.KeyboardCenterY = wy*0.5
 	for k = 0 to 10
 		Intro.TextKeyboardLabel[k] = CreateText("")
-		SetTextAlignment(Intro.TextKeyboardLabel[k],2)
+		SetTextAlignment(Intro.TextKeyboardLabel[k],ALIGNMENT_OPTION_STANDARD)
+		SetTextSize(Intro.TextKeyboardLabel[k],SIZE_OPTION_STANDARD)
+		SetTextBold(Intro.TextKeyboardLabel[k],BOLD_OPTION_STANDARD)
 		SetTextPosition(Intro.TextKeyboardLabel[k],Intro.KeyboardCenterX-9,Intro.KeyboardCenterY)
-		SetTextSize(Intro.TextKeyboardLabel[k],17)
-		SetTextBold(Intro.TextKeyboardLabel[k],1)
 		Intro.TextKeyboardKey[k] = CreateText("")
-		SetTextAlignment(Intro.TextKeyboardKey[k],0)
+		SetTextAlignment(Intro.TextKeyboardKey[k],ALIGNMENT_OPTION_STANDARD)
+		SetTextSize(Intro.TextKeyboardKey[k],SIZE_OPTION_STANDARD)
+		SetTextBold(Intro.TextKeyboardKey[k],BOLD_OPTION_STANDARD)
 		SetTextPosition(Intro.TextKeyboardKey[k],Intro.KeyboardCenterX+9,Intro.KeyboardCenterY)
-		SetTextSize(Intro.TextKeyboardKey[k],17)
-		SetTextBold(Intro.TextKeyboardKey[k],1)
 	next k
 
 	Intro.TextCapturePrompt = CreateText("PRESS NEW KEY")
-	SetTextAlignment(Intro.TextCapturePrompt,1)
+	SetTextAlignment(Intro.TextCapturePrompt,ALIGNMENT_OPTION_STANDARD)
+	SetTextSize(Intro.TextCapturePrompt,SIZE_OPTION_STANDARD)
+	SetTextBold(Intro.TextCapturePrompt,BOLD_OPTION_STANDARD)
 	SetTextPosition(Intro.TextCapturePrompt,Intro.KeyboardCenterX,Intro.KeyboardCenterY-15)
-	SetTextSize(Intro.TextCapturePrompt,28)
-	SetTextBold(Intro.TextCapturePrompt,1)
-	SetTextColor(Intro.TextCapturePrompt,0,255,255,222)
+	SetTextColor(Intro.TextCapturePrompt,SELECTED_RED,SELECTED_GREEN,SELECTED_BLUE,SELECTED_ALPHA)
 	Intro.TextCaptureCancel = CreateText("BACKSPACE - CANCEL")
-	SetTextAlignment(Intro.TextCaptureCancel,1)
+	SetTextAlignment(Intro.TextCaptureCancel,ALIGNMENT_OPTION_STANDARD)
+	SetTextSize(Intro.TextCaptureCancel,SIZE_OPTION_STANDARD)
+	SetTextBold(Intro.TextCaptureCancel,BOLD_OPTION_STANDARD)
 	SetTextPosition(Intro.TextCaptureCancel,Intro.KeyboardCenterX,Intro.KeyboardCenterY+25)
-	SetTextSize(Intro.TextCaptureCancel,18)
-	SetTextBold(Intro.TextCaptureCancel,1)
-	SetTextColor(Intro.TextCaptureCancel,255,255,255,222)
+	SetTextColor(Intro.TextCaptureCancel,NORMAL_RED,NORMAL_GREEN,NORMAL_BLUE,NORMAL_ALPHA)
 	Intro.KeyboardCapture = FALSE
 	Intro.KeyboardCaptureArmed = FALSE
 	Intro.KeyboardCaptureAction = 0
@@ -301,7 +337,7 @@ function IntroKeyboardTableUpdate(Intro ref as TIntro,Keys ref as TKeys)
 	// Keep the 12-pixel break before each two-row navigation pair.
 	NavigationGap = 12
 	RowStart = Intro.KeyboardCenterY - ((11-1)*20+NavigationGap+62)/2+44
-	SetTextPosition(Intro.TextOptionsTitle,Intro.KeyboardCenterX,RowStart-44)
+	SetTextPosition(Intro.TextOptionsTitle,wx*0.5,wy*0.5-SIZE_OPTION_LINEHEIGHT*4-GetTextTotalHeight(Intro.TextOptionsTitle)*0.5)
 
 	for Row = 0 to 10
 		RowY = RowStart + Row*20
@@ -381,39 +417,42 @@ function IntroKeyboardTableUpdate(Intro ref as TIntro,Keys ref as TKeys)
 			endif
 		endif
 		// Navigation entries belong to the whole screen, not the key column.
+		SetTextAlignment(Intro.TextKeyboardLabel[Row],ALIGNMENT_KEYBOARD_STANDARD)
+		SetTextBold(Intro.TextKeyboardLabel[Row],BOLD_KEYBOARD_STANDARD)
 		if IsNavigation = TRUE
-			SetTextAlignment(Intro.TextKeyboardLabel[Row],1)
-			SetTextPosition(Intro.TextKeyboardLabel[Row],Intro.KeyboardCenterX,RowY)
+			SetTextPosition(Intro.TextKeyboardLabel[Row],wx*0.5,wy*0.5-2*SIZE_OPTION_LINEHEIGHT+SIZE_OPTION_LINEHEIGHT*(Row+1)-GetTextTotalHeight(Intro.TextKeyboardLabel[Row])*0.5)
 		else
-			SetTextAlignment(Intro.TextKeyboardLabel[Row],2)
-			SetTextPosition(Intro.TextKeyboardLabel[Row],Intro.KeyboardCenterX-9,RowY)
+			SetTextPosition(Intro.TextKeyboardLabel[Row],wx*0.5,wy*0.5-2*SIZE_OPTION_LINEHEIGHT+SIZE_OPTION_LINEHEIGHT*(Row)-GetTextTotalHeight(Intro.TextKeyboardLabel[Row])*0.5)
 		endif
-		SetTextPosition(Intro.TextKeyboardKey[Row],Intro.KeyboardCenterX+9,RowY)
+		
 		SetTextString(Intro.TextKeyboardLabel[Row],Label)
-		SetTextString(Intro.TextKeyboardKey[Row],KeyValue)
-		SetTextSize(Intro.TextKeyboardLabel[Row],17)
-		SetTextSize(Intro.TextKeyboardKey[Row],17)
+		if Len(KeyValue) > 0 then SetTextString(Intro.TextKeyboardKey[Row],"("+KeyValue+")")
+		SetTextSize(Intro.TextKeyboardLabel[Row],SIZE_OPTION_STANDARD)
+		SetTextSize(Intro.TextKeyboardKey[Row],SIZE_OPTION_STANDARD)
 		SetTextColor(Intro.TextKeyboardLabel[Row],255,255,255,170)
 		SetTextColor(Intro.TextKeyboardKey[Row],255,255,255,170)
 		if Row+1 = Intro.OptionSelectionPos
-			SetTextSize(Intro.TextKeyboardLabel[Row],19)
-			SetTextSize(Intro.TextKeyboardKey[Row],19)
-			SetTextColor(Intro.TextKeyboardLabel[Row],0,255,255,222)
-			SetTextColor(Intro.TextKeyboardKey[Row],0,255,255,222)
+			SetTextSize(Intro.TextKeyboardLabel[Row],SIZE_OPTION_STANDARD)
+			SetTextSize(Intro.TextKeyboardKey[Row],SIZE_OPTION_STANDARD)
+			SetTextColor(Intro.TextKeyboardLabel[Row],SELECTED_RED,SELECTED_GREEN,SELECTED_BLUE,SELECTED_ALPHA)
+			SetTextColor(Intro.TextKeyboardKey[Row],SELECTED_RED,SELECTED_GREEN,SELECTED_BLUE,SELECTED_ALPHA)
 		endif
 		// Keep selected action labels cyan; only conflicting key values turn red.
 		if Index >= 0
 			if IntroKeyboardKeyConflict(Keys,Index) = 1
-				SetTextColor(Intro.TextKeyboardKey[Row],255,65,65,222)
+				SetTextColor(Intro.TextKeyboardKey[Row],CONFLICT_RED,CONFLICT_GREEN,CONFLICT_BLUE,CONFLICT_ALPHA)
 			endif
 		endif
+
+		SetTextPosition(Intro.TextKeyboardKey[Row],wx*0.5+120,wy*0.5-2*SIZE_OPTION_LINEHEIGHT+SIZE_OPTION_LINEHEIGHT*(Row)-GetTextTotalHeight(Intro.TextKeyboardLabel[Row])*0.5)
+
 	next Row
 endfunction
 
 // Experimental menu-only loop; keep sound effects and gameplay audio independent.
 function IntroMusicStart(Intro ref as TIntro)
     if Intro.MusicSoundID > 0 and Intro.MusicInstanceID = 0
-        Intro.MusicInstanceID = PlaySound(Intro.MusicSoundID,35,1)
+        Intro.MusicInstanceID = PlaySound(Intro.MusicSoundID,100,1)
     endif
 endfunction
 
@@ -433,7 +472,10 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Optio
 	local CapturedKey as integer
 	local DefaultKeys as TKeys
 	local BindingIndex as integer
-	
+	local dy as float
+	local Main as integer
+	local Option as integer
+
 	// Capture is modal: no navigation, page changes or gameplay keys run.
 	if Intro.KeyboardCapture = TRUE
 		if GetKeyPressed(KEY_BACK) = 1
@@ -460,6 +502,55 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Optio
 		exitfunction Value
 	endif
 	
+		if Intro.IsOption = FALSE
+			Main = 1
+			Option = 0
+		else
+			Main = 0
+			Option = 1
+		endif
+
+		if Main = 1 and (GetKeyPressed(KEY_ENTER) = 1 or GetJoyPressed(JoystickIndex,joystickButtonA) = 1)
+			select Intro.SelctionPos
+				case 1
+					Value = TRUE
+				endcase
+				case 2
+					Intro.IsOption = TRUE
+					Intro.OptionSelectionPos = 1
+					Intro.OptionPage = 1
+					// IntroDraw can render OPTIONS in this same frame.
+					// Initialize the correct title and highlight immediately,
+					// instead of displaying the previous page's stale colours.
+					SetTextString(Intro.TextOptionsTitle,"OPTIONS")
+					SetTextPosition(Intro.TextOptionsTitle,Intro.KeyboardCenterX,Intro.KeyboardCenterY-90)
+					SetTextSize(Intro.TextOptionsTitle,SIZE_OPTION_HEADER)
+					SetTextString(Intro.TextOptionsEntry1,"GAMEPLAY")
+					SetTextString(Intro.TextOptionsEntry2,"CONTROLS")
+					SetTextString(Intro.TextOptionsEntry3,"AUDIO")
+					SetTextString(Intro.TextOptionsEntry4,"BACK")
+					SetTextSize(Intro.TextOptionsEntry1,SIZE_OPTION_STANDARD)
+					SetTextSize(Intro.TextOptionsEntry2,SIZE_OPTION_STANDARD)
+					SetTextSize(Intro.TextOptionsEntry3,SIZE_OPTION_STANDARD)
+					SetTextSize(Intro.TextOptionsEntry4,SIZE_OPTION_STANDARD)
+					SetTextColor(Intro.TextOptionsEntry1,SELECTED_RED,SELECTED_GREEN,SELECTED_BLUE,SELECTED_ALPHA)
+					SetTextColor(Intro.TextOptionsEntry2,255,255,255,111)
+					SetTextColor(Intro.TextOptionsEntry3,255,255,255,111)
+					SetTextColor(Intro.TextOptionsEntry4,255,255,255,111)
+					SetTextPosition(Intro.TextOptionsEntry1,wx*0.5,wy*0.5-SIZE_OPTION_LINEHEIGHT*1-GetTextTotalHeight(Intro.TextOptionsEntry1)*0.5)
+					SetTextPosition(Intro.TextOptionsEntry2,wx*0.5,wy*0.5-SIZE_OPTION_LINEHEIGHT*0-GetTextTotalHeight(Intro.TextOptionsEntry2)*0.5)
+					SetTextPosition(Intro.TextOptionsEntry3,wx*0.5,wy*0.5-SIZE_OPTION_LINEHEIGHT*-1-GetTextTotalHeight(Intro.TextOptionsEntry3)*0.5)
+					SetTextPosition(Intro.TextOptionsEntry4,wx*0.5,wy*0.5-SIZE_OPTION_LINEHEIGHT*-2-GetTextTotalHeight(Intro.TextOptionsEntry4)*0.5)
+					Option = 1
+				endcase
+				case 3
+					Intro.IsQuit = TRUE
+				endcase
+			endselect
+			PlaySound(Sound.SelectSound)
+		endif
+
+
 	// Analog menu navigation works in both the main and options screens.
 	// One step per deflection, then rearm only when the stick returns to neutral.
 	AnalogY = GetJoyY(JoystickIndex)
@@ -538,7 +629,10 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Optio
 			endif
 			PlaySound(Sound.SelectSound)
 		else
-			if GetKeyPressed(KEY_ENTER) = 1 or GetJoyPressed(JoystickIndex,joystickButtonA) = 1
+			if Main = 1 and Option = 1
+				Main = 0
+			else
+			if (GetKeyPressed(KEY_ENTER) = 1 or GetJoyPressed(JoystickIndex,joystickButtonA) = 1)
 				select Intro.OptionPage
 					case 1
 						select Intro.OptionSelectionPos
@@ -556,6 +650,8 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Optio
 							endcase
 							case 4
 								Intro.IsOption = FALSE
+								Option = 0
+								Main = 1
 							endcase
 						endselect
 						PlaySound(Sound.SelectSound)
@@ -651,6 +747,7 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Optio
 					endcase
 				endselect
 			endif
+			endif
 		endif
 
 		// Keyboard pages position their title together with their centred table.
@@ -706,40 +803,44 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Optio
 
 		// During capture, the existing title identifies the selected action.
 		// The action row text is already populated by IntroKeyboardTableUpdate.
-		if Intro.KeyboardCapture = TRUE
-			SetTextString(Intro.TextOptionsTitle,"CHANGE KEY - "+GetTextString(Intro.TextKeyboardLabel[Intro.OptionSelectionPos-1]))
-			SetTextPosition(Intro.TextOptionsTitle,Intro.KeyboardCenterX,Intro.KeyboardCenterY-70)
-			SetTextSize(Intro.TextOptionsTitle,20)
-		else
-			SetTextSize(Intro.TextOptionsTitle,30)
+		if Intro.OptionPage <> 5 and Intro.OptionPage <> 6
+			if Intro.KeyboardCapture = TRUE
+				SetTextString(Intro.TextOptionsTitle,"CHANGE KEY - "+GetTextString(Intro.TextKeyboardLabel[Intro.OptionSelectionPos-1]))
+			endif
+			SetTextSize(Intro.TextOptionsTitle,SIZE_OPTION_HEADER)
+			SetTextPosition(Intro.TextOptionsTitle,wx*0.5,wy*0.5-SIZE_OPTION_LINEHEIGHT*3-GetTextTotalHeight(Intro.TextOptionsTitle)*0.5)
 		endif
 
-		SetTextSize(Intro.TextOptionsEntry1,19)
-		SetTextSize(Intro.TextOptionsEntry2,19)
-		SetTextSize(Intro.TextOptionsEntry3,19)
-		SetTextSize(Intro.TextOptionsEntry4,19)
+		SetTextSize(Intro.TextOptionsEntry1,SIZE_OPTION_STANDARD)
+		SetTextSize(Intro.TextOptionsEntry2,SIZE_OPTION_STANDARD)
+		SetTextSize(Intro.TextOptionsEntry3,SIZE_OPTION_STANDARD)
+		SetTextSize(Intro.TextOptionsEntry4,SIZE_OPTION_STANDARD)
 		SetTextColor(Intro.TextOptionsEntry1,255,255,255,111)
 		SetTextColor(Intro.TextOptionsEntry2,255,255,255,111)
 		SetTextColor(Intro.TextOptionsEntry3,255,255,255,111)
 		SetTextColor(Intro.TextOptionsEntry4,255,255,255,111)
 		select Intro.OptionSelectionPos
 			case 1
-				SetTextSize(Intro.TextOptionsEntry1,22)
-				SetTextColor(Intro.TextOptionsEntry1,0,255,255,222)
+				SetTextSize(Intro.TextOptionsEntry1,SIZE_OPTION_SELECTION)
+				SetTextColor(Intro.TextOptionsEntry1,SELECTED_RED,SELECTED_GREEN,SELECTED_BLUE,SELECTED_ALPHA)
 			endcase
 			case 2
-				SetTextSize(Intro.TextOptionsEntry2,22)
-				SetTextColor(Intro.TextOptionsEntry2,0,255,255,222)
+				SetTextSize(Intro.TextOptionsEntry2,SIZE_OPTION_SELECTION)
+				SetTextColor(Intro.TextOptionsEntry2,SELECTED_RED,SELECTED_GREEN,SELECTED_BLUE,SELECTED_ALPHA)
 			endcase
 			case 3
-				SetTextSize(Intro.TextOptionsEntry3,22)
-				SetTextColor(Intro.TextOptionsEntry3,0,255,255,222)
+				SetTextSize(Intro.TextOptionsEntry3,SIZE_OPTION_SELECTION)
+				SetTextColor(Intro.TextOptionsEntry3,SELECTED_RED,SELECTED_GREEN,SELECTED_BLUE,SELECTED_ALPHA)
 			endcase
 			case 4
-				SetTextSize(Intro.TextOptionsEntry4,22)
-				SetTextColor(Intro.TextOptionsEntry4,0,255,255,222)
+				SetTextSize(Intro.TextOptionsEntry4,SIZE_OPTION_SELECTION)
+				SetTextColor(Intro.TextOptionsEntry4,SELECTED_RED,SELECTED_GREEN,SELECTED_BLUE,SELECTED_ALPHA)
 			endcase
 		endselect
+	SetTextPosition(Intro.TextOptionsEntry1,wx*0.5,wy*0.5-SIZE_OPTION_LINEHEIGHT*1-GetTextTotalHeight(Intro.TextOptionsEntry1)*0.5)
+	SetTextPosition(Intro.TextOptionsEntry2,wx*0.5,wy*0.5-SIZE_OPTION_LINEHEIGHT*0-GetTextTotalHeight(Intro.TextOptionsEntry2)*0.5)
+	SetTextPosition(Intro.TextOptionsEntry3,wx*0.5,wy*0.5-SIZE_OPTION_LINEHEIGHT*-1-GetTextTotalHeight(Intro.TextOptionsEntry3)*0.5)
+	SetTextPosition(Intro.TextOptionsEntry4,wx*0.5,wy*0.5-SIZE_OPTION_LINEHEIGHT*-2-GetTextTotalHeight(Intro.TextOptionsEntry4)*0.5)
 	else
 		if GetKeyPressed(KEY_W) = 1 or GetKeyPressed(KEY_UP) = 1 or GetJoyPressed(JoystickIndex,JoystickButtonCrossUp) = 1 or AnalogStep = -1
 			if Intro.SelctionPos <= 1
@@ -761,69 +862,40 @@ function IntroDo(Intro ref as TIntro,Sound ref as TSound,Keys ref as TKeys,Optio
 		
 		select Intro.SelctionPos
 			case 1
-				SetTextColor(Intro.TextStart,0,255,255,222)
+				SetTextColor(Intro.TextStart,SELECTED_RED,SELECTED_GREEN,SELECTED_BLUE,SELECTED_ALPHA)
 				SetTextColor(Intro.TextOption,255,255,255,111)
 				SetTextColor(Intro.TextEnd,255,255,255,111)
-				SetTextSize(Intro.TextStart,32)
-				SetTextSize(Intro.TextOption,28)
-				SetTextSize(Intro.TextEnd,28)
+				SetTextSize(Intro.TextStart,SIZE_MENU_SELECTION)
+				SetTextSize(Intro.TextOption,SIZE_MENU_STANDARD)
+				SetTextSize(Intro.TextEnd,SIZE_MENU_STANDARD)
+
 			endcase
 			case 2
 				
 				SetTextColor(Intro.TextStart,255,255,255,111)
-				SetTextColor(Intro.TextOption,0,255,255,222)
+				SetTextColor(Intro.TextOption,SELECTED_RED,SELECTED_GREEN,SELECTED_BLUE,SELECTED_ALPHA)
 				SetTextColor(Intro.TextEnd,255,255,255,111)
-				SetTextSize(Intro.TextStart,28)
-				SetTextSize(Intro.TextOption,32)
-				SetTextSize(Intro.TextEnd,28)
+				SetTextSize(Intro.TextStart,SIZE_MENU_STANDARD)
+				SetTextSize(Intro.TextOption,SIZE_MENU_SELECTION)
+				SetTextSize(Intro.TextEnd,SIZE_MENU_STANDARD)
 			endcase
 			case 3
 				SetTextColor(Intro.TextStart,255,255,255,111)
 				SetTextColor(Intro.TextOption,255,255,255,111)
-				SetTextColor(Intro.TextEnd,0,255,255,222)
-				SetTextSize(Intro.TextStart,28)
-				SetTextSize(Intro.TextOption,28)
-				SetTextSize(Intro.TextEnd,32)
+				SetTextColor(Intro.TextEnd,SELECTED_RED,SELECTED_GREEN,SELECTED_BLUE,SELECTED_ALPHA)
+				SetTextSize(Intro.TextStart,SIZE_MENU_STANDARD)
+				SetTextSize(Intro.TextOption,SIZE_MENU_STANDARD)
+				SetTextSize(Intro.TextEnd,SIZE_MENU_SELECTION)
 			endcase
 		endselect
-		
-		if GetKeyPressed(KEY_ENTER) = 1 or GetJoyPressed(JoystickIndex,joystickButtonA) = 1
-			select Intro.SelctionPos
-				case 1
-					Value = TRUE
-				endcase
-				case 2
-					Intro.IsOption = TRUE
-					Intro.OptionSelectionPos = 1
-					Intro.OptionPage = 1
-					// IntroDraw can render OPTIONS in this same frame.
-					// Initialize the correct title and highlight immediately,
-					// instead of displaying the previous page's stale colours.
-					SetTextString(Intro.TextOptionsTitle,"OPTIONS")
-					SetTextPosition(Intro.TextOptionsTitle,Intro.KeyboardCenterX,Intro.KeyboardCenterY-90)
-					SetTextSize(Intro.TextOptionsTitle,30)
-					SetTextString(Intro.TextOptionsEntry1,"GAMEPLAY")
-					SetTextString(Intro.TextOptionsEntry2,"CONTROLS")
-					SetTextString(Intro.TextOptionsEntry3,"AUDIO")
-					SetTextString(Intro.TextOptionsEntry4,"BACK")
-					SetTextSize(Intro.TextOptionsEntry1,22)
-					SetTextSize(Intro.TextOptionsEntry2,19)
-					SetTextSize(Intro.TextOptionsEntry3,19)
-					SetTextSize(Intro.TextOptionsEntry4,19)
-					SetTextColor(Intro.TextOptionsEntry1,0,255,255,222)
-					SetTextColor(Intro.TextOptionsEntry2,255,255,255,111)
-					SetTextColor(Intro.TextOptionsEntry3,255,255,255,111)
-					SetTextColor(Intro.TextOptionsEntry4,255,255,255,111)
-				endcase
-				case 3
-					Intro.IsQuit = TRUE
-				endcase
-			endselect
-			PlaySound(Sound.SelectSound)
-		endif
-		
+	
+dy = wy - GetImageHeight(Intro.ProtoBackground.Image.ID)	
+SetTextPosition(Intro.TextStart,wx-SIZE_MENU_MARGINRIGHT,wy-dy-SIZE_MENU_MARGINBOTTOM-SIZE_MENU_LINEHEIGHT*3.0-GetTextTotalHeight(Intro.TextStart)*0.5)
+SetTextPosition(Intro.TextOption,wx-SIZE_MENU_MARGINRIGHT,wy-dy-SIZE_MENU_MARGINBOTTOM-SIZE_MENU_LINEHEIGHT*2.0-GetTextTotalHeight(Intro.TextOption)*0.5)
+SetTextPosition(Intro.TextEnd,wx-SIZE_MENU_MARGINRIGHT,wy-dy-SIZE_MENU_MARGINBOTTOM-SIZE_MENU_LINEHEIGHT*1.0-GetTextTotalHeight(Intro.TextEnd)*0.5)
+
 		if GetPointerPressed()
-            IntroPaintShoot(Intro,GetPointerX(),GetPointerY())
+            IntroPaintShoot(Intro,pointerNX,pointerNY)
         endif
 		
 	endif
@@ -836,11 +908,11 @@ endfunction Value
 function IntroCrossDraw(Intro ref as TIntro)
     local X as float
     local Y as float
-    X = GetPointerX()
-    Y = GetPointerY()
-    if Intro.CrossSpriteID > 0 and X >= 0 and X < Intro.MenuWidth and Y >= 0 and Y < Intro.MenuHeight
+    X = pointerNX + pointerSX
+    Y = pointerNY + pointerSY
+    if Intro.CrossSpriteID > 0 and X >= 1 and X < Intro.MenuWidth - 1 and Y >= 1 and Y < Intro.MenuHeight - 1
         SetRawMouseVisible(0)
-        SetSpritePositionByOffset(Intro.CrossSpriteID,X,Y)
+        SetSpritePositionByOffset(Intro.CrossSpriteID,pointerNX,pointerNY)
         DrawSprite(Intro.CrossSpriteID)
     else
         SetRawMouseVisible(1)

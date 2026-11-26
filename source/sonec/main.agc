@@ -17,12 +17,12 @@ SetWindowTitle("SonecBot")
 
 local dx as integer
 local dy as integer
-local wx as integer
-local wy as integer
-local vx as integer
-local vy as integer
-local cx as float
-local cy as float
+global wx as integer
+global wy as integer
+global vx as integer
+global vy as integer
+Global cx as float
+Global cy as float
 
 wx = 1350
 wy = 675
@@ -41,7 +41,7 @@ SetVirtualResolution(vx,vy)
 // Windows VSync A/B test: 1 = request monitor VSync, 0 = previous 60 FPS limiter.
 // This labels the API call made by the game, not the driver's actual presentation.
 #constant WINDOWS_VSYNC_TEST 1
-#constant FALLBACK_SYNC_RATE_FPS 60
+#constant FALLBACK_SYNC_RATE_FPS 75
 global MotionDebugSyncRequest as string
 // F2 clock diagnostics: never used by gameplay calculations.
 global MotionDebugClockRealDeltaMs as integer
@@ -181,16 +181,67 @@ local ClockFirstReadMs as integer
 local ClockPreviousNowMs as integer
 local ClockPreviousVirtualMs as integer
 
-IntroCreate(Intro,vx,vy,Now)
+IntroCreate(Intro,Now)
 GameCreate(Game,vx,vy)
 
 // Normal background motion: move tower parts on each GameDo with a positive dt.
 // F5 retains the original 10-ms gate only as an F2 diagnostic comparison.
 TowerMotionEveryFrameEnabled = 1
 
+global pointerX as float
+global pointerNX as float
+global pointerY as float
+global pointerNY as float
+
+global pointerOX as float
+global pointerOY as float
+global pointerSX as float
+global pointerSY as float
+
+global pointerT as integer
+global pointerF as integer
+global pointerC as integer
+global pointerH as integer
+global pointerM as integer
+global pointerR as integer
+
+pointerM = 100
+
 repeat
 	
-	SetTextString(FPS,Str(Trunc(ScreenFPS())))
+	if pointerT < getmilliseconds() and Game.IsLost = TRUE
+		
+		inc pointerC
+
+		if pointerOX > 1 and pointerX > 0 and pointerX < vx and pointerNX > 0 and pointerNX < vx then pointerSX = pointerNX - pointerX
+		if pointerOY > 1 and pointerY > 0 and pointerY < vy and pointerNY > 0 and pointerNY < vy then pointerSY = pointerNY - pointerY
+
+		pointerX = pointerNX
+		pointerY = pointerNY
+
+		pointerNX = GetPointerX()
+		pointerNY = GetPointerY()
+
+		pointerOX = abs(pointerNX - pointerX)
+		pointerOY = abs(pointerNY - pointerY)
+
+		if pointerT + (1000 / FALLBACK_SYNC_RATE_FPS) < getmilliseconds() or pointerC > pointerM or pointerC > 8000
+			inc pointerR
+			pointerF = getmilliseconds() - pointerT
+			pointerT = getmilliseconds()
+			if pointerR > 1000
+				pointerR = 0
+				pointerH = 0
+			endif
+			if pointerC > pointerH then pointerH = pointerC
+			if pointerC > pointerM then pointerM = pointerC
+			SetTextString(FPS,Str(Trunc(ScreenFPS())) + "/"  + str(pointerF) + "/" + str(pointerH) + "/" + str(pointerM) + "/" + str(pointerSX) + "/" + str(pointerSY))
+			pointerC = 0
+		endif		
+
+	else
+
+	//SetTextString(FPS,Str(Trunc(ScreenFPS())) + "/"  + str(Trunc(pointerF)) + "/" + str(pointerC))
 	
 	// Capture the existing two time samples without changing their call order.
 	ClockPreviousNowMs = Now
@@ -291,7 +342,12 @@ repeat
         endif
 		if IntroDo(Intro,Game.Sound,Keys,Options,Game.JoystickIndex,CurrentNow) = TRUE
 			IntroMusicStop(Intro)
-            SetRawMouseVisible(1)
+			SetRawMouseVisible(0)
+			if GetVirtualWidth() = wx and GetVirtualHeight() = wy
+				SetVirtualResolution(vx,vy)
+				cx = vx/2
+				cy = vy/2
+			endif
 			GameInit(Game,CurrentNow)
 		endif
 		IntroDraw(Intro)
@@ -322,13 +378,23 @@ repeat
 			endif
 		endif
 	endif	
-	
+
+	SetTextPosition(FPS,10,GetVirtualHeight()-GetTextTotalHeight(FPS)-10)
 	Drawtext(FPS)
-    if Game.IsLost = TRUE
-        IntroCrossDraw(Intro)
-    endif
+
+	if Game.IsLost = TRUE
+		if GetVirtualWidth() = vx and GetVirtualHeight() = vy
+			SetVirtualResolution(wx,wy)
+			cx = wx/2
+			cy = wy/2
+		endif
+		IntroCrossDraw(Intro)
+	endif
+
 	Swap()
 	
+	endif
+
 until GetESCPressed() = 1 or (Device$ <> "html5" and Intro.IsQuit = TRUE)
 
 SetRawMouseVisible(1)

@@ -210,6 +210,7 @@ function SmokeDrawAll(World ref as TWorld)
             // Same centered scaled pivot convention as SpriteDraw.
             SetSpriteOffset(SpriteID,GetSpriteWidth(SpriteID)*0.5,GetSpriteHeight(SpriteID)*0.5)
             SetSpriteScaleByOffset(SpriteID,DrawScale,DrawScale)
+            SetSpriteOffset(SpriteID,GetSpriteWidth(SpriteID)*0.5,GetSpriteHeight(SpriteID)*0.5)
             SetSpriteAngle(SpriteID,SmokeParticles[i].Angle)
             SetSpriteColor(SpriteID,55+random(0,55),125,55+random(0,55),DrawAlpha)
             SetSpritePositionByOffset(SpriteID,SmokeParticles[i].Position.x-World.Position.x,SmokeParticles[i].Position.y-World.Position.y)

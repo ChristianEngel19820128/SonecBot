@@ -70,32 +70,33 @@ FILE_17=gui.agc;-1
 FILE_18=image.agc;-1
 FILE_19=inenergie.agc;-1
 FILE_20=intro.agc;-1
-FILE_21=jetfire.agc;-1
-FILE_22=jumppod.agc;-1
-FILE_23=main.agc;-1
-FILE_24=math.agc;-1
-FILE_25=mine.agc;-1
-FILE_26=orb.agc;-1
-FILE_27=plasmablitz.agc;-1
-FILE_28=plate.agc;-1
-FILE_29=shield.agc;-1
-FILE_30=smoke.agc;-1
-FILE_31=sonec.agc;-1
-FILE_32=sound.agc;-1
-FILE_33=sprite.agc;-1
-FILE_34=timer.agc;-1
-FILE_35=tower.agc;-1
-FILE_36=walker.agc;-1
-FILE_37=world.agc;-1
-FILE_38=physics.agc;-1
-FILE_39=weaponcollision.agc;-1
+FILE_21=intro_paintball.agc;-1
+FILE_22=jetfire.agc;-1
+FILE_23=jumppod.agc;-1
+FILE_24=main.agc;-1
+FILE_25=math.agc;-1
+FILE_26=mine.agc;-1
+FILE_27=orb.agc;-1
+FILE_28=plasmablitz.agc;-1
+FILE_29=plate.agc;-1
+FILE_30=shield.agc;-1
+FILE_31=smoke.agc;-1
+FILE_32=sonec.agc;-1
+FILE_33=sound.agc;-1
+FILE_34=sprite.agc;-1
+FILE_35=timer.agc;-1
+FILE_36=tower.agc;-1
+FILE_37=walker.agc;-1
+FILE_38=world.agc;-1
 
 [files]
-FILE_NAME_0=0;jumppod.agc;0;0
+FILE_NAME_0=0;intro.agc;69;0
+FILE_NAME_1=0;intro_paintball.agc;161;1
+FILE_NAME_2=1;main.agc;381;2
 
 [watchvariables]
 watch_variable=@Version;
 
 [project]
-unfolded=1
+unfolded=0
 
