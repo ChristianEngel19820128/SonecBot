@@ -727,6 +727,7 @@ type TExplosion
 	LastSimpleMineHitMs as integer[-1]
 	LastWalkerHitMs as integer[-1]
     LastFlarakHitMs as integer[-1]
+    LastFlarakTargetId as integer[-1]
     LastJumppodHitMs as integer[-1]
 	MeasureStartMs as integer
 	MeasureChecks as integer

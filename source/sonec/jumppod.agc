@@ -154,7 +154,7 @@ function JumppodFreeCenter(Plate ref as TPlate,PlateIndex as integer,ChestList r
             endif
         next k
         for k = 0 to FlarakList.Length
-            if FlarakList[k].Enabled = TRUE and FlarakList[k].PlateIndex = PlateIndex
+            if FlarakList[k].Enabled = TRUE and FlarakList[k].PlateIndex = PlateIndex and FlarakCarrierMatches(FlarakList[k],Plate) = TRUE
                 OtherLeft = FlarakList[k].PlateOffsetX-FLARAK_TEST_CELL_W*0.5
                 OtherRight = OtherLeft+FLARAK_TEST_CELL_W
                 if LeftX < OtherRight and RightX > OtherLeft then Blocked = TRUE
@@ -278,7 +278,7 @@ function JumppodBuildMechanicalList(ChestList ref as TChestList,PlateList ref as
         if FlarakList[i].Enabled = TRUE
             PlateIndex = FlarakList[i].PlateIndex
             if PlateIndex >= 0 and PlateIndex <= PlateList.Plate.Length
-                if PlateList.Plate[PlateIndex].Enabled = TRUE
+                if FlarakCarrierMatches(FlarakList[i],PlateList.Plate[PlateIndex]) = TRUE
                     Slot = i*SONEC_MECHANICAL_SLOT_STRIDE
                     LowerRect = Empty
                     UpperRect = Empty

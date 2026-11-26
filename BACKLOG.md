@@ -38,7 +38,7 @@ Bomber, Flarak, Jumppod einschließlich Landminen-Attrappe, Gefahren-/Erfahrungs
 - **Gamepad-Rebinding, Maus und weitere Bedienoptionen:** später; Entwickler ist mit der vorhandenen Gamepad-Steuerung zufrieden. Keyboard-Umbelegung, Speicherung und Reset sind umgesetzt.
 - **Spieloptionen zurücksetzen:** Umfang getrennt vom fertigen Keyboard-Reset klären.
 - **Energieanziehung als Halten/Umschalten:** mögliche spätere Einstellung; heutiges Verhalten nicht automatisch ändern.
-- **Umfangreichere Missionen, Informationsavatar oder Sprache:** über die kleinen Alpha-Ziele und vorhandenen Warn-/Hilfetexte hinausgehender Ausbau. Polishing-Idee 26.11.: gezielte englische Sprachmeldungen zu Spielereignissen, z. B. „Touchdown imminent“ (Formulierungsvorschlag für bevorstehende Landung); Auswahl, Trigger, Audio und Prioritäten später konkretisieren.
+- **Umfangreichere Missionen, Informationsavatar oder Sprache:** über die kleinen Alpha-Ziele und vorhandenen Warn-/Hilfetexte hinausgehender Ausbau. Polishing-Idee 26.11.: gezielte englische Sprachmeldungen zu Spielereignissen, z. B. „Touchdown imminent“ (Formulierungsvorschlag für bevorstehende Landung); Entwickler möchte die englischen Ansagen selbst einsprechen und nachbearbeiten, keine KI-Stimme. Auswahl, Trigger, Audio und Prioritäten später konkretisieren.
 - **Optionale Draufsicht und Multiplayer:** langfristig, ohne zugesagten Release.
 
 ## Belohnungs-Balancing: Grenzfälle und Ersatznutzen

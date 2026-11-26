@@ -134,6 +134,7 @@ function ExplosionNew(Explosion ref as TExplosion,ProtoExplosion ref as TProtoEx
 	Explosion.LastSimpleMineHitMs.Length = -1
 	Explosion.LastWalkerHitMs.Length = -1
     Explosion.LastFlarakHitMs.Length = -1
+    Explosion.LastFlarakTargetId.Length = -1
     Explosion.LastJumppodHitMs.Length = -1
 	Explosion.MeasureChecks = 0
 	Explosion.MeasureHits = 0
@@ -540,6 +541,15 @@ function ExplosionCollideFlaraks(ExplosionList ref as TExplosionList,Game ref as
                             if FlarakAreaHits(FlarakList[k],Game.World,Impact.x,Impact.y,R,R,TRUE)
                                 if ExplosionList.Explosion[i].LastFlarakHitMs.Length < k
                                     ExplosionList.Explosion[i].LastFlarakHitMs.Length = k
+                                endif
+                                // FlameTargetId already identifies each spawned station for the round.
+                                // The same slot can contain a different target during this explosion.
+                                if ExplosionList.Explosion[i].LastFlarakTargetId.Length < k
+                                    ExplosionList.Explosion[i].LastFlarakTargetId.Length = k
+                                endif
+                                if ExplosionList.Explosion[i].LastFlarakTargetId[k] <> FlarakList[k].FlameTargetId
+                                    ExplosionList.Explosion[i].LastFlarakTargetId[k] = FlarakList[k].FlameTargetId
+                                    ExplosionList.Explosion[i].LastFlarakHitMs[k] = 0
                                 endif
                                 if EXPLOSION_TIMED_DAMAGE = 0 or ExplosionList.Explosion[i].LastFlarakHitMs[k] = 0 or GetMilliseconds()-ExplosionList.Explosion[i].LastFlarakHitMs[k] >= EXPLOSION_DAMAGE_INTERVAL_MS
                                     ExplosionList.Explosion[i].LastFlarakHitMs[k] = GetMilliseconds()

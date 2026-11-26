@@ -128,6 +128,8 @@ function PlateAdd(PlateList ref as TPlateList,ProtoPlate ref as TProtoPlate,Worl
 				PlateList.FirstFree = PlateList.Plate.Length
 				Value = PlateList.Plate.Length
 			else
+				// Retire old stations before the new carrier becomes visible to placement.
+				FlarakDetachRecycledPlate(i)
 				PlateList.Plate[i] = Plate
 				PlateList.FirstFree = i+1
 				Value = i
@@ -373,7 +375,7 @@ function PlateAndChestDrawAll(PlateList ref as TPlateList,ProtoPlate ref as TPro
 		// Keep all stationary base objects in the carrier's existing draw order.
 		if PlateList.Plate[i].Enabled = TRUE
 			JumppodDrawPlate(i,World,PlayerPosition)
-			FlarakDrawPlate(i,World)
+			FlarakDrawPlate(i,PlateList.Plate[i],World)
 		endif
 	next i
 	

@@ -124,6 +124,7 @@ type TFlarak
     WorldY as float
     Enabled as integer
     PlateIndex as integer
+    CarrierPlateId as integer
     PlateOffsetX as float
     PlateOffsetY as float
     State as integer
@@ -165,6 +166,26 @@ function FlarakMarkFree(Index as integer)
     if FlarakSlotFree(FlarakList[Index]) = TRUE
         if Index < FlarakFirstFree then FlarakFirstFree = Index
     endif
+endfunction
+
+// A slot is a storage address, not the identity of its current carrier.
+function FlarakCarrierMatches(F ref as TFlarak,Plate ref as TPlate)
+    if Plate.Enabled = FALSE or F.CarrierPlateId <= 0 then exitfunction FALSE
+    if F.CarrierPlateId = Plate.WeaponDepthId then exitfunction TRUE
+endfunction FALSE
+
+// Called before a free plate slot is overwritten, before new placement checks.
+// Do not advance rockets here; their regular update owns movement.
+function FlarakDetachRecycledPlate(PlateIndex as integer)
+    local i as integer
+    for i = 0 to FlarakList.Length
+        if FlarakList[i].Enabled = TRUE and FlarakList[i].PlateIndex = PlateIndex
+            FlarakList[i].Enabled = FALSE
+            FlarakList[i].Rocket1.Attached = FALSE
+            FlarakList[i].Rocket2.Attached = FALSE
+            FlarakMarkFree(i)
+        endif
+    next i
 endfunction
 
 function FlarakProtoLoad()
@@ -260,6 +281,7 @@ function FlarakSpawn(PlateList ref as TPlateList,ChestList ref as TChestList,Pla
     F.HitFlashUntil = 0
     F.Variant = Random(0,1)
     F.PlateIndex = PlateIndex
+    F.CarrierPlateId = Plate.WeaponDepthId
     F.PlateOffsetX = FreeLeft+FLARAK_TEST_BASE_OFFSET_X
     // Developer-verified platform alignment; no extra platform-height correction.
     F.PlateOffsetY = -(FLARAK_TEST_CELL_H-FLARAK_TEST_BASE_OFFSET_Y)
@@ -655,7 +677,7 @@ function FlarakSmokeDoAll(PlateList ref as TPlateList,Now as integer)
         if FlarakList[i].Enabled = TRUE and FlarakList[i].Destroyed = TRUE
             PlateIndex = FlarakList[i].PlateIndex
             if PlateIndex >= 0 and PlateIndex <= PlateList.Plate.Length
-                if PlateList.Plate[PlateIndex].Enabled = TRUE
+                if FlarakCarrierMatches(FlarakList[i],PlateList.Plate[PlateIndex]) = TRUE
                     Density = SMOKE_DENSITY_FLARAK
                     if FlarakList[i].Variant = FLARAK_VARIANT_FLAK then Density = SMOKE_DENSITY_FLAK
                     Position.x = PlateList.Plate[PlateIndex].ObjectData.Position.x+FlarakList[i].PlateOffsetX
@@ -941,7 +963,7 @@ function FlarakDoAll(Game ref as TGame,JetfireList ref as TJetfireList,ProtoJetf
             if PlateIndex < 0 or PlateIndex > PlateList.Plate.Length
                 FlarakList[i].Enabled = FALSE
             else
-                if PlateList.Plate[PlateIndex].Enabled = FALSE
+                if FlarakCarrierMatches(FlarakList[i],PlateList.Plate[PlateIndex]) = FALSE
                     FlarakList[i].Enabled = FALSE
                 else
                     FlarakList[i].WorldX = PlateList.Plate[PlateIndex].ObjectData.Position.x+FlarakList[i].PlateOffsetX
@@ -1270,10 +1292,10 @@ function FlarakCollisionDebugDrawAll(World ref as TWorld)
 endfunction
 
 // Draw the complete station (including wrecks) in its carrier's layer.
-function FlarakDrawPlate(PlateIndex as integer,World ref as TWorld)
+function FlarakDrawPlate(PlateIndex as integer,Plate ref as TPlate,World ref as TWorld)
     local i as integer
     for i = 0 to FlarakList.Length
-        if FlarakList[i].Enabled = TRUE and FlarakList[i].PlateIndex = PlateIndex
+        if FlarakList[i].Enabled = TRUE and FlarakList[i].PlateIndex = PlateIndex and FlarakCarrierMatches(FlarakList[i],Plate) = TRUE
             FlarakDraw(FlarakList[i],World)
         endif
     next i
@@ -1291,7 +1313,7 @@ function FlarakFreeRocketDrawAll(PlateList ref as TPlateList,World ref as TWorld
         if FlarakList[i].Enabled = TRUE and ProtoFlarak.BaseSprite > 0 and ProtoFlarak.LauncherSprite > 0
             PlateIndex = FlarakList[i].PlateIndex
             if PlateIndex >= 0 and PlateIndex <= PlateList.Plate.Length
-                if PlateList.Plate[PlateIndex].Enabled = TRUE then HasDrawCarrier = TRUE
+                if FlarakCarrierMatches(FlarakList[i],PlateList.Plate[PlateIndex]) = TRUE then HasDrawCarrier = TRUE
             endif
         endif
         if HasDrawCarrier = FALSE or FlarakList[i].Rocket1.Attached = FALSE then FlarakRocketDraw(FlarakList[i].Rocket1,World)

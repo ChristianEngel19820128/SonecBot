@@ -154,7 +154,7 @@ function WeaponDepthCaptureGrounded(Depth ref as TWeaponDepth,PlateList ref as T
         if FlarakList[i].Enabled = TRUE
             PlateIndex = FlarakList[i].PlateIndex
             if PlateIndex <> OwnPlateIndex and PlateIndex >= 0 and PlateIndex <= PlateList.Plate.Length
-                if PlateList.Plate[PlateIndex].Enabled = TRUE
+                if FlarakCarrierMatches(FlarakList[i],PlateList.Plate[PlateIndex]) = TRUE
                     SockelUpdateRects(LowerRect,UpperRect,PlateList.Plate[PlateIndex],PlateIndex,FlarakList[i].PlateOffsetX)
                     if WeaponDepthOverlaps(MinPos,MaxPos,LowerRect.CollisionData.Position1,LowerRect.CollisionData.Position2) = TRUE or WeaponDepthOverlaps(MinPos,MaxPos,UpperRect.CollisionData.Position1,UpperRect.CollisionData.Position2) = TRUE
                         WeaponDepthExclude(Depth,PlateList,PlateIndex,FALSE)
