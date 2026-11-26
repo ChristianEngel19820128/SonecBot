@@ -1,3 +1,9 @@
+// Launcher profile: reference range measured from the muzzle, not the player.
+// Keep the same gravity in standing, crouching and airborne shots.
+#constant GRENADE_LAUNCH_SPEED_PX_PER_MS 3.0
+#constant GRENADE_LAUNCH_REFERENCE_RANGE_PX 675.0
+#constant GRENADE_LAUNCH_DRAG_PER_MS 0.0
+#constant GRENADE_STANDING_MUZZLE_OFFSET_Y -6.0
 
 //----------------------------------------------------------------------
 // 
@@ -34,9 +40,9 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function GrenadeNew(Grenade ref as TGrenade,ProtoGrenade ref as TProtoGrenade,World ref as TWorld,Position as TPosition,Angle as float,Radius as float,Now)
+function GrenadeNew(Grenade ref as TGrenade,ProtoGrenade ref as TProtoGrenade,World ref as TWorld,Position as TPosition,Angle as float,Radius as float,ReferenceMuzzleHeight as float,Now as integer)
 	
-	Speed as TPosition
+	local Drop as float
 	
 	Grenade.Enabled = TRUE
 	TimeSet(Grenade.ObjectData.MoveTimer,10,10)
@@ -46,18 +52,8 @@ function GrenadeNew(Grenade ref as TGrenade,ProtoGrenade ref as TProtoGrenade,Wo
 	CalcPosition(Grenade.ObjectData.Position,Angle,Radius)
 	Grenade.PreviousPosition = Grenade.ObjectData.Position
 	
-	Grenade.ObjectData.MoveSpeedMax.x = 3
-	Grenade.ObjectData.MoveSpeedMax.y = 3
-	
-	Speed.x = 0
-	Speed.y = 0
-	CalcPosition(Speed,Angle,3)
-
-	Grenade.ObjectData.MoveSpeed.x = Speed.x
-	Grenade.ObjectData.MoveSpeed.y = Speed.y
-
+	PhysicsLaunchVelocity(Grenade.ObjectData.MoveSpeed,Angle,GRENADE_LAUNCH_SPEED_PX_PER_MS)
 	Grenade.ObjectData.MoveAcceleration.x = 0
-	Grenade.ObjectData.MoveAcceleration.y = 1.5
 	
 	Grenade.ObjectData.MoveAlignment.x = 0
 	Grenade.ObjectData.MoveAlignment.y = 0
@@ -70,6 +66,11 @@ function GrenadeNew(Grenade ref as TGrenade,ProtoGrenade ref as TProtoGrenade,Wo
 	
 	Grenade.ObjectData.Size.Width = GetImageWidth(ProtoGrenade.AnimGrenade.Image.ID)*Grenade.SpriteData.Scale
 	Grenade.ObjectData.Size.Height = GetImageHeight(ProtoGrenade.AnimGrenade.Image.ID)*Grenade.SpriteData.Scale
+
+	// Existing horizontal grenade AABB uses image width as vertical size.
+	Drop = ReferenceMuzzleHeight-Grenade.ObjectData.Size.Width*0.5
+	if Drop < 1.0 then Drop = 1.0
+	Grenade.ObjectData.MoveAcceleration.y = PhysicsHorizontalRangeGravity(Drop,GRENADE_LAUNCH_SPEED_PX_PER_MS,GRENADE_LAUNCH_REFERENCE_RANGE_PX)
 
 	if Grenade.ObjectData.Size.Width > Grenade.ObjectData.Size.Height
 		Grenade.ObjectData.Radius = Grenade.ObjectData.Size.Width * 0.5
@@ -93,13 +94,13 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function GrenadeAdd(GrenadeList ref as TGrenadeList,ProtoGrenade ref as TProtoGrenade,World ref as TWorld,Position as TPosition,Angle as float,Radius as float,Now as integer)
+function GrenadeAdd(GrenadeList ref as TGrenadeList,ProtoGrenade ref as TProtoGrenade,World ref as TWorld,Position as TPosition,Angle as float,Radius as float,ReferenceMuzzleHeight as float,Now as integer)
 	
 	local Found as integer
 	local i as integer
 	local Grenade as TGrenade
 		
-	GrenadeNew(Grenade,ProtoGrenade,World,Position,Angle,Radius,Now)
+	GrenadeNew(Grenade,ProtoGrenade,World,Position,Angle,Radius,ReferenceMuzzleHeight,Now)
 	
 	Found = FALSE
 	i = GrenadeList.FirstFree
@@ -422,14 +423,7 @@ function GrenadeMove(Grenade ref as TGrenade,World ref as TWorld,Now as integer)
 			
 			
 			
-			Grenade.ObjectData.MoveAcceleration.y = Grenade.ObjectData.MoveAcceleration.y^2
-			
-			if Grenade.ObjectData.MoveSpeed.y + Grenade.ObjectData.MoveAcceleration.y*0.00025 < Grenade.ObjectData.MoveSpeedMax.y
-				Grenade.ObjectData.MoveSpeed.y = Grenade.ObjectData.MoveSpeed.y + Grenade.ObjectData.MoveAcceleration.y*0.00025
-			endif
-			
-			Grenade.ObjectData.Position.x = Grenade.ObjectData.Position.x + Grenade.ObjectData.MoveSpeed.x * Grenade.ObjectData.MoveTimer.CalcRange
-			Grenade.ObjectData.Position.y = Grenade.ObjectData.Position.y + Grenade.ObjectData.MoveSpeed.y * Grenade.ObjectData.MoveTimer.CalcRange
+			PhysicsBallisticStep(Grenade.ObjectData.Position,Grenade.ObjectData.MoveSpeed,Grenade.ObjectData.MoveAcceleration.y,GRENADE_LAUNCH_DRAG_PER_MS,Grenade.ObjectData.MoveTimer.FullDifference)
 			
 			SpritePositionCalc(Grenade.SpriteData.Position,Grenade.ObjectData.Position,World.Position)
 			

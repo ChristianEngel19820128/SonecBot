@@ -734,6 +734,7 @@ function SonecGrenadeLauncherInput(Sonec ref as TSonec,GrenadeList ref as TGrena
 	local Angle as float
 	local Radius as float
 	local Recoil as float
+	local ReferenceMuzzleHeight as float
 	
 	if (InputActionState(Keys,JoystickIndex,ACTION_FIRE_GRENADE) = 1) and Sonec.GrenadeLauncher.Ammo > 0
 		if TimeGet(Sonec.GrenadeLauncher.FireTimer,Now) > 0
@@ -743,7 +744,7 @@ function SonecGrenadeLauncherInput(Sonec ref as TSonec,GrenadeList ref as TGrena
 			if Sonec.State.Duck = TRUE
 				Position.y = Sonec.ObjectData.Position.y + 4
 			else
-				Position.y = Sonec.ObjectData.Position.y - 6
+				Position.y = Sonec.ObjectData.Position.y + GRENADE_STANDING_MUZZLE_OFFSET_Y
 			endif
 			
 			if Sonec.State.LookAlignment = LOOKLEFT
@@ -756,7 +757,8 @@ function SonecGrenadeLauncherInput(Sonec ref as TSonec,GrenadeList ref as TGrena
 				
 			SoundPlay(Sound.GrenadeLauncherSound)
 			Radius = 25
-			GrenadeAdd(GrenadeList,ProtoGrenade,World,Position,Angle,Radius,Now)
+			ReferenceMuzzleHeight = Sonec.ObjectData.Size.Height*0.5-GRENADE_STANDING_MUZZLE_OFFSET_Y
+			GrenadeAdd(GrenadeList,ProtoGrenade,World,Position,Angle,Radius,ReferenceMuzzleHeight,Now)
 			TimeReset(Sonec.GrenadeLauncher.FireTimer,Now)
 			
 			// Add recoil once in the opposite firing direction. MoveSpeed.x
