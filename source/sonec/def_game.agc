@@ -432,6 +432,7 @@ type THealth
 endtype
 
 type TBulletData
+    DamageOrigin as TDamageOrigin
 	BulletType as integer
 	Damage as integer
 endtype
@@ -942,6 +943,7 @@ type TProtoBomber
 endtype
 
 type TBomberBomb
+    DamageOrigin as TDamageOrigin
     SweepStartMs as integer
     Enabled as integer
     Position as TPosition

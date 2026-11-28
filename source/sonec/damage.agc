@@ -27,6 +27,7 @@
 // These are not a queue and do not implement XP or relief.
 global DamageLastHit as TDamageResult
 global DamageLastDestruction as TDamageDestruction
+global DamageSourceSerial as integer
 global DamageHitAvailable as integer
 global DamageDestructionAvailable as integer
 
@@ -35,6 +36,7 @@ function DamageReset()
     local EmptyDestruction as TDamageDestruction
     DamageLastHit = EmptyHit
     DamageLastDestruction = EmptyDestruction
+    DamageSourceSerial = 0
     DamageHitAvailable = FALSE
     DamageDestructionAvailable = FALSE
 endfunction
@@ -92,4 +94,13 @@ function DamageRecordImmediateDestruction(BeforeHP as integer,Origin ref as TDam
     Event.EffectiveHealthLoss = DamageEffectiveHealthLoss(BeforeHP,0)
     Event.TimeMs = Now
     DamagePublishDestruction(Event)
+endfunction
+
+// Independent source IDs, reset each round.
+function DamageOriginStart(Origin ref as TDamageOrigin,OwnerKind as integer,OwnerId as integer,SourceKind as integer)
+    DamageSourceSerial = DamageSourceSerial+1
+    Origin.OwnerKind = OwnerKind
+    Origin.OwnerId = OwnerId
+    Origin.SourceKind = SourceKind
+    Origin.SourceId = DamageSourceSerial
 endfunction

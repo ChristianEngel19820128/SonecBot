@@ -45,6 +45,7 @@ function GrenadeNew(Grenade ref as TGrenade,ProtoGrenade ref as TProtoGrenade,Wo
 	local Drop as float
 	
 	Grenade.Enabled = TRUE
+    DamageOriginStart(Grenade.BulletData.DamageOrigin,DAMAGE_OBJECT_SONEC,0,DAMAGE_SOURCE_GRENADE)
 	TimeSet(Grenade.ObjectData.MoveTimer,10,10)
 	TimeReset(Grenade.ObjectData.MoveTimer,Now)
 	
@@ -144,7 +145,7 @@ function GrenadeDestroy(GrenadeList ref as TGrenadeList,Index as integer,Explosi
 
 	if GrenadeList.Grenade[Index].Enabled = FALSE then exitfunction
 	GrenadeDelete(GrenadeList,Index)
-	ExplosionAdd(ExplosionList,ProtoExplosion,Game,1,Position,Now)
+	ExplosionAddAttributed(ExplosionList,ProtoExplosion,Game,1,Position,Now,GrenadeList.Grenade[Index].BulletData.DamageOrigin)
 
 endfunction
 
@@ -366,15 +367,15 @@ function GrenadeCollideAll(Game ref as TGame,Now as integer)
                     P = Game.Bomber.Bomb[BestIndex].Position
                     Game.Bomber.Bomb[BestIndex].Enabled = FALSE
                     GrenadeDelete(Game.GrenadeList,i)
-                    ExplosionAdd(Game.ExplosionList,Game.ProtoExplosion,Game,1,P,Now)
+                    ExplosionAddAttributed(Game.ExplosionList,Game.ProtoExplosion,Game,1,P,Now,Game.GrenadeList.Grenade[i].BulletData.DamageOrigin)
                 endif
                 if BestType = 2
-                    FlarakRocketIntercept(FlarakList[BestIndex].Rocket1,Game,Now)
+                    FlarakRocketIntercept(FlarakList[BestIndex].Rocket1,Game,Now,Game.GrenadeList.Grenade[i].BulletData.DamageOrigin)
                     FlarakMarkFree(BestIndex)
                     GrenadeDelete(Game.GrenadeList,i)
                 endif
                 if BestType = 3
-                    FlarakRocketIntercept(FlarakList[BestIndex].Rocket2,Game,Now)
+                    FlarakRocketIntercept(FlarakList[BestIndex].Rocket2,Game,Now,Game.GrenadeList.Grenade[i].BulletData.DamageOrigin)
                     FlarakMarkFree(BestIndex)
                     GrenadeDelete(Game.GrenadeList,i)
                 endif

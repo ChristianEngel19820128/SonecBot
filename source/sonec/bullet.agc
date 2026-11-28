@@ -74,6 +74,8 @@ function BulletNew(Bullet ref as TBullet,ProtoBullet ref as TProtoBullet,World r
 	Speed as TPosition
 	
 	Bullet.Enabled = TRUE
+    DamageOriginStart(Bullet.BulletData.DamageOrigin,DAMAGE_OBJECT_UNKNOWN,0,DAMAGE_SOURCE_BULLET)
+    if CollisionType = TYPEPLAYERONE then Bullet.BulletData.DamageOrigin.OwnerKind = DAMAGE_OBJECT_SONEC
     WeaponDepthReset(Bullet.WeaponDepth)
 	Bullet.Modification = BULLET_MOD_STANDARD
 	Bullet.ExplodeAtMs = 0
@@ -186,7 +188,7 @@ function BulletExplosiveFuses(BulletList ref as TBulletList,Game ref as TGame,No
     for i = 0 to BulletList.Bullet.Length
         if BulletList.Bullet[i].Enabled = TRUE and BulletList.Bullet[i].Modification = BULLET_MOD_EXPLOSIVE
             if Now >= BulletList.Bullet[i].ExplodeAtMs and BulletList.Bullet[i].OutsideWorld = FALSE
-                ExplosionAdd(Game.ExplosionList,Game.ProtoExplosion,Game,BULLET_EXPLOSIVE_EXPLOSION_TYPE,BulletList.Bullet[i].ObjectData.Position,Now)
+                ExplosionAddAttributed(Game.ExplosionList,Game.ProtoExplosion,Game,BULLET_EXPLOSIVE_EXPLOSION_TYPE,BulletList.Bullet[i].ObjectData.Position,Now,BulletList.Bullet[i].BulletData.DamageOrigin)
                 BulletDelete(BulletList,i)
             endif
         endif
@@ -287,7 +289,7 @@ function BulletCollide(BulletList ref as TBulletList,Sonec ref as TSonec,Shield 
                             Impact.y = BulletList.Bullet[i].PreviousPosition.y+(Impact.y-BulletList.Bullet[i].PreviousPosition.y)*Entry
                         endif
                         BulletDelete(BulletList,i)
-                        ExplosionAdd(Game.ExplosionList,Game.ProtoExplosion,Game,BULLET_EXPLOSIVE_EXPLOSION_TYPE,Impact,Now)
+                        ExplosionAddAttributed(Game.ExplosionList,Game.ProtoExplosion,Game,BULLET_EXPLOSIVE_EXPLOSION_TYPE,Impact,Now,BulletList.Bullet[i].BulletData.DamageOrigin)
                     else
                     // Keep the established proportional shield protection and health damage.
                     local HealthBeforeHit as integer

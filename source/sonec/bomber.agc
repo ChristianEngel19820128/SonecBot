@@ -234,6 +234,7 @@ function BomberBombDo(Bomber ref as TBomber,ProtoBomber ref as TProtoBomber,Worl
         if Bomber.NextBombAtMs > 0 and Now >= Bomber.NextBombAtMs
             i = Bomber.BombCount
             Bomber.Bomb[i].Enabled = TRUE
+            DamageOriginStart(Bomber.Bomb[i].DamageOrigin,DAMAGE_OBJECT_BOMBER,Bomber.FlameTargetId,DAMAGE_SOURCE_BOMB)
             Bomber.Bomb[i].Position.x = Bomber.Position.x
             Bomber.Bomb[i].Position.y = Bomber.Position.y+BOMBER_BOMB_RELEASE_Y
             Bomber.Bomb[i].PreviousPosition = Bomber.Bomb[i].Position
@@ -314,7 +315,7 @@ function BomberBombCollidePlasmaBlitz(Bomber ref as TBomber,PlasmaBlitzList ref 
                     if Entry >= 0
                         HitPosition = Bomber.Bomb[k].Position
                         Bomber.Bomb[k].Enabled = FALSE
-                        ExplosionAdd(Game.ExplosionList,Game.ProtoExplosion,Game,1,HitPosition,Now)
+                        ExplosionAddAttributed(Game.ExplosionList,Game.ProtoExplosion,Game,1,HitPosition,Now,PlasmaBlitzList.PlasmaBlitz[i].BulletData.DamageOrigin)
                     endif
                 endif
             next k
@@ -342,7 +343,7 @@ function BomberBombCollideFlames(Bomber ref as TBomber,FlameList ref as TFlameLi
                     if Entry >= 0
                         HitPosition = Bomber.Bomb[k].Position
                         Bomber.Bomb[k].Enabled = FALSE
-                        ExplosionAdd(Game.ExplosionList,Game.ProtoExplosion,Game,1,HitPosition,Now)
+                        ExplosionAddAttributed(Game.ExplosionList,Game.ProtoExplosion,Game,1,HitPosition,Now,FlameList.Flame[i].BulletData.DamageOrigin)
                     endif
                 endif
             next k
@@ -385,7 +386,7 @@ function BomberBombCollideBullets(Bomber ref as TBomber,BulletList ref as TBulle
                 HitPosition = Bomber.Bomb[BestIndex].Position
                 Bomber.Bomb[BestIndex].Enabled = FALSE
                 BulletDelete(BulletList,i)
-                ExplosionAdd(ExplosionList,ProtoExplosion,Game,1,HitPosition,Now)
+                ExplosionAddAttributed(ExplosionList,ProtoExplosion,Game,1,HitPosition,Now,BulletList.Bullet[i].BulletData.DamageOrigin)
             endif
         endif
     next i
@@ -447,10 +448,10 @@ endfunction -1.0
 
 // Keep the explosion at its contact offset on the carrier. The remaining
 // movement of the carrier has already been simulated for this frame.
-function BomberBombAddPlateExplosion(Game ref as TGame,PlateIndex as integer,Impact as TPosition,FrameContact as float,Now as integer)
+function BomberBombAddPlateExplosion(Game ref as TGame,PlateIndex as integer,Impact as TPosition,FrameContact as float,Now as integer,Origin ref as TDamageOrigin)
     Impact.x = Impact.x+(Game.PlateList.Plate[PlateIndex].ObjectData.Position.x-Game.PlateList.Plate[PlateIndex].CollisionMoveStart.x)*(1.0-FrameContact)
     Impact.y = Impact.y+(Game.PlateList.Plate[PlateIndex].ObjectData.Position.y-Game.PlateList.Plate[PlateIndex].CollisionMoveStart.y)*(1.0-FrameContact)
-    ExplosionAddAboveY(Game.ExplosionList,Game.ProtoExplosion,Game,1,Impact,Game.PlateList.Plate[PlateIndex].CollisionData.Position1.y,Game.PlateList.Plate[PlateIndex].CollisionData.Position1.x,Game.PlateList.Plate[PlateIndex].CollisionData.Position2.x,PlateIndex,Now)
+    ExplosionAddAboveYAttributed(Game.ExplosionList,Game.ProtoExplosion,Game,1,Impact,Game.PlateList.Plate[PlateIndex].CollisionData.Position1.y,Game.PlateList.Plate[PlateIndex].CollisionData.Position1.x,Game.PlateList.Plate[PlateIndex].CollisionData.Position2.x,PlateIndex,Now,Origin)
 endfunction
 
 // Earliest contact across the three existing target families, once per bomb.
@@ -520,7 +521,7 @@ function BomberBombCollideAll(Bomber ref as TBomber,Game ref as TGame,Now as int
                     HealthBeforeHit = Game.Sonec.Health.State
                     Game.Sonec.Health.State = Game.Sonec.Health.State-(BOMBER_BOMB_DIRECT_DAMAGE-ShieldAbsorbDamage(Game.Shield,Game.Sonec,BOMBER_BOMB_DIRECT_DAMAGE,Now))
                     if Game.Sonec.Health.State < HealthBeforeHit then SonecHitFlashUntil = Now+SONEC_HIT_FLASH_MS
-                    ExplosionAdd(Game.ExplosionList,Game.ProtoExplosion,Game,1,HitPosition,Now)
+                    ExplosionAddAttributed(Game.ExplosionList,Game.ProtoExplosion,Game,1,HitPosition,Now,Bomber.Bomb[i].DamageOrigin)
                 endif
                 if BestType = 2
                     PlateIndex = Game.ChestList.Chest[BestIndex].CollisionData.Index
@@ -537,18 +538,18 @@ function BomberBombCollideAll(Bomber ref as TBomber,Game ref as TGame,Now as int
                     endif
                     if PlateIndex >= 0 and PlateIndex <= Game.PlateList.Plate.Length
                         if Game.PlateList.Plate[PlateIndex].Enabled = TRUE
-                            BomberBombAddPlateExplosion(Game,PlateIndex,HitPosition,FrameContact,Now)
+                            BomberBombAddPlateExplosion(Game,PlateIndex,HitPosition,FrameContact,Now,Bomber.Bomb[i].DamageOrigin)
                         else
-                            ExplosionAdd(Game.ExplosionList,Game.ProtoExplosion,Game,1,HitPosition,Now)
+                            ExplosionAddAttributed(Game.ExplosionList,Game.ProtoExplosion,Game,1,HitPosition,Now,Bomber.Bomb[i].DamageOrigin)
                         endif
                     else
-                        ExplosionAdd(Game.ExplosionList,Game.ProtoExplosion,Game,1,HitPosition,Now)
+                        ExplosionAddAttributed(Game.ExplosionList,Game.ProtoExplosion,Game,1,HitPosition,Now,Bomber.Bomb[i].DamageOrigin)
                     endif
                 endif
                 if BestType = 3
                     // The tip, not the center, contacts the top surface.
                     HitPosition.y = HitPosition.y+5
-                    BomberBombAddPlateExplosion(Game,BestIndex,HitPosition,FrameContact,Now)
+                    BomberBombAddPlateExplosion(Game,BestIndex,HitPosition,FrameContact,Now,Bomber.Bomb[i].DamageOrigin)
                 endif
             endif
         endif

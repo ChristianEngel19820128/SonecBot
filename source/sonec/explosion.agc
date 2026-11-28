@@ -117,6 +117,7 @@ endfunction
 function ExplosionNew(Explosion ref as TExplosion,ProtoExplosion ref as TProtoExplosion,Game ref as TGame,ExplosionType as integer,Position ref as TPosition,Now as integer)
 
 	Explosion.Enabled = TRUE
+    DamageOriginStart(Explosion.BulletData.DamageOrigin,DAMAGE_OBJECT_UNKNOWN,0,DAMAGE_SOURCE_EXPLOSION)
     Explosion.CompositeUpperVisual = FALSE
     Explosion.ImpactPlateIndex = -1
     Explosion.ImpactPlateLastX = 0
@@ -246,13 +247,25 @@ function ExplosionInsert(ExplosionList ref as TExplosionList,Explosion ref as TE
 endfunction
 
 function ExplosionAdd(ExplosionList ref as TExplosionList,ProtoExplosion ref as TProtoExplosion,Game ref as TGame,ExplosionType as integer,Position ref as TPosition,Now as integer)
+    local UnknownOrigin as TDamageOrigin
+    ExplosionAddAttributed(ExplosionList,ProtoExplosion,Game,ExplosionType,Position,Now,UnknownOrigin)
+endfunction
+
+function ExplosionAddAttributed(ExplosionList ref as TExplosionList,ProtoExplosion ref as TProtoExplosion,Game ref as TGame,ExplosionType as integer,Position ref as TPosition,Now as integer,Origin ref as TDamageOrigin)
     local Explosion as TExplosion
     ExplosionNew(Explosion,ProtoExplosion,Game,ExplosionType,Position,Now)
+    Explosion.BulletData.DamageOrigin.OwnerKind = Origin.OwnerKind
+    Explosion.BulletData.DamageOrigin.OwnerId = Origin.OwnerId
     ExplosionInsert(ExplosionList,Explosion)
 endfunction
 
 // Only bomb impacts opt into this world-space damage boundary.
 function ExplosionAddAboveY(ExplosionList ref as TExplosionList,ProtoExplosion ref as TProtoExplosion,Game ref as TGame,ExplosionType as integer,Position ref as TPosition,MaxY as float,PlateLeftX as float,PlateRightX as float,PlateIndex as integer,Now as integer)
+    local UnknownOrigin as TDamageOrigin
+    ExplosionAddAboveYAttributed(ExplosionList,ProtoExplosion,Game,ExplosionType,Position,MaxY,PlateLeftX,PlateRightX,PlateIndex,Now,UnknownOrigin)
+endfunction
+
+function ExplosionAddAboveYAttributed(ExplosionList ref as TExplosionList,ProtoExplosion ref as TProtoExplosion,Game ref as TGame,ExplosionType as integer,Position ref as TPosition,MaxY as float,PlateLeftX as float,PlateRightX as float,PlateIndex as integer,Now as integer,Origin ref as TDamageOrigin)
     local Explosion as TExplosion
     ExplosionNew(Explosion,ProtoExplosion,Game,ExplosionType,Position,Now)
     Explosion.LimitDamageBelowY = TRUE
@@ -266,6 +279,8 @@ function ExplosionAddAboveY(ExplosionList ref as TExplosionList,ProtoExplosion r
     Explosion.SpriteData.Angle = 0
     // Bomb-platform composite only: tint both existing layers green.
     ColorSet(Explosion.SpriteData.Color,0,255,0,200)
+    Explosion.BulletData.DamageOrigin.OwnerKind = Origin.OwnerKind
+    Explosion.BulletData.DamageOrigin.OwnerId = Origin.OwnerId
     ExplosionInsert(ExplosionList,Explosion)
 endfunction
 

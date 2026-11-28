@@ -39,6 +39,7 @@ function PlasmaBlitzNew(PlasmaBlitz ref as TPlasmaBlitz,ProtoPlasmaBlitz ref as 
 	Speed as TPosition
 	
 	PlasmaBlitz.Enabled = TRUE
+    DamageOriginStart(PlasmaBlitz.BulletData.DamageOrigin,DAMAGE_OBJECT_SONEC,0,DAMAGE_SOURCE_PLASMA)
     WeaponDepthReset(PlasmaBlitz.WeaponDepth)
 	PlasmaBlitz.CreatedMs = Now
 	TimeSet(PlasmaBlitz.ObjectData.MoveTimer,10,10)

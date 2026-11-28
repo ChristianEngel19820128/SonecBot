@@ -1163,7 +1163,11 @@ function WalkerFireShot(Walker ref as TWalker,WalkerIndex as integer,ProtoWalker
     MaxPos.y = Walker.ObjectData.Position.y+WALKER_HULL_BOTTOM
     WeaponDepthCaptureGrounded(Depth,PlateList,ChestList,Walker.PlateIndex,MinPos,MaxPos)
     BulletIndex = BulletAdd(BulletList,ProtoBullet,World,MuzzlePosition,FireAngle,0.0,TYPEENEMY,Now)
-    if BulletIndex >= 0 then BulletList.Bullet[BulletIndex].WeaponDepth = Depth
+    if BulletIndex >= 0
+        BulletList.Bullet[BulletIndex].WeaponDepth = Depth
+        BulletList.Bullet[BulletIndex].BulletData.DamageOrigin.OwnerKind = DAMAGE_OBJECT_WALKER
+        BulletList.Bullet[BulletIndex].BulletData.DamageOrigin.OwnerId = Walker.FlameTargetId
+    endif
 	// Both effects use the same origin; flash following removes visual recoil.
 	FlashIndex = FlashAdd(FlashList,ProtoFlash,World,0,WALKER_MUZZLE_FLASH_CYCLES,MuzzlePosition,FireAngle,0.0,Now)
 	if FlashIndex >= 0

@@ -65,6 +65,7 @@ function FlameNew(Flame ref as TFlame,ProtoFlame ref as TProtoFlame,World ref as
 	Speed as TPosition
 	
 	Flame.Enabled = TRUE
+    DamageOriginStart(Flame.BulletData.DamageOrigin,DAMAGE_OBJECT_SONEC,0,DAMAGE_SOURCE_FLAME)
 	Flame.HitList.Length = -1
 	TimeSet(Flame.ObjectData.MoveTimer,10,10)
 	TimeReset(Flame.ObjectData.MoveTimer,Now)

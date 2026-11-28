@@ -63,6 +63,7 @@
 #constant FLARAK_TEST_BARREL_ANGLE_OFFSET 90
 
 type TFlarakTestRocket
+    DamageOrigin as TDamageOrigin
     CenterSweepStart as TPosition
     OutsideWorld as integer
     SweepStart as TPosition
@@ -330,6 +331,10 @@ function FlarakFireBullet(F ref as TFlarak,Game ref as TGame,NowMs as integer)
     Position.x = F.WorldX-FLARAK_FLAK_FINAL_OFFSET_Y*Sin(VisualAngle)+Sin(FlightAngle)*FLARAK_FLAK_MUZZLE_DISTANCE+Cos(FlightAngle)*TubeOffset
     Position.y = F.WorldY+FLARAK_FLAK_FINAL_OFFSET_Y*Cos(VisualAngle)-Cos(FlightAngle)*FLARAK_FLAK_MUZZLE_DISTANCE+Sin(FlightAngle)*TubeOffset
     NewBulletIndex = BulletAdd(Game.BulletList,Game.ProtoBullet,Game.World,Position,FlightAngle,0,TYPEENEMY,NowMs)
+    if NewBulletIndex >= 0
+        Game.BulletList.Bullet[NewBulletIndex].BulletData.DamageOrigin.OwnerKind = DAMAGE_OBJECT_FLARAK
+        Game.BulletList.Bullet[NewBulletIndex].BulletData.DamageOrigin.OwnerId = F.FlameTargetId
+    endif
     BulletSetModification(Game.BulletList,NewBulletIndex,BULLET_MOD_EXPLOSIVE,NowMs)
     if FLARAK_DEBUG_BULLETS = 1
         F.FlakDebugAddCount = F.FlakDebugAddCount+1
@@ -345,7 +350,8 @@ endfunction
 // Perpendicular launch offset rotates with flight direction:
 // at 0 degrees (up), the rockets start side-by-side at X +/-4px.
 // Both use the same FlightAngle until their independent homing begins.
-function FlarakRocketLaunch(Rocket ref as TFlarakTestRocket,X as float,Y as float,FlightAngle as float,LaneOffset as float,NowMs as integer)
+function FlarakRocketLaunch(Rocket ref as TFlarakTestRocket,X as float,Y as float,FlightAngle as float,LaneOffset as float,NowMs as integer,OwnerId as integer)
+    DamageOriginStart(Rocket.DamageOrigin,DAMAGE_OBJECT_FLARAK,OwnerId,DAMAGE_SOURCE_ROCKET)
     Rocket.Angle = FlightAngle
     Rocket.SpriteAngle = FlightAngle+90
     Rocket.StartX = X+Sin(FlightAngle)*FLARAK_TEST_MUZZLE_DISTANCE+Cos(FlightAngle)*LaneOffset
@@ -394,7 +400,7 @@ function FlarakRocketDo(Rocket ref as TFlarakTestRocket,Game ref as TGame,Jetfir
     if NowMs-Rocket.LaunchMs >= FLARAK_TEST_ROCKET_LIFETIME_MS
         ImpactPosition.x = Rocket.PosX
         ImpactPosition.y = Rocket.PosY
-        ExplosionAdd(Game.ExplosionList,Game.ProtoExplosion,Game,3,ImpactPosition,NowMs)
+        ExplosionAddAttributed(Game.ExplosionList,Game.ProtoExplosion,Game,3,ImpactPosition,NowMs,Rocket.DamageOrigin)
         Rocket.Active = FALSE
         exitfunction
     endif
@@ -441,7 +447,7 @@ function FlarakRocketResolve(Rocket ref as TFlarakTestRocket,Game ref as TGame,J
     if Rocket.Active = FALSE then exitfunction
     if FlarakRocketHitsSonec(Rocket,Game.Sonec,ImpactPosition) = TRUE
         Rocket.Active = FALSE
-        ExplosionAdd(Game.ExplosionList,Game.ProtoExplosion,Game,3,ImpactPosition,NowMs)
+        ExplosionAddAttributed(Game.ExplosionList,Game.ProtoExplosion,Game,3,ImpactPosition,NowMs,Rocket.DamageOrigin)
         exitfunction
     endif
     if Rocket.OutsideWorld = TRUE then exitfunction
@@ -499,14 +505,14 @@ endfunction FALSE
 // Rocket sprite position is its world-space center; attached rockets are also valid.
 #constant FLARAK_ROCKET_SHOT_RADIUS 7
 
-function FlarakRocketIntercept(Rocket ref as TFlarakTestRocket,Game ref as TGame,Now as integer)
+function FlarakRocketIntercept(Rocket ref as TFlarakTestRocket,Game ref as TGame,Now as integer,Origin ref as TDamageOrigin)
     local Impact as TPosition
     if Rocket.Active = FALSE then exitfunction
     Impact.x = Rocket.PosX
     Impact.y = Rocket.PosY
     Rocket.Active = FALSE
     Rocket.Attached = FALSE
-    ExplosionAdd(Game.ExplosionList,Game.ProtoExplosion,Game,3,Impact,Now)
+    ExplosionAddAttributed(Game.ExplosionList,Game.ProtoExplosion,Game,3,Impact,Now,Origin)
 endfunction
 
 function FlarakRocketBulletEntry(Rocket ref as TFlarakTestRocket,Bullet ref as TBullet)
@@ -551,9 +557,9 @@ function FlarakRocketCollideBullets(Game ref as TGame,Now as integer)
             next k
             if BestIndex >= 0
                 if BestRocket = 1
-                    FlarakRocketIntercept(FlarakList[BestIndex].Rocket1,Game,Now)
+                    FlarakRocketIntercept(FlarakList[BestIndex].Rocket1,Game,Now,Game.BulletList.Bullet[i].BulletData.DamageOrigin)
                 else
-                    FlarakRocketIntercept(FlarakList[BestIndex].Rocket2,Game,Now)
+                    FlarakRocketIntercept(FlarakList[BestIndex].Rocket2,Game,Now,Game.BulletList.Bullet[i].BulletData.DamageOrigin)
                 endif
                 FlarakMarkFree(BestIndex)
                 BulletDelete(Game.BulletList,i)
@@ -582,13 +588,13 @@ function FlarakRocketCollideFlames(Game ref as TGame,Now as integer)
             for k = 0 to FlarakList.Length
                 if Game.FlameList.Flame[i].Enabled = TRUE
                     if FlarakRocketHitByFlame(FlarakList[k].Rocket1,Game.FlameList.Flame[i])
-                        FlarakRocketIntercept(FlarakList[k].Rocket1,Game,Now)
+                        FlarakRocketIntercept(FlarakList[k].Rocket1,Game,Now,Game.FlameList.Flame[i].BulletData.DamageOrigin)
                         FlarakMarkFree(k)
                     endif
                 endif
                 if Game.FlameList.Flame[i].Enabled = TRUE
                     if FlarakRocketHitByFlame(FlarakList[k].Rocket2,Game.FlameList.Flame[i])
-                        FlarakRocketIntercept(FlarakList[k].Rocket2,Game,Now)
+                        FlarakRocketIntercept(FlarakList[k].Rocket2,Game,Now,Game.FlameList.Flame[i].BulletData.DamageOrigin)
                         FlarakMarkFree(k)
                     endif
                 endif
@@ -616,11 +622,11 @@ function FlarakRocketCollidePlasma(Game ref as TGame,Now as integer)
         if Game.PlasmaBlitzList.PlasmaBlitz[i].Enabled = TRUE
             for k = 0 to FlarakList.Length
                 if FlarakRocketHitByPlasma(FlarakList[k].Rocket1,Game.PlasmaBlitzList.PlasmaBlitz[i])
-                    FlarakRocketIntercept(FlarakList[k].Rocket1,Game,Now)
+                    FlarakRocketIntercept(FlarakList[k].Rocket1,Game,Now,Game.PlasmaBlitzList.PlasmaBlitz[i].BulletData.DamageOrigin)
                     FlarakMarkFree(k)
                 endif
                 if FlarakRocketHitByPlasma(FlarakList[k].Rocket2,Game.PlasmaBlitzList.PlasmaBlitz[i])
-                    FlarakRocketIntercept(FlarakList[k].Rocket2,Game,Now)
+                    FlarakRocketIntercept(FlarakList[k].Rocket2,Game,Now,Game.PlasmaBlitzList.PlasmaBlitz[i].BulletData.DamageOrigin)
                     FlarakMarkFree(k)
                 endif
             next k
@@ -741,7 +747,7 @@ function FlarakDo(F ref as TFlarak,Game ref as TGame,JetfireList ref as TJetfire
     endif
     // Complete the already started second rocket even during a retreat.
     if F.SecondPending = TRUE and NowMs >= F.SecondFireMs
-        FlarakRocketLaunch(F.Rocket2,F.WorldX,F.WorldY,F.VolleyAngle,FLARAK_TEST_ROCKET_LANE_OFFSET,NowMs)
+        FlarakRocketLaunch(F.Rocket2,F.WorldX,F.WorldY,F.VolleyAngle,FLARAK_TEST_ROCKET_LANE_OFFSET,NowMs,F.FlameTargetId)
         F.SecondPending = FALSE
     endif
     if F.State = FLARAK_OPENING
@@ -831,7 +837,7 @@ function FlarakDo(F ref as TFlarak,Game ref as TGame,JetfireList ref as TJetfire
             // Keep the original rocket flight angles while only mirroring the launcher artwork.
             F.VolleyAngle = F.CurrentLauncherAngle+FLARAK_TEST_BARREL_ANGLE_OFFSET
             if F.AimSide < 0 then F.VolleyAngle = F.CurrentLauncherAngle-180+FLARAK_TEST_BARREL_ANGLE_OFFSET
-            FlarakRocketLaunch(F.Rocket1,F.WorldX,F.WorldY,F.VolleyAngle,-FLARAK_TEST_ROCKET_LANE_OFFSET,NowMs)
+            FlarakRocketLaunch(F.Rocket1,F.WorldX,F.WorldY,F.VolleyAngle,-FLARAK_TEST_ROCKET_LANE_OFFSET,NowMs,F.FlameTargetId)
             F.SecondFireMs = NowMs+FLARAK_TEST_SECOND_ROCKET_DELAY_MS
             F.SecondPending = TRUE
             F.VolleyStartMs = NowMs
