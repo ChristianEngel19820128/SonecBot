@@ -56,6 +56,7 @@ function ChestNew(ChestList ref as TChestList,Chest ref as TChest,ProtoChest ref
 	
 	Chest.Enabled = TRUE
 	Chest.FlameTargetId = FlameNewTargetId()
+    DamageClearDelayedOrigin(Chest.Health)
 	// Reset on every creation, including a reused local or list slot.
 	Chest.IsBackground = FALSE
 
@@ -133,7 +134,8 @@ function ChestHealthRegenerate(ChestList ref as TChestList,Game ref as TGame,Now
 				endif
 				TimeReset(ChestList.Chest[i].Health.RegenerationTimer,Now)
 			endif
-			if ChestList.Chest[i].Health.State < 0
+			if ChestList.Chest[i].Health.State >= 0 then DamageClearDelayedOrigin(ChestList.Chest[i].Health)
+            if ChestList.Chest[i].Health.State < 0
 				RewardDrop(Game,REWARD_OBJECT_CHEST,ChestList.Chest[i].ObjectData.Position,Now)
 				ChestDelete(ChestList,i)
 			endif

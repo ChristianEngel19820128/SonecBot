@@ -250,6 +250,7 @@ function PlasmaBlitzCollideOrbs(PlasmaBlitzList ref as TPlasmaBlitzList,OrbList 
 						//Radius = CalcRadius(PlasmaBlitzList.PlasmaBlitz[i].ObjectData.Position,OrbList.Orb[k].ObjectData.Position)
 						//if Radius < OrbList.Orb[k].ObjectData.Radius
 							if BoxInBox(PlasmaBlitzList.PlasmaBlitz[i].CollisionData.Position1,PlasmaBlitzList.PlasmaBlitz[i].CollisionData.Position2,OrbList.Orb[k].CollisionData.Position1,OrbList.Orb[k].CollisionData.Position2)
+								DamagePrepareDelayedOrigin(OrbList.Orb[k].Health,PlasmaBlitzList.PlasmaBlitz[i].BulletData.Damage,PlasmaBlitzList.PlasmaBlitz[i].BulletData.DamageOrigin)
 								OrbList.Orb[k].Health.State = OrbList.Orb[k].Health.State - PlasmaBlitzList.PlasmaBlitz[i].BulletData.Damage
 								//PlasmaBlitzDelete(PlasmaBlitzList,i)
 								ColorSet(OrbList.Orb[k].SpriteData.Color,255,0,0,255)
@@ -279,6 +280,7 @@ function PlasmaBlitzCollideMine(PlasmaBlitzList ref as TPlasmaBlitzList,MineList
 				for k = 0 to MineList.Mine.Length
 					if MineList.Mine[k].Enabled = TRUE
 						if BoxInBox(PlasmaBlitzList.PlasmaBlitz[i].CollisionData.Position1,PlasmaBlitzList.PlasmaBlitz[i].CollisionData.Position2,MineList.Mine[k].CollisionData.Position1,MineList.Mine[k].CollisionData.Position2)
+							DamagePrepareDelayedOrigin(MineList.Mine[k].Health,PlasmaBlitzList.PlasmaBlitz[i].BulletData.Damage,PlasmaBlitzList.PlasmaBlitz[i].BulletData.DamageOrigin)
 							MineList.Mine[k].Health.State = MineList.Mine[k].Health.State - PlasmaBlitzList.PlasmaBlitz[i].BulletData.Damage
 							ColorSet(MineList.Mine[k].SpriteData.Color,255,0,0,255)
 						endif
@@ -305,6 +307,7 @@ function PlasmaBlitzCollideChest(PlasmaBlitzList ref as TPlasmaBlitzList,ChestLi
 				for k = 0 to ChestList.Chest.Length
 					if ChestList.Chest[k].Enabled = TRUE and WeaponDepthAllows(PlasmaBlitzList.PlasmaBlitz[i].WeaponDepth,PlateList,ChestList.Chest[k].CollisionData.Index,ChestList.Chest[k].IsBackground) = TRUE
 						if BoxInBox(PlasmaBlitzList.PlasmaBlitz[i].CollisionData.Position1,PlasmaBlitzList.PlasmaBlitz[i].CollisionData.Position2,ChestList.Chest[k].CollisionData.Position1,ChestList.Chest[k].CollisionData.Position2)
+							DamagePrepareDelayedOrigin(ChestList.Chest[k].Health,PlasmaBlitzList.PlasmaBlitz[i].BulletData.Damage,PlasmaBlitzList.PlasmaBlitz[i].BulletData.DamageOrigin)
 							ChestList.Chest[k].Health.State = ChestList.Chest[k].Health.State - PlasmaBlitzList.PlasmaBlitz[i].BulletData.Damage
 							ColorSet(ChestList.Chest[k].SpriteData.Color,255,0,0,255)
 						endif
@@ -328,6 +331,7 @@ function PlasmaBlitzCollideWalkers(PlasmaBlitzList ref as TPlasmaBlitzList,Walke
 				for k = 0 to WalkerList.Walker.Length
 					if WalkerList.Walker[k].Enabled = TRUE and WeaponDepthAllows(PlasmaBlitzList.PlasmaBlitz[i].WeaponDepth,PlateList,WalkerList.Walker[k].PlateIndex,FALSE) = TRUE
 						if BoxInBox(PlasmaBlitzList.PlasmaBlitz[i].CollisionData.Position1,PlasmaBlitzList.PlasmaBlitz[i].CollisionData.Position2,WalkerList.Walker[k].WalkerCollisionData.Tower.Position1,WalkerList.Walker[k].WalkerCollisionData.Tower.Position2)
+							DamagePrepareDelayedOrigin(WalkerList.Walker[k].Health,PlasmaBlitzList.PlasmaBlitz[i].BulletData.Damage,PlasmaBlitzList.PlasmaBlitz[i].BulletData.DamageOrigin)
 							WalkerList.Walker[k].Health.State = WalkerList.Walker[k].Health.State - PlasmaBlitzList.PlasmaBlitz[i].BulletData.Damage
 							WalkerList.Walker[k].HitFlashUntil = Now + 150
 							ColorSet(WalkerList.Walker[k].WalkerSpriteData.Tower.Color,255,0,0,255)
@@ -354,7 +358,7 @@ function PlasmaBlitzCollideDrone(PlasmaBlitzList ref as TPlasmaBlitzList,Drone r
         if Drone.Enabled = TRUE and PlasmaBlitzList.PlasmaBlitz[i].Enabled = TRUE
             if TimeGet(PlasmaBlitzList.PlasmaBlitz[i].CollisionData.CollisionTimer,Now) > 0
                 if BoxInBox(PlasmaBlitzList.PlasmaBlitz[i].CollisionData.Position1,PlasmaBlitzList.PlasmaBlitz[i].CollisionData.Position2,MinPos,MaxPos)
-                    DroneTakeDamage(Drone,PlasmaBlitzList.PlasmaBlitz[i].BulletData.Damage)
+                    DroneTakeDamage(Drone,PlasmaBlitzList.PlasmaBlitz[i].BulletData.Damage,PlasmaBlitzList.PlasmaBlitz[i].BulletData.DamageOrigin)
                 endif
             endif
         endif
@@ -378,7 +382,7 @@ function PlasmaBlitzCollideFlaraks(PlasmaBlitzList ref as TPlasmaBlitzList,Game 
                 for k = 0 to FlarakList.Length
                     if FlarakList[k].Enabled = TRUE and FlarakList[k].Destroyed = FALSE and WeaponDepthAllows(PlasmaBlitzList.PlasmaBlitz[i].WeaponDepth,Game.PlateList,FlarakList[k].PlateIndex,FALSE) = TRUE
                         if FlarakAreaHits(FlarakList[k],Game.World,CX,CY,HW,HH,FALSE)
-                            FlarakApplyDamage(FlarakList[k],Game,PlasmaBlitzList.PlasmaBlitz[i].BulletData.Damage,Now)
+                            FlarakApplyDamage(FlarakList[k],Game,PlasmaBlitzList.PlasmaBlitz[i].BulletData.Damage,Now,PlasmaBlitzList.PlasmaBlitz[i].BulletData.DamageOrigin)
                         endif
                     endif
                 next k

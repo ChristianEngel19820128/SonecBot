@@ -40,6 +40,7 @@ global DroneNextJetMs as integer
 global DroneHitFlashUntilMs as integer
 global DroneDeathEffectPending as integer
 global DroneDeathPosition as TPosition
+global DroneDeathDamageOrigin as TDamageOrigin
 global DroneNextAutoSpawnMs as integer
 global DroneMotionUseGate as integer
 global DroneMotionTimer as TTime
@@ -190,13 +191,14 @@ function DroneInit(Drone ref as TDrone,Screen as TSize,World ref as TWorld,Now a
 endfunction
 
 // D5a: shared entry point for all player weapons.
-function DroneTakeDamage(Drone ref as TDrone,Damage as integer)
+function DroneTakeDamage(Drone ref as TDrone,Damage as integer,Origin ref as TDamageOrigin)
     if Drone.Enabled = TRUE and Damage > 0
         Drone.Health.State = Drone.Health.State-Damage
         DroneHitFlashUntilMs = GetMilliseconds()+DRONE_HIT_FLASH_MS
         if Drone.Health.State <= 0
             Drone.Health.State = 0
             DroneDeathPosition = Drone.Position
+            DroneDeathDamageOrigin = Origin
             DroneDeathEffectPending = TRUE
             Drone.Enabled = FALSE
             DroneLaserActive = FALSE

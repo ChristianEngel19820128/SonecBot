@@ -37,6 +37,7 @@ function OrbNew(Orb ref as TOrb,ProtoOrb ref as TProtoOrb,World ref as TWorld,y 
 	
 	Orb.Enabled = TRUE
 	Orb.FlameTargetId = FlameNewTargetId()
+    DamageClearDelayedOrigin(Orb.Health)
 	TimeSet(Orb.ObjectData.MoveTimer,10,10)
 	TimeReset(Orb.ObjectData.MoveTimer,Now)
 	
@@ -181,7 +182,7 @@ endfunction
 
 function OrbDestroy(OrbList ref as TOrbList,Index as integer,ExplosionList ref as TExplosionList,ProtoExplosion ref as TProtoExplosion,Game ref as TGame,Position ref as TPosition,Now as integer)
 
-	ExplosionAdd(ExplosionList,ProtoExplosion,Game,2,Position,Now)
+	ExplosionAddAttributed(ExplosionList,ProtoExplosion,Game,2,Position,Now,OrbList.Orb[Index].Health.PendingDamageOrigin)
 	OrbDelete(OrbList,Index)
 
 endfunction
@@ -234,7 +235,8 @@ function OrbHealthRegenerate(OrbList ref as TOrbList,Game ref as TGame,Now as in
 				endif
 				TimeReset(OrbList.Orb[i].Health.RegenerationTimer,Now)
 			endif
-			if OrbList.Orb[i].Health.State < 0
+			if OrbList.Orb[i].Health.State >= 0 then DamageClearDelayedOrigin(OrbList.Orb[i].Health)
+            if OrbList.Orb[i].Health.State < 0
 				RewardDrop(Game,REWARD_OBJECT_ORB,OrbList.Orb[i].ObjectData.Position,Now)
 				OrbDestroy(OrbList,i,Game.ExplosionList,Game.ProtoExplosion,Game,OrbList.Orb[i].ObjectData.Position,Now)
 			endif

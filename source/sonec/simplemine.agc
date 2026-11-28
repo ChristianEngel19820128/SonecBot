@@ -306,6 +306,7 @@ function SimpleMineHealthRegenerate(MineList ref as TMineList,Game ref as TGame,
                 endif
                 TimeReset(MineList.Mine[i].Health.RegenerationTimer,Now)
             endif
+            if MineList.Mine[i].Health.State >= 0 then DamageClearDelayedOrigin(MineList.Mine[i].Health)
             if MineList.Mine[i].Health.State < 0
                 RewardDrop(Game,REWARD_OBJECT_SIMPLE_MINE,MineList.Mine[i].ObjectData.Position,Now)
                 MineDestroy(MineList,i,Game.ExplosionList,Game.ProtoExplosion,Game,MineList.Mine[i].ObjectData.Position,Now)

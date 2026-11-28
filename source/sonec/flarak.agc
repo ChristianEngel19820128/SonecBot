@@ -654,7 +654,7 @@ endfunction CurrentAngle
 
 // Destruction is a one-shot event. Keep the base sprite as a dark frame-1
 // wreck; fired rockets remain independently simulated by FlarakDoAll.
-function FlarakDestroy(F ref as TFlarak,Game ref as TGame,NowMs as integer)
+function FlarakDestroy(F ref as TFlarak,Game ref as TGame,NowMs as integer,Origin ref as TDamageOrigin)
     local Impact as TPosition
     if F.Enabled = FALSE or F.Destroyed = TRUE then exitfunction
     F.Destroyed = TRUE
@@ -667,7 +667,7 @@ function FlarakDestroy(F ref as TFlarak,Game ref as TGame,NowMs as integer)
     F.Rocket2.Attached = FALSE
     Impact.x = F.WorldX
     Impact.y = F.WorldY-10
-    ExplosionAdd(Game.ExplosionList,Game.ProtoExplosion,Game,4,Impact,NowMs)
+    ExplosionAddAttributed(Game.ExplosionList,Game.ProtoExplosion,Game,4,Impact,NowMs,Origin)
     RewardDrop(Game,REWARD_OBJECT_FLARAK,Impact,NowMs)
 endfunction
 
@@ -696,11 +696,11 @@ function FlarakSmokeDoAll(PlateList ref as TPlateList,Now as integer)
     next i
 endfunction
 
-function FlarakApplyDamage(F ref as TFlarak,Game ref as TGame,Damage as integer,NowMs as integer)
+function FlarakApplyDamage(F ref as TFlarak,Game ref as TGame,Damage as integer,NowMs as integer,Origin ref as TDamageOrigin)
     if F.Enabled = FALSE or F.Destroyed = TRUE or Damage <= 0 then exitfunction
     F.Health = F.Health-Damage
     F.HitFlashUntil = NowMs+150
-    if F.Health <= 0 then FlarakDestroy(F,Game,NowMs)
+    if F.Health <= 0 then FlarakDestroy(F,Game,NowMs,Origin)
 endfunction
 
 function FlarakDo(F ref as TFlarak,Game ref as TGame,JetfireList ref as TJetfireList,ProtoJetfire ref as TProtoJetfire,World ref as TWorld,NowMs as integer)

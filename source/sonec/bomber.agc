@@ -557,7 +557,7 @@ function BomberBombCollideAll(Bomber ref as TBomber,Game ref as TGame,Now as int
 endfunction
 
 // B4: one shared damage/death path for all four Sonec weapons.
-function BomberTakeDamage(Bomber ref as TBomber,Game ref as TGame,Damage as integer,Now as integer)
+function BomberTakeDamage(Bomber ref as TBomber,Game ref as TGame,Damage as integer,Now as integer,Origin ref as TDamageOrigin)
     local i as integer
     local Position as TPosition
     if Bomber.Enabled = FALSE then exitfunction
@@ -568,7 +568,7 @@ function BomberTakeDamage(Bomber ref as TBomber,Game ref as TGame,Damage as inte
         Bomber.Enabled = FALSE
         Bomber.Phase = 3
         // Already released bombs continue to fall; no further bombs are released.
-        ExplosionAdd(Game.ExplosionList,Game.ProtoExplosion,Game,1,Position,Now)
+        ExplosionAddAttributed(Game.ExplosionList,Game.ProtoExplosion,Game,1,Position,Now,Origin)
         RewardDrop(Game,REWARD_OBJECT_BOMBER,Position,Now)
     endif
 endfunction
@@ -607,7 +607,7 @@ function BomberCollideWeapons(Bomber ref as TBomber,Game ref as TGame,Now as int
             NearY = Game.BulletList.Bullet[i].PreviousPosition.y+Fraction*Dy
             Radius = Game.BulletList.Bullet[i].ObjectData.Radius
             if NearX >= MinPos.x-Radius and NearX <= MaxPos.x+Radius and NearY >= MinPos.y-Radius and NearY <= MaxPos.y+Radius
-                BomberTakeDamage(Bomber,Game,Game.BulletList.Bullet[i].BulletData.Damage,Now)
+                BomberTakeDamage(Bomber,Game,Game.BulletList.Bullet[i].BulletData.Damage,Now,Game.BulletList.Bullet[i].BulletData.DamageOrigin)
                 BulletDelete(Game.BulletList,i)
             endif
         endif
@@ -621,7 +621,7 @@ function BomberCollideWeapons(Bomber ref as TBomber,Game ref as TGame,Now as int
             NearY = Game.FlameList.Flame[i].ObjectData.Position.y
             if NearX >= MinPos.x-Radius and NearX <= MaxPos.x+Radius and NearY >= MinPos.y-Radius and NearY <= MaxPos.y+Radius
                 if FlameCanDamage(Game.FlameList.Flame[i],Bomber.FlameTargetId,Now) = TRUE
-                    BomberTakeDamage(Bomber,Game,Game.FlameList.Flame[i].BulletData.Damage,Now)
+                    BomberTakeDamage(Bomber,Game,Game.FlameList.Flame[i].BulletData.Damage,Now,Game.FlameList.Flame[i].BulletData.DamageOrigin)
                 endif
             endif
         endif
@@ -632,7 +632,7 @@ function BomberCollideWeapons(Bomber ref as TBomber,Game ref as TGame,Now as int
         for i = 0 to Game.PlasmaBlitzList.PlasmaBlitz.Length
             if Bomber.Enabled = TRUE and Game.PlasmaBlitzList.PlasmaBlitz[i].Enabled = TRUE
                 if BoxInBox(Game.PlasmaBlitzList.PlasmaBlitz[i].CollisionData.Position1,Game.PlasmaBlitzList.PlasmaBlitz[i].CollisionData.Position2,MinPos,MaxPos)
-                    BomberTakeDamage(Bomber,Game,Game.PlasmaBlitzList.PlasmaBlitz[i].BulletData.Damage,Now)
+                    BomberTakeDamage(Bomber,Game,Game.PlasmaBlitzList.PlasmaBlitz[i].BulletData.Damage,Now,Game.PlasmaBlitzList.PlasmaBlitz[i].BulletData.DamageOrigin)
                     Bomber.LastPlasmaHitMs = Now
                     exitfunction
                 endif

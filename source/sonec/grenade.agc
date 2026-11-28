@@ -380,30 +380,35 @@ function GrenadeCollideAll(Game ref as TGame,Now as integer)
                     GrenadeDelete(Game.GrenadeList,i)
                 endif
                 if BestType = 4
+                    DamagePrepareDelayedOrigin(Game.OrbList.Orb[BestIndex].Health,Damage,Game.GrenadeList.Grenade[i].BulletData.DamageOrigin)
                     Game.OrbList.Orb[BestIndex].Health.State = Game.OrbList.Orb[BestIndex].Health.State-Damage
                     ColorSet(Game.OrbList.Orb[BestIndex].SpriteData.Color,255,0,0,255)
                 endif
                 if BestType = 5
+                    DamagePrepareDelayedOrigin(Game.MineList.Mine[BestIndex].Health,Damage,Game.GrenadeList.Grenade[i].BulletData.DamageOrigin)
                     Game.MineList.Mine[BestIndex].Health.State = Game.MineList.Mine[BestIndex].Health.State-Damage
                     ColorSet(Game.MineList.Mine[BestIndex].SpriteData.Color,255,0,0,255)
                 endif
                 if BestType = 6
+                    DamagePrepareDelayedOrigin(Game.SimpleMineList.Mine[BestIndex].Health,Damage,Game.GrenadeList.Grenade[i].BulletData.DamageOrigin)
                     Game.SimpleMineList.Mine[BestIndex].Health.State = Game.SimpleMineList.Mine[BestIndex].Health.State-Damage
                     ColorSet(Game.SimpleMineList.Mine[BestIndex].SpriteData.Color,255,0,0,255)
                 endif
                 if BestType = 7
+                    DamagePrepareDelayedOrigin(Game.ChestList.Chest[BestIndex].Health,Damage,Game.GrenadeList.Grenade[i].BulletData.DamageOrigin)
                     Game.ChestList.Chest[BestIndex].Health.State = Game.ChestList.Chest[BestIndex].Health.State-Damage
                     ColorSet(Game.ChestList.Chest[BestIndex].SpriteData.Color,255,0,0,255)
                 endif
                 if BestType = 8
+                    DamagePrepareDelayedOrigin(Game.WalkerList.Walker[BestIndex].Health,Damage,Game.GrenadeList.Grenade[i].BulletData.DamageOrigin)
                     Game.WalkerList.Walker[BestIndex].Health.State = Game.WalkerList.Walker[BestIndex].Health.State-Damage
                     Game.WalkerList.Walker[BestIndex].HitFlashUntil = Now+150
                     ColorSet(Game.WalkerList.Walker[BestIndex].WalkerSpriteData.Tower.Color,255,0,0,255)
                 endif
-                if BestType = 9 then DroneTakeDamage(Game.Drone,Damage)
-                if BestType = 10 then FlarakApplyDamage(FlarakList[BestIndex],Game,Damage,Now)
-                if BestType = 11 then JumppodApplyDamage(BestIndex,Game,Damage,Now)
-                if BestType = 13 then BomberTakeDamage(Game.Bomber,Game,Damage,Now)
+                if BestType = 9 then DroneTakeDamage(Game.Drone,Damage,Game.GrenadeList.Grenade[i].BulletData.DamageOrigin)
+                if BestType = 10 then FlarakApplyDamage(FlarakList[BestIndex],Game,Damage,Now,Game.GrenadeList.Grenade[i].BulletData.DamageOrigin)
+                if BestType = 11 then JumppodApplyDamage(BestIndex,Game,Damage,Now,Game.GrenadeList.Grenade[i].BulletData.DamageOrigin)
+                if BestType = 13 then BomberTakeDamage(Game.Bomber,Game,Damage,Now,Game.GrenadeList.Grenade[i].BulletData.DamageOrigin)
                 if BestType >= 4
                     GrenadeDestroy(Game.GrenadeList,i,Game.ExplosionList,Game.ProtoExplosion,Game,Impact,Now)
                 endif

@@ -150,6 +150,8 @@ function GameInit(Game ref as TGame,Now as integer)
 	DroneInit(Game.Drone,Game.Screen,Game.World,Now)
 	// Discard any deferred destruction event from the previous round.
 	DroneDeathEffectPending = FALSE
+    local EmptyDroneDeathOrigin as TDamageOrigin
+    DroneDeathDamageOrigin = EmptyDroneDeathOrigin
 	DroneDeathPosition.x = 0
 	DroneDeathPosition.y = 0
 	BomberInit(Game.Bomber,Now)
@@ -400,10 +402,10 @@ function GameDo(Game ref as TGame,Now as integer)
 	
 	MineMoveAll(Game.MineList,Game.Sonec,Game.Inenergie,Game.World,Now)
 	MineHealthRegenerate(Game.MineList,Game,Now)
-	MineCollideSonec(Game.MineList,Game.Sonec,Game,Now)
+	MineCollideSonec(Game.MineList,Game.Sonec,Game,Now,DAMAGE_OBJECT_SMART_MINE)
 	SimpleMineMoveAll(Game.SimpleMineList,Game.World,Now)
 	SimpleMineHealthRegenerate(Game.SimpleMineList,Game,Now)
-	MineCollideSonec(Game.SimpleMineList,Game.Sonec,Game,Now)
+	MineCollideSonec(Game.SimpleMineList,Game.Sonec,Game,Now,DAMAGE_OBJECT_SIMPLE_MINE)
 	
 	
 	// Flaraks follow platforms after PlateMoveAll below.
@@ -512,7 +514,7 @@ function GameDo(Game ref as TGame,Now as integer)
 	FlarakSmokeDoAll(Game.PlateList,Now)
 	// D5c: consume one destruction event after all weapon collisions.
 	if DroneDeathEffectPending = TRUE
-		ExplosionAdd(Game.ExplosionList,Game.ProtoExplosion,Game,0,DroneDeathPosition,Now)
+		ExplosionAddAttributed(Game.ExplosionList,Game.ProtoExplosion,Game,0,DroneDeathPosition,Now,DroneDeathDamageOrigin)
 		RewardDrop(Game,REWARD_OBJECT_DRONE,DroneDeathPosition,Now)
 		DroneDeathEffectPending = FALSE
 	endif

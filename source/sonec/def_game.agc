@@ -425,6 +425,7 @@ type TEnergy
 endtype
 
 type THealth
+    PendingDamageOrigin as TDamageOrigin
 	State as integer
 	StateMax as integer
 	RegenerationTimer as TTime

@@ -353,7 +353,7 @@ function JumppodDrawPlate(PlateIndex as integer,World ref as TWorld,PlayerPositi
 endfunction
 
 // Damage acceptance is independent of the geometry; wrecks remain solid.
-function JumppodApplyDamage(Index as integer,Game ref as TGame,Damage as integer,Now as integer)
+function JumppodApplyDamage(Index as integer,Game ref as TGame,Damage as integer,Now as integer,Origin ref as TDamageOrigin)
     local Blast as TExplosion
     local Impact as TPosition
     if JumppodList[Index].Enabled = FALSE or JumppodList[Index].Destroyed = TRUE or Damage <= 0 then exitfunction
@@ -378,6 +378,8 @@ function JumppodApplyDamage(Index as integer,Game ref as TGame,Damage as integer
             Blast.BulletData.Damage = JUMPPOD_BLAST_DAMAGE
             PlaySound(Game.Sound.ImpactSound)
         endif
+        Blast.BulletData.DamageOrigin.OwnerKind = Origin.OwnerKind
+        Blast.BulletData.DamageOrigin.OwnerId = Origin.OwnerId
         ExplosionInsert(Game.ExplosionList,Blast)
     endif
 endfunction
@@ -387,9 +389,11 @@ endfunction
 // targets use the existing timed explosion/central body-circle damage rules.
 function JumppodResolveContactTriggers(Game ref as TGame,Now as integer)
     local i as integer
+    local ContactOrigin as TDamageOrigin
     for i = 0 to JumppodList.Length
         if JumppodList[i].Enabled = TRUE and JumppodList[i].Destroyed = FALSE and JumppodList[i].ObjectKind = LANDMINE_KIND and JumppodList[i].ContactTriggered = TRUE
-            JumppodApplyDamage(i,Game,JumppodList[i].Health,Now)
+            DamageOriginStart(ContactOrigin,DAMAGE_OBJECT_LANDMINE,JumppodList[i].FlameTargetId,DAMAGE_SOURCE_CONTACT)
+            JumppodApplyDamage(i,Game,JumppodList[i].Health,Now,ContactOrigin)
         endif
     next i
 endfunction
@@ -460,7 +464,7 @@ function JumppodCollideFlames(Game ref as TGame,Now as integer)
                 if Game.FlameList.Flame[i].Enabled = TRUE and JumppodList[k].Enabled = TRUE and JumppodList[k].Destroyed = FALSE and WeaponDepthAllows(Game.FlameList.Flame[i].WeaponDepth,Game.PlateList,JumppodList[k].PlateIndex,FALSE) = TRUE
                     if JumppodCircleHits(JumppodList[k],Game.FlameList.Flame[i].ObjectData.Position,R)
                         if FlameCanDamage(Game.FlameList.Flame[i],JumppodList[k].FlameTargetId,Now) = TRUE
-                            JumppodApplyDamage(k,Game,Game.FlameList.Flame[i].BulletData.Damage,Now)
+                            JumppodApplyDamage(k,Game,Game.FlameList.Flame[i].BulletData.Damage,Now,Game.FlameList.Flame[i].BulletData.DamageOrigin)
                         endif
                     endif
                 endif
@@ -480,7 +484,7 @@ function JumppodCollidePlasma(Game ref as TGame,Now as integer)
                 for k = 0 to JumppodList.Length
                     if JumppodList[k].Enabled = TRUE and WeaponDepthAllows(Game.PlasmaBlitzList.PlasmaBlitz[i].WeaponDepth,Game.PlateList,JumppodList[k].PlateIndex,FALSE) = TRUE
                         if JumppodBoxHits(JumppodList[k],Game.PlasmaBlitzList.PlasmaBlitz[i].CollisionData.Position1,Game.PlasmaBlitzList.PlasmaBlitz[i].CollisionData.Position2)
-                            JumppodApplyDamage(k,Game,Game.PlasmaBlitzList.PlasmaBlitz[i].BulletData.Damage,Now)
+                            JumppodApplyDamage(k,Game,Game.PlasmaBlitzList.PlasmaBlitz[i].BulletData.Damage,Now,Game.PlasmaBlitzList.PlasmaBlitz[i].BulletData.DamageOrigin)
                         endif
                     endif
                 next k
@@ -514,7 +518,7 @@ function JumppodCollideExplosions(Game ref as TGame,Now as integer)
                             if Game.ExplosionList.Explosion[i].LastJumppodHitMs.Length < k then Game.ExplosionList.Explosion[i].LastJumppodHitMs.Length = k
                             if EXPLOSION_TIMED_DAMAGE = 0 or Game.ExplosionList.Explosion[i].LastJumppodHitMs[k] = 0 or Now+1-Game.ExplosionList.Explosion[i].LastJumppodHitMs[k] >= EXPLOSION_DAMAGE_INTERVAL_MS
                                 Game.ExplosionList.Explosion[i].LastJumppodHitMs[k] = Now+1
-                                JumppodApplyDamage(k,Game,Game.ExplosionList.Explosion[i].BulletData.Damage,Now)
+                                JumppodApplyDamage(k,Game,Game.ExplosionList.Explosion[i].BulletData.Damage,Now,Game.ExplosionList.Explosion[i].BulletData.DamageOrigin)
                             endif
                         endif
                     endif

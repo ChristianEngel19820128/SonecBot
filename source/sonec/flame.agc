@@ -236,6 +236,7 @@ function FlameCollideOrbs(FlameList ref as TFlameList,OrbList ref as TOrbList,No
 					Radius = CalcRadius(FlameList.Flame[i].ObjectData.Position,OrbList.Orb[k].ObjectData.Position)
 					if Radius < FlameRadius + OrbList.Orb[k].ObjectData.Radius
 						if FlameCanDamage(FlameList.Flame[i],OrbList.Orb[k].FlameTargetId,Now) = TRUE
+							DamagePrepareDelayedOrigin(OrbList.Orb[k].Health,FlameList.Flame[i].BulletData.Damage,FlameList.Flame[i].BulletData.DamageOrigin)
 							OrbList.Orb[k].Health.State = OrbList.Orb[k].Health.State - FlameList.Flame[i].BulletData.Damage
 							ColorSet(OrbList.Orb[k].SpriteData.Color,255,0,0,255)
 						endif
@@ -266,6 +267,7 @@ function FlameCollideMine(FlameList ref as TFlameList,MineList ref as TMineList,
 					Radius = CalcRadius(FlameList.Flame[i].ObjectData.Position,MineList.Mine[k].ObjectData.Position)
 					if Radius < FlameRadius + MineList.Mine[k].ObjectData.Radius
 						if FlameCanDamage(FlameList.Flame[i],MineList.Mine[k].FlameTargetId,Now) = TRUE
+							DamagePrepareDelayedOrigin(MineList.Mine[k].Health,FlameList.Flame[i].BulletData.Damage,FlameList.Flame[i].BulletData.DamageOrigin)
 							MineList.Mine[k].Health.State = MineList.Mine[k].Health.State - FlameList.Flame[i].BulletData.Damage
 							ColorSet(MineList.Mine[k].SpriteData.Color,255,0,0,255)
 						endif
@@ -303,6 +305,7 @@ function FlameCollideChest(FlameList ref as TFlameList,ChestList ref as TChestLi
 					if NearestPoint.y > ChestList.Chest[k].CollisionData.Position2.y then NearestPoint.y = ChestList.Chest[k].CollisionData.Position2.y
 					if CalcRadius(FlameList.Flame[i].ObjectData.Position,NearestPoint) <= Radius
 						if FlameCanDamage(FlameList.Flame[i],ChestList.Chest[k].FlameTargetId,Now) = TRUE
+							DamagePrepareDelayedOrigin(ChestList.Chest[k].Health,FlameList.Flame[i].BulletData.Damage,FlameList.Flame[i].BulletData.DamageOrigin)
 							ChestList.Chest[k].Health.State = ChestList.Chest[k].Health.State - FlameList.Flame[i].BulletData.Damage
 							ColorSet(ChestList.Chest[k].SpriteData.Color,255,0,0,255)
 						endif
@@ -339,6 +342,7 @@ function FlameCollideWalkers(FlameList ref as TFlameList,WalkerList ref as TWalk
 					if NearestPoint.y > WalkerList.Walker[k].WalkerCollisionData.Tower.Position2.y then NearestPoint.y = WalkerList.Walker[k].WalkerCollisionData.Tower.Position2.y
 					if CalcRadius(FlameList.Flame[i].ObjectData.Position,NearestPoint) <= Radius
 						if FlameCanDamage(FlameList.Flame[i],WalkerList.Walker[k].FlameTargetId,Now) = TRUE
+							DamagePrepareDelayedOrigin(WalkerList.Walker[k].Health,FlameList.Flame[i].BulletData.Damage,FlameList.Flame[i].BulletData.DamageOrigin)
 							WalkerList.Walker[k].Health.State = WalkerList.Walker[k].Health.State - FlameList.Flame[i].BulletData.Damage
 							WalkerList.Walker[k].HitFlashUntil = Now + 150
 							ColorSet(WalkerList.Walker[k].WalkerSpriteData.Tower.Color,255,0,0,255)
@@ -367,7 +371,7 @@ function FlameCollideFlaraks(FlameList ref as TFlameList,Game ref as TGame,Now a
                 if FlameList.Flame[i].Enabled = TRUE and FlarakList[k].Enabled = TRUE and FlarakList[k].Destroyed = FALSE and WeaponDepthAllows(FlameList.Flame[i].WeaponDepth,Game.PlateList,FlarakList[k].PlateIndex,FALSE) = TRUE
                     if FlarakAreaHits(FlarakList[k],Game.World,FlameList.Flame[i].ObjectData.Position.x,FlameList.Flame[i].ObjectData.Position.y,R,R,TRUE)
                         if FlameCanDamage(FlameList.Flame[i],FlarakList[k].FlameTargetId,Now) = TRUE
-                            FlarakApplyDamage(FlarakList[k],Game,FlameList.Flame[i].BulletData.Damage,Now)
+                            FlarakApplyDamage(FlarakList[k],Game,FlameList.Flame[i].BulletData.Damage,Now,FlameList.Flame[i].BulletData.DamageOrigin)
                         endif
                     endif
                 endif
@@ -390,7 +394,7 @@ function FlameCollideDrone(FlameList ref as TFlameList,Drone ref as TDrone,Now a
             Radius = FlameCollisionRadius(FlameList.Flame[i])
             if CalcRadius(FlameList.Flame[i].ObjectData.Position,NearestPoint) <= Radius
                 if FlameCanDamage(FlameList.Flame[i],Drone.FlameTargetId,Now) = TRUE
-                    DroneTakeDamage(Drone,FlameList.Flame[i].BulletData.Damage)
+                    DroneTakeDamage(Drone,FlameList.Flame[i].BulletData.Damage,FlameList.Flame[i].BulletData.DamageOrigin)
                 endif
             endif
         endif

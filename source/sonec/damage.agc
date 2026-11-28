@@ -104,3 +104,16 @@ function DamageOriginStart(Origin ref as TDamageOrigin,OwnerKind as integer,Owne
     Origin.SourceKind = SourceKind
     Origin.SourceId = DamageSourceSerial
 endfunction
+
+// B01c2: record only a crossing of the legacy strictly-negative threshold.
+// Later hits on already-negative HP must not replace the original cause.
+function DamagePrepareDelayedOrigin(Health ref as THealth,Damage as integer,Origin ref as TDamageOrigin)
+    if Health.State >= 0 and Health.State-Damage < 0
+        Health.PendingDamageOrigin = Origin
+    endif
+endfunction
+
+function DamageClearDelayedOrigin(Health ref as THealth)
+    local EmptyOrigin as TDamageOrigin
+    Health.PendingDamageOrigin = EmptyOrigin
+endfunction

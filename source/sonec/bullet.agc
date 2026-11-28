@@ -320,6 +320,7 @@ function BulletCollideOrbs(BulletList ref as TBulletList,OrbList ref as TOrbList
 			for k = 0 to OrbList.Orb.Length
 				if OrbList.Orb[k].Enabled = TRUE
 					if BoxInBox(BulletList.Bullet[i].CollisionData.Position1,BulletList.Bullet[i].CollisionData.Position2,OrbList.Orb[k].CollisionData.Position1,OrbList.Orb[k].CollisionData.Position2)
+						DamagePrepareDelayedOrigin(OrbList.Orb[k].Health,BulletList.Bullet[i].BulletData.Damage,BulletList.Bullet[i].BulletData.DamageOrigin)
 						OrbList.Orb[k].Health.State = OrbList.Orb[k].Health.State - BulletList.Bullet[i].BulletData.Damage
 						BulletDelete(BulletList,i)
 						ColorSet(OrbList.Orb[k].SpriteData.Color,255,0,0,255)
@@ -344,6 +345,7 @@ function BulletCollideWalkers(BulletList ref as TBulletList,WalkerList ref as TW
 			for k = 0 to WalkerList.Walker.Length
 				if WalkerList.Walker[k].Enabled = TRUE and BulletList.Bullet[i].Enabled = TRUE
 					if BoxInBox(BulletList.Bullet[i].CollisionData.Position1,BulletList.Bullet[i].CollisionData.Position2,WalkerList.Walker[k].WalkerCollisionData.Tower.Position1,WalkerList.Walker[k].WalkerCollisionData.Tower.Position2)
+						DamagePrepareDelayedOrigin(WalkerList.Walker[k].Health,BulletList.Bullet[i].BulletData.Damage,BulletList.Bullet[i].BulletData.DamageOrigin)
 						WalkerList.Walker[k].Health.State = WalkerList.Walker[k].Health.State - BulletList.Bullet[i].BulletData.Damage
 						WalkerList.Walker[k].HitFlashUntil = Now + 150
 						ColorSet(WalkerList.Walker[k].WalkerSpriteData.Tower.Color,255,0,0,255)
@@ -606,39 +608,44 @@ function BulletCollidePlayerTargets(BulletList ref as TBulletList,OrbList ref as
                 endif
             next k
             if BestType = 8
-                JumppodApplyDamage(BestIndex,Game,BulletList.Bullet[i].BulletData.Damage,Now)
+                JumppodApplyDamage(BestIndex,Game,BulletList.Bullet[i].BulletData.Damage,Now,BulletList.Bullet[i].BulletData.DamageOrigin)
                 BulletDelete(BulletList,i)
             endif
             if BestType = 7
-                FlarakApplyDamage(FlarakList[BestIndex],Game,BulletList.Bullet[i].BulletData.Damage,Now)
+                FlarakApplyDamage(FlarakList[BestIndex],Game,BulletList.Bullet[i].BulletData.Damage,Now,BulletList.Bullet[i].BulletData.DamageOrigin)
                 BulletDelete(BulletList,i)
             endif
             if BestType = 1
+                DamagePrepareDelayedOrigin(OrbList.Orb[BestIndex].Health,BulletList.Bullet[i].BulletData.Damage,BulletList.Bullet[i].BulletData.DamageOrigin)
                 OrbList.Orb[BestIndex].Health.State = OrbList.Orb[BestIndex].Health.State - BulletList.Bullet[i].BulletData.Damage
                 ColorSet(OrbList.Orb[BestIndex].SpriteData.Color,255,0,0,255)
                 BulletDelete(BulletList,i)
             endif
             if BestType = 2
+                DamagePrepareDelayedOrigin(WalkerList.Walker[BestIndex].Health,BulletList.Bullet[i].BulletData.Damage,BulletList.Bullet[i].BulletData.DamageOrigin)
                 WalkerList.Walker[BestIndex].Health.State = WalkerList.Walker[BestIndex].Health.State - BulletList.Bullet[i].BulletData.Damage
                 WalkerList.Walker[BestIndex].HitFlashUntil = Now + 150
                 ColorSet(WalkerList.Walker[BestIndex].WalkerSpriteData.Tower.Color,255,0,0,255)
                 BulletDelete(BulletList,i)
             endif
             if BestType = 3
+                DamagePrepareDelayedOrigin(MineList.Mine[BestIndex].Health,BulletList.Bullet[i].BulletData.Damage,BulletList.Bullet[i].BulletData.DamageOrigin)
                 MineList.Mine[BestIndex].Health.State = MineList.Mine[BestIndex].Health.State - BulletList.Bullet[i].BulletData.Damage
                 ColorSet(MineList.Mine[BestIndex].SpriteData.Color,255,0,0,255)
                 BulletDelete(BulletList,i)
             endif
             if BestType = 4
+                DamagePrepareDelayedOrigin(SimpleMineList.Mine[BestIndex].Health,BulletList.Bullet[i].BulletData.Damage,BulletList.Bullet[i].BulletData.DamageOrigin)
                 SimpleMineList.Mine[BestIndex].Health.State = SimpleMineList.Mine[BestIndex].Health.State - BulletList.Bullet[i].BulletData.Damage
                 ColorSet(SimpleMineList.Mine[BestIndex].SpriteData.Color,255,0,0,255)
                 BulletDelete(BulletList,i)
             endif
             if BestType = 6
-                DroneTakeDamage(Drone,BulletList.Bullet[i].BulletData.Damage)
+                DroneTakeDamage(Drone,BulletList.Bullet[i].BulletData.Damage,BulletList.Bullet[i].BulletData.DamageOrigin)
                 BulletDelete(BulletList,i)
             endif
             if BestType = 5
+                DamagePrepareDelayedOrigin(ChestList.Chest[BestIndex].Health,BulletList.Bullet[i].BulletData.Damage,BulletList.Bullet[i].BulletData.DamageOrigin)
                 ChestList.Chest[BestIndex].Health.State = ChestList.Chest[BestIndex].Health.State - BulletList.Bullet[i].BulletData.Damage
                 ColorSet(ChestList.Chest[BestIndex].SpriteData.Color,255,0,0,255)
                 BulletDelete(BulletList,i)
@@ -700,11 +707,13 @@ function BulletCollideMines(BulletList ref as TBulletList,MineList ref as TMineL
             next k
 
             if BestType = 1
+                DamagePrepareDelayedOrigin(MineList.Mine[BestIndex].Health,BulletList.Bullet[i].BulletData.Damage,BulletList.Bullet[i].BulletData.DamageOrigin)
                 MineList.Mine[BestIndex].Health.State = MineList.Mine[BestIndex].Health.State - BulletList.Bullet[i].BulletData.Damage
                 ColorSet(MineList.Mine[BestIndex].SpriteData.Color,255,0,0,255)
                 BulletDelete(BulletList,i)
             endif
             if BestType = 2
+                DamagePrepareDelayedOrigin(SimpleMineList.Mine[BestIndex].Health,BulletList.Bullet[i].BulletData.Damage,BulletList.Bullet[i].BulletData.DamageOrigin)
                 SimpleMineList.Mine[BestIndex].Health.State = SimpleMineList.Mine[BestIndex].Health.State - BulletList.Bullet[i].BulletData.Damage
                 ColorSet(SimpleMineList.Mine[BestIndex].SpriteData.Color,255,0,0,255)
                 BulletDelete(BulletList,i)
@@ -728,6 +737,7 @@ function BulletCollideChest(BulletList ref as TBulletList,ChestList ref as TChes
 			for k = 0 to ChestList.Chest.Length
 				if ChestList.Chest[k].Enabled = TRUE and WeaponDepthAllows(BulletList.Bullet[i].WeaponDepth,PlateList,ChestList.Chest[k].CollisionData.Index,ChestList.Chest[k].IsBackground) = TRUE
 					if BoxInBox(BulletList.Bullet[i].CollisionData.Position1,BulletList.Bullet[i].CollisionData.Position2,ChestList.Chest[k].CollisionData.Position1,ChestList.Chest[k].CollisionData.Position2)
+						DamagePrepareDelayedOrigin(ChestList.Chest[k].Health,BulletList.Bullet[i].BulletData.Damage,BulletList.Bullet[i].BulletData.DamageOrigin)
 						ChestList.Chest[k].Health.State = ChestList.Chest[k].Health.State - BulletList.Bullet[i].BulletData.Damage
 						BulletDelete(BulletList,i)
 						ColorSet(ChestList.Chest[k].SpriteData.Color,255,0,0,255)

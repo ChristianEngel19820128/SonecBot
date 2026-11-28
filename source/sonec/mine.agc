@@ -39,6 +39,7 @@ function MineNew(Mine ref as TMine,ProtoMine ref as TProtoMine,World ref as TWor
 	
 	Mine.Enabled = TRUE
 	Mine.FlameTargetId = FlameNewTargetId()
+    DamageClearDelayedOrigin(Mine.Health)
 	TimeSet(Mine.ObjectData.MoveTimer,10,10)
 	TimeReset(Mine.ObjectData.MoveTimer,Now)
 	
@@ -172,7 +173,7 @@ endfunction
 
 function MineDestroy(MineList ref as TMineList,Index as integer,ExplosionList ref as TExplosionList,ProtoExplosion ref as TProtoExplosion,Game ref as TGame,Position ref as TPosition,Now as integer)
 
-	ExplosionAdd(ExplosionList,ProtoExplosion,Game,1,Position,Now)
+	ExplosionAddAttributed(ExplosionList,ProtoExplosion,Game,1,Position,Now,MineList.Mine[Index].Health.PendingDamageOrigin)
 	MineDelete(MineList,Index)
 
 endfunction
@@ -225,7 +226,8 @@ function MineHealthRegenerate(MineList ref as TMineList,Game ref as TGame,Now as
 				endif
 				TimeReset(MineList.Mine[i].Health.RegenerationTimer,Now)
 			endif
-			if MineList.Mine[i].Health.State < 0
+			if MineList.Mine[i].Health.State >= 0 then DamageClearDelayedOrigin(MineList.Mine[i].Health)
+            if MineList.Mine[i].Health.State < 0
 				RewardDrop(Game,REWARD_OBJECT_SMART_MINE,MineList.Mine[i].ObjectData.Position,Now)
 				MineDestroy(MineList,i,Game.ExplosionList,Game.ProtoExplosion,Game,MineList.Mine[i].ObjectData.Position,Now)
 			endif
@@ -237,7 +239,7 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function MineCollideSonec(MineList ref as TMineList,Sonec ref as TSonec,Game ref as TGame,Now as integer)
+function MineCollideSonec(MineList ref as TMineList,Sonec ref as TSonec,Game ref as TGame,Now as integer,MineKind as integer)
 
     local i as integer
     local CircleIndex as integer
@@ -259,6 +261,7 @@ function MineCollideSonec(MineList ref as TMineList,Sonec ref as TSonec,Game ref
             next CircleIndex
             if Hit = TRUE
                 // A collision destroys the mine and grants its established reward.
+                DamageOriginStart(MineList.Mine[i].Health.PendingDamageOrigin,MineKind,MineList.Mine[i].FlameTargetId,DAMAGE_SOURCE_CONTACT)
                 RewardDrop(Game,REWARD_OBJECT_SMART_MINE,MineList.Mine[i].ObjectData.Position,Now)
                 MineDestroy(MineList,i,Game.ExplosionList,Game.ProtoExplosion,Game,MineList.Mine[i].ObjectData.Position,Now)
             endif

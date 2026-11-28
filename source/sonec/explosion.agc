@@ -402,6 +402,7 @@ function ExplosionCollideChest(ExplosionList ref as TExplosionList,ChestList ref
 						if EXPLOSION_TIMED_DAMAGE = 0 or ExplosionList.Explosion[i].LastChestHitMs[k] = 0 or GetMilliseconds()-ExplosionList.Explosion[i].LastChestHitMs[k] >= EXPLOSION_DAMAGE_INTERVAL_MS
 							ExplosionList.Explosion[i].LastChestHitMs[k] = GetMilliseconds()
 							ExplosionList.Explosion[i].MeasureChestHits = ExplosionList.Explosion[i].MeasureChestHits + 1
+							DamagePrepareDelayedOrigin(ChestList.Chest[k].Health,ExplosionList.Explosion[i].BulletData.Damage,ExplosionList.Explosion[i].BulletData.DamageOrigin)
 							ChestList.Chest[k].Health.State = ChestList.Chest[k].Health.State - ExplosionList.Explosion[i].BulletData.Damage
 						endif
 					endif
@@ -434,6 +435,7 @@ function ExplosionCollideOrb(ExplosionList ref as TExplosionList,OrbList ref as 
 						if EXPLOSION_TIMED_DAMAGE = 0 or ExplosionList.Explosion[i].LastOrbHitMs[k] = 0 or GetMilliseconds()-ExplosionList.Explosion[i].LastOrbHitMs[k] >= EXPLOSION_DAMAGE_INTERVAL_MS
 							ExplosionList.Explosion[i].LastOrbHitMs[k] = GetMilliseconds()
 							ExplosionList.Explosion[i].MeasureOrbHits = ExplosionList.Explosion[i].MeasureOrbHits + 1
+							DamagePrepareDelayedOrigin(OrbList.Orb[k].Health,ExplosionList.Explosion[i].BulletData.Damage,ExplosionList.Explosion[i].BulletData.DamageOrigin)
 							OrbList.Orb[k].Health.State = OrbList.Orb[k].Health.State - ExplosionList.Explosion[i].BulletData.Damage
 						endif
 					endif
@@ -485,6 +487,7 @@ function ExplosionCollideMine(ExplosionList ref as TExplosionList,MineList ref a
 						endif
 						if HitAllowed = TRUE
 							ExplosionList.Explosion[i].MeasureMineHits = ExplosionList.Explosion[i].MeasureMineHits + 1
+							DamagePrepareDelayedOrigin(MineList.Mine[k].Health,ExplosionList.Explosion[i].BulletData.Damage,ExplosionList.Explosion[i].BulletData.DamageOrigin)
 							MineList.Mine[k].Health.State = MineList.Mine[k].Health.State - ExplosionList.Explosion[i].BulletData.Damage
 						endif
 					endif
@@ -522,6 +525,7 @@ function ExplosionCollideWalkers(ExplosionList ref as TExplosionList,WalkerList 
 						endif
 						if EXPLOSION_TIMED_DAMAGE = 0 or ExplosionList.Explosion[i].LastWalkerHitMs[k] = 0 or GetMilliseconds()-ExplosionList.Explosion[i].LastWalkerHitMs[k] >= EXPLOSION_DAMAGE_INTERVAL_MS
 							ExplosionList.Explosion[i].LastWalkerHitMs[k] = GetMilliseconds()
+							DamagePrepareDelayedOrigin(WalkerList.Walker[k].Health,ExplosionList.Explosion[i].BulletData.Damage,ExplosionList.Explosion[i].BulletData.DamageOrigin)
 							WalkerList.Walker[k].Health.State = WalkerList.Walker[k].Health.State - ExplosionList.Explosion[i].BulletData.Damage
 							WalkerList.Walker[k].HitFlashUntil = Now + 150
 							ColorSet(WalkerList.Walker[k].WalkerSpriteData.Tower.Color,255,0,0,255)
@@ -568,7 +572,7 @@ function ExplosionCollideFlaraks(ExplosionList ref as TExplosionList,Game ref as
                                 endif
                                 if EXPLOSION_TIMED_DAMAGE = 0 or ExplosionList.Explosion[i].LastFlarakHitMs[k] = 0 or GetMilliseconds()-ExplosionList.Explosion[i].LastFlarakHitMs[k] >= EXPLOSION_DAMAGE_INTERVAL_MS
                                     ExplosionList.Explosion[i].LastFlarakHitMs[k] = GetMilliseconds()
-                                    FlarakApplyDamage(FlarakList[k],Game,ExplosionList.Explosion[i].BulletData.Damage,Now)
+                                    FlarakApplyDamage(FlarakList[k],Game,ExplosionList.Explosion[i].BulletData.Damage,Now,ExplosionList.Explosion[i].BulletData.DamageOrigin)
                                 endif
                             endif
                         endif
@@ -592,7 +596,7 @@ function ExplosionCollideDrone(ExplosionList ref as TExplosionList,Drone ref as 
             if CalcRadius(ExplosionList.Explosion[i].ObjectData.Position,NearestPoint) < ExplosionList.Explosion[i].ObjectData.Radius and ExplosionDamageAllowed(ExplosionList.Explosion[i],NearestPoint)
                 if EXPLOSION_TIMED_DAMAGE = 0 or ExplosionList.Explosion[i].LastDroneHitMs = 0 or GetMilliseconds()-ExplosionList.Explosion[i].LastDroneHitMs >= EXPLOSION_DAMAGE_INTERVAL_MS
                     ExplosionList.Explosion[i].LastDroneHitMs = GetMilliseconds()
-                    DroneTakeDamage(Drone,ExplosionList.Explosion[i].BulletData.Damage)
+                    DroneTakeDamage(Drone,ExplosionList.Explosion[i].BulletData.Damage,ExplosionList.Explosion[i].BulletData.DamageOrigin)
                 endif
             endif
         endif

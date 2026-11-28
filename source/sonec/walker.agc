@@ -438,6 +438,7 @@ function WalkerNew(Walker ref as TWalker,ProtoWalker ref as TProtoWalker,World r
 	
 	Walker.Enabled = TRUE
 	Walker.FlameTargetId = FlameNewTargetId()
+    DamageClearDelayedOrigin(Walker.Health)
 	Walker.PlateIndex = PlateIndex
 	TimeSet(Walker.ObjectData.MoveTimer,10,10)
 	TimeReset(Walker.ObjectData.MoveTimer,Now)
@@ -703,7 +704,7 @@ endfunction
 
 function WalkerDestroy(WalkerList ref as TWalkerList,Index as integer,ExplosionList ref as TExplosionList,ProtoExplosion ref as TProtoExplosion,Game ref as TGame,Position ref as TPosition,Now as integer)
 
-	ExplosionAdd(ExplosionList,ProtoExplosion,Game,0,Position,Now)
+	ExplosionAddAttributed(ExplosionList,ProtoExplosion,Game,0,Position,Now,WalkerList.Walker[Index].Health.PendingDamageOrigin)
 	WalkerDelete(WalkerList,Index)
 
 endfunction
@@ -772,7 +773,8 @@ function WalkerHealthRegenerate(WalkerList ref as TWalkerList,Game ref as TGame,
 			
 			endif
 			
-			if WalkerList.Walker[i].Health.State < 0
+			if WalkerList.Walker[i].Health.State >= 0 then DamageClearDelayedOrigin(WalkerList.Walker[i].Health)
+            if WalkerList.Walker[i].Health.State < 0
 				
 				RewardDrop(Game,REWARD_OBJECT_WALKER,WalkerList.Walker[i].ObjectData.Position,Now)
 				
