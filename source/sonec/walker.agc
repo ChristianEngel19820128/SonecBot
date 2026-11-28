@@ -775,6 +775,7 @@ function WalkerHealthRegenerate(WalkerList ref as TWalkerList,Game ref as TGame,
 			
 			if WalkerList.Walker[i].Health.State >= 0 then DamageClearDelayedOrigin(WalkerList.Walker[i].Health)
             if WalkerList.Walker[i].Health.State < 0
+                DamageRecordDestruction(WalkerList.Walker[i].Health.PendingDamageOrigin,DAMAGE_OBJECT_WALKER,WalkerList.Walker[i].FlameTargetId,Now)
 				
 				RewardDrop(Game,REWARD_OBJECT_WALKER,WalkerList.Walker[i].ObjectData.Position,Now)
 				

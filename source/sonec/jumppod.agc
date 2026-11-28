@@ -363,6 +363,7 @@ function JumppodApplyDamage(Index as integer,Game ref as TGame,Damage as integer
     JumppodList[Index].Health = DamageApplyDirectValue(JumppodList[Index].Health,Damage,Origin,DamageTargetKind,JumppodList[Index].FlameTargetId)
     JumppodList[Index].HitFlashUntil = Now+150
     if JumppodList[Index].Health <= 0
+        if Origin.SourceKind <> DAMAGE_SOURCE_CONTACT then DamageRecordDestruction(Origin,DamageTargetKind,JumppodList[Index].FlameTargetId,Now)
         JumppodList[Index].Health = 0
         JumppodList[Index].Destroyed = TRUE
         SmokeStartEmitter(JumppodList[Index].SmokeEmitter,Now)

@@ -41,6 +41,7 @@ global DroneHitFlashUntilMs as integer
 global DroneDeathEffectPending as integer
 global DroneDeathPosition as TPosition
 global DroneDeathDamageOrigin as TDamageOrigin
+global DroneDeathTargetId as integer
 global DroneNextAutoSpawnMs as integer
 global DroneMotionUseGate as integer
 global DroneMotionTimer as TTime
@@ -199,6 +200,7 @@ function DroneTakeDamage(Drone ref as TDrone,Damage as integer,Origin ref as TDa
             Drone.Health.State = 0
             DroneDeathPosition = Drone.Position
             DroneDeathDamageOrigin = Origin
+            DroneDeathTargetId = Drone.FlameTargetId
             DroneDeathEffectPending = TRUE
             Drone.Enabled = FALSE
             DroneLaserActive = FALSE

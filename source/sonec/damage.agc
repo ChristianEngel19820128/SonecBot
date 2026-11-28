@@ -1,4 +1,4 @@
-// B01d1: direct player damage enabled; other paths retain their legacy execution.
+// B01d2: direct player damage and explosion damage against objects enabled.
 // OwnerKind identifies the original cause; SourceKind the immediate delivery.
 // IDs are value snapshots, never array slot indices.
 #constant DAMAGE_OBJECT_UNKNOWN 0
@@ -118,9 +118,10 @@ function DamageClearDelayedOrigin(Health ref as THealth)
     Health.PendingDamageOrigin = EmptyOrigin
 endfunction
 
-// D1 activation: shared target handlers also receive explosions/contact.
-// Leave those paths on their old subtraction until the next activation steps.
-function DamageDirectPlayerEnabled(Origin ref as TDamageOrigin)
+// D2 activation: explosion damage is enabled regardless of original owner.
+// Other enemy and contact paths retain legacy subtraction until D3.
+function DamageObjectPathEnabled(Origin ref as TDamageOrigin)
+    if Origin.SourceKind = DAMAGE_SOURCE_EXPLOSION then exitfunction TRUE
     if Origin.OwnerKind <> DAMAGE_OBJECT_SONEC then exitfunction FALSE
     if Origin.SourceKind = DAMAGE_SOURCE_BULLET or Origin.SourceKind = DAMAGE_SOURCE_GRENADE or Origin.SourceKind = DAMAGE_SOURCE_FLAME or Origin.SourceKind = DAMAGE_SOURCE_PLASMA then exitfunction TRUE
 endfunction FALSE
@@ -128,7 +129,7 @@ endfunction FALSE
 function DamageApplyDirectValue(BeforeHP as integer,Damage as integer,Origin ref as TDamageOrigin,TargetKind as integer,TargetId as integer)
     local Result as TDamageResult
     local AfterHP as integer
-    if DamageDirectPlayerEnabled(Origin) = FALSE then exitfunction BeforeHP-Damage
+    if DamageObjectPathEnabled(Origin) = FALSE then exitfunction BeforeHP-Damage
     AfterHP = DamageApplyHP(BeforeHP,Damage,0,Origin,TargetKind,TargetId,Result)
     DamagePublishHit(Result)
 endfunction AfterHP
@@ -136,4 +137,16 @@ endfunction AfterHP
 function DamageApplyDelayedHealth(Health ref as THealth,Damage as integer,Origin ref as TDamageOrigin,TargetKind as integer,TargetId as integer)
     DamagePrepareDelayedOrigin(Health,Damage,Origin)
     Health.State = DamageApplyDirectValue(Health.State,Damage,Origin,TargetKind,TargetId)
+endfunction
+
+// Normal destruction follows the accepted HP hits; do not count HP twice.
+// Direct removal without HP processing uses DamageRecordImmediateDestruction.
+function DamageRecordDestruction(Origin ref as TDamageOrigin,TargetKind as integer,TargetId as integer,Now as integer)
+    local Event as TDamageDestruction
+    Event.Origin = Origin
+    Event.TargetKind = TargetKind
+    Event.TargetId = TargetId
+    Event.EffectiveHealthLoss = 0
+    Event.TimeMs = Now
+    DamagePublishDestruction(Event)
 endfunction

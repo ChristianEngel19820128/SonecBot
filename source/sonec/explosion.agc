@@ -402,8 +402,7 @@ function ExplosionCollideChest(ExplosionList ref as TExplosionList,ChestList ref
 						if EXPLOSION_TIMED_DAMAGE = 0 or ExplosionList.Explosion[i].LastChestHitMs[k] = 0 or GetMilliseconds()-ExplosionList.Explosion[i].LastChestHitMs[k] >= EXPLOSION_DAMAGE_INTERVAL_MS
 							ExplosionList.Explosion[i].LastChestHitMs[k] = GetMilliseconds()
 							ExplosionList.Explosion[i].MeasureChestHits = ExplosionList.Explosion[i].MeasureChestHits + 1
-							DamagePrepareDelayedOrigin(ChestList.Chest[k].Health,ExplosionList.Explosion[i].BulletData.Damage,ExplosionList.Explosion[i].BulletData.DamageOrigin)
-							ChestList.Chest[k].Health.State = ChestList.Chest[k].Health.State - ExplosionList.Explosion[i].BulletData.Damage
+							DamageApplyDelayedHealth(ChestList.Chest[k].Health,ExplosionList.Explosion[i].BulletData.Damage,ExplosionList.Explosion[i].BulletData.DamageOrigin,DAMAGE_OBJECT_CHEST,ChestList.Chest[k].FlameTargetId)
 						endif
 					endif
 				endif
@@ -435,8 +434,7 @@ function ExplosionCollideOrb(ExplosionList ref as TExplosionList,OrbList ref as 
 						if EXPLOSION_TIMED_DAMAGE = 0 or ExplosionList.Explosion[i].LastOrbHitMs[k] = 0 or GetMilliseconds()-ExplosionList.Explosion[i].LastOrbHitMs[k] >= EXPLOSION_DAMAGE_INTERVAL_MS
 							ExplosionList.Explosion[i].LastOrbHitMs[k] = GetMilliseconds()
 							ExplosionList.Explosion[i].MeasureOrbHits = ExplosionList.Explosion[i].MeasureOrbHits + 1
-							DamagePrepareDelayedOrigin(OrbList.Orb[k].Health,ExplosionList.Explosion[i].BulletData.Damage,ExplosionList.Explosion[i].BulletData.DamageOrigin)
-							OrbList.Orb[k].Health.State = OrbList.Orb[k].Health.State - ExplosionList.Explosion[i].BulletData.Damage
+							DamageApplyDelayedHealth(OrbList.Orb[k].Health,ExplosionList.Explosion[i].BulletData.Damage,ExplosionList.Explosion[i].BulletData.DamageOrigin,DAMAGE_OBJECT_ORB,OrbList.Orb[k].FlameTargetId)
 						endif
 					endif
 				endif
@@ -453,6 +451,9 @@ endfunction
 // E1b: mine pools use independent per-explosion hit cooldowns.
 // IsSimpleMine = 0 for intelligent mines, 1 for simple mine formations.
 function ExplosionCollideMine(ExplosionList ref as TExplosionList,MineList ref as TMineList,IsSimpleMine as integer)
+    local DamageTargetKind as integer
+    DamageTargetKind = DAMAGE_OBJECT_SMART_MINE
+    if IsSimpleMine = 1 then DamageTargetKind = DAMAGE_OBJECT_SIMPLE_MINE
 
 	local i as integer
 	local k as integer
@@ -487,8 +488,7 @@ function ExplosionCollideMine(ExplosionList ref as TExplosionList,MineList ref a
 						endif
 						if HitAllowed = TRUE
 							ExplosionList.Explosion[i].MeasureMineHits = ExplosionList.Explosion[i].MeasureMineHits + 1
-							DamagePrepareDelayedOrigin(MineList.Mine[k].Health,ExplosionList.Explosion[i].BulletData.Damage,ExplosionList.Explosion[i].BulletData.DamageOrigin)
-							MineList.Mine[k].Health.State = MineList.Mine[k].Health.State - ExplosionList.Explosion[i].BulletData.Damage
+							DamageApplyDelayedHealth(MineList.Mine[k].Health,ExplosionList.Explosion[i].BulletData.Damage,ExplosionList.Explosion[i].BulletData.DamageOrigin,DamageTargetKind,MineList.Mine[k].FlameTargetId)
 						endif
 					endif
 				endif
@@ -525,8 +525,7 @@ function ExplosionCollideWalkers(ExplosionList ref as TExplosionList,WalkerList 
 						endif
 						if EXPLOSION_TIMED_DAMAGE = 0 or ExplosionList.Explosion[i].LastWalkerHitMs[k] = 0 or GetMilliseconds()-ExplosionList.Explosion[i].LastWalkerHitMs[k] >= EXPLOSION_DAMAGE_INTERVAL_MS
 							ExplosionList.Explosion[i].LastWalkerHitMs[k] = GetMilliseconds()
-							DamagePrepareDelayedOrigin(WalkerList.Walker[k].Health,ExplosionList.Explosion[i].BulletData.Damage,ExplosionList.Explosion[i].BulletData.DamageOrigin)
-							WalkerList.Walker[k].Health.State = WalkerList.Walker[k].Health.State - ExplosionList.Explosion[i].BulletData.Damage
+							DamageApplyDelayedHealth(WalkerList.Walker[k].Health,ExplosionList.Explosion[i].BulletData.Damage,ExplosionList.Explosion[i].BulletData.DamageOrigin,DAMAGE_OBJECT_WALKER,WalkerList.Walker[k].FlameTargetId)
 							WalkerList.Walker[k].HitFlashUntil = Now + 150
 							ColorSet(WalkerList.Walker[k].WalkerSpriteData.Tower.Color,255,0,0,255)
 						endif

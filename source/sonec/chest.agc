@@ -136,6 +136,7 @@ function ChestHealthRegenerate(ChestList ref as TChestList,Game ref as TGame,Now
 			endif
 			if ChestList.Chest[i].Health.State >= 0 then DamageClearDelayedOrigin(ChestList.Chest[i].Health)
             if ChestList.Chest[i].Health.State < 0
+                DamageRecordDestruction(ChestList.Chest[i].Health.PendingDamageOrigin,DAMAGE_OBJECT_CHEST,ChestList.Chest[i].FlameTargetId,Now)
 				RewardDrop(Game,REWARD_OBJECT_CHEST,ChestList.Chest[i].ObjectData.Position,Now)
 				ChestDelete(ChestList,i)
 			endif

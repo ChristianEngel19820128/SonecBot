@@ -657,6 +657,7 @@ endfunction CurrentAngle
 function FlarakDestroy(F ref as TFlarak,Game ref as TGame,NowMs as integer,Origin ref as TDamageOrigin)
     local Impact as TPosition
     if F.Enabled = FALSE or F.Destroyed = TRUE then exitfunction
+    DamageRecordDestruction(Origin,DAMAGE_OBJECT_FLARAK,F.FlameTargetId,NowMs)
     F.Destroyed = TRUE
     SmokeStartEmitter(F.SmokeEmitter,NowMs)
     F.Health = 0

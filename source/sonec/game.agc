@@ -152,6 +152,7 @@ function GameInit(Game ref as TGame,Now as integer)
 	DroneDeathEffectPending = FALSE
     local EmptyDroneDeathOrigin as TDamageOrigin
     DroneDeathDamageOrigin = EmptyDroneDeathOrigin
+    DroneDeathTargetId = 0
 	DroneDeathPosition.x = 0
 	DroneDeathPosition.y = 0
 	BomberInit(Game.Bomber,Now)
@@ -514,6 +515,7 @@ function GameDo(Game ref as TGame,Now as integer)
 	FlarakSmokeDoAll(Game.PlateList,Now)
 	// D5c: consume one destruction event after all weapon collisions.
 	if DroneDeathEffectPending = TRUE
+        DamageRecordDestruction(DroneDeathDamageOrigin,DAMAGE_OBJECT_DRONE,DroneDeathTargetId,Now)
 		ExplosionAddAttributed(Game.ExplosionList,Game.ProtoExplosion,Game,0,DroneDeathPosition,Now,DroneDeathDamageOrigin)
 		RewardDrop(Game,REWARD_OBJECT_DRONE,DroneDeathPosition,Now)
 		DroneDeathEffectPending = FALSE

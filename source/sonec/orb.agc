@@ -237,6 +237,7 @@ function OrbHealthRegenerate(OrbList ref as TOrbList,Game ref as TGame,Now as in
 			endif
 			if OrbList.Orb[i].Health.State >= 0 then DamageClearDelayedOrigin(OrbList.Orb[i].Health)
             if OrbList.Orb[i].Health.State < 0
+                DamageRecordDestruction(OrbList.Orb[i].Health.PendingDamageOrigin,DAMAGE_OBJECT_ORB,OrbList.Orb[i].FlameTargetId,Now)
 				RewardDrop(Game,REWARD_OBJECT_ORB,OrbList.Orb[i].ObjectData.Position,Now)
 				OrbDestroy(OrbList,i,Game.ExplosionList,Game.ProtoExplosion,Game,OrbList.Orb[i].ObjectData.Position,Now)
 			endif

@@ -228,6 +228,7 @@ function MineHealthRegenerate(MineList ref as TMineList,Game ref as TGame,Now as
 			endif
 			if MineList.Mine[i].Health.State >= 0 then DamageClearDelayedOrigin(MineList.Mine[i].Health)
             if MineList.Mine[i].Health.State < 0
+                DamageRecordDestruction(MineList.Mine[i].Health.PendingDamageOrigin,DAMAGE_OBJECT_SMART_MINE,MineList.Mine[i].FlameTargetId,Now)
 				RewardDrop(Game,REWARD_OBJECT_SMART_MINE,MineList.Mine[i].ObjectData.Position,Now)
 				MineDestroy(MineList,i,Game.ExplosionList,Game.ProtoExplosion,Game,MineList.Mine[i].ObjectData.Position,Now)
 			endif
