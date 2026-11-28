@@ -23,6 +23,129 @@
 #constant DAMAGE_SOURCE_ROCKET 27
 #constant DAMAGE_SOURCE_CONTACT 28
 
+// B02ab: source and target metadata are prepared; HP reduction is not active.
+#constant DAMAGE_TYPE_UNKNOWN 0
+#constant DAMAGE_TYPE_KINETIC 1
+#constant DAMAGE_TYPE_ENERGY 2
+#constant DAMAGE_TYPE_EXPLOSION 3
+#constant DAMAGE_TYPE_FIRE 4
+#constant DAMAGE_ARMOR_UNARMORED 0
+#constant DAMAGE_ARMOR_MASSIVE 1
+#constant DAMAGE_ARMOR_ENERGY 2
+#constant DAMAGE_ARMOR_COMPOSITE 3
+#constant DAMAGE_ARMOR_THERMAL 4
+#constant DAMAGE_ARMOR_INDIVIDUAL 5
+
+global DamageArmorConfig as TDamageArmorConfig
+global DamageArmorConfigLoaded as integer
+
+function DamageResistanceSet(Profile ref as TDamageResistance,Kinetic as integer,Energy as integer,Explosion as integer,Fire as integer)
+    Profile.Kinetic = Kinetic
+    Profile.Energy = Energy
+    Profile.Explosion = Explosion
+    Profile.Fire = Fire
+endfunction
+
+function DamageResistanceValid(Profile ref as TDamageResistance)
+    local Valid as integer
+    Valid = TRUE
+    if Profile.Kinetic < 0 or Profile.Kinetic > 100 then Valid = FALSE
+    if Profile.Energy < 0 or Profile.Energy > 100 then Valid = FALSE
+    if Profile.Explosion < 0 or Profile.Explosion > 100 then Valid = FALSE
+    if Profile.Fire < 0 or Profile.Fire > 100 then Valid = FALSE
+endfunction Valid
+
+function DamageArmorLoad()
+    local File as TFilePath
+    local Candidate as TDamageArmorConfig
+    DamageArmorConfig.Version = 1
+    DamageResistanceSet(DamageArmorConfig.Unarmored,0,0,0,0)
+    DamageResistanceSet(DamageArmorConfig.Massive,75,0,50,25)
+    DamageResistanceSet(DamageArmorConfig.Energy,25,75,0,50)
+    DamageResistanceSet(DamageArmorConfig.Composite,50,25,75,0)
+    DamageResistanceSet(DamageArmorConfig.Thermal,0,50,25,75)
+    DamageArmorConfigLoaded = FALSE
+    File.Path = "/media/data"
+    File.Name = "damagearmor.json"
+    if FilePathSetAndCheck(File) = FALSE then exitfunction
+    // Missing fields must not silently become valid zero resistances.
+    Candidate.Version = -1
+    DamageResistanceSet(Candidate.Unarmored,-1,-1,-1,-1)
+    DamageResistanceSet(Candidate.Massive,-1,-1,-1,-1)
+    DamageResistanceSet(Candidate.Energy,-1,-1,-1,-1)
+    DamageResistanceSet(Candidate.Composite,-1,-1,-1,-1)
+    DamageResistanceSet(Candidate.Thermal,-1,-1,-1,-1)
+    Candidate.FromJson(ReadFileString(File))
+    if Candidate.Version <> 1 then exitfunction
+    if DamageResistanceValid(Candidate.Unarmored) = FALSE then exitfunction
+    if DamageResistanceValid(Candidate.Massive) = FALSE then exitfunction
+    if DamageResistanceValid(Candidate.Energy) = FALSE then exitfunction
+    if DamageResistanceValid(Candidate.Composite) = FALSE then exitfunction
+    if DamageResistanceValid(Candidate.Thermal) = FALSE then exitfunction
+    if Candidate.Unarmored.Kinetic <> 0 or Candidate.Unarmored.Energy <> 0 or Candidate.Unarmored.Explosion <> 0 or Candidate.Unarmored.Fire <> 0 then exitfunction
+    DamageArmorConfig = Candidate
+    DamageArmorConfigLoaded = TRUE
+endfunction
+
+function DamageTargetArmor(TargetKind as integer)
+    local Armor as integer
+    Armor = DAMAGE_ARMOR_UNARMORED
+    if TargetKind = DAMAGE_OBJECT_SONEC then Armor = DAMAGE_ARMOR_INDIVIDUAL
+    if TargetKind = DAMAGE_OBJECT_WALKER or TargetKind = DAMAGE_OBJECT_FLARAK then Armor = DAMAGE_ARMOR_MASSIVE
+    if TargetKind = DAMAGE_OBJECT_ORB or TargetKind = DAMAGE_OBJECT_DRONE then Armor = DAMAGE_ARMOR_ENERGY
+    if TargetKind = DAMAGE_OBJECT_SMART_MINE or TargetKind = DAMAGE_OBJECT_BOMBER then Armor = DAMAGE_ARMOR_COMPOSITE
+endfunction Armor
+
+function DamageProfileResistance(Profile ref as TDamageResistance,DamageType as integer)
+    local Resistance as integer
+    Resistance = 0
+    if DamageType = DAMAGE_TYPE_KINETIC then Resistance = Profile.Kinetic
+    if DamageType = DAMAGE_TYPE_ENERGY then Resistance = Profile.Energy
+    if DamageType = DAMAGE_TYPE_EXPLOSION then Resistance = Profile.Explosion
+    if DamageType = DAMAGE_TYPE_FIRE then Resistance = Profile.Fire
+endfunction Resistance
+
+function DamageArmorResistance(Armor as integer,DamageType as integer)
+    local Resistance as integer
+    Resistance = 0
+    if Armor = DAMAGE_ARMOR_MASSIVE then Resistance = DamageProfileResistance(DamageArmorConfig.Massive,DamageType)
+    if Armor = DAMAGE_ARMOR_ENERGY then Resistance = DamageProfileResistance(DamageArmorConfig.Energy,DamageType)
+    if Armor = DAMAGE_ARMOR_COMPOSITE then Resistance = DamageProfileResistance(DamageArmorConfig.Composite,DamageType)
+    if Armor = DAMAGE_ARMOR_THERMAL then Resistance = DamageProfileResistance(DamageArmorConfig.Thermal,DamageType)
+endfunction Resistance
+
+function DamageDefaultType(SourceKind as integer)
+    local DamageType as integer
+    DamageType = DAMAGE_TYPE_UNKNOWN
+    if SourceKind = DAMAGE_SOURCE_BULLET or SourceKind = DAMAGE_SOURCE_GRENADE then DamageType = DAMAGE_TYPE_KINETIC
+    if SourceKind = DAMAGE_SOURCE_PLASMA or SourceKind = DAMAGE_SOURCE_LASER then DamageType = DAMAGE_TYPE_ENERGY
+    if SourceKind = DAMAGE_SOURCE_EXPLOSION or SourceKind = DAMAGE_SOURCE_BOMB or SourceKind = DAMAGE_SOURCE_ROCKET then DamageType = DAMAGE_TYPE_EXPLOSION
+    if SourceKind = DAMAGE_SOURCE_FLAME then DamageType = DAMAGE_TYPE_FIRE
+endfunction DamageType
+
+function DamageEffectiveResistance(Resistance as integer,Penetration as integer)
+    local Effective as float
+    if Resistance < 0 then Resistance = 0
+    if Resistance > 100 then Resistance = 100
+    if Penetration < 0 then Penetration = 0
+    if Penetration > 100 then Penetration = 100
+    Effective = Resistance*(100-Penetration)/100.0
+    if Resistance = 100 then Effective = 100
+endfunction Effective
+
+// Integer HP, nearest integer (half up), minimum one except zero/immunity.
+function DamageReducedHP(Damage as integer,Resistance as integer,Penetration as integer)
+    local Reduced as integer
+    local Effective as float
+    Reduced = 0
+    if Damage > 0 and Resistance < 100
+        Effective = DamageEffectiveResistance(Resistance,Penetration)
+        Reduced = Floor(Damage*(100.0-Effective)/100.0+0.5)
+        if Reduced < 1 then Reduced = 1
+        if Reduced > Damage then Reduced = Damage
+    endif
+endfunction Reduced
+
 // Bounded event snapshots; future consumers attach at the publish functions.
 // These are not a queue and do not implement XP or relief.
 global DamageLastHit as TDamageResult
@@ -80,6 +203,11 @@ function DamageApplyHP(BeforeHP as integer,RequestedDamage as integer,ShieldAbso
     Result.TargetId = TargetId
     Result.RequestedDamage = RequestedDamage
     Result.ShieldAbsorbed = ShieldAbsorbed
+    Result.ArmorType = DamageTargetArmor(TargetKind)
+    Result.BaseResistance = DamageArmorResistance(Result.ArmorType,Origin.DamageType)
+    Result.EffectiveResistance = DamageEffectiveResistance(Result.BaseResistance,Origin.ArmorPenetration)
+    Result.ResistancePrevented = 0
+    Result.HPDamage = RequestedDamage-ShieldAbsorbed
     Result.HealthBefore = BeforeHP
     Result.HealthAfter = BeforeHP-(RequestedDamage-ShieldAbsorbed)
     Result.EffectiveHealthLoss = DamageEffectiveHealthLoss(BeforeHP,Result.HealthAfter)
@@ -91,6 +219,8 @@ function DamageApplySonec(Sonec ref as TSonec,Shield ref as TShield,RequestedDam
     Absorbed = ShieldAbsorbDamage(Shield,Sonec,RequestedDamage,Now)
     DamagePrepareDelayedOrigin(Sonec.Health,RequestedDamage-Absorbed,Origin)
     Sonec.Health.State = DamageApplyHP(Sonec.Health.State,RequestedDamage,Absorbed,Origin,DAMAGE_OBJECT_SONEC,TargetId,Result)
+    Result.BaseResistance = DamageProfileResistance(Sonec.DamageResistance,Origin.DamageType)
+    Result.EffectiveResistance = DamageEffectiveResistance(Result.BaseResistance,Origin.ArmorPenetration)
     DamagePublishHit(Result)
 endfunction
 
@@ -113,6 +243,8 @@ function DamageOriginStart(Origin ref as TDamageOrigin,OwnerKind as integer,Owne
     Origin.OwnerId = OwnerId
     Origin.SourceKind = SourceKind
     Origin.SourceId = DamageSourceSerial
+    Origin.DamageType = DamageDefaultType(SourceKind)
+    Origin.ArmorPenetration = 0
 endfunction
 
 // B01c2: record only a crossing of the legacy strictly-negative threshold.
@@ -168,7 +300,7 @@ function DamageTraceWrite(Row as string)
             DamageTraceEnabled = FALSE
             exitfunction
         endif
-        WriteLine(FileID,"round,sequence,event,owner_kind,owner_id,source_kind,source_id,target_kind,target_id,requested,shield_absorbed,hp_before,hp_after,effective_hp")
+        WriteLine(FileID,"round,sequence,event,owner_kind,owner_id,source_kind,source_id,target_kind,target_id,requested,shield_absorbed,hp_before,hp_after,effective_hp,damage_type,armor_type,resistance_base,armor_penetration,resistance_effective,resistance_prevented,hp_damage,armor_config_loaded")
         CloseFile(FileID)
         DamageTraceStarted = TRUE
     endif
@@ -190,12 +322,13 @@ endfunction Row
 function DamageTraceHit(Result ref as TDamageResult)
     local Row as string
     Row = "hit,"+DamageTraceOrigin(Result.Origin)+","+Str(Result.TargetKind)+","+Str(Result.TargetId)+","+Str(Result.RequestedDamage)+","+Str(Result.ShieldAbsorbed)+","+Str(Result.HealthBefore)+","+Str(Result.HealthAfter)+","+Str(Result.EffectiveHealthLoss)
+    Row = Row+","+Str(Result.Origin.DamageType)+","+Str(Result.ArmorType)+","+Str(Result.BaseResistance)+","+Str(Result.Origin.ArmorPenetration)+","+Str(Result.EffectiveResistance)+","+Str(Result.ResistancePrevented)+","+Str(Result.HPDamage)+","+Str(DamageArmorConfigLoaded)
     DamageTraceWrite(Row)
 endfunction
 
 function DamageTraceDestruction(Event ref as TDamageDestruction)
     local Row as string
-    Row = "destroy,"+DamageTraceOrigin(Event.Origin)+","+Str(Event.TargetKind)+","+Str(Event.TargetId)+",,,,,"+Str(Event.EffectiveHealthLoss)
+    Row = "destroy,"+DamageTraceOrigin(Event.Origin)+","+Str(Event.TargetKind)+","+Str(Event.TargetId)+",,,,,"+Str(Event.EffectiveHealthLoss)+","+Str(Event.Origin.DamageType)+",,,"+Str(Event.Origin.ArmorPenetration)+",,,,"+Str(DamageArmorConfigLoaded)
     DamageTraceWrite(Row)
 endfunction
 
@@ -215,6 +348,6 @@ function DamageTraceDraw()
         SetTextColor(DamageTraceText,255,255,255,255)
         SetTextPosition(DamageTraceText,8,100)
     endif
-    SetTextString(DamageTraceText,"B01 CSV ON  #"+Str(DamageTraceSequence))
+    SetTextString(DamageTraceText,"B02 PREP CSV ON  #"+Str(DamageTraceSequence))
     DrawText(DamageTraceText)
 endfunction

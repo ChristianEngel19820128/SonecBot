@@ -80,9 +80,9 @@ Vier Schadensarten: Kinetik, Energie, Explosion, Feuer. Übertragungsform (Direk
 | Thermopanzerung | 0 % | 50 % | 25 % | 75 % |
 | Nanopanzerung (zurückgestellt) | 25 % | 25 % | 25 % | 25 % |
 
-100 % Immunität technisch unterstützen; für besondere Gegner/Bosse reserviert, keine konkreten Bosspanzerungen in Phase B. Keine Schadensverstärkung über den Basisschaden durch die Matrix vorgesehen. AP-Penetration verringert die wirksame Panzerungsreduktion, kann jedoch 100 % Immunität nicht aufheben. Exakte Berechnung und Rundung noch festzulegen.
+100 % Immunität technisch unterstützen; für besondere Gegner/Bosse reserviert, keine konkreten Bosspanzerungen in Phase B. Keine Schadensverstärkung über den Basisschaden durch die Matrix vorgesehen. AP-Penetration verringert die wirksame Panzerungsreduktion, kann jedoch 100 % Immunität nicht aufheben. B02-Freigabe: AP reduziert die Resistenz proportional (R_eff = R * (1 - AP/100)); 100 % bleiben immun. Nach Schild und Resistenz einmal kaufmännisch runden, bei positivem Restschaden und unter 100 % Resistenz mindestens 1 HP.
 
-Sonec hat vier unabhängige permanente Resistenzen statt eines festen Panzerungstyps. Jede ist bis 75 % steigerbar; mit fortschreitendem Ausbau sinkt der Zugewinn, das Maximum muss tatsächlich erreichbar sein. Nur diese Upgrades verwenden abnehmende Steigerungswerte. Schild ist ein separates Schutzsystem; Reihenfolge von Absorption und Resistenz noch festlegen. Schildschaden liefert keine XP. Drohnenschild ist als Idee vorgesehen, aber keinem freigegebenen B-Paket zugeordnet.
+Sonec hat vier unabhängige permanente Resistenzen statt eines festen Panzerungstyps. Jede ist bis 75 % steigerbar; mit fortschreitendem Ausbau sinkt der Zugewinn, das Maximum muss tatsächlich erreichbar sein. Nur diese Upgrades verwenden abnehmende Steigerungswerte. Schild ist ein separates Schutzsystem; B02-Freigabe: zuerst Schildabsorption, dann individuelle Resistenz; alle vier Startresistenzen 0 %. Schildschaden liefert keine XP. Drohnenschild ist als Idee vorgesehen, aber keinem freigegebenen B-Paket zugeordnet.
 
 Nanopanzerung ist mangels vorgesehenen Gegners zurückgestellt. Konzept: direkte HP-Regeneration nach Erholungszeit, keine separate Panzerungs-HP-Leiste; genaue Reset-/Regenerationsregeln erst bei Umsetzung festlegen. Zusätzliche schadensartspezifische Statuseffekte sind Beta; vorhandene Effekte bleiben unverändert.
 
@@ -258,7 +258,9 @@ Gesamtschätzung: eine Woche nach Erfahrung des Entwicklers, keine künstliche A
 
 **Abgrenzung:** Körperteilpanzerung B04, AP-Munition B07, Resistenzpickups B08, Nano/Bosspanzerungen zurückgestellt; endgültige Werte Balancing.
 
-**Abnahme:** Alle Matrixkombinationen korrekt, 100 % Immunität auch bei AP wirksam, unabhängige Resistenzen, konfigurierbare Matrix ohne Codeänderung, Schild und Treffermechanik erhalten. Reihenfolge Schild/Resistenz und Rundung offen.
+**Abnahme:** Alle Matrixkombinationen korrekt, 100 % Immunität auch bei AP wirksam, unabhängige Resistenzen, konfigurierbare Matrix ohne Codeänderung, Schild und Treffermechanik erhalten.
+
+**Freigegebene Startzuordnung:** Walker/Flak/Flarak massiv, Orb/Drohne Energie, intelligente Mine/Bomber Verbund; einfache Mine, Landmine, Kiste und Jumppod ungepanzert. Geschosse und Granatendirekttreffer kinetisch, Plasmablitz/Laser Energie, Flammen Feuer, Bomben/Raketen/Explosionen explosiv; vorhandene Quellen AP 0. Unmittelbare Zerstörungen und Abfangen bleiben unverändert. B02ab bereitet Daten und Diagnose ohne HP-Reduktion vor; lokale AGK-Abnahme steht aus.
 
 ### B03 – Explosionen und Druckwellen
 

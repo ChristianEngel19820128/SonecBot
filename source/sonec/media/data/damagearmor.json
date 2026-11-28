@@ -1,0 +1,33 @@
+{
+  "Version": 1,
+  "Unarmored": {
+    "Kinetic": 0,
+    "Energy": 0,
+    "Explosion": 0,
+    "Fire": 0
+  },
+  "Massive": {
+    "Kinetic": 75,
+    "Energy": 0,
+    "Explosion": 50,
+    "Fire": 25
+  },
+  "Energy": {
+    "Kinetic": 25,
+    "Energy": 75,
+    "Explosion": 0,
+    "Fire": 50
+  },
+  "Composite": {
+    "Kinetic": 50,
+    "Energy": 25,
+    "Explosion": 75,
+    "Fire": 0
+  },
+  "Thermal": {
+    "Kinetic": 0,
+    "Energy": 50,
+    "Explosion": 25,
+    "Fire": 75
+  }
+}

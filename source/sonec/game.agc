@@ -11,6 +11,7 @@ function GameCreate(Game ref as TGame,vx as integer,vy as integer)
 	Game.Screen.Height = vy
 	
 	GameProtoLoad(Game)
+	DamageArmorLoad()
 	FlarakProtoLoad()
 	ProtoJumppodLoad()
 	ProtoSmokeLoad()

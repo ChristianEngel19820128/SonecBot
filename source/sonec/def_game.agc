@@ -32,11 +32,30 @@
 
 // B01: value snapshots, independent of live object slots.
 // Zero-initialized origin is unknown; no implicit player credit.
+// B02: named fields keep JSON profiles and individual resistances independent.
+type TDamageResistance
+    Kinetic as integer
+    Energy as integer
+    Explosion as integer
+    Fire as integer
+endtype
+
+type TDamageArmorConfig
+    Version as integer
+    Unarmored as TDamageResistance
+    Massive as TDamageResistance
+    Energy as TDamageResistance
+    Composite as TDamageResistance
+    Thermal as TDamageResistance
+endtype
+
 type TDamageOrigin
     OwnerKind as integer
     OwnerId as integer
     SourceKind as integer
     SourceId as integer
+    DamageType as integer
+    ArmorPenetration as integer
 endtype
 
 type TDamageResult
@@ -45,6 +64,11 @@ type TDamageResult
     TargetId as integer
     RequestedDamage as integer
     ShieldAbsorbed as integer
+    ArmorType as integer
+    BaseResistance as integer
+    EffectiveResistance as float
+    ResistancePrevented as integer
+    HPDamage as integer
     HealthBefore as integer
     HealthAfter as integer
     EffectiveHealthLoss as integer
@@ -607,6 +631,7 @@ type TSonecContactCandidate
 endtype
 
 type TSonec
+    DamageResistance as TDamageResistance
 	DebugCsvMoveStartVX as float
 	DebugCsvMoveAfterHorizontalVX as float
 	DebugCsvMoveStartX as float

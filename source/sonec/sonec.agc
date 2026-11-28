@@ -293,6 +293,7 @@ function SonecInit(Sonec ref as TSonec,ProtoSonec ref as TProtoSonec,World ref a
 	TimeSet(Sonec.InputActionTimer,15,1)
 	TimeReset(Sonec.InputActionTimer,Now)
 
+	DamageResistanceSet(Sonec.DamageResistance,0,0,0,0)
 	Sonec.IsLost = False
 	Sonec.BalanceActive = FALSE
 	Sonec.BalanceTargetX = 0
