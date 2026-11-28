@@ -23,7 +23,7 @@
 #constant DAMAGE_SOURCE_ROCKET 27
 #constant DAMAGE_SOURCE_CONTACT 28
 
-// B02ab: source and target metadata are prepared; HP reduction is not active.
+// B02c: resistance reduction active in the common HP path.
 #constant DAMAGE_TYPE_UNKNOWN 0
 #constant DAMAGE_TYPE_KINETIC 1
 #constant DAMAGE_TYPE_ENERGY 2
@@ -156,6 +156,7 @@ global DamageTraceStarted as integer
 global DamageTraceSequence as integer
 global DamageTraceRound as integer
 global DamageTraceText as integer
+global DamageTestSummary as string
 global DamageHitAvailable as integer
 global DamageDestructionAvailable as integer
 
@@ -197,19 +198,19 @@ endfunction
 
 // Preserve the raw subtraction, including negative HP and exact zero.
 // Target-specific thresholds, clamping, flashes and rewards remain with callers.
-function DamageApplyHP(BeforeHP as integer,RequestedDamage as integer,ShieldAbsorbed as integer,Origin ref as TDamageOrigin,TargetKind as integer,TargetId as integer,Result ref as TDamageResult)
+function DamageApplyHP(BeforeHP as integer,RequestedDamage as integer,ShieldAbsorbed as integer,Origin ref as TDamageOrigin,TargetKind as integer,TargetId as integer,BaseResistance as integer,Result ref as TDamageResult)
     Result.Origin = Origin
     Result.TargetKind = TargetKind
     Result.TargetId = TargetId
     Result.RequestedDamage = RequestedDamage
     Result.ShieldAbsorbed = ShieldAbsorbed
     Result.ArmorType = DamageTargetArmor(TargetKind)
-    Result.BaseResistance = DamageArmorResistance(Result.ArmorType,Origin.DamageType)
+    Result.BaseResistance = BaseResistance
     Result.EffectiveResistance = DamageEffectiveResistance(Result.BaseResistance,Origin.ArmorPenetration)
-    Result.ResistancePrevented = 0
-    Result.HPDamage = RequestedDamage-ShieldAbsorbed
+    Result.HPDamage = DamageReducedHP(RequestedDamage-ShieldAbsorbed,Result.BaseResistance,Origin.ArmorPenetration)
+    Result.ResistancePrevented = RequestedDamage-ShieldAbsorbed-Result.HPDamage
     Result.HealthBefore = BeforeHP
-    Result.HealthAfter = BeforeHP-(RequestedDamage-ShieldAbsorbed)
+    Result.HealthAfter = BeforeHP-Result.HPDamage
     Result.EffectiveHealthLoss = DamageEffectiveHealthLoss(BeforeHP,Result.HealthAfter)
 endfunction Result.HealthAfter
 
@@ -217,10 +218,14 @@ endfunction Result.HealthAfter
 function DamageApplySonec(Sonec ref as TSonec,Shield ref as TShield,RequestedDamage as integer,Origin ref as TDamageOrigin,TargetId as integer,Now as integer,Result ref as TDamageResult)
     local Absorbed as integer
     Absorbed = ShieldAbsorbDamage(Shield,Sonec,RequestedDamage,Now)
-    DamagePrepareDelayedOrigin(Sonec.Health,RequestedDamage-Absorbed,Origin)
-    Sonec.Health.State = DamageApplyHP(Sonec.Health.State,RequestedDamage,Absorbed,Origin,DAMAGE_OBJECT_SONEC,TargetId,Result)
-    Result.BaseResistance = DamageProfileResistance(Sonec.DamageResistance,Origin.DamageType)
-    Result.EffectiveResistance = DamageEffectiveResistance(Result.BaseResistance,Origin.ArmorPenetration)
+    local Resistance as integer
+    local AfterHP as integer
+    Resistance = DamageProfileResistance(Sonec.DamageResistance,Origin.DamageType)
+    if Resistance < 0 then Resistance = 0
+    if Resistance > 75 then Resistance = 75
+    AfterHP = DamageApplyHP(Sonec.Health.State,RequestedDamage,Absorbed,Origin,DAMAGE_OBJECT_SONEC,TargetId,Resistance,Result)
+    DamagePrepareDelayedOrigin(Sonec.Health,Result.HPDamage,Origin)
+    Sonec.Health.State = AfterHP
     DamagePublishHit(Result)
 endfunction
 
@@ -264,13 +269,17 @@ endfunction
 function DamageApplyDirectValue(BeforeHP as integer,Damage as integer,Origin ref as TDamageOrigin,TargetKind as integer,TargetId as integer)
     local Result as TDamageResult
     local AfterHP as integer
-    AfterHP = DamageApplyHP(BeforeHP,Damage,0,Origin,TargetKind,TargetId,Result)
+    AfterHP = DamageApplyHP(BeforeHP,Damage,0,Origin,TargetKind,TargetId,DamageArmorResistance(DamageTargetArmor(TargetKind),Origin.DamageType),Result)
     DamagePublishHit(Result)
 endfunction AfterHP
 
 function DamageApplyDelayedHealth(Health ref as THealth,Damage as integer,Origin ref as TDamageOrigin,TargetKind as integer,TargetId as integer)
-    DamagePrepareDelayedOrigin(Health,Damage,Origin)
-    Health.State = DamageApplyDirectValue(Health.State,Damage,Origin,TargetKind,TargetId)
+    local Result as TDamageResult
+    local AfterHP as integer
+    AfterHP = DamageApplyHP(Health.State,Damage,0,Origin,TargetKind,TargetId,DamageArmorResistance(DamageTargetArmor(TargetKind),Origin.DamageType),Result)
+    DamagePrepareDelayedOrigin(Health,Result.HPDamage,Origin)
+    Health.State = AfterHP
+    DamagePublishHit(Result)
 endfunction
 
 // Normal destruction follows the accepted HP hits; do not count HP twice.
@@ -332,10 +341,68 @@ function DamageTraceDestruction(Event ref as TDamageDestruction)
     DamageTraceWrite(Row)
 endfunction
 
+// B02c developer self-test: local value snapshots only, no combat events or HP changes.
+function DamageTestCase(Requested as integer,Absorbed as integer,Resistance as integer,AP as integer,Expected as integer)
+    local Origin as TDamageOrigin
+    local Result as TDamageResult
+    local AfterHP as integer
+    local Passed as integer
+    Origin.DamageType = DAMAGE_TYPE_KINETIC
+    Origin.ArmorPenetration = AP
+    AfterHP = DamageApplyHP(10,Requested,Absorbed,Origin,DAMAGE_OBJECT_WALKER,0,Resistance,Result)
+    Passed = FALSE
+    if Result.HPDamage = Expected and AfterHP = 10-Expected and Result.ResistancePrevented = Requested-Absorbed-Expected and Result.EffectiveHealthLoss = DamageEffectiveHealthLoss(10,10-Expected) then Passed = TRUE
+endfunction Passed
+
+function DamageRunSelfTest()
+    local Passed as integer
+    local Armor as integer
+    local Kind as integer
+    local Resistance as integer
+    local Expected as integer
+    local Profile as TDamageResistance
+    local Health as THealth
+    local Origin as TDamageOrigin
+    local Result as TDamageResult
+    local AfterHP as integer
+    Passed = 0
+    // Test all 20 loaded matrix cells with an exact 100-point input.
+    for Armor = 0 to 4
+        for Kind = 1 to 4
+            Resistance = DamageArmorResistance(Armor,Kind)
+            Expected = 100-Resistance
+            Passed = Passed+DamageTestCase(100,0,Resistance,0,Expected)
+        next Kind
+    next Armor
+    Passed = Passed+DamageTestCase(20,0,75,50,13)
+    Passed = Passed+DamageTestCase(20,0,75,100,20)
+    Passed = Passed+DamageTestCase(20,0,100,0,0)
+    Passed = Passed+DamageTestCase(20,0,100,100,0)
+    Passed = Passed+DamageTestCase(1,0,75,0,1)
+    Passed = Passed+DamageTestCase(0,0,75,0,0)
+    Passed = Passed+DamageTestCase(20,20,75,0,0)
+    Passed = Passed+DamageTestCase(100,40,50,0,30)
+    DamageResistanceSet(Profile,10,20,30,40)
+    if DamageProfileResistance(Profile,DAMAGE_TYPE_KINETIC) = 10 and DamageProfileResistance(Profile,DAMAGE_TYPE_ENERGY) = 20 and DamageProfileResistance(Profile,DAMAGE_TYPE_EXPLOSION) = 30 and DamageProfileResistance(Profile,DAMAGE_TYPE_FIRE) = 40 then Passed = Passed+1
+    // The first hit must not record a false destruction crossing.
+    Health.State = 15
+    Origin.OwnerId = 123
+    Origin.DamageType = DAMAGE_TYPE_KINETIC
+    AfterHP = DamageApplyHP(Health.State,20,0,Origin,DAMAGE_OBJECT_WALKER,0,50,Result)
+    DamagePrepareDelayedOrigin(Health,Result.HPDamage,Origin)
+    if AfterHP = 5 and Health.PendingDamageOrigin.OwnerId = 0 then Passed = Passed+1
+    Health.State = AfterHP
+    AfterHP = DamageApplyHP(Health.State,20,0,Origin,DAMAGE_OBJECT_WALKER,0,50,Result)
+    DamagePrepareDelayedOrigin(Health,Result.HPDamage,Origin)
+    if AfterHP = -5 and Health.PendingDamageOrigin.OwnerId = 123 then Passed = Passed+1
+    DamageTestSummary = " | selftest "+Str(Passed)+"/31 | JSON "+Str(DamageArmorConfigLoaded)
+endfunction
+
 function DamageTraceToggle()
     if DamageTraceEnabled = TRUE
         DamageTraceEnabled = FALSE
     else
+        DamageRunSelfTest()
         DamageTraceEnabled = TRUE
     endif
 endfunction
@@ -348,6 +415,6 @@ function DamageTraceDraw()
         SetTextColor(DamageTraceText,255,255,255,255)
         SetTextPosition(DamageTraceText,8,100)
     endif
-    SetTextString(DamageTraceText,"B02 PREP CSV ON  #"+Str(DamageTraceSequence))
+    SetTextString(DamageTraceText,"B02 CSV ON  #"+Str(DamageTraceSequence)+DamageTestSummary)
     DrawText(DamageTraceText)
 endfunction

@@ -260,7 +260,7 @@ Gesamtschätzung: eine Woche nach Erfahrung des Entwicklers, keine künstliche A
 
 **Abnahme:** Alle Matrixkombinationen korrekt, 100 % Immunität auch bei AP wirksam, unabhängige Resistenzen, konfigurierbare Matrix ohne Codeänderung, Schild und Treffermechanik erhalten.
 
-**Freigegebene Startzuordnung:** Walker/Flak/Flarak massiv, Orb/Drohne Energie, intelligente Mine/Bomber Verbund; einfache Mine, Landmine, Kiste und Jumppod ungepanzert. Geschosse und Granatendirekttreffer kinetisch, Plasmablitz/Laser Energie, Flammen Feuer, Bomben/Raketen/Explosionen explosiv; vorhandene Quellen AP 0. Unmittelbare Zerstörungen und Abfangen bleiben unverändert. B02ab bereitet Daten und Diagnose ohne HP-Reduktion vor; lokale AGK-Abnahme steht aus.
+**Freigegebene Startzuordnung:** Walker/Flak/Flarak massiv, Orb/Drohne Energie, intelligente Mine/Bomber Verbund; einfache Mine, Landmine, Kiste und Jumppod ungepanzert. Geschosse und Granatendirekttreffer kinetisch, Plasmablitz/Laser Energie, Flammen Feuer, Bomben/Raketen/Explosionen explosiv; vorhandene Quellen AP 0. Unmittelbare Zerstörungen und Abfangen bleiben unverändert. B02ab lokal AGK-bestanden (10/10, 0ebecb5). B02c aktiviert die Schadensreduktion zentral nach Schild; lokale Abnahme ausstehend.
 
 ### B03 – Explosionen und Druckwellen
 
