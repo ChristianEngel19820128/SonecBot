@@ -30,6 +30,34 @@
 #constant TYPEENEMY 3
 
 
+// B01: value snapshots, independent of live object slots.
+// Zero-initialized origin is unknown; no implicit player credit.
+type TDamageOrigin
+    OwnerKind as integer
+    OwnerId as integer
+    SourceKind as integer
+    SourceId as integer
+endtype
+
+type TDamageResult
+    Origin as TDamageOrigin
+    TargetKind as integer
+    TargetId as integer
+    RequestedDamage as integer
+    ShieldAbsorbed as integer
+    HealthBefore as integer
+    HealthAfter as integer
+    EffectiveHealthLoss as integer
+endtype
+
+type TDamageDestruction
+    Origin as TDamageOrigin
+    TargetKind as integer
+    TargetId as integer
+    EffectiveHealthLoss as integer
+    TimeMs as integer
+endtype
+
 type TPosition
 	x as float
 	y as float

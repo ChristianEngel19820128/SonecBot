@@ -119,6 +119,7 @@ function GameInit(Game ref as TGame,Now as integer)
 
 	local Position as TPosition
 
+	DamageReset()
 	Game.IsPause = FALSE
 	Game.IsLost = FALSE
     Game.TouchdownUntilMs = Now+TOUCHDOWN_COUNTDOWN_MS
