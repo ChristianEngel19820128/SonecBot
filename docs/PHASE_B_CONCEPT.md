@@ -46,7 +46,7 @@ Effektiver Schaden an einem intakten Körperteil reduziert gleichzeitig dessen H
 | Turm erreicht null HP | Neutralisierung, Absenken und Zusammenbruch zum passiven Wrack |
 | Korpus oder Gesamt-HP erreichen null | Sofortige Kernexplosion und vollständige Entfernung |
 
-Priorität bei gleichzeitigem Schaden: Kernexplosion vor Neutralisierung vor Immobilisierung. Keine weiterlaufenden entwaffneten Walker. Das Wrack bleibt mit seinen HP und Panzerungen beschädigbar; spätere Korpus-/Gesamtzerstörung löst die Kernexplosion aus.
+Priorität bei gleichzeitigem Schaden: Kernexplosion vor Neutralisierung vor Immobilisierung. Bei mehreren Körperteilschäden desselben Schadensereignisses (insbesondere einer Druckwelle innerhalb desselben Verarbeitungsschritts) die Zustandspriorität über alle betroffenen Teile hinweg wahren; keine mehrfachen funktionalen Übergänge oder Boni durch die Reihenfolge einzelner Treffer. Keine weiterlaufenden entwaffneten Walker. Das Wrack bleibt mit seinen HP und Panzerungen beschädigbar; spätere Korpus-/Gesamtzerstörung löst die Kernexplosion aus.
 
 #### Trefferzonen
 
@@ -134,7 +134,7 @@ HUD: vorhandene Balkengrafiken weiterverwenden, farblich differenzieren, verklei
 
 Erfahrung innerhalb eines Spieldurchlaufs permanent kumuliert, nicht ausgebbar. Materielle Belohnungen und Gefahrenentlastung sind getrennte Systeme.
 
-- Schaden: tatsächlicher HP-Verlust nach Schadensreduktion, kein Overkill, Schildschaden, wirkungsloser Treffer oder Fehlschuss. Erneut verlorene regenerierte HP zählen erneut; kein separater XP-Deckel pro Gegner. Walker nur Gesamt-HP-Verlust, keine doppelte Anrechnung von Körperteil-HP.
+- Schaden: Nur tatsächlicher HP-Verlust nach Schadensreduktion zählt. Overkill, Schildschaden, wirkungslose Treffer und Fehlschüsse erzeugen keine XP. Erneut verlorene regenerierte HP zählen erneut; kein separater XP-Deckel pro Gegner. Walker nur Gesamt-HP-Verlust, keine doppelte Anrechnung von Körperteil-HP.
 - Ressourcen und Heilung: tatsächliche wirksame Menge; bei Fallback nur dessen tatsächliche Wirkung. Permanente Upgrades: definierter XP-Wert je wirksamer Verbesserung.
 - Taktische Boni: einmalig für Walker-Immobilisierung und vorgesehene Gegnerneutralisierung; kein erneuter Bonus beim Wrack. Natürliches Verlassen der Welt erzeugt keine XP.
 - Verursacherprinzip: ursprünglicher Verursacher bei Kettenreaktionen erhalten; konfigurierbare Faktoren, konkrete Werte noch nicht beschlossen.
@@ -149,9 +149,9 @@ G = Summe der vorzeichenbehafteten Gefahr aller aktiven relevanten Weltobjekte; 
 
 Vor jedem Versuch G vollständig neu berechnen, keine persistente Gefahrenbuchhaltung. Ein zentraler framerateunabhängiger, konfigurierbarer Timer auf Basis aktiver virtueller Spielzeit; nach jedem Versuch (auch Ablehnung) nächstes Intervall. Zufälliger Kandidat aus zentraler Liste; bei Ablehnung kein unmittelbarer Ersatz. Keine levelabhängige Gewichtung oder künstlichen Gegnerzahlgrenzen, auch nicht für Drohnen. Bomber bleibt technische Einzelinstanz. Notwendige Platzierungsbedingungen bleiben bestehen. Dekorative Wolken/Türme separat verwalten.
 
-Objekttypbezogene, feste konfigurierbare Gefahrenwerte, unabhängig von Rest-HP und Level. Positive Bedrohungen (z. B. Minen, Flak, Walker), negative unterstützende Objekte (Platten, Kisten, Jumppods). Immobilisierter Walker reduzierte Gefahr, Wrack null. Plattform samt geplanter Aufbauten ist ein gemeinsamer Kandidat mit Summe der Werte; keine zweite Budgetprüfung einzelner Aufbauten. Nach Erzeugung aktuelle Einzelzustände zählen. Projektile, aktive Bomben und Explosionen vorerst nicht in der Gefahr enthalten. Plattformlebenszyklen und Instanzidentitäten beachten; frei erzeugte Sammelobjekte in zentraler Spawnverwaltung, genaue Gefahrenbewertung noch festzulegen.
+Objekttypbezogene, feste konfigurierbare Gefahrenwerte, unabhängig von Rest-HP und Level. Positive Bedrohungen (z. B. Minen, Flak, Walker), negative unterstützende Objekte (Platten, Kisten, Jumppods). Immobilisierter Walker reduzierte Gefahr, Wrack null. Plattform samt geplanter Aufbauten ist ein gemeinsamer Kandidat mit Summe der Werte; keine zweite Budgetprüfung einzelner Aufbauten. Die tatsächlich erzeugte Zusammensetzung muss der geprüften Zusammensetzung entsprechen; nach Freigabe keine erneute zufällige Auswahl der Aufbauten. Nach Erzeugung aktuelle Einzelzustände zählen. Projektile, aktive Bomben und Explosionen vorerst nicht in der Gefahr enthalten. Plattformlebenszyklen und Instanzidentitäten beachten; frei erzeugte Sammelobjekte in zentraler Spawnverwaltung, genaue Gefahrenbewertung noch festzulegen.
 
-E entsteht ausschließlich durch tatsächliche Reduzierung positiver Gefahr infolge Bekämpfung/funktionaler Einschränkung. Gefahrenreduktion × eigener Entlastungsfaktor × eigener Verursacherfaktor (unabhängig von XP). Mehrere Entlastungen addieren, linear zeitabhängig bis null abbauen, keine Obergrenze, phasenübergreifend. Natürliches Verlassen erzeugt keine Entlastung; Zerstörung eines hilfreichen Objekts entfernt dessen negativen Wert, erhöht G und verändert E nicht. Kein pauschaler Spawnstopp. Bei negativen Budgets gelten unverändert die beiden Freigabebedingungen.
+E entsteht ausschließlich durch tatsächliche Reduzierung positiver Gefahr infolge Bekämpfung/funktionaler Einschränkung. Gefahrenreduktion × eigener Entlastungsfaktor × eigener Verursacherfaktor (unabhängig von XP). Bei einem unmittelbaren Zustandsübergang (z. B. aktiver Walker direkt zur vollständigen Zerstörung) die tatsächliche positive Gefahrenreduktion nur einmal anrechnen; keine zusätzlichen Entlastungen für übersprungene Zwischenzustände. Mehrere Entlastungen addieren, linear zeitabhängig bis null abbauen, keine Obergrenze, phasenübergreifend. Natürliches Verlassen erzeugt keine Entlastung; Zerstörung eines hilfreichen Objekts entfernt dessen negativen Wert, erhöht G und verändert E nicht. Kein pauschaler Spawnstopp. Bei negativen Budgets gelten unverändert die beiden Freigabebedingungen.
 
 Belastungs-/Erholungsphasen mit statischen konfigurierbaren Dauern; Budget beider Phasen wächst mit Level. Keine dynamische Dauer oder Neustart beim Levelaufstieg. Pause friert Timer ein; neuer Durchlauf initialisiert sämtliche Zustände neu.
 
@@ -214,7 +214,7 @@ Beta bzw. spätere Phase: physische Walker-Hindernisse/Deckung, Hinken, zusätzl
 
 ## 7. Technische Abhängigkeiten
 
-Empfohlene und freigegebene Reihenfolge B01 bis B13. B01 schafft zentrale Schadens- und Ereignisgrundlage; B02 ergänzt Panzerung; B03 stellt Druckwellen bereit; B04/B05 nutzen diese für Walker. B06 schafft Aufnahmelogik; B07 benötigt B03 und B06, B08 B02 und B06. B09 bindet die Ereignisse aus B01–B08 an XP/Level an. B10 stellt Drohnenmehrinstanzfähigkeit her und integriert die dann vorhandenen Schadens-/XP-Pfade. B11 nutzt B05/B10; B12 setzt B09/B11 voraus; B13 folgt allen Paketen.
+Empfohlene und freigegebene Reihenfolge B01 bis B13. B01 schafft zentrale Schadens- und Ereignisgrundlage; B02 ergänzt Panzerung; B03 stellt Druckwellen bereit; B04/B05 nutzen diese für Walker. B06 schafft Aufnahmelogik; B07 benötigt B03 und B06, B08 B02 und B06. B09 bindet die Ereignisse aus B01–B08 an XP/Level an. B10 setzt B01, B02 und B09 voraus, stellt Drohnenmehrinstanzfähigkeit her und integriert die vorhandenen Schadens-/XP-Pfade. B11 nutzt B05/B10; B12 setzt B09/B11 voraus; B13 folgt allen Paketen.
 
 B01 und B02 bewusst getrennt: zunächst Verhaltensparität, erst danach neue Schadensregeln. B04 und B05 bewusst getrennt: funktionale Zustände zunächst eingefroren, danach endgültige Animationen. B11 und B12 bewusst getrennt: technische Erzeugung zuerst, Freigabeentscheidung anschließend. Keine dauerhaften Übergangssysteme. Kontrollierte Testbestände/-auslöser nur soweit zur Abnahme erforderlich.
 
@@ -231,7 +231,7 @@ B01 und B02 bewusst getrennt: zunächst Verhaltensparität, erst danach neue Sch
 | B07 | Munitionsarten und barrierearmes HUD | B02, B03, B06 | Mittel |
 | B08 | Permanente Upgrades | B02, B06 | Mittel bis hoch |
 | B09 | Erfahrung und Levelsystem | B01–B08 | Mittel |
-| B10 | Mehrinstanzfähigkeit der Drohne | B01, B02; in Reihenfolge nach B09 | Hoch |
+| B10 | Mehrinstanzfähigkeit der Drohne | B01, B02, B09 | Hoch |
 | B11 | Zentrale Spawnverwaltung | B05, B10 | Hoch |
 | B12 | Gefahrenbudget und Belastungsphasen | B09, B11 | Mittel |
 | B13 | Abschließende Quellcodebereinigung | B01–B12 | Mittel |
@@ -242,7 +242,7 @@ Gesamtschätzung: eine Woche nach Erfahrung des Entwicklers, keine künstliche A
 
 **Ziel:** Gemeinsame Schadensgrundlage bei unverändertem bestehendem Spielverhalten.
 
-**Umfang:** Aktive kampfbezogene Schadenspfade vollständig erfassen; zentrale Schnittstelle, tatsächlicher HP-Verlust, getrennte Schildabsorption, Verursacherinformation auch bei verzögerter Zerstörung und Kettenreaktion. Ereignisse für spätere XP/Entlastung vorbereiten. Bestehende Geometrie, Priorität, Intervalle, Schadenswerte und Drops erhalten.
+**Umfang:** Aktive kampfbezogene Schadenspfade vollständig erfassen; zentrale Schnittstelle, tatsächlicher HP-Verlust, getrennte Schildabsorption, Verursacherinformation auch bei verzögerter Zerstörung und Kettenreaktion. Ereignisse für spätere XP/Entlastung vorbereiten. Bestehende Geometrie, Priorität, Intervalle, Schadenswerte und Drops erhalten. Den tatsächlich anrechenbaren HP-Verlust getrennt von der bisherigen internen HP-Verarbeitung bestimmen; keine vorzeitige Änderung bestehender HP-Grenzen oder Zerstörungsschwellen.
 
 **Abgrenzung:** Keine neuen Schadensarten, Panzerung, Druckwellen, Walker-Teile, Munition, XP oder Entlastung. Überladung und weitere nicht kampfbezogene Verluste eindeutig abgrenzen, nicht unbeabsichtigt verändern.
 
@@ -346,9 +346,9 @@ Gesamtschätzung: eine Woche nach Erfahrung des Entwicklers, keine künstliche A
 
 **Umfang:** Konfigurierbarer Timer, Kandidatenliste, Zufallsauswahl, Vorbereitung/Prüfung/Erzeugung trennen, Plattform samt Kisten/Walker/Flak/Jumppod und gegebenenfalls weiteren Aufbauten als Einheit planen, Orbs, intelligente/einfache Minen, Drohnen, Bomberstart und freie Pickups zentral anbinden. Künstliche Limits/alte Scheduler deaktivieren; technische Platzierung und Bomber-Einzelinstanz erhalten. Dekoration separat. Freigabeschnittstelle für B12.
 
-**Abgrenzung:** Gefahr, Entlastung, Phasen B12; keine Levelgewichtung; alte ungenutzte Funktionen B13; endgültige Chancen Balancing. Bis B12 kontrollierte Freigabebedingungen, kein provisorisches Schwierigkeitssystem.
+**Abgrenzung:** Gefahr, Entlastung, Phasen B12; keine Levelgewichtung; alte ungenutzte Funktionen B13; endgültige Chancen Balancing. Bis B12 kontrollierte Freigabebedingungen, die unkontrollierte Gegnererzeugung verhindern; keine unbeschränkte reguläre Spawnfreigabe und kein provisorisches Schwierigkeitssystem. Konkrete Testbedingungen vor Aktivierung abstimmen.
 
-**Abnahme:** Alle Kandidaten zentral erzeugbar, framerateunabhängige Intervalle nach Erfolg/Ablehnung, kein Ersatzkandidat, zusammengesetzte Kandidaten vor Erzeugung bewertbar, technische Platzierung, reguläre Mehrdrohnen, keine künstlichen Gegnerlimits, bestehende Angriffsabläufe, keine Spawns in Pause. Risiko: bisher Aufbauten erst nach Plattenerzeugung; Minenformationen und Bomber-Warnphase prüfen.
+**Abnahme:** Alle Kandidaten zentral erzeugbar, framerateunabhängige Intervalle nach Erfolg/Ablehnung, kein Ersatzkandidat, zusammengesetzte Kandidaten vor Erzeugung bewertbar und geprüfte Zusammensetzung bei Erzeugung unverändert, technische Platzierung, reguläre Mehrdrohnen, keine künstlichen Gegnerlimits, bestehende Angriffsabläufe, keine Spawns in Pause. Risiko: bisher Aufbauten erst nach Plattenerzeugung; Minenformationen und Bomber-Warnphase prüfen.
 
 ### B12 – Gefahrenbudget und Belastungsphasen
 
@@ -358,7 +358,7 @@ Gesamtschätzung: eine Woche nach Erfahrung des Entwicklers, keine künstliche A
 
 **Abgrenzung:** Keine Sonderbehandlung negativer Budgets (keine Nullbegrenzung), keine Projektile/Bomben/Explosionen im Pflichtumfang, keine dynamischen Phasendauern/Levelgewichtung/erzwungene Füllung/Entfernung. Parameter Balancing.
 
-**Abnahme:** Exakt `G < B-E` und `P <= B-E` einschließlich negativer Werte, Überschreitung nach Spawn erlaubt; Walkerzustände, negative Weltobjekte, natürliche Abgänge ohne Entlastung, kumulative Entlastung/Abbau, Phasenwechsel, Level ohne Reset, Pause/Neustart korrekt.
+**Abnahme:** Exakt `G < B-E` und `P <= B-E` einschließlich negativer Werte, Überschreitung nach Spawn erlaubt; Walkerzustände ohne mehrfache Entlastung bei direkten Zustandsübergängen, negative Weltobjekte, natürliche Abgänge ohne Entlastung, kumulative Entlastung/Abbau, Phasenwechsel, Level ohne Reset, Pause/Neustart korrekt.
 
 ### B13 – Abschließende Quellcodebereinigung
 
@@ -384,10 +384,10 @@ Gesamtschätzung: eine Woche nach Erfahrung des Entwicklers, keine künstliche A
 | Upgrade-Grafiken, Schritte/Maxima, Resistenzkurve, unabhängige Plasma-Skalierung und Flammenstreuung | B08; Werte Balancing |
 | XP-Faktoren und Attribution, Schwellenkurve, Überlebensbetrag und Levelanzeige | B09; Werte Balancing |
 | Drohnenschild als separate Idee ohne freigegebenes Paket | Separate Entscheidung |
-| Kandidatenliste/-gewichtung, Minenformationen, Plattformaufbauten, technische Platzierung, Bomber-Warnphase und freie Pickups | B11 |
+| Kandidatenliste und allgemeine Spawnwahrscheinlichkeiten (keine levelabhängige Gewichtung), Minenformationen, Plattformaufbauten, technische Platzierung, Bomber-Warnphase und freie Pickups | B11 |
 | Konkrete Gefahrenwerte, Phasenbudget/-dauer, Entlastungs-/Verursacherfaktoren, Abbaurate | B12; Werte Balancing |
 | Bereinigungsumfang und Regressionstestliste | B13 |
 
 Nicht als bereits entschieden behandeln: konkrete numerische Balancingwerte außerhalb ausdrücklich beschlossener Matrix/Resistenzgrenze und Standard-Überlebensintervall, zusätzliche optionale Fallbacks, neue Boss- oder Schildmechaniken. Offene Punkte vor Umsetzung mit dem Entwickler abstimmen, soweit sie über reine technische Ausgestaltung hinausgehen.
 
-**Dokumentstatus:** Inhaltliche Planung freigegeben, dokumentarische Zusammenführung zur abschließenden Prüfung. Keine Repository-Änderungen, keine Tests im Rahmen der Konzepterstellung ausgeführt. Nach Übernahme ins Repository als Grundlage für B01 und die nachfolgenden Implementierungschats verwenden.
+**Dokumentstatus:** Konzeptphase abgeschlossen; Gesamtkonzept und Arbeitspakete B01–B13 freigegeben, Dokument im Branch `develop` hinterlegt und auf Konsistenz geprüft. Ausschließlich dokumentarische Änderungen, keine Quellcodeänderungen und keine praktischen Tests im Rahmen der Konzeptphase. Nächster Schritt: B01 in einem neuen Implementierungschat nach Prüfung des aktuellen Quellcodebestands und Freigabe des konkreten Implementierungsplans.
