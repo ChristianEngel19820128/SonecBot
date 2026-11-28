@@ -561,7 +561,7 @@ function BomberTakeDamage(Bomber ref as TBomber,Game ref as TGame,Damage as inte
     local i as integer
     local Position as TPosition
     if Bomber.Enabled = FALSE then exitfunction
-    Bomber.Health = Bomber.Health-Damage
+    Bomber.Health = DamageApplyDirectValue(Bomber.Health,Damage,Origin,DAMAGE_OBJECT_BOMBER,Bomber.FlameTargetId)
     Bomber.HitFlashUntil = Now+BOMBER_HIT_FLASH_MS
     if Bomber.Health <= 0
         Position = Bomber.Position

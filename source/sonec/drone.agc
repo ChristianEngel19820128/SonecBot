@@ -193,7 +193,7 @@ endfunction
 // D5a: shared entry point for all player weapons.
 function DroneTakeDamage(Drone ref as TDrone,Damage as integer,Origin ref as TDamageOrigin)
     if Drone.Enabled = TRUE and Damage > 0
-        Drone.Health.State = Drone.Health.State-Damage
+        Drone.Health.State = DamageApplyDirectValue(Drone.Health.State,Damage,Origin,DAMAGE_OBJECT_DRONE,Drone.FlameTargetId)
         DroneHitFlashUntilMs = GetMilliseconds()+DRONE_HIT_FLASH_MS
         if Drone.Health.State <= 0
             Drone.Health.State = 0

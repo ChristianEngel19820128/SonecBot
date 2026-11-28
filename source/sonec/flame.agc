@@ -236,8 +236,7 @@ function FlameCollideOrbs(FlameList ref as TFlameList,OrbList ref as TOrbList,No
 					Radius = CalcRadius(FlameList.Flame[i].ObjectData.Position,OrbList.Orb[k].ObjectData.Position)
 					if Radius < FlameRadius + OrbList.Orb[k].ObjectData.Radius
 						if FlameCanDamage(FlameList.Flame[i],OrbList.Orb[k].FlameTargetId,Now) = TRUE
-							DamagePrepareDelayedOrigin(OrbList.Orb[k].Health,FlameList.Flame[i].BulletData.Damage,FlameList.Flame[i].BulletData.DamageOrigin)
-							OrbList.Orb[k].Health.State = OrbList.Orb[k].Health.State - FlameList.Flame[i].BulletData.Damage
+							DamageApplyDelayedHealth(OrbList.Orb[k].Health,FlameList.Flame[i].BulletData.Damage,FlameList.Flame[i].BulletData.DamageOrigin,DAMAGE_OBJECT_ORB,OrbList.Orb[k].FlameTargetId)
 							ColorSet(OrbList.Orb[k].SpriteData.Color,255,0,0,255)
 						endif
 					endif
@@ -252,7 +251,7 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function FlameCollideMine(FlameList ref as TFlameList,MineList ref as TMineList,Now as integer)
+function FlameCollideMine(FlameList ref as TFlameList,MineList ref as TMineList,Now as integer,MineKind as integer)
 	
 	local i as integer
 	local k as integer
@@ -267,8 +266,7 @@ function FlameCollideMine(FlameList ref as TFlameList,MineList ref as TMineList,
 					Radius = CalcRadius(FlameList.Flame[i].ObjectData.Position,MineList.Mine[k].ObjectData.Position)
 					if Radius < FlameRadius + MineList.Mine[k].ObjectData.Radius
 						if FlameCanDamage(FlameList.Flame[i],MineList.Mine[k].FlameTargetId,Now) = TRUE
-							DamagePrepareDelayedOrigin(MineList.Mine[k].Health,FlameList.Flame[i].BulletData.Damage,FlameList.Flame[i].BulletData.DamageOrigin)
-							MineList.Mine[k].Health.State = MineList.Mine[k].Health.State - FlameList.Flame[i].BulletData.Damage
+							DamageApplyDelayedHealth(MineList.Mine[k].Health,FlameList.Flame[i].BulletData.Damage,FlameList.Flame[i].BulletData.DamageOrigin,MineKind,MineList.Mine[k].FlameTargetId)
 							ColorSet(MineList.Mine[k].SpriteData.Color,255,0,0,255)
 						endif
 					endif
@@ -305,8 +303,7 @@ function FlameCollideChest(FlameList ref as TFlameList,ChestList ref as TChestLi
 					if NearestPoint.y > ChestList.Chest[k].CollisionData.Position2.y then NearestPoint.y = ChestList.Chest[k].CollisionData.Position2.y
 					if CalcRadius(FlameList.Flame[i].ObjectData.Position,NearestPoint) <= Radius
 						if FlameCanDamage(FlameList.Flame[i],ChestList.Chest[k].FlameTargetId,Now) = TRUE
-							DamagePrepareDelayedOrigin(ChestList.Chest[k].Health,FlameList.Flame[i].BulletData.Damage,FlameList.Flame[i].BulletData.DamageOrigin)
-							ChestList.Chest[k].Health.State = ChestList.Chest[k].Health.State - FlameList.Flame[i].BulletData.Damage
+							DamageApplyDelayedHealth(ChestList.Chest[k].Health,FlameList.Flame[i].BulletData.Damage,FlameList.Flame[i].BulletData.DamageOrigin,DAMAGE_OBJECT_CHEST,ChestList.Chest[k].FlameTargetId)
 							ColorSet(ChestList.Chest[k].SpriteData.Color,255,0,0,255)
 						endif
 					endif
@@ -342,8 +339,7 @@ function FlameCollideWalkers(FlameList ref as TFlameList,WalkerList ref as TWalk
 					if NearestPoint.y > WalkerList.Walker[k].WalkerCollisionData.Tower.Position2.y then NearestPoint.y = WalkerList.Walker[k].WalkerCollisionData.Tower.Position2.y
 					if CalcRadius(FlameList.Flame[i].ObjectData.Position,NearestPoint) <= Radius
 						if FlameCanDamage(FlameList.Flame[i],WalkerList.Walker[k].FlameTargetId,Now) = TRUE
-							DamagePrepareDelayedOrigin(WalkerList.Walker[k].Health,FlameList.Flame[i].BulletData.Damage,FlameList.Flame[i].BulletData.DamageOrigin)
-							WalkerList.Walker[k].Health.State = WalkerList.Walker[k].Health.State - FlameList.Flame[i].BulletData.Damage
+							DamageApplyDelayedHealth(WalkerList.Walker[k].Health,FlameList.Flame[i].BulletData.Damage,FlameList.Flame[i].BulletData.DamageOrigin,DAMAGE_OBJECT_WALKER,WalkerList.Walker[k].FlameTargetId)
 							WalkerList.Walker[k].HitFlashUntil = Now + 150
 							ColorSet(WalkerList.Walker[k].WalkerSpriteData.Tower.Color,255,0,0,255)
 						endif

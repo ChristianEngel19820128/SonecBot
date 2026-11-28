@@ -616,27 +616,23 @@ function BulletCollidePlayerTargets(BulletList ref as TBulletList,OrbList ref as
                 BulletDelete(BulletList,i)
             endif
             if BestType = 1
-                DamagePrepareDelayedOrigin(OrbList.Orb[BestIndex].Health,BulletList.Bullet[i].BulletData.Damage,BulletList.Bullet[i].BulletData.DamageOrigin)
-                OrbList.Orb[BestIndex].Health.State = OrbList.Orb[BestIndex].Health.State - BulletList.Bullet[i].BulletData.Damage
+                DamageApplyDelayedHealth(OrbList.Orb[BestIndex].Health,BulletList.Bullet[i].BulletData.Damage,BulletList.Bullet[i].BulletData.DamageOrigin,DAMAGE_OBJECT_ORB,OrbList.Orb[BestIndex].FlameTargetId)
                 ColorSet(OrbList.Orb[BestIndex].SpriteData.Color,255,0,0,255)
                 BulletDelete(BulletList,i)
             endif
             if BestType = 2
-                DamagePrepareDelayedOrigin(WalkerList.Walker[BestIndex].Health,BulletList.Bullet[i].BulletData.Damage,BulletList.Bullet[i].BulletData.DamageOrigin)
-                WalkerList.Walker[BestIndex].Health.State = WalkerList.Walker[BestIndex].Health.State - BulletList.Bullet[i].BulletData.Damage
+                DamageApplyDelayedHealth(WalkerList.Walker[BestIndex].Health,BulletList.Bullet[i].BulletData.Damage,BulletList.Bullet[i].BulletData.DamageOrigin,DAMAGE_OBJECT_WALKER,WalkerList.Walker[BestIndex].FlameTargetId)
                 WalkerList.Walker[BestIndex].HitFlashUntil = Now + 150
                 ColorSet(WalkerList.Walker[BestIndex].WalkerSpriteData.Tower.Color,255,0,0,255)
                 BulletDelete(BulletList,i)
             endif
             if BestType = 3
-                DamagePrepareDelayedOrigin(MineList.Mine[BestIndex].Health,BulletList.Bullet[i].BulletData.Damage,BulletList.Bullet[i].BulletData.DamageOrigin)
-                MineList.Mine[BestIndex].Health.State = MineList.Mine[BestIndex].Health.State - BulletList.Bullet[i].BulletData.Damage
+                DamageApplyDelayedHealth(MineList.Mine[BestIndex].Health,BulletList.Bullet[i].BulletData.Damage,BulletList.Bullet[i].BulletData.DamageOrigin,DAMAGE_OBJECT_SMART_MINE,MineList.Mine[BestIndex].FlameTargetId)
                 ColorSet(MineList.Mine[BestIndex].SpriteData.Color,255,0,0,255)
                 BulletDelete(BulletList,i)
             endif
             if BestType = 4
-                DamagePrepareDelayedOrigin(SimpleMineList.Mine[BestIndex].Health,BulletList.Bullet[i].BulletData.Damage,BulletList.Bullet[i].BulletData.DamageOrigin)
-                SimpleMineList.Mine[BestIndex].Health.State = SimpleMineList.Mine[BestIndex].Health.State - BulletList.Bullet[i].BulletData.Damage
+                DamageApplyDelayedHealth(SimpleMineList.Mine[BestIndex].Health,BulletList.Bullet[i].BulletData.Damage,BulletList.Bullet[i].BulletData.DamageOrigin,DAMAGE_OBJECT_SIMPLE_MINE,SimpleMineList.Mine[BestIndex].FlameTargetId)
                 ColorSet(SimpleMineList.Mine[BestIndex].SpriteData.Color,255,0,0,255)
                 BulletDelete(BulletList,i)
             endif
@@ -645,8 +641,7 @@ function BulletCollidePlayerTargets(BulletList ref as TBulletList,OrbList ref as
                 BulletDelete(BulletList,i)
             endif
             if BestType = 5
-                DamagePrepareDelayedOrigin(ChestList.Chest[BestIndex].Health,BulletList.Bullet[i].BulletData.Damage,BulletList.Bullet[i].BulletData.DamageOrigin)
-                ChestList.Chest[BestIndex].Health.State = ChestList.Chest[BestIndex].Health.State - BulletList.Bullet[i].BulletData.Damage
+                DamageApplyDelayedHealth(ChestList.Chest[BestIndex].Health,BulletList.Bullet[i].BulletData.Damage,BulletList.Bullet[i].BulletData.DamageOrigin,DAMAGE_OBJECT_CHEST,ChestList.Chest[BestIndex].FlameTargetId)
                 ColorSet(ChestList.Chest[BestIndex].SpriteData.Color,255,0,0,255)
                 BulletDelete(BulletList,i)
             endif

@@ -698,7 +698,7 @@ endfunction
 
 function FlarakApplyDamage(F ref as TFlarak,Game ref as TGame,Damage as integer,NowMs as integer,Origin ref as TDamageOrigin)
     if F.Enabled = FALSE or F.Destroyed = TRUE or Damage <= 0 then exitfunction
-    F.Health = F.Health-Damage
+    F.Health = DamageApplyDirectValue(F.Health,Damage,Origin,DAMAGE_OBJECT_FLARAK,F.FlameTargetId)
     F.HitFlashUntil = NowMs+150
     if F.Health <= 0 then FlarakDestroy(F,Game,NowMs,Origin)
 endfunction

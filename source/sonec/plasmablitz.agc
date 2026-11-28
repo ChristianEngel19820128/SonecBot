@@ -250,8 +250,7 @@ function PlasmaBlitzCollideOrbs(PlasmaBlitzList ref as TPlasmaBlitzList,OrbList 
 						//Radius = CalcRadius(PlasmaBlitzList.PlasmaBlitz[i].ObjectData.Position,OrbList.Orb[k].ObjectData.Position)
 						//if Radius < OrbList.Orb[k].ObjectData.Radius
 							if BoxInBox(PlasmaBlitzList.PlasmaBlitz[i].CollisionData.Position1,PlasmaBlitzList.PlasmaBlitz[i].CollisionData.Position2,OrbList.Orb[k].CollisionData.Position1,OrbList.Orb[k].CollisionData.Position2)
-								DamagePrepareDelayedOrigin(OrbList.Orb[k].Health,PlasmaBlitzList.PlasmaBlitz[i].BulletData.Damage,PlasmaBlitzList.PlasmaBlitz[i].BulletData.DamageOrigin)
-								OrbList.Orb[k].Health.State = OrbList.Orb[k].Health.State - PlasmaBlitzList.PlasmaBlitz[i].BulletData.Damage
+								DamageApplyDelayedHealth(OrbList.Orb[k].Health,PlasmaBlitzList.PlasmaBlitz[i].BulletData.Damage,PlasmaBlitzList.PlasmaBlitz[i].BulletData.DamageOrigin,DAMAGE_OBJECT_ORB,OrbList.Orb[k].FlameTargetId)
 								//PlasmaBlitzDelete(PlasmaBlitzList,i)
 								ColorSet(OrbList.Orb[k].SpriteData.Color,255,0,0,255)
 							endif
@@ -269,7 +268,7 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function PlasmaBlitzCollideMine(PlasmaBlitzList ref as TPlasmaBlitzList,MineList ref as TMineList,Now as integer)
+function PlasmaBlitzCollideMine(PlasmaBlitzList ref as TPlasmaBlitzList,MineList ref as TMineList,Now as integer,MineKind as integer)
 
 	local i as integer
 	local k as integer
@@ -280,8 +279,7 @@ function PlasmaBlitzCollideMine(PlasmaBlitzList ref as TPlasmaBlitzList,MineList
 				for k = 0 to MineList.Mine.Length
 					if MineList.Mine[k].Enabled = TRUE
 						if BoxInBox(PlasmaBlitzList.PlasmaBlitz[i].CollisionData.Position1,PlasmaBlitzList.PlasmaBlitz[i].CollisionData.Position2,MineList.Mine[k].CollisionData.Position1,MineList.Mine[k].CollisionData.Position2)
-							DamagePrepareDelayedOrigin(MineList.Mine[k].Health,PlasmaBlitzList.PlasmaBlitz[i].BulletData.Damage,PlasmaBlitzList.PlasmaBlitz[i].BulletData.DamageOrigin)
-							MineList.Mine[k].Health.State = MineList.Mine[k].Health.State - PlasmaBlitzList.PlasmaBlitz[i].BulletData.Damage
+							DamageApplyDelayedHealth(MineList.Mine[k].Health,PlasmaBlitzList.PlasmaBlitz[i].BulletData.Damage,PlasmaBlitzList.PlasmaBlitz[i].BulletData.DamageOrigin,MineKind,MineList.Mine[k].FlameTargetId)
 							ColorSet(MineList.Mine[k].SpriteData.Color,255,0,0,255)
 						endif
 					endif
@@ -307,8 +305,7 @@ function PlasmaBlitzCollideChest(PlasmaBlitzList ref as TPlasmaBlitzList,ChestLi
 				for k = 0 to ChestList.Chest.Length
 					if ChestList.Chest[k].Enabled = TRUE and WeaponDepthAllows(PlasmaBlitzList.PlasmaBlitz[i].WeaponDepth,PlateList,ChestList.Chest[k].CollisionData.Index,ChestList.Chest[k].IsBackground) = TRUE
 						if BoxInBox(PlasmaBlitzList.PlasmaBlitz[i].CollisionData.Position1,PlasmaBlitzList.PlasmaBlitz[i].CollisionData.Position2,ChestList.Chest[k].CollisionData.Position1,ChestList.Chest[k].CollisionData.Position2)
-							DamagePrepareDelayedOrigin(ChestList.Chest[k].Health,PlasmaBlitzList.PlasmaBlitz[i].BulletData.Damage,PlasmaBlitzList.PlasmaBlitz[i].BulletData.DamageOrigin)
-							ChestList.Chest[k].Health.State = ChestList.Chest[k].Health.State - PlasmaBlitzList.PlasmaBlitz[i].BulletData.Damage
+							DamageApplyDelayedHealth(ChestList.Chest[k].Health,PlasmaBlitzList.PlasmaBlitz[i].BulletData.Damage,PlasmaBlitzList.PlasmaBlitz[i].BulletData.DamageOrigin,DAMAGE_OBJECT_CHEST,ChestList.Chest[k].FlameTargetId)
 							ColorSet(ChestList.Chest[k].SpriteData.Color,255,0,0,255)
 						endif
 					endif
@@ -331,8 +328,7 @@ function PlasmaBlitzCollideWalkers(PlasmaBlitzList ref as TPlasmaBlitzList,Walke
 				for k = 0 to WalkerList.Walker.Length
 					if WalkerList.Walker[k].Enabled = TRUE and WeaponDepthAllows(PlasmaBlitzList.PlasmaBlitz[i].WeaponDepth,PlateList,WalkerList.Walker[k].PlateIndex,FALSE) = TRUE
 						if BoxInBox(PlasmaBlitzList.PlasmaBlitz[i].CollisionData.Position1,PlasmaBlitzList.PlasmaBlitz[i].CollisionData.Position2,WalkerList.Walker[k].WalkerCollisionData.Tower.Position1,WalkerList.Walker[k].WalkerCollisionData.Tower.Position2)
-							DamagePrepareDelayedOrigin(WalkerList.Walker[k].Health,PlasmaBlitzList.PlasmaBlitz[i].BulletData.Damage,PlasmaBlitzList.PlasmaBlitz[i].BulletData.DamageOrigin)
-							WalkerList.Walker[k].Health.State = WalkerList.Walker[k].Health.State - PlasmaBlitzList.PlasmaBlitz[i].BulletData.Damage
+							DamageApplyDelayedHealth(WalkerList.Walker[k].Health,PlasmaBlitzList.PlasmaBlitz[i].BulletData.Damage,PlasmaBlitzList.PlasmaBlitz[i].BulletData.DamageOrigin,DAMAGE_OBJECT_WALKER,WalkerList.Walker[k].FlameTargetId)
 							WalkerList.Walker[k].HitFlashUntil = Now + 150
 							ColorSet(WalkerList.Walker[k].WalkerSpriteData.Tower.Color,255,0,0,255)
 						endif

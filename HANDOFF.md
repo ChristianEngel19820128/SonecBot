@@ -33,7 +33,7 @@
 
 ## Genau ein nächster Schritt
 
-B01b ergänzend implementiert: gemeinsame Schadens-/Verursachertypen, `damage.agc`, begrenzte Ereignis-Snapshots und Reset in `GameInit`. Keine aktiven Schadenspfade umgestellt. Lokaler AGK-Compile für B01b erfolgreich gemeldet (28.11.2026, lokale SHA nicht separat bestätigt). B01c1 lokal erfolgreich kompiliert (28.11.2026, lokale SHA nicht separat bestätigt). B01c2 Zerstörungsattribution ergänzt, Compile offen. B01-Plan freigegeben; nächster Schritt B01d (kontrollierte Aktivierung), danach lokale Abnahme. Phase B gemäß [PHASE_B_CONCEPT.md](docs/PHASE_B_CONCEPT.md); ausschließlich B01 bearbeiten. Vorherige ausführliche Übergabe bleibt im Git-Stand `8e59268` erhalten. Keine neuen Bugbefunde registriert.
+B01b ergänzend implementiert: gemeinsame Schadens-/Verursachertypen, `damage.agc`, begrenzte Ereignis-Snapshots und Reset in `GameInit`. Keine aktiven Schadenspfade umgestellt. Lokaler AGK-Compile für B01b erfolgreich gemeldet (28.11.2026, lokale SHA nicht separat bestätigt). B01c1 lokal erfolgreich kompiliert (28.11.2026, lokale SHA nicht separat bestätigt). B01c2 lokal erfolgreich kompiliert (28.11.2026, lokale SHA nicht separat bestätigt). B01d1 direkte Spielerwaffen zentral aktiviert; Compile und Funktionstest offen. Nächster Schritt B01d2 (Explosionen und Zerstörungsereignisse), danach restliche Aktivierung und lokale Abnahme. Phase B gemäß [PHASE_B_CONCEPT.md](docs/PHASE_B_CONCEPT.md); ausschließlich B01 bearbeiten. Vorherige ausführliche Übergabe bleibt im Git-Stand `8e59268` erhalten. Keine neuen Bugbefunde registriert.
 
 ## Referenzen
 

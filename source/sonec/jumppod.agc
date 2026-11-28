@@ -357,7 +357,10 @@ function JumppodApplyDamage(Index as integer,Game ref as TGame,Damage as integer
     local Blast as TExplosion
     local Impact as TPosition
     if JumppodList[Index].Enabled = FALSE or JumppodList[Index].Destroyed = TRUE or Damage <= 0 then exitfunction
-    JumppodList[Index].Health = JumppodList[Index].Health-Damage
+    local DamageTargetKind as integer
+    DamageTargetKind = DAMAGE_OBJECT_JUMPPOD
+    if JumppodList[Index].ObjectKind = LANDMINE_KIND then DamageTargetKind = DAMAGE_OBJECT_LANDMINE
+    JumppodList[Index].Health = DamageApplyDirectValue(JumppodList[Index].Health,Damage,Origin,DamageTargetKind,JumppodList[Index].FlameTargetId)
     JumppodList[Index].HitFlashUntil = Now+150
     if JumppodList[Index].Health <= 0
         JumppodList[Index].Health = 0

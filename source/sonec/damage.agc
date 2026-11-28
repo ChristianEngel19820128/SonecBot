@@ -1,4 +1,4 @@
-// B01b: passive foundation. No existing combat caller uses these functions yet.
+// B01d1: direct player damage enabled; other paths retain their legacy execution.
 // OwnerKind identifies the original cause; SourceKind the immediate delivery.
 // IDs are value snapshots, never array slot indices.
 #constant DAMAGE_OBJECT_UNKNOWN 0
@@ -116,4 +116,24 @@ endfunction
 function DamageClearDelayedOrigin(Health ref as THealth)
     local EmptyOrigin as TDamageOrigin
     Health.PendingDamageOrigin = EmptyOrigin
+endfunction
+
+// D1 activation: shared target handlers also receive explosions/contact.
+// Leave those paths on their old subtraction until the next activation steps.
+function DamageDirectPlayerEnabled(Origin ref as TDamageOrigin)
+    if Origin.OwnerKind <> DAMAGE_OBJECT_SONEC then exitfunction FALSE
+    if Origin.SourceKind = DAMAGE_SOURCE_BULLET or Origin.SourceKind = DAMAGE_SOURCE_GRENADE or Origin.SourceKind = DAMAGE_SOURCE_FLAME or Origin.SourceKind = DAMAGE_SOURCE_PLASMA then exitfunction TRUE
+endfunction FALSE
+
+function DamageApplyDirectValue(BeforeHP as integer,Damage as integer,Origin ref as TDamageOrigin,TargetKind as integer,TargetId as integer)
+    local Result as TDamageResult
+    local AfterHP as integer
+    if DamageDirectPlayerEnabled(Origin) = FALSE then exitfunction BeforeHP-Damage
+    AfterHP = DamageApplyHP(BeforeHP,Damage,0,Origin,TargetKind,TargetId,Result)
+    DamagePublishHit(Result)
+endfunction AfterHP
+
+function DamageApplyDelayedHealth(Health ref as THealth,Damage as integer,Origin ref as TDamageOrigin,TargetKind as integer,TargetId as integer)
+    DamagePrepareDelayedOrigin(Health,Damage,Origin)
+    Health.State = DamageApplyDirectValue(Health.State,Damage,Origin,TargetKind,TargetId)
 endfunction
