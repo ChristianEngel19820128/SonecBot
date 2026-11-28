@@ -1,4 +1,4 @@
-// B01d2: direct player damage and explosion damage against objects enabled.
+// B01d3: all active combat damage paths use the central foundation.
 // OwnerKind identifies the original cause; SourceKind the immediate delivery.
 // IDs are value snapshots, never array slot indices.
 #constant DAMAGE_OBJECT_UNKNOWN 0
@@ -80,6 +80,7 @@ endfunction Result.HealthAfter
 function DamageApplySonec(Sonec ref as TSonec,Shield ref as TShield,RequestedDamage as integer,Origin ref as TDamageOrigin,TargetId as integer,Now as integer,Result ref as TDamageResult)
     local Absorbed as integer
     Absorbed = ShieldAbsorbDamage(Shield,Sonec,RequestedDamage,Now)
+    DamagePrepareDelayedOrigin(Sonec.Health,RequestedDamage-Absorbed,Origin)
     Sonec.Health.State = DamageApplyHP(Sonec.Health.State,RequestedDamage,Absorbed,Origin,DAMAGE_OBJECT_SONEC,TargetId,Result)
     DamagePublishHit(Result)
 endfunction
@@ -118,18 +119,10 @@ function DamageClearDelayedOrigin(Health ref as THealth)
     Health.PendingDamageOrigin = EmptyOrigin
 endfunction
 
-// D2 activation: explosion damage is enabled regardless of original owner.
-// Other enemy and contact paths retain legacy subtraction until D3.
-function DamageObjectPathEnabled(Origin ref as TDamageOrigin)
-    if Origin.SourceKind = DAMAGE_SOURCE_EXPLOSION then exitfunction TRUE
-    if Origin.OwnerKind <> DAMAGE_OBJECT_SONEC then exitfunction FALSE
-    if Origin.SourceKind = DAMAGE_SOURCE_BULLET or Origin.SourceKind = DAMAGE_SOURCE_GRENADE or Origin.SourceKind = DAMAGE_SOURCE_FLAME or Origin.SourceKind = DAMAGE_SOURCE_PLASMA then exitfunction TRUE
-endfunction FALSE
-
+// All accepted combat HP hits use the same subtraction and event hook.
 function DamageApplyDirectValue(BeforeHP as integer,Damage as integer,Origin ref as TDamageOrigin,TargetKind as integer,TargetId as integer)
     local Result as TDamageResult
     local AfterHP as integer
-    if DamageObjectPathEnabled(Origin) = FALSE then exitfunction BeforeHP-Damage
     AfterHP = DamageApplyHP(BeforeHP,Damage,0,Origin,TargetKind,TargetId,Result)
     DamagePublishHit(Result)
 endfunction AfterHP

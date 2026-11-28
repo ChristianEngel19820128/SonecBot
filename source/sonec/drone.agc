@@ -61,6 +61,7 @@ global DroneNextChargeMs as integer
 global DroneChargeFrame as integer
 global DroneActionRestUntilMs as integer
 global DroneLaserActive as integer
+global DroneLaserDamageOrigin as TDamageOrigin
 global DroneLaserX as float
 global DroneLaserY as float
 global DroneLaserDirection as integer
@@ -163,6 +164,8 @@ function DroneInit(Drone ref as TDrone,Screen as TSize,World ref as TWorld,Now a
     DroneChargeFrame = 1
     DroneActionRestUntilMs = Now
     DroneLaserActive = FALSE
+    local EmptyLaserOrigin as TDamageOrigin
+    DroneLaserDamageOrigin = EmptyLaserOrigin
     DroneLaserX = 0
     DroneLaserY = 0
     DroneLaserDirection = MOVELEFT
@@ -312,6 +315,7 @@ function DroneMove(Drone ref as TDrone,Screen as TSize,Sonec ref as TSonec,Shiel
                 if Sonec.IsLost = FALSE and DroneTargetAcquired = TRUE and ((Drone.Direction = MOVELEFT and TargetDx < 0) or (Drone.Direction = MOVERIGHT and TargetDx > 0))
                     if abs(TargetDy) <= DRONE_SHOT_MAX_Y_DIFFERENCE
                         DroneLaserActive = TRUE
+                        DamageOriginStart(DroneLaserDamageOrigin,DAMAGE_OBJECT_DRONE,Drone.FlameTargetId,DAMAGE_SOURCE_LASER)
                     endif
                 endif
                 DroneTargetAcquired = FALSE
@@ -459,6 +463,7 @@ function DroneLaserResolve(Sonec ref as TSonec,Shield ref as TShield,Screen as T
     local Entry as float
     local Hit as integer
     local HealthBeforeHit as integer
+    local DamageResult as TDamageResult
     if DroneLaserSweepPending = FALSE then exitfunction
     DroneLaserSweepPending = FALSE
     // Preserve a shot already moved this frame even if its drone was
@@ -475,7 +480,7 @@ function DroneLaserResolve(Sonec ref as TSonec,Shield ref as TShield,Screen as T
             DroneLaserActive = FALSE
             DroneLaserHits = DroneLaserHits+1
             HealthBeforeHit = Sonec.Health.State
-            Sonec.Health.State = Sonec.Health.State - (DRONE_LASER_DAMAGE - ShieldAbsorbDamage(Shield,Sonec,DRONE_LASER_DAMAGE,Now))
+            DamageApplySonec(Sonec,Shield,DRONE_LASER_DAMAGE,DroneLaserDamageOrigin,0,Now,DamageResult)
             if Sonec.Health.State < HealthBeforeHit then SonecHitFlashUntil = Now+SONEC_HIT_FLASH_MS
         endif
     endif

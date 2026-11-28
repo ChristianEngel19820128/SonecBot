@@ -387,6 +387,7 @@ function SonecInit(Sonec ref as TSonec,ProtoSonec ref as TProtoSonec,World ref a
 	
 	Sonec.Health.StateMax = 1000
 	Sonec.Health.State = 1000
+    DamageClearDelayedOrigin(Sonec.Health)
 	Sonec.Health.RegRate = 500
 	
 	TimeSet(Sonec.Health.RegenerationTimer,Sonec.Health.RegRate,1)
@@ -443,6 +444,7 @@ function SonecHealthRegenerate(Sonec ref as TSonec,Now as integer)
 		if Sonec.Energy.State > Sonec.Energy.StateMax
 			Overload = Sonec.Energy.State - Sonec.Energy.StateMax
 			Overload = Overload / 100
+			if Sonec.Health.State >= 0 then DamageClearDelayedOrigin(Sonec.Health)
 			Sonec.Health.State = Sonec.Health.State - COSTOVERLOAD * Overload
 		else
 			if Sonec.Health.State + REGHEALTH <= Sonec.Health.StateMax
@@ -455,7 +457,13 @@ function SonecHealthRegenerate(Sonec ref as TSonec,Now as integer)
 		endif
 		TimeReset(Sonec.Health.RegenerationTimer,Now)
 	endif
-	if Sonec.Health.State < 0 then Sonec.IsLost = TRUE
+	if Sonec.Health.State >= 0 then DamageClearDelayedOrigin(Sonec.Health)
+    if Sonec.Health.State < 0
+        if Sonec.IsLost = FALSE and Sonec.Health.PendingDamageOrigin.OwnerKind <> DAMAGE_OBJECT_UNKNOWN
+            DamageRecordDestruction(Sonec.Health.PendingDamageOrigin,DAMAGE_OBJECT_SONEC,0,Now)
+        endif
+        Sonec.IsLost = TRUE
+    endif
 endfunction
 
 //----------------------------------------------------------------------

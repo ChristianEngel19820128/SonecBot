@@ -195,6 +195,7 @@ function EnergieCollect(EnergieList ref as TEnergieList,Sonec ref as TSonec,Warn
 					case 0
 						Sonec.Energy.State = Sonec.Energy.State + EnergieList.Energie[i].Value
 						if Sonec.Energy.State > 1.5*Sonec.Energy.StateMax
+							if Sonec.Health.State >= 0 then DamageClearDelayedOrigin(Sonec.Health)
 							Sonec.Health.State = Sonec.Health.State - ((Sonec.Energy.State + EnergieList.Energie[i].Value)-(Sonec.Energy.State*150/Sonec.Energy.StateMax))
 							Sonec.Energy.State = Sonec.Energy.State*150/Sonec.Energy.StateMax
 						endif						
@@ -214,6 +215,7 @@ function EnergieCollect(EnergieList ref as TEnergieList,Sonec ref as TSonec,Warn
 						if Sonec.Health.State > Sonec.Health.StateMax
 							Sonec.Health.State = Sonec.Health.StateMax
 						endif
+                        if Sonec.Health.State >= 0 then DamageClearDelayedOrigin(Sonec.Health)
                         if Sonec.Health.State > PreviousValue
                             WarningShowPositive(Warning,NOTICE_HEALTH_COLLECTED,NOTICE_PICKUP_COLLECTED_MS,Now)
                         endif

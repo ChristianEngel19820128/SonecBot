@@ -470,6 +470,7 @@ function BomberBombCollideAll(Bomber ref as TBomber,Game ref as TGame,Now as int
     local PlateIndex as integer
     local NewCarrier as integer
     local HealthBeforeHit as integer
+    local DamageResult as TDamageResult
     local MechanicalSlot as integer
 
     for i = 0 to BOMBER_BOMB_COUNT-1
@@ -519,12 +520,13 @@ function BomberBombCollideAll(Bomber ref as TBomber,Game ref as TGame,Now as int
                 Bomber.Bomb[i].Enabled = FALSE
                 if BestType = 1
                     HealthBeforeHit = Game.Sonec.Health.State
-                    Game.Sonec.Health.State = Game.Sonec.Health.State-(BOMBER_BOMB_DIRECT_DAMAGE-ShieldAbsorbDamage(Game.Shield,Game.Sonec,BOMBER_BOMB_DIRECT_DAMAGE,Now))
+                    DamageApplySonec(Game.Sonec,Game.Shield,BOMBER_BOMB_DIRECT_DAMAGE,Bomber.Bomb[i].DamageOrigin,0,Now,DamageResult)
                     if Game.Sonec.Health.State < HealthBeforeHit then SonecHitFlashUntil = Now+SONEC_HIT_FLASH_MS
                     ExplosionAddAttributed(Game.ExplosionList,Game.ProtoExplosion,Game,1,HitPosition,Now,Bomber.Bomb[i].DamageOrigin)
                 endif
                 if BestType = 2
                     PlateIndex = Game.ChestList.Chest[BestIndex].CollisionData.Index
+                    DamageRecordImmediateDestruction(Game.ChestList.Chest[BestIndex].Health.State,Bomber.Bomb[i].DamageOrigin,DAMAGE_OBJECT_CHEST,Game.ChestList.Chest[BestIndex].FlameTargetId,Now)
                     RewardDrop(Game,REWARD_OBJECT_CHEST,Game.ChestList.Chest[BestIndex].ObjectData.Position,Now)
                     ChestDelete(Game.ChestList,BestIndex)
                     // The mechanical pass has finished. Release a destroyed

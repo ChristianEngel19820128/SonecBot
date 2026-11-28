@@ -263,6 +263,7 @@ function MineCollideSonec(MineList ref as TMineList,Sonec ref as TSonec,Game ref
             if Hit = TRUE
                 // A collision destroys the mine and grants its established reward.
                 DamageOriginStart(MineList.Mine[i].Health.PendingDamageOrigin,MineKind,MineList.Mine[i].FlameTargetId,DAMAGE_SOURCE_CONTACT)
+                DamageRecordImmediateDestruction(MineList.Mine[i].Health.State,MineList.Mine[i].Health.PendingDamageOrigin,MineKind,MineList.Mine[i].FlameTargetId,Now)
                 RewardDrop(Game,REWARD_OBJECT_SMART_MINE,MineList.Mine[i].ObjectData.Position,Now)
                 MineDestroy(MineList,i,Game.ExplosionList,Game.ProtoExplosion,Game,MineList.Mine[i].ObjectData.Position,Now)
             endif

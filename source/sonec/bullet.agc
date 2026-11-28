@@ -293,8 +293,9 @@ function BulletCollide(BulletList ref as TBulletList,Sonec ref as TSonec,Shield 
                     else
                     // Keep the established proportional shield protection and health damage.
                     local HealthBeforeHit as integer
+    local DamageResult as TDamageResult
                     HealthBeforeHit = Sonec.Health.State
-                    Sonec.Health.State = Sonec.Health.State - (BulletList.Bullet[i].BulletData.Damage - ShieldAbsorbDamage(Shield,Sonec,BulletList.Bullet[i].BulletData.Damage,Now))
+                    DamageApplySonec(Sonec,Shield,BulletList.Bullet[i].BulletData.Damage,BulletList.Bullet[i].BulletData.DamageOrigin,0,Now,DamageResult)
                     if Sonec.Health.State < HealthBeforeHit then SonecHitFlashUntil = Now + SONEC_HIT_FLASH_MS
                     BulletDelete(BulletList,i)
                     endif
@@ -702,14 +703,12 @@ function BulletCollideMines(BulletList ref as TBulletList,MineList ref as TMineL
             next k
 
             if BestType = 1
-                DamagePrepareDelayedOrigin(MineList.Mine[BestIndex].Health,BulletList.Bullet[i].BulletData.Damage,BulletList.Bullet[i].BulletData.DamageOrigin)
-                MineList.Mine[BestIndex].Health.State = MineList.Mine[BestIndex].Health.State - BulletList.Bullet[i].BulletData.Damage
+                DamageApplyDelayedHealth(MineList.Mine[BestIndex].Health,BulletList.Bullet[i].BulletData.Damage,BulletList.Bullet[i].BulletData.DamageOrigin,DAMAGE_OBJECT_SMART_MINE,MineList.Mine[BestIndex].FlameTargetId)
                 ColorSet(MineList.Mine[BestIndex].SpriteData.Color,255,0,0,255)
                 BulletDelete(BulletList,i)
             endif
             if BestType = 2
-                DamagePrepareDelayedOrigin(SimpleMineList.Mine[BestIndex].Health,BulletList.Bullet[i].BulletData.Damage,BulletList.Bullet[i].BulletData.DamageOrigin)
-                SimpleMineList.Mine[BestIndex].Health.State = SimpleMineList.Mine[BestIndex].Health.State - BulletList.Bullet[i].BulletData.Damage
+                DamageApplyDelayedHealth(SimpleMineList.Mine[BestIndex].Health,BulletList.Bullet[i].BulletData.Damage,BulletList.Bullet[i].BulletData.DamageOrigin,DAMAGE_OBJECT_SIMPLE_MINE,SimpleMineList.Mine[BestIndex].FlameTargetId)
                 ColorSet(SimpleMineList.Mine[BestIndex].SpriteData.Color,255,0,0,255)
                 BulletDelete(BulletList,i)
             endif
@@ -732,8 +731,7 @@ function BulletCollideChest(BulletList ref as TBulletList,ChestList ref as TChes
 			for k = 0 to ChestList.Chest.Length
 				if ChestList.Chest[k].Enabled = TRUE and WeaponDepthAllows(BulletList.Bullet[i].WeaponDepth,PlateList,ChestList.Chest[k].CollisionData.Index,ChestList.Chest[k].IsBackground) = TRUE
 					if BoxInBox(BulletList.Bullet[i].CollisionData.Position1,BulletList.Bullet[i].CollisionData.Position2,ChestList.Chest[k].CollisionData.Position1,ChestList.Chest[k].CollisionData.Position2)
-						DamagePrepareDelayedOrigin(ChestList.Chest[k].Health,BulletList.Bullet[i].BulletData.Damage,BulletList.Bullet[i].BulletData.DamageOrigin)
-						ChestList.Chest[k].Health.State = ChestList.Chest[k].Health.State - BulletList.Bullet[i].BulletData.Damage
+						DamageApplyDelayedHealth(ChestList.Chest[k].Health,BulletList.Bullet[i].BulletData.Damage,BulletList.Bullet[i].BulletData.DamageOrigin,DAMAGE_OBJECT_CHEST,ChestList.Chest[k].FlameTargetId)
 						BulletDelete(BulletList,i)
 						ColorSet(ChestList.Chest[k].SpriteData.Color,255,0,0,255)
 					endif

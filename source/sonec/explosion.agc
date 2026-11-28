@@ -370,8 +370,9 @@ function ExplosionCollideSonec(ExplosionList ref as TExplosionList,Sonec ref as 
                     ExplosionList.Explosion[i].MeasureHits = ExplosionList.Explosion[i].MeasureHits + 1
                     ExplosionList.Explosion[i].MeasureDamage = ExplosionList.Explosion[i].MeasureDamage + ExplosionList.Explosion[i].BulletData.Damage
                     local HealthBeforeHit as integer
+    local DamageResult as TDamageResult
                     HealthBeforeHit = Sonec.Health.State
-                    Sonec.Health.State = Sonec.Health.State - (ExplosionList.Explosion[i].BulletData.Damage - ShieldAbsorbDamage(Shield,Sonec,ExplosionList.Explosion[i].BulletData.Damage,Now))
+                    DamageApplySonec(Sonec,Shield,ExplosionList.Explosion[i].BulletData.Damage,ExplosionList.Explosion[i].BulletData.DamageOrigin,0,Now,DamageResult)
                     if Sonec.Health.State < HealthBeforeHit then SonecHitFlashUntil = Now + SONEC_HIT_FLASH_MS
                 endif
             endif
