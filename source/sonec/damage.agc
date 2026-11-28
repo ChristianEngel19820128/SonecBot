@@ -28,6 +28,11 @@
 global DamageLastHit as TDamageResult
 global DamageLastDestruction as TDamageDestruction
 global DamageSourceSerial as integer
+global DamageTraceEnabled as integer
+global DamageTraceStarted as integer
+global DamageTraceSequence as integer
+global DamageTraceRound as integer
+global DamageTraceText as integer
 global DamageHitAvailable as integer
 global DamageDestructionAvailable as integer
 
@@ -37,6 +42,8 @@ function DamageReset()
     DamageLastHit = EmptyHit
     DamageLastDestruction = EmptyDestruction
     DamageSourceSerial = 0
+    DamageTraceRound = DamageTraceRound+1
+    DamageTraceEnabled = FALSE
     DamageHitAvailable = FALSE
     DamageDestructionAvailable = FALSE
 endfunction
@@ -56,11 +63,13 @@ endfunction Loss
 function DamagePublishHit(Result ref as TDamageResult)
     DamageLastHit = Result
     DamageHitAvailable = TRUE
+    if DamageTraceEnabled = TRUE then DamageTraceHit(Result)
 endfunction
 
 function DamagePublishDestruction(Event ref as TDamageDestruction)
     DamageLastDestruction = Event
     DamageDestructionAvailable = TRUE
+    if DamageTraceEnabled = TRUE then DamageTraceDestruction(Event)
 endfunction
 
 // Preserve the raw subtraction, including negative HP and exact zero.
@@ -142,4 +151,70 @@ function DamageRecordDestruction(Origin ref as TDamageOrigin,TargetKind as integ
     Event.EffectiveHealthLoss = 0
     Event.TimeMs = Now
     DamagePublishDestruction(Event)
+endfunction
+
+// B01e developer-only trace. Off by default and after each GameInit.
+// One CSV per application run, including round and sequence for slot reuse checks.
+// File operations are restricted to enabled diagnostic sessions.
+function DamageTraceWrite(Row as string)
+    local FileID as integer
+    local CsvPath as TFilePath
+    CsvPath.Path = "/"
+    CsvPath.Name = ""
+    FilePathSetAndCheck(CsvPath)
+    if DamageTraceStarted = FALSE
+        FileID = OpenToWrite("sonec_damage_diagnostics.csv",0)
+        if FileID = 0
+            DamageTraceEnabled = FALSE
+            exitfunction
+        endif
+        WriteLine(FileID,"round,sequence,event,owner_kind,owner_id,source_kind,source_id,target_kind,target_id,requested,shield_absorbed,hp_before,hp_after,effective_hp")
+        CloseFile(FileID)
+        DamageTraceStarted = TRUE
+    endif
+    FileID = OpenToWrite("sonec_damage_diagnostics.csv",1)
+    if FileID = 0
+        DamageTraceEnabled = FALSE
+        exitfunction
+    endif
+    DamageTraceSequence = DamageTraceSequence+1
+    WriteLine(FileID,Str(DamageTraceRound)+","+Str(DamageTraceSequence)+","+Row)
+    CloseFile(FileID)
+endfunction
+
+function DamageTraceOrigin(Origin ref as TDamageOrigin)
+    local Row as string
+    Row = Str(Origin.OwnerKind)+","+Str(Origin.OwnerId)+","+Str(Origin.SourceKind)+","+Str(Origin.SourceId)
+endfunction Row
+
+function DamageTraceHit(Result ref as TDamageResult)
+    local Row as string
+    Row = "hit,"+DamageTraceOrigin(Result.Origin)+","+Str(Result.TargetKind)+","+Str(Result.TargetId)+","+Str(Result.RequestedDamage)+","+Str(Result.ShieldAbsorbed)+","+Str(Result.HealthBefore)+","+Str(Result.HealthAfter)+","+Str(Result.EffectiveHealthLoss)
+    DamageTraceWrite(Row)
+endfunction
+
+function DamageTraceDestruction(Event ref as TDamageDestruction)
+    local Row as string
+    Row = "destroy,"+DamageTraceOrigin(Event.Origin)+","+Str(Event.TargetKind)+","+Str(Event.TargetId)+",,,,,"+Str(Event.EffectiveHealthLoss)
+    DamageTraceWrite(Row)
+endfunction
+
+function DamageTraceToggle()
+    if DamageTraceEnabled = TRUE
+        DamageTraceEnabled = FALSE
+    else
+        DamageTraceEnabled = TRUE
+    endif
+endfunction
+
+function DamageTraceDraw()
+    if DamageTraceEnabled = FALSE then exitfunction
+    if DamageTraceText = 0
+        DamageTraceText = CreateText("")
+        SetTextSize(DamageTraceText,12)
+        SetTextColor(DamageTraceText,255,255,255,255)
+        SetTextPosition(DamageTraceText,8,100)
+    endif
+    SetTextString(DamageTraceText,"B01 CSV ON  #"+Str(DamageTraceSequence))
+    DrawText(DamageTraceText)
 endfunction

@@ -215,22 +215,7 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function PlasmaBlitzCollide(PlasmaBlitzList ref as TPlasmaBlitzList,Sonec ref as TSonec)
-	
-	local i as integer
-	local Radius as float
-	
-	for i = 0 to PlasmaBlitzList.PlasmaBlitz.Length
-		if PlasmaBlitzList.PlasmaBlitz[i].Enabled = TRUE
-			Radius = CalcRadius(PlasmaBlitzList.PlasmaBlitz[i].ObjectData.Position,Sonec.ObjectData.Position)
-			if Radius < 15
-				Sonec.Health.State = Sonec.Health.State - PlasmaBlitzList.PlasmaBlitz[i].BulletData.Damage
-				//PlasmaBlitzDelete(PlasmaBlitzList,i)
-			endif
-		endif
-	next i
-	
-endfunction
+// B01: unused legacy collision path removed (PlasmaBlitzCollide).
 
 //----------------------------------------------------------------------
 // 

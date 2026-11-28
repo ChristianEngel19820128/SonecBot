@@ -198,24 +198,7 @@ endfunction Radius
 // 
 //----------------------------------------------------------------------
 
-function FlameCollide(FlameList ref as TFlameList,Sonec ref as TSonec)
-	
-	local i as integer
-	local Radius as float
-	local FlameRadius as float
-	
-	for i = 0 to FlameList.Flame.Length
-		if FlameList.Flame[i].Enabled = TRUE
-			FlameRadius = FlameCollisionRadius(FlameList.Flame[i])
-			Radius = CalcRadius(FlameList.Flame[i].ObjectData.Position,Sonec.ObjectData.Position)
-			if Radius < FlameRadius + Sonec.ObjectData.Radius
-				Sonec.Health.State = Sonec.Health.State - FlameList.Flame[i].BulletData.Damage
-				FlameDelete(FlameList,i)
-			endif
-		endif
-	next i
-	
-endfunction
+// B01: unused legacy collision path removed (FlameCollide).
 
 //----------------------------------------------------------------------
 // 

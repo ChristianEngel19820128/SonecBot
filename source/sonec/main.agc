@@ -267,8 +267,9 @@ repeat
 	// Debug keys 1-8 work in Windows and HTML5 (click the browser canvas first).
 	// 1 Walker, 2 platforms, 3 K1d outlines, 4 pixel snap,
 	// 5 tower A/B, 6 platform A/B, 7 drone A/B, 8 Flak bullet HUD.
-	// 9 toggles Flarak/Flak collision proposals; 0 remains free.
+	// 9 toggles Flarak/Flak collision proposals; 0 toggles B01 damage CSV.
 	if Game.IsLost = FALSE and GAME_DEBUG_ENABLED = 1
+		if GetKeyPressed(KEY_0) = 1 then DamageTraceToggle()
 		if GetKeyPressed(KEY_9) = 1
 			if FlarakCollisionDebugVisible = 0
 				FlarakCollisionDebugVisible = 1
@@ -372,6 +373,7 @@ repeat
 				GameAnimate(Game,CurrentNow)
 			endif		
 			GameDraw(Game)
+			if GAME_DEBUG_ENABLED = 1 then DamageTraceDraw()
 			if Game.IsPause = TRUE
 				Drawtext(Pause)
 				Drawtext(PauseHintResume)

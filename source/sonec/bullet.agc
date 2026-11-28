@@ -309,54 +309,13 @@ endfunction
 // 
 //----------------------------------------------------------------------
 
-function BulletCollideOrbs(BulletList ref as TBulletList,OrbList ref as TOrbList)
-	
-	local i as integer
-	local k as integer
-	local Radius as float
-	
-	for i = 0 to BulletList.Bullet.Length
-		// Orbs are player-only targets: enemy bullets must never destroy rewards.
-		if BulletList.Bullet[i].Enabled = TRUE and BulletList.Bullet[i].CollisionData.CollisionType = TYPEPLAYERONE
-			for k = 0 to OrbList.Orb.Length
-				if OrbList.Orb[k].Enabled = TRUE
-					if BoxInBox(BulletList.Bullet[i].CollisionData.Position1,BulletList.Bullet[i].CollisionData.Position2,OrbList.Orb[k].CollisionData.Position1,OrbList.Orb[k].CollisionData.Position2)
-						DamagePrepareDelayedOrigin(OrbList.Orb[k].Health,BulletList.Bullet[i].BulletData.Damage,BulletList.Bullet[i].BulletData.DamageOrigin)
-						OrbList.Orb[k].Health.State = OrbList.Orb[k].Health.State - BulletList.Bullet[i].BulletData.Damage
-						BulletDelete(BulletList,i)
-						ColorSet(OrbList.Orb[k].SpriteData.Color,255,0,0,255)
-					endif
-				endif
-			next k
-		endif
-	next i
-	
-endfunction
+// B01: unused legacy collision path removed (BulletCollideOrbs).
 
 //----------------------------------------------------------------------
 // 
 //----------------------------------------------------------------------
 
-function BulletCollideWalkers(BulletList ref as TBulletList,WalkerList ref as TWalkerList,Now as integer)
-	local i as integer
-	local k as integer
-	for i = 0 to BulletList.Bullet.Length
-		// Enemy bullets must not damage Walkers; only player bullets hit their turret.
-		if BulletList.Bullet[i].Enabled = TRUE and BulletList.Bullet[i].CollisionData.CollisionType = TYPEPLAYERONE
-			for k = 0 to WalkerList.Walker.Length
-				if WalkerList.Walker[k].Enabled = TRUE and BulletList.Bullet[i].Enabled = TRUE
-					if BoxInBox(BulletList.Bullet[i].CollisionData.Position1,BulletList.Bullet[i].CollisionData.Position2,WalkerList.Walker[k].WalkerCollisionData.Tower.Position1,WalkerList.Walker[k].WalkerCollisionData.Tower.Position2)
-						DamagePrepareDelayedOrigin(WalkerList.Walker[k].Health,BulletList.Bullet[i].BulletData.Damage,BulletList.Bullet[i].BulletData.DamageOrigin)
-						WalkerList.Walker[k].Health.State = WalkerList.Walker[k].Health.State - BulletList.Bullet[i].BulletData.Damage
-						WalkerList.Walker[k].HitFlashUntil = Now + 150
-						ColorSet(WalkerList.Walker[k].WalkerSpriteData.Tower.Color,255,0,0,255)
-						BulletDelete(BulletList,i)
-					endif
-				endif
-			next k
-		endif
-	next i
-endfunction
+// B01: unused legacy collision path removed (BulletCollideWalkers).
 
 //----------------------------------------------------------------------
 // 
